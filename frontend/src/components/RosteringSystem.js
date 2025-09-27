@@ -83,17 +83,24 @@ const RosteringSystem = () => {
   };
 
   // Template copying function
-  const copyToTemplate = () => {
+  const copyToTemplate = async () => {
     if (window.confirm('Copy Week A and Week B schedules to Next A and Next B?')) {
-      // Get current Week A and Week B data
-      const weekAData = rosterData.weekA || {};
-      const weekBData = rosterData.weekB || {};
-      
-      // Update Next A and Next B
-      updateRosterMutation.mutate({ weekType: 'nextA', data: weekAData });
-      updateRosterMutation.mutate({ weekType: 'nextB', data: weekBData });
-      
-      toast.success('Templates copied successfully! Week A→Next A, Week B→Next B');
+      try {
+        // Fetch current Week A and Week B data
+        const weekAResponse = await axios.get(`${API}/roster/weekA`);
+        const weekBResponse = await axios.get(`${API}/roster/weekB`);
+        
+        // Update Next A and Next B with the data
+        await axios.post(`${API}/roster/nextA`, weekAResponse.data);
+        await axios.post(`${API}/roster/nextB`, weekBResponse.data);
+        
+        // Invalidate queries to refresh the data
+        queryClient.invalidateQueries(['roster']);
+        
+        toast.success('Templates copied successfully! Week A→Next A, Week B→Next B');
+      } catch (error) {
+        toast.error('Failed to copy templates: ' + error.message);
+      }
     }
   };
 
