@@ -230,29 +230,35 @@ const ParticipantSchedule = ({
                         <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
                           <button 
                             className="btn btn-secondary"
-                            onClick={() => handleEditShift(shift, date)}
+                            onClick={() => {
+                              console.log('Edit shift clicked:', shift, date);
+                              handleEditShift(shift, date);
+                            }}
                             style={{ 
-                              fontSize: '1rem', 
+                              fontSize: '0.9rem', 
                               padding: '0.5rem 1rem',
                               display: 'inline-flex',
                               alignItems: 'center',
                               gap: '0.25rem'
                             }}
                           >
-                            <Edit size={16} />
+                            <Edit size={16} /> Edit
                           </button>
                           <button 
                             className="btn btn-danger"
-                            onClick={() => handleDeleteShift(index, date)}
+                            onClick={() => {
+                              console.log('Delete shift clicked:', index, date);
+                              handleDeleteShift(index, date);
+                            }}
                             style={{ 
-                              fontSize: '1rem', 
+                              fontSize: '0.9rem', 
                               padding: '0.5rem 1rem',
                               display: 'inline-flex',
                               alignItems: 'center',
                               gap: '0.25rem'
                             }}
                           >
-                            <Trash2 size={16} />
+                            <Trash2 size={16} /> Delete
                           </button>
                         </div>
                       )}
