@@ -97,7 +97,7 @@ const RosteringSystem = () => {
       <header className="header">
         <div className="header-top">
           <div>
-            <h1 className="header-title">🏠 Support Worker Rostering System</h1>
+            <h1 className="header-title">🏠 Support Management System</h1>
           </div>
           <div className="header-controls">
             {activeTab !== 'admin' && (
