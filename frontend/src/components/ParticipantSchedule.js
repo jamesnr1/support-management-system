@@ -189,44 +189,36 @@ const ParticipantSchedule = ({
                         <div className="shift-row">
                           <div className="shift-info">
                             <div className="shift-time">
-                              {shift.startTime} - {shift.endTime}
-                              <span style={{ 
-                                marginLeft: '0.5rem', 
-                                color: 'var(--text-muted)',
-                                fontSize: '1rem'
-                              }}>
-                                ({shift.duration || '0'}h)
-                              </span>
-                            </div>
-                            
-                            <div style={{ display: 'flex', gap: '0.5rem', marginTop: '0.25rem' }}>
-                              <span className="shift-type">{shift.supportType || 'Self-Care'}</span>
-                              <span className="shift-type" style={{ background: 'var(--accent-success)' }}>
+                              {shift.startTime} - {shift.endTime} ({shift.duration || '0'}h)
+                              <span className="shift-type" style={{ marginLeft: '0.5rem' }}>{shift.supportType || 'Self-Care'}</span>
+                              <span className="shift-type" style={{ background: 'var(--accent-success)', marginLeft: '0.25rem' }}>
                                 {shift.ratio || '1:1'}
                               </span>
                               {shift.shiftNumber && (
-                                <span className="shift-type" style={{ background: 'var(--bg-tertiary)', color: 'var(--text-secondary)' }}>
+                                <span className="shift-type" style={{ background: 'var(--bg-tertiary)', color: 'var(--text-secondary)', marginLeft: '0.25rem' }}>
                                   #{shift.shiftNumber}
                                 </span>
                               )}
                             </div>
                             
-                            {shift.workers && shift.workers.length > 0 && (
-                              <div className="shift-workers">
-                                <Users size={14} style={{ marginRight: '0.25rem' }} />
-                                {getWorkerNames(shift.workers)}
-                              </div>
-                            )}
-                            
-                            {shift.location && (
-                              <div className="shift-workers">
-                                {getLocationName(shift.location)}
-                              </div>
-                            )}
-                            
-                            {shift.notes && (
-                              <div className="shift-workers">
-                                💬 {shift.notes}
+                            {(shift.workers?.length > 0 || shift.location || shift.notes) && (
+                              <div className="shift-workers" style={{ marginTop: '0.25rem' }}>
+                                {shift.workers && shift.workers.length > 0 && (
+                                  <>
+                                    <Users size={14} style={{ marginRight: '0.25rem' }} />
+                                    {getWorkerNames(shift.workers)}
+                                  </>
+                                )}
+                                {shift.location && (
+                                  <span style={{ marginLeft: shift.workers?.length > 0 ? '0.5rem' : '0' }}>
+                                    📍 {getLocationName(shift.location)}
+                                  </span>
+                                )}
+                                {shift.notes && (
+                                  <span style={{ marginLeft: '0.5rem' }}>
+                                    💬 {shift.notes}
+                                  </span>
+                                )}
                               </div>
                             )}
                           </div>
