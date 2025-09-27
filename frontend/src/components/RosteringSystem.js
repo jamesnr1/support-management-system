@@ -193,8 +193,6 @@ const RosteringSystem = () => {
             )}
           </>
         )}
-          </div>
-        )}
       </div>
     </div>
   );
