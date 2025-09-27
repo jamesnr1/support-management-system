@@ -154,11 +154,19 @@ const RosteringSystem = () => {
     }
   };
 
+  console.log('Debug: participantsLoading:', participantsLoading, 'workersLoading:', workersLoading, 'locationsLoading:', locationsLoading);
+  console.log('Errors:', { participantsError, workersError, locationsError });
+
   if (participantsLoading || workersLoading || locationsLoading) {
     return (
       <div className="loading">
         <div className="spinner"></div>
         Loading system data...
+        <div style={{ fontSize: '12px', marginTop: '10px', color: 'var(--text-muted)' }}>
+          Participants: {participantsLoading ? 'Loading...' : 'Ready'}<br/>
+          Workers: {workersLoading ? 'Loading...' : 'Ready'}<br/>
+          Locations: {locationsLoading ? 'Loading...' : 'Ready'}
+        </div>
       </div>
     );
   }
