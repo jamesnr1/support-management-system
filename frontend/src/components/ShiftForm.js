@@ -282,21 +282,19 @@ const ShiftForm = ({
 
         {/* Save and Cancel buttons */}
         <button type="submit" className="btn btn-success" style={{ 
-          padding: '0.5rem', 
+          padding: '0.5rem 1rem', 
           fontSize: '1rem',
           borderRadius: '6px',
-          minWidth: '40px'
+          minWidth: '80px',
+          background: 'var(--accent-success)',
+          border: '2px solid var(--accent-success)',
+          color: 'white'
         }}>
           <Save size={16} />
         </button>
         
-        <button type="button" onClick={onCancel} className="btn btn-secondary" style={{ 
-          padding: '0.5rem', 
-          fontSize: '1rem',
-          borderRadius: '6px',
-          minWidth: '40px'
-        }}>
-          <X size={16} />
+        <button type="button" onClick={onCancel} className="btn-cancel-x">
+          ×
         </button>
       </form>
     </div>
