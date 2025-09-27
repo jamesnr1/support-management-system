@@ -4,7 +4,7 @@ from datetime import datetime, date, time
 import uuid
 
 class Worker(BaseModel):
-    id: Optional[int] = None
+    id: Optional[str] = None
     code: str
     full_name: str
     email: Optional[str] = None
