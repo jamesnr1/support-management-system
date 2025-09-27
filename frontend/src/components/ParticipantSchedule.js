@@ -242,27 +242,64 @@ const ParticipantSchedule = ({
                               <button 
                                 className="btn btn-danger"
                                 onClick={() => {
-                                  console.log('Delete shift clicked:', index, date, shift);
+                                  console.log('=== DELETE DEBUG START ===');
+                                  console.log('Delete shift clicked for index:', index);
+                                  console.log('Date:', date);
+                                  console.log('Shift data:', shift);
+                                  console.log('Participant code:', participant.code);
+                                  console.log('Current rosterData:', rosterData);
+                                  console.log('Current dayShifts:', dayShifts);
+                                  
                                   if (window.confirm('Are you sure you want to delete this shift?')) {
-                                    const newRosterData = { ...rosterData };
-                                    
-                                    // Ensure the participant and date exist
-                                    if (newRosterData[participant.code] && newRosterData[participant.code][date]) {
-                                      // Remove the shift at the specified index
-                                      newRosterData[participant.code][date].splice(index, 1);
+                                    try {
+                                      // Create a deep copy
+                                      const newRosterData = JSON.parse(JSON.stringify(rosterData));
                                       
-                                      // Remove empty date arrays to keep data clean
-                                      if (newRosterData[participant.code][date].length === 0) {
-                                        delete newRosterData[participant.code][date];
+                                      console.log('Before delete - roster structure:', newRosterData);
+                                      console.log('Participant data exists:', !!newRosterData[participant.code]);
+                                      console.log('Date data exists:', !!newRosterData[participant.code]?.[date]);
+                                      console.log('Shifts array length:', newRosterData[participant.code]?.[date]?.length);
+                                      
+                                      // Initialize if needed
+                                      if (!newRosterData[participant.code]) {
+                                        newRosterData[participant.code] = {};
+                                        console.log('Created participant entry');
                                       }
                                       
-                                      console.log('Updated roster after delete:', newRosterData);
-                                      onRosterUpdate(newRosterData);
-                                      toast.success('Shift deleted successfully');
-                                    } else {
-                                      toast.error('Error: Could not find shift to delete');
+                                      if (!newRosterData[participant.code][date]) {
+                                        newRosterData[participant.code][date] = [];
+                                        console.log('Created date entry');
+                                      }
+                                      
+                                      const shiftsArray = newRosterData[participant.code][date];
+                                      console.log('Shifts array before splice:', shiftsArray);
+                                      console.log('Trying to remove index:', index, 'from array of length:', shiftsArray.length);
+                                      
+                                      if (index >= 0 && index < shiftsArray.length) {
+                                        shiftsArray.splice(index, 1);
+                                        console.log('Shifts array after splice:', shiftsArray);
+                                        
+                                        // Remove empty date arrays
+                                        if (shiftsArray.length === 0) {
+                                          delete newRosterData[participant.code][date];
+                                          console.log('Removed empty date entry');
+                                        }
+                                        
+                                        console.log('Final roster data:', newRosterData);
+                                        onRosterUpdate(newRosterData);
+                                        toast.success('Shift deleted successfully');
+                                        console.log('=== DELETE SUCCESS ===');
+                                      } else {
+                                        console.error('Invalid index:', index, 'for array length:', shiftsArray.length);
+                                        toast.error('Error: Invalid shift index');
+                                      }
+                                      
+                                    } catch (error) {
+                                      console.error('Delete error:', error);
+                                      toast.error('Error deleting shift: ' + error.message);
                                     }
                                   }
+                                  console.log('=== DELETE DEBUG END ===');
                                 }}
                                 style={{ 
                                   fontSize: '0.9rem', 
