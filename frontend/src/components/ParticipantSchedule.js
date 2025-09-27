@@ -201,17 +201,6 @@ const ParticipantSchedule = ({
                     </button>
                   )}
                   
-                  {/* Debug info - remove later */}
-                  {process.env.NODE_ENV === 'development' && (
-                    <div style={{ 
-                      fontSize: '10px', 
-                      color: 'red', 
-                      marginBottom: '0.5rem' 
-                    }}>
-                      DEBUG: editMode = {editMode ? 'true' : 'false'}
-                    </div>
-                  )}
-                  
                   {/* Show shift form only for the selected date */}
                   {showShiftForm && selectedDate === date && (
                     <ShiftForm
