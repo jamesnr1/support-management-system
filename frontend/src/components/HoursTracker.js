@@ -2,7 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { Download, Upload, Calculator, AlertTriangle } from 'lucide-react';
 import { toast } from 'react-hot-toast';
 
-const HoursTracker = ({ participants, workers, rosterData }) => {
+const HoursTracker = (props) => {
+  const { participants, workers, rosterData } = props;
   const [currentWeek, setCurrentWeek] = useState(1);
   const [weeksRemaining, setWeeksRemaining] = useState(20);
   const [showCSVUpload, setShowCSVUpload] = useState(false);
