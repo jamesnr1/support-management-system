@@ -220,9 +220,10 @@ const RosteringSystem = () => {
               </button>
             )}
             <button 
-              className="btn btn-primary"
+              className="btn btn-secondary"
               onClick={copyToTemplate}
               title="Copy Week A/B to Next A/B"
+              style={{ padding: '0.5rem 1rem', fontSize: '0.9rem' }}
             >
               📋 Copy to Template
             </button>
