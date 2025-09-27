@@ -132,19 +132,20 @@ const ShiftForm = ({
     <div className="shift-row" style={{
       background: 'var(--bg-input)',
       borderLeft: '4px solid var(--accent-warning)',
-      marginBottom: '0.5rem'
+      marginBottom: '0.5rem',
+      borderRadius: '4px'
     }}>
       <form onSubmit={handleSubmit}>
         <div style={{ 
           display: 'flex', 
-          gap: '0.5rem', 
+          gap: '0.7rem', 
           alignItems: 'center', 
           flexWrap: 'wrap',
-          padding: '0.8rem'
+          padding: '1rem'
         }}>
           
           {/* Date - Fixed width to prevent cutoff */}
-          <div style={{ minWidth: '90px' }}>
+          <div style={{ minWidth: '100px' }}>
             <input 
               type="text" 
               value={new Date(date).toLocaleDateString('en-AU', { 
@@ -154,11 +155,13 @@ const ShiftForm = ({
               })}
               readOnly 
               style={{ 
-                width: '85px', 
+                width: '95px', 
                 background: 'var(--bg-tertiary)', 
-                fontSize: '0.85rem',
+                fontSize: '1rem',
                 textAlign: 'center',
-                border: '1px solid var(--border-color)'
+                border: '1px solid var(--border-color)',
+                padding: '0.5rem',
+                borderRadius: '4px'
               }}
             />
           </div>
@@ -167,19 +170,29 @@ const ShiftForm = ({
           <select 
             value={formData.startTime}
             onChange={(e) => handleInputChange('startTime', e.target.value)}
-            style={{ width: '70px', fontSize: '0.85rem' }}
+            style={{ 
+              width: '80px', 
+              fontSize: '1rem',
+              padding: '0.5rem',
+              borderRadius: '4px'
+            }}
           >
             {timeOptions.map(time => (
               <option key={time.value} value={time.value}>{time.label}</option>
             ))}
           </select>
 
-          <span style={{ color: 'var(--text-muted)', fontSize: '0.85rem' }}>to</span>
+          <span style={{ color: 'var(--text-muted)', fontSize: '1rem', fontWeight: 'bold' }}>to</span>
 
           <select 
             value={formData.endTime}
             onChange={(e) => handleInputChange('endTime', e.target.value)}
-            style={{ width: '70px', fontSize: '0.85rem' }}
+            style={{ 
+              width: '80px', 
+              fontSize: '1rem',
+              padding: '0.5rem',
+              borderRadius: '4px'
+            }}
           >
             {timeOptions.map(time => (
               <option key={time.value} value={time.value}>{time.label}</option>
@@ -190,7 +203,12 @@ const ShiftForm = ({
           <select 
             value={formData.supportType}
             onChange={(e) => handleInputChange('supportType', e.target.value)}
-            style={{ minWidth: '140px', fontSize: '0.85rem' }}
+            style={{ 
+              minWidth: '160px', 
+              fontSize: '1rem',
+              padding: '0.5rem',
+              borderRadius: '4px'
+            }}
           >
             <option value="Self-Care">Self-Care</option>
             <option value="Community Participation">Community Participation</option>
@@ -200,7 +218,12 @@ const ShiftForm = ({
           <select 
             value={formData.ratio}
             onChange={(e) => handleInputChange('ratio', e.target.value)}
-            style={{ width: '60px', fontSize: '0.85rem' }}
+            style={{ 
+              width: '70px', 
+              fontSize: '1rem',
+              padding: '0.5rem',
+              borderRadius: '4px'
+            }}
           >
             <option value="1:1">1:1</option>
             <option value="2:1">2:1</option>
@@ -211,7 +234,12 @@ const ShiftForm = ({
           <select 
             value={formData.workers[0] || ''}
             onChange={(e) => handleWorkerChange(0, e.target.value)}
-            style={{ minWidth: '140px', fontSize: '0.85rem' }}
+            style={{ 
+              minWidth: '160px', 
+              fontSize: '1rem',
+              padding: '0.5rem',
+              borderRadius: '4px'
+            }}
           >
             <option value="">Select Worker 1</option>
             {workers.map(worker => (
@@ -224,7 +252,12 @@ const ShiftForm = ({
             <select 
               value={formData.workers[1] || ''}
               onChange={(e) => handleWorkerChange(1, e.target.value)}
-              style={{ minWidth: '140px', fontSize: '0.85rem' }}
+              style={{ 
+                minWidth: '160px', 
+                fontSize: '1rem',
+                padding: '0.5rem',
+                borderRadius: '4px'
+              }}
             >
               <option value="">Select Worker 2</option>
               {workers.map(worker => (
@@ -237,9 +270,14 @@ const ShiftForm = ({
           <select 
             value={formData.location}
             onChange={(e) => handleInputChange('location', e.target.value)}
-            style={{ minWidth: '110px', fontSize: '0.85rem' }}
+            style={{ 
+              minWidth: '130px', 
+              fontSize: '1rem',
+              padding: '0.5rem',
+              borderRadius: '4px'
+            }}
           >
-            <option value="">Location</option>
+            <option value="">Select Location</option>
             {locations.map(location => (
               <option key={location.id} value={location.id}>
                 {location.name}
@@ -248,21 +286,41 @@ const ShiftForm = ({
           </select>
 
           {/* Action buttons */}
-          <button type="submit" className="btn btn-success" style={{ padding: '0.4rem 0.8rem', fontSize: '0.85rem' }}>
-            <Save size={14} /> Save
+          <button type="submit" className="btn btn-success" style={{ 
+            padding: '0.5rem 1rem', 
+            fontSize: '1rem',
+            borderRadius: '4px'
+          }}>
+            <Save size={16} /> Save
           </button>
-          <button type="button" onClick={onCancel} className="btn btn-secondary" style={{ padding: '0.4rem 0.8rem', fontSize: '0.85rem' }}>
-            <X size={14} /> Cancel
+          <button type="button" onClick={onCancel} className="btn btn-secondary" style={{ 
+            padding: '0.5rem 1rem', 
+            fontSize: '1rem',
+            borderRadius: '4px'
+          }}>
+            <X size={16} /> Cancel
           </button>
         </div>
 
         {/* Shift Report Number and Notes in second row */}
-        <div style={{ padding: '0 0.8rem 0.8rem', display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
+        <div style={{ 
+          padding: '0 1rem 1rem', 
+          display: 'flex', 
+          gap: '0.7rem', 
+          alignItems: 'center',
+          borderTop: '1px solid var(--border-color)',
+          paddingTop: '1rem'
+        }}>
           <input 
             type="text" 
             value={formData.shiftNumber}
             onChange={(e) => handleInputChange('shiftNumber', e.target.value)}
-            style={{ width: '120px', fontSize: '0.85rem' }}
+            style={{ 
+              width: '140px', 
+              fontSize: '1rem',
+              padding: '0.5rem',
+              borderRadius: '4px'
+            }}
             placeholder="Shift Report #"
           />
           
@@ -270,12 +328,13 @@ const ShiftForm = ({
             value={formData.notes}
             onChange={(e) => handleInputChange('notes', e.target.value)}
             placeholder="Notes (optional)"
-            rows="1" 
+            rows="2" 
             style={{ 
               flex: 1, 
-              fontSize: '0.85rem',
-              resize: 'none',
-              minHeight: '32px'
+              fontSize: '1rem',
+              resize: 'vertical',
+              padding: '0.5rem',
+              borderRadius: '4px'
             }}
           />
         </div>
