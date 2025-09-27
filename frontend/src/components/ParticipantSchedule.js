@@ -200,7 +200,7 @@ const ParticipantSchedule = ({
                           <span style={{ 
                             marginLeft: '0.5rem', 
                             color: 'var(--text-muted)',
-                            fontSize: '0.85rem'
+                            fontSize: '1rem'
                           }}>
                             ({shift.duration || '0'}h)
                           </span>
