@@ -202,8 +202,6 @@ const ParticipantSchedule = ({
           <div>
             <div className="participant-name">{participant.full_name}</div>
             <div className="participant-details">
-              Code: {participant.code} | 
-              {participant.participant_number && ` Number: ${participant.participant_number} | `}
               Default Ratio: {participant.default_ratio || '1:1'}
             </div>
           </div>
