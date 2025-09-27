@@ -7,35 +7,50 @@ const HoursTracker = (props) => {
   const [participantHours, setParticipantHours] = useState({});
 
   useEffect(() => {
+    console.log('HoursTracker - rosterData:', rosterData);
+    console.log('HoursTracker - participants:', participants);
     calculateHours();
   }, [rosterData, participants]);
 
   const calculateHours = () => {
+    console.log('Calculating hours...');
     const hours = {};
     
     participants.forEach(participant => {
+      console.log('Processing participant:', participant.code);
       hours[participant.code] = {
         participant,
         selfCare: { used: 0, available: 168 }, // Weekly hours
         community: { used: 0, available: 56 }
       };
       
-      // Calculate hours from current roster data
-      const participantShifts = rosterData[participant.code] || {};
-      Object.values(participantShifts).forEach(dayShifts => {
-        if (Array.isArray(dayShifts)) {
-          dayShifts.forEach(shift => {
-            const duration = parseFloat(shift.duration) || 0;
-            if (shift.supportType === 'Community Access') {
-              hours[participant.code].community.used += duration;
-            } else {
-              hours[participant.code].selfCare.used += duration;
-            }
-          });
-        }
-      });
+      // Calculate hours from current roster data for this participant
+      if (rosterData && rosterData[participant.code]) {
+        console.log('Found roster data for:', participant.code, rosterData[participant.code]);
+        
+        Object.values(rosterData[participant.code]).forEach(dayShifts => {
+          if (Array.isArray(dayShifts)) {
+            console.log('Processing day shifts:', dayShifts);
+            dayShifts.forEach(shift => {
+              const duration = parseFloat(shift.duration) || 0;
+              console.log('Shift duration:', duration, 'Type:', shift.supportType);
+              
+              if (shift.supportType === 'Community Access') {
+                hours[participant.code].community.used += duration;
+              } else {
+                hours[participant.code].selfCare.used += duration;
+              }
+            });
+          }
+        });
+      } else {
+        console.log('No roster data found for:', participant.code);
+      }
+      
+      console.log('Final hours for', participant.code, hours[participant.code]);
     });
     
+    console.log('All calculated hours:', hours);
     setParticipantHours(hours);
   };
 
