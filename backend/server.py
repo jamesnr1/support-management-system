@@ -99,19 +99,102 @@ async def init_sample_data():
         if not existing:
             await db.locations.insert_one(location)
     
-    # Add participants
-    participants_data = [
-        {"code": "LIB001", "full_name": "Libby", "location": "loc1", "default_ratio": "2:1", "_id": str(uuid.uuid4())},
-        {"code": "JAM001", "full_name": "James", "location": "loc2", "default_ratio": "2:1", "_id": str(uuid.uuid4())},
-        {"code": "ACE001", "full_name": "Ace", "location": "loc1", "default_ratio": "1:1", "_id": str(uuid.uuid4())},
-        {"code": "GRA001", "full_name": "Grace", "location": "loc1", "default_ratio": "1:1", "_id": str(uuid.uuid4())},
-        {"code": "MIL001", "full_name": "Milan", "location": "loc1", "default_ratio": "1:1", "_id": str(uuid.uuid4())}
+    # Add sample workers from SQL data
+    workers_data = [
+        {
+            "_id": "worker1", 
+            "code": "GAU001", 
+            "full_name": "Gaumit Patel", 
+            "email": "gaumit@example.com", 
+            "phone": "0423123456", 
+            "status": "Active",
+            "skills": "Manual Handling, First Aid",
+            "car": "Yes",
+            "max_hours": 40
+        },
+        {
+            "_id": "worker2", 
+            "code": "VER001", 
+            "full_name": "Pranvera (Vera) Ymeraj", 
+            "email": "vera@example.com", 
+            "phone": "0423234567", 
+            "status": "Active",
+            "skills": "Personal Care, Community Support",
+            "car": "Yes",
+            "max_hours": 35
+        },
+        {
+            "_id": "worker3", 
+            "code": "HAP001", 
+            "full_name": "Harshkumar (Happy) Modi", 
+            "email": "happy@example.com", 
+            "phone": "0423345678", 
+            "status": "Active",
+            "skills": "Manual Handling, Driving",
+            "car": "Yes",
+            "max_hours": 40
+        },
+        {
+            "_id": "worker4", 
+            "code": "SAN001", 
+            "full_name": "Sanjaykumar (Sanjay) Patel", 
+            "email": "sanjay@example.com", 
+            "phone": "0423456789", 
+            "status": "Active",
+            "skills": "Personal Care, First Aid",
+            "car": "No",
+            "max_hours": 30
+        },
+        {
+            "_id": "worker5", 
+            "code": "KRU001", 
+            "full_name": "Krunalkumar (Krunal) Patel", 
+            "email": "krunal@example.com", 
+            "phone": "0423567890", 
+            "status": "Active",
+            "skills": "Community Access, Driving",
+            "car": "Yes",
+            "max_hours": 40
+        },
+        {
+            "_id": "worker6", 
+            "code": "CHA001", 
+            "full_name": "Chaynne Humphrys", 
+            "email": "chaynne@example.com", 
+            "phone": "0423678901", 
+            "status": "Active",
+            "skills": "Personal Care, Community Support",
+            "car": "No",
+            "max_hours": 25
+        },
+        {
+            "_id": "worker7", 
+            "code": "MEE001", 
+            "full_name": "Meena Sapkota", 
+            "email": "meena@example.com", 
+            "phone": "0423789012", 
+            "status": "Active",
+            "skills": "Personal Care, ADL Support",
+            "car": "No",
+            "max_hours": 30
+        },
+        {
+            "_id": "worker8", 
+            "code": "MIH001", 
+            "full_name": "Mihir Patel", 
+            "email": "mihir@example.com", 
+            "phone": "0423890123", 
+            "status": "Active",
+            "skills": "Manual Handling, Community Access",
+            "car": "Yes",
+            "max_hours": 35
+        }
     ]
     
-    for participant in participants_data:
-        existing = await db.participants.find_one({"code": participant["code"]})
+    for worker in workers_data:
+        existing = await db.workers.find_one({"_id": worker["_id"]})
         if not existing:
-            await db.participants.insert_one(participant)
+            await db.workers.insert_one(worker)
 
 async def load_participants():
     """Load participants from database"""
