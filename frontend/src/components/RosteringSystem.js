@@ -93,7 +93,8 @@ const RosteringSystem = () => {
     { id: 'weekB', label: 'Week B', color: '#8B9A7B' },
     { id: 'nextA', label: 'Next A', color: '#C4915C' },
     { id: 'nextB', label: 'Next B', color: '#B87E7E' },
-    { id: 'admin', label: 'Admin', color: '#9A8F85' }
+    { id: 'admin', label: 'Admin', color: '#9A8F85' },
+    { id: 'hours', label: 'Hours', color: '#A89080' }
   ];
 
   const toggleHoursTracker = () => {
