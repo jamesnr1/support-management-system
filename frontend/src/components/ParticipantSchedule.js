@@ -94,6 +94,10 @@ const ParticipantSchedule = ({
   };
 
   const handleShiftSave = (shiftData) => {
+    console.log('handleShiftSave called with:', shiftData);
+    console.log('Current rosterData:', rosterData);
+    console.log('Participant code:', participant.code);
+    
     // Update roster data
     const newRosterData = { ...rosterData };
     if (!newRosterData[participant.code]) {
@@ -106,14 +110,17 @@ const ParticipantSchedule = ({
     if (editingShift) {
       // Update existing shift
       const shiftIndex = newRosterData[participant.code][shiftData.date].findIndex(s => s.id === editingShift.id);
+      console.log('Updating shift, found index:', shiftIndex);
       if (shiftIndex !== -1) {
         newRosterData[participant.code][shiftData.date][shiftIndex] = shiftData;
       }
     } else {
       // Add new shift
+      console.log('Adding new shift');
       newRosterData[participant.code][shiftData.date].push(shiftData);
     }
 
+    console.log('New roster data after save:', newRosterData);
     onRosterUpdate(newRosterData);
     toast.success(`Shift ${editingShift ? 'updated' : 'created'} successfully`);
   };
