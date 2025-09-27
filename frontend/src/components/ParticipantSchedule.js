@@ -177,15 +177,6 @@ const ParticipantSchedule = ({
                   <div style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>
                     {new Date(date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
                   </div>
-                  {editMode && (
-                    <button 
-                      className="btn btn-primary"
-                      onClick={() => handleAddShift(date)}
-                      style={{ marginTop: '0.5rem', fontSize: '1rem', padding: '0.5rem 1rem' }}
-                    >
-                      <Plus size={16} /> Add Shift
-                    </button>
-                  )}
                 </div>
 
                 <div className="day-shifts">
