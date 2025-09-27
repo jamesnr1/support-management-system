@@ -193,20 +193,22 @@ const WorkerManagement = ({ workers, locations, onWorkerUpdate }) => {
     });
   };
 
-  const handleUnavailabilitySubmit = (e) => {
-    e.preventDefault();
-    const formData = new FormData(e.target);
-    
-    const unavailabilityData = {
-      from_date: formData.get('from_date'),
-      to_date: formData.get('to_date'),
-      reason: formData.get('reason')
-    };
-    
-    addUnavailabilityMutation.mutate({ 
-      workerId: selectedWorker.id, 
-      unavailabilityData 
-    });
+  const handleSendTelegramMessage = (worker) => {
+    const message = prompt(`Send message to ${worker.full_name}:`);
+    if (message) {
+      // Call API to send telegram message
+      fetch(`${API}/telegram/send`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          worker_id: worker.id,
+          message: message,
+          urgent: false
+        })
+      })
+      .then(() => toast.success(`Message sent to ${worker.full_name}`))
+      .catch(() => toast.error('Failed to send message'));
+    }
   };
 
   return (
