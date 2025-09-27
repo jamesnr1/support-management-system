@@ -135,10 +135,10 @@ body {
 }
 
 .participant-header {
-  background: linear-gradient(135deg, var(--accent-primary), var(--accent-hover));
+  background: var(--bg-tertiary);
   padding: 1rem 1.5rem;
   border-bottom: 1px solid var(--border-color);
-  color: var(--bg-primary);
+  color: var(--text-primary);
 }
 
 .participant-info {
