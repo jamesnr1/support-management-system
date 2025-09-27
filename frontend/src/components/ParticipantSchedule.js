@@ -108,50 +108,7 @@ const ParticipantSchedule = ({
     }
   };
 
-  const handleShiftSubmit = async (e) => {
-    e.preventDefault();
-    const formData = new FormData(e.target);
-    
-    const shiftData = {
-      id: editingShift?.id || Date.now().toString(),
-      startTime: formData.get('start_time'),
-      endTime: formData.get('end_time'),
-      supportType: formData.get('support_type'),
-      workers: Array.from(formData.getAll('workers')).map(id => parseInt(id)),
-      ratio: formData.get('ratio'),
-      location: formData.get('location'),
-      notes: formData.get('notes') || '',
-      date: selectedDate
-    };
-
-    // Validate shift
-    if (shiftData.startTime >= shiftData.endTime) {
-      toast.error('End time must be after start time');
-      return;
-    }
-
-    // Check for conflicts if workers are assigned
-    if (shiftData.workers.length > 0) {
-      try {
-        for (const workerId of shiftData.workers) {
-          const conflicts = await checkConflictsMutation.mutateAsync({
-            worker_id: workerId,
-            shift_date: selectedDate,
-            start_time: shiftData.startTime,
-            end_time: shiftData.endTime
-          });
-          
-          if (conflicts.hasConflict) {
-            const workerName = workers.find(w => w.id === workerId)?.full_name || 'Unknown';
-            toast.error(`Conflict detected for ${workerName}: ${conflicts.conflictDetails}`);
-            return;
-          }
-        }
-      } catch (error) {
-        console.error('Error checking conflicts:', error);
-      }
-    }
-
+  const handleShiftSave = (shiftData) => {
     // Update roster data
     const newRosterData = { ...rosterData };
     if (!newRosterData[participant.code]) {
@@ -173,8 +130,14 @@ const ParticipantSchedule = ({
     }
 
     onRosterUpdate(newRosterData);
-    setShowShiftModal(false);
+    setShowShiftForm(false);
     toast.success(`Shift ${editingShift ? 'updated' : 'created'} successfully`);
+  };
+
+  const handleShiftCancel = () => {
+    setShowShiftForm(false);
+    setEditingShift(null);
+    setSelectedDate(null);
   };
 
   const calculateShiftHours = (startTime, endTime) => {
