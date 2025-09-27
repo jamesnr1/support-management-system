@@ -243,16 +243,16 @@ const ParticipantSchedule = ({
                           <button 
                             className="btn btn-secondary"
                             onClick={() => handleEditShift(shift, date)}
-                            style={{ fontSize: '0.85rem', padding: '0.4rem 0.8rem' }}
+                            style={{ fontSize: '1rem', padding: '0.5rem 1rem' }}
                           >
-                            <Edit size={14} /> Edit
+                            <Edit size={16} /> Edit
                           </button>
                           <button 
                             className="btn btn-danger"
                             onClick={() => handleDeleteShift(index, date)}
-                            style={{ fontSize: '0.85rem', padding: '0.4rem 0.8rem' }}
+                            style={{ fontSize: '1rem', padding: '0.5rem 1rem' }}
                           >
-                            <Trash2 size={14} /> Delete
+                            <Trash2 size={16} /> Delete
                           </button>
                         </div>
                       )}
