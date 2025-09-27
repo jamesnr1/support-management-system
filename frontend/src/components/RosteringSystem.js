@@ -97,7 +97,7 @@ const RosteringSystem = () => {
   ];
 
   const toggleHoursTracker = () => {
-    setShowHoursTracker(!showHoursTracker);
+    setActiveTab('hours');
   };
 
   const toggleEditMode = () => {
