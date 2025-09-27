@@ -123,8 +123,11 @@ const RosteringSystem = () => {
                 {editMode ? '❌ Exit Edit' : '✏️ Edit Mode'}
               </button>
             )}
-            <button className="btn btn-primary">
-              📋 Templates
+            <button 
+              className="btn btn-primary"
+              onClick={copyToTemplate}
+            >
+              📋 Copy to Template
             </button>
             <button className="btn btn-primary">
               💰 Export
