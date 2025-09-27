@@ -161,17 +161,6 @@ const ParticipantSchedule = ({
                   <div style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>
                     {new Date(date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
                   </div>
-                  
-                  {/* Show shift numbers with gap */}
-                  {dayShifts.length > 0 && (
-                    <div style={{ marginTop: '0.5rem' }}>
-                      {dayShifts.map((shift, index) => (
-                        <div key={index} style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>
-                          {shift.shiftNumber && `#${shift.shiftNumber}`}
-                        </div>
-                      ))}
-                    </div>
-                  )}
                 </div>
 
                 <div className="day-shifts">
