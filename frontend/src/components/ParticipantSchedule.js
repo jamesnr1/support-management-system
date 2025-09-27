@@ -190,11 +190,26 @@ const ParticipantSchedule = ({
                         alignItems: 'center',
                         gap: '0.25rem',
                         fontSize: '0.9rem',
-                        padding: '0.4rem 0.8rem'
+                        padding: '0.4rem 0.8rem',
+                        background: 'var(--accent-primary)',
+                        color: 'var(--bg-primary)',
+                        border: '2px solid var(--accent-primary)',
+                        borderRadius: '6px'
                       }}
                     >
                       <Plus size={16} /> Add Shift
                     </button>
+                  )}
+                  
+                  {/* Debug info - remove later */}
+                  {process.env.NODE_ENV === 'development' && (
+                    <div style={{ 
+                      fontSize: '10px', 
+                      color: 'red', 
+                      marginBottom: '0.5rem' 
+                    }}>
+                      DEBUG: editMode = {editMode ? 'true' : 'false'}
+                    </div>
                   )}
                   
                   {/* Show shift form only for the selected date */}
