@@ -188,22 +188,22 @@ const ParticipantSchedule = ({
                         /* Show normal shift display */
                         <div className="shift-row">
                           <div className="shift-info">
-                            {/* Shift number for this specific shift */}
-                            <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginBottom: '0.25rem' }}>
-                              {shift.shiftNumber && `#${shift.shiftNumber}`}
-                            </div>
-                            
                             {/* Line 1: Time and hours */}
                             <div className="shift-time">
                               {shift.startTime} - {shift.endTime} ({shift.duration || '0'}h)
                             </div>
                             
-                            {/* Line 2: Shift type and ratio */}
+                            {/* Line 2: Shift type, ratio, and shift number */}
                             <div style={{ marginTop: '0.25rem' }}>
                               <span className="shift-type">{shift.supportType || 'Self-Care'}</span>
                               <span className="shift-type" style={{ background: 'var(--accent-success)', marginLeft: '0.5rem' }}>
                                 {shift.ratio || '1:1'}
                               </span>
+                              {shift.shiftNumber && (
+                                <span className="shift-type" style={{ background: 'var(--bg-tertiary)', color: 'var(--text-secondary)', marginLeft: '0.5rem' }}>
+                                  #{shift.shiftNumber}
+                                </span>
+                              )}
                             </div>
                             
                             {/* Line 3: Workers with icon and notes on same line */}
