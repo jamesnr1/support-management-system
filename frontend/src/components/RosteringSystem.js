@@ -151,20 +151,34 @@ const RosteringSystem = () => {
     }
   };
 
-  // Template copying function
+  // Template copying function - Fixed to work properly
   const copyToTemplate = async () => {
     if (window.confirm('Copy Week A and Week B schedules to Next A and Next B?')) {
       try {
-        // Fetch current Week A and Week B data
-        const weekAResponse = await axios.get(`${API}/roster/weekA`);
-        const weekBResponse = await axios.get(`${API}/roster/weekB`);
+        // Get the actual roster data from state
+        const weekAData = rosterData || {};
+        const weekBData = rosterData || {};
         
-        // Update Next A and Next B with the data
-        await axios.post(`${API}/roster/nextA`, weekAResponse.data);
-        await axios.post(`${API}/roster/nextB`, weekBResponse.data);
+        // Prepare the data for Next A and Next B
+        const nextAData = {};
+        const nextBData = {};
         
-        // Invalidate queries to refresh the data
-        queryClient.invalidateQueries(['roster']);
+        // Copy all participant data from current weeks
+        Object.keys(weekAData).forEach(participantCode => {
+          if (weekAData[participantCode]) {
+            nextAData[participantCode] = { ...weekAData[participantCode] };
+          }
+        });
+        
+        Object.keys(weekBData).forEach(participantCode => {
+          if (weekBData[participantCode]) {
+            nextBData[participantCode] = { ...weekBData[participantCode] };
+          }
+        });
+        
+        // Update roster with Next A and Next B data
+        onRosterUpdate(nextAData, 'nextA');
+        onRosterUpdate(nextBData, 'nextB');
         
         toast.success('Templates copied successfully! Week A→Next A, Week B→Next B');
       } catch (error) {
