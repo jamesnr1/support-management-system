@@ -481,6 +481,179 @@ class RosteringSystemTester:
             self.log_test("Data Consistency", False, "Consistency test failed", str(e))
             return False
     
+    def test_add_edit_delete_shifts_workflow(self):
+        """Test Add/Edit/Delete shifts workflow"""
+        try:
+            # Test adding shifts to weekA
+            shift_data = {
+                "shifts": {
+                    "monday": {
+                        "morning": {
+                            "participants": ["LIB001"],
+                            "workers": ["GAU001", "VER001"],
+                            "location": "Glandore",
+                            "hours": 4,
+                            "startTime": "09:00",
+                            "endTime": "13:00",
+                            "supportType": "Self-Care",
+                            "ratio": "2:1"
+                        }
+                    }
+                },
+                "updated_at": "2024-01-15T14:00:00Z"
+            }
+            
+            # Add shift
+            response = requests.post(
+                f"{self.base_url}/roster/weekA",
+                json=shift_data,
+                headers=self.headers,
+                timeout=10
+            )
+            
+            if response.status_code != 200:
+                self.log_test("Add Shift", False, f"Failed to add shift: HTTP {response.status_code}", response.text)
+                return False
+            
+            # Verify shift was added
+            response = requests.get(f"{self.base_url}/roster/weekA", timeout=10)
+            if response.status_code == 200:
+                retrieved_data = response.json()
+                if "shifts" in retrieved_data and "monday" in retrieved_data["shifts"]:
+                    self.log_test("Add Shift", True, "Successfully added shift to weekA")
+                else:
+                    self.log_test("Add Shift", False, "Added shift not found in retrieved data", str(retrieved_data))
+                    return False
+            else:
+                self.log_test("Add Shift", False, "Failed to verify added shift", response.text)
+                return False
+            
+            # Test editing shift (modify hours and workers)
+            edited_shift_data = {
+                "shifts": {
+                    "monday": {
+                        "morning": {
+                            "participants": ["LIB001"],
+                            "workers": ["GAU001", "HAP001"],  # Changed worker
+                            "location": "Glandore",
+                            "hours": 6,  # Changed hours
+                            "startTime": "09:00",
+                            "endTime": "15:00",  # Changed end time
+                            "supportType": "Self-Care",
+                            "ratio": "2:1"
+                        }
+                    }
+                },
+                "updated_at": "2024-01-15T15:00:00Z"
+            }
+            
+            # Edit shift
+            response = requests.post(
+                f"{self.base_url}/roster/weekA",
+                json=edited_shift_data,
+                headers=self.headers,
+                timeout=10
+            )
+            
+            if response.status_code == 200:
+                # Verify edit
+                response = requests.get(f"{self.base_url}/roster/weekA", timeout=10)
+                if response.status_code == 200:
+                    retrieved_data = response.json()
+                    morning_shift = retrieved_data.get("shifts", {}).get("monday", {}).get("morning", {})
+                    if morning_shift.get("hours") == 6 and "HAP001" in morning_shift.get("workers", []):
+                        self.log_test("Edit Shift", True, "Successfully edited shift in weekA")
+                    else:
+                        self.log_test("Edit Shift", False, "Edited shift changes not reflected", str(morning_shift))
+                        return False
+                else:
+                    self.log_test("Edit Shift", False, "Failed to verify edited shift", response.text)
+                    return False
+            else:
+                self.log_test("Edit Shift", False, f"Failed to edit shift: HTTP {response.status_code}", response.text)
+                return False
+            
+            # Test deleting shift (set to empty)
+            empty_shift_data = {
+                "shifts": {},
+                "updated_at": "2024-01-15T16:00:00Z"
+            }
+            
+            # Delete shift
+            response = requests.post(
+                f"{self.base_url}/roster/weekA",
+                json=empty_shift_data,
+                headers=self.headers,
+                timeout=10
+            )
+            
+            if response.status_code == 200:
+                # Verify deletion
+                response = requests.get(f"{self.base_url}/roster/weekA", timeout=10)
+                if response.status_code == 200:
+                    retrieved_data = response.json()
+                    if not retrieved_data.get("shifts") or len(retrieved_data.get("shifts", {})) == 0:
+                        self.log_test("Delete Shift", True, "Successfully deleted shift from weekA")
+                        return True
+                    else:
+                        self.log_test("Delete Shift", False, "Shift still exists after deletion", str(retrieved_data))
+                        return False
+                else:
+                    self.log_test("Delete Shift", False, "Failed to verify shift deletion", response.text)
+                    return False
+            else:
+                self.log_test("Delete Shift", False, f"Failed to delete shift: HTTP {response.status_code}", response.text)
+                return False
+                
+        except Exception as e:
+            self.log_test("Add/Edit/Delete Shifts Workflow", False, "Workflow test failed", str(e))
+            return False
+
+    def test_hours_tracking_backend_support(self):
+        """Test backend support for hours tracking (data retrieval)"""
+        try:
+            # Test that backend provides all necessary data for hours calculations
+            
+            # Get participants for hours tracking
+            participants_response = requests.get(f"{self.base_url}/participants", timeout=10)
+            if participants_response.status_code != 200:
+                self.log_test("Hours Tracking Backend Support", False, "Failed to get participants for hours tracking", participants_response.text)
+                return False
+            
+            participants = participants_response.json()
+            if not participants or len(participants) == 0:
+                self.log_test("Hours Tracking Backend Support", False, "No participants available for hours tracking")
+                return False
+            
+            # Test roster data retrieval for all weeks (needed for hours calculation)
+            week_types = ["weekA", "weekB", "nextA", "nextB"]
+            roster_data = {}
+            
+            for week_type in week_types:
+                response = requests.get(f"{self.base_url}/roster/{week_type}", timeout=10)
+                if response.status_code == 200:
+                    roster_data[week_type] = response.json()
+                else:
+                    self.log_test("Hours Tracking Backend Support", False, f"Failed to get {week_type} data for hours tracking", response.text)
+                    return False
+            
+            # Verify we have the structure needed for hours calculations
+            # The frontend HoursTracker component needs participant data and roster data
+            required_participant_fields = ["code", "full_name"]
+            sample_participant = participants[0]
+            missing_fields = [field for field in required_participant_fields if field not in sample_participant]
+            
+            if missing_fields:
+                self.log_test("Hours Tracking Backend Support", False, f"Participants missing required fields for hours tracking: {missing_fields}")
+                return False
+            
+            self.log_test("Hours Tracking Backend Support", True, f"Backend provides all necessary data for hours tracking: {len(participants)} participants, {len(roster_data)} week types")
+            return True
+            
+        except Exception as e:
+            self.log_test("Hours Tracking Backend Support", False, "Hours tracking backend support test failed", str(e))
+            return False
+
     def run_all_tests(self):
         """Run all backend tests"""
         print("🚀 Starting Rostering System Backend Tests")
@@ -498,6 +671,10 @@ class RosteringSystemTester:
         
         # Roster operations
         roster_ops_ok = self.test_roster_operations()
+        
+        # Specific workflow tests requested in review
+        add_edit_delete_ok = self.test_add_edit_delete_shifts_workflow()
+        hours_backend_ok = self.test_hours_tracking_backend_support()
         
         # New functionality tests
         copy_template_ok = self.test_copy_to_template_functionality()
@@ -528,14 +705,15 @@ class RosteringSystemTester:
         
         # Overall assessment
         critical_tests = [health_ok, participants_ok, workers_ok, locations_ok, roster_ops_ok]
+        workflow_tests = [add_edit_delete_ok, hours_backend_ok]
         feature_tests = [copy_template_ok, export_ok, consistency_ok]
         
         if all(critical_tests):
-            if all(feature_tests):
+            if all(workflow_tests + feature_tests):
                 print("\n✅ ALL TESTS PASSED - Backend is fully functional")
                 return True
             else:
-                print("\n⚠️  CORE FUNCTIONALITY WORKING - Some new features have issues")
+                print("\n⚠️  CORE FUNCTIONALITY WORKING - Some workflow/features have issues")
                 return False
         else:
             print("\n❌ CRITICAL ISSUES FOUND - Core functionality is broken")
