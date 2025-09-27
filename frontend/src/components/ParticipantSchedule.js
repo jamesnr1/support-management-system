@@ -278,7 +278,25 @@ const ParticipantSchedule = ({
                     </button>
                   )}
                   
-                  {/* Show shift form only for the selected date */}}
+                  {showShiftForm && selectedDate === date && (
+                    <ShiftForm
+                      participant={participant}
+                      date={date}
+                      editingShift={editingShift}
+                      workers={workers}
+                      locations={locations}
+                      onSave={(shiftData) => {
+                        handleShiftSave({...shiftData, date});
+                        setShowShiftForm(false);
+                        setSelectedDate(null);
+                        setEditingShift(null);
+                      }}
+                      onCancel={handleShiftCancel}
+                      existingShifts={dayShifts}
+                    />
+                  )}
+
+                  {/* Show "No shifts" only if not in edit mode and no shifts exist */}}
 
                   {/* Show "No shifts" only if not in edit mode and no shifts exist */}
                   {!editMode && dayShifts.length === 0 && (
