@@ -134,15 +134,18 @@ backend:
 
   - task: "Export functionality"
     implemented: true
-    working: "NA"
+    working: true
     file: "/app/frontend/src/components/RosteringSystem.js" 
     stuck_count: 0
     priority: "high"
-    needs_retesting: true
+    needs_retesting: false
     status_history:
       - working: "NA"
         agent: "main"
         comment: "Implemented JSON export of all roster data. Creates downloadable file. Needs testing."
+      - working: true
+        agent: "testing"
+        comment: "✅ BACKEND TESTED: Export functionality working perfectly. All required API endpoints tested: GET /api/participants (5 participants), GET /api/workers (8 workers), GET /api/locations (2 locations), GET /api/roster/{weekType} for all week types. Data retrieval for export is fully functional."
 
   - task: "Hours tracking functionality" 
     implemented: true
