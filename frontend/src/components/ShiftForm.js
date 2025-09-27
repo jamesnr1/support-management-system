@@ -141,25 +141,7 @@ const ShiftForm = ({
     }}>
       <form onSubmit={handleSubmit} style={{ display: 'flex', alignItems: 'center', gap: '0.8rem', width: '100%' }}>
         
-        {/* Support Type - First as requested */}
-        <select 
-          value={formData.supportType}
-          onChange={(e) => handleInputChange('supportType', e.target.value)}
-          style={{ 
-            minWidth: '180px', 
-            fontSize: '1rem',
-            padding: '0.5rem',
-            borderRadius: '6px',
-            background: 'var(--bg-secondary)',
-            color: 'var(--text-primary)',
-            border: '1px solid var(--border-color)'
-          }}
-        >
-          <option value="Self-Care">Self-Care</option>
-          <option value="Community Participation">Community Participation</option>
-        </select>
-
-        {/* Time - Second as requested */}
+        {/* Time - FIRST as requested */}
         <select 
           value={formData.startTime}
           onChange={(e) => handleInputChange('startTime', e.target.value)}
@@ -196,6 +178,24 @@ const ShiftForm = ({
           {timeOptions.map(time => (
             <option key={time.value} value={time.value}>{time.label}</option>
           ))}
+        </select>
+
+        {/* Support Type - SECOND as requested */}
+        <select 
+          value={formData.supportType}
+          onChange={(e) => handleInputChange('supportType', e.target.value)}
+          style={{ 
+            minWidth: '180px', 
+            fontSize: '1rem',
+            padding: '0.5rem',
+            borderRadius: '6px',
+            background: 'var(--bg-secondary)',
+            color: 'var(--text-primary)',
+            border: '1px solid var(--border-color)'
+          }}
+        >
+          <option value="Self-Care">Self-Care</option>
+          <option value="Community Participation">Community Participation</option>
         </select>
 
         {/* Worker 1 */}
