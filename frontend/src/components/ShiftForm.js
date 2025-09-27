@@ -18,11 +18,9 @@ const ShiftForm = ({
       for (let minute = 0; minute < 60; minute += 15) {
         const displayHour = hour >= 24 ? hour - 24 : hour;
         const time24 = `${displayHour.toString().padStart(2, '0')}:${minute.toString().padStart(2, '0')}`;
-        const displayTime = `${displayHour.toString().padStart(2, '0')}:${minute.toString().padStart(2, '0')}`;
         times.push({
           value: time24,
-          label: displayTime,
-          minutes: hour * 60 + minute
+          label: time24
         });
       }
     }
@@ -62,15 +60,6 @@ const ShiftForm = ({
     return `${dateStr}${participantInitial}${randomNum}`;
   }
 
-  // Calculate shift duration
-  const calculateDuration = (start, end) => {
-    const startMinutes = timeOptions.find(t => t.value === start)?.minutes || 0;
-    const endMinutes = timeOptions.find(t => t.value === end)?.minutes || 0;
-    let duration = endMinutes - startMinutes;
-    if (duration <= 0) duration += 24 * 60; // Handle overnight
-    return (duration / 60).toFixed(1);
-  };
-
   const handleInputChange = (field, value) => {
     setFormData(prev => ({
       ...prev,
@@ -78,12 +67,12 @@ const ShiftForm = ({
     }));
   };
 
-  const handleWorkerToggle = (workerId) => {
+  const handleWorkerChange = (index, workerId) => {
+    const newWorkers = [...formData.workers];
+    newWorkers[index] = workerId;
     setFormData(prev => ({
       ...prev,
-      workers: prev.workers.includes(workerId) 
-        ? prev.workers.filter(id => id !== workerId)
-        : [...prev.workers, workerId]
+      workers: newWorkers
     }));
   };
 
@@ -99,182 +88,166 @@ const ShiftForm = ({
     const shiftData = {
       ...formData,
       id: editingShift?.id || Date.now().toString(),
-      date,
-      duration: calculateDuration(formData.startTime, formData.endTime)
+      date
     };
 
     onSave(shiftData);
   };
 
-  const duration = calculateDuration(formData.startTime, formData.endTime);
+  // Determine if this participant needs two workers (like James/Libby in HTML)
+  const needsSecondWorker = participant.default_ratio === '2:1';
 
   return (
-    <div style={{
-      background: 'var(--bg-secondary)',
-      border: '1px solid var(--border-color)',
-      borderRadius: '8px',
-      padding: '1rem',
-      margin: '1rem 0'
+    <div className="shift-row" style={{
+      background: 'var(--bg-input)',
+      borderLeft: '4px solid var(--accent-warning)',
+      marginBottom: '0.5rem'
     }}>
       <form onSubmit={handleSubmit}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
-          <h4 style={{ color: 'var(--accent-primary)', margin: 0 }}>
-            {editingShift ? 'Edit Shift' : 'Add Shift'} - {participant.full_name}
-          </h4>
-          <button type="button" onClick={onCancel} className="btn btn-secondary" style={{ padding: '0.25rem' }}>
-            <X size={16} />
-          </button>
-        </div>
-
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '1rem' }}>
+        <div className="edit-controls" style={{ 
+          display: 'flex', 
+          gap: '0.5rem', 
+          alignItems: 'center', 
+          flexWrap: 'wrap',
+          padding: '0.5rem'
+        }}>
           
-          {/* Date and Shift Number */}
-          <div>
-            <label className="form-label">Date</label>
-            <input type="date" value={date} readOnly style={{ background: 'var(--bg-tertiary)' }} />
-          </div>
-          
-          <div>
-            <label className="form-label">Shift Report #</label>
-            <input 
-              type="text" 
-              value={formData.shiftNumber}
-              onChange={(e) => handleInputChange('shiftNumber', e.target.value)}
-            />
-          </div>
+          {/* Date */}
+          <input 
+            type="text" 
+            value={new Date(date).toLocaleDateString('en-AU', { day: 'numeric', month: 'short' })}
+            readOnly 
+            style={{ 
+              width: '70px', 
+              background: 'var(--bg-tertiary)', 
+              fontSize: '0.85rem',
+              textAlign: 'center'
+            }}
+          />
 
-          {/* Times */}
-          <div>
-            <label className="form-label">Start Time</label>
-            <select 
-              value={formData.startTime}
-              onChange={(e) => handleInputChange('startTime', e.target.value)}
-            >
-              {timeOptions.map(time => (
-                <option key={time.value} value={time.value}>{time.label}</option>
-              ))}
-            </select>
-          </div>
-
-          <div>
-            <label className="form-label">End Time</label>
-            <select 
-              value={formData.endTime}
-              onChange={(e) => handleInputChange('endTime', e.target.value)}
-            >
-              {timeOptions.map(time => (
-                <option key={time.value} value={time.value}>{time.label}</option>
-              ))}
-            </select>
-          </div>
+          {/* Shift Report Number */}
+          <input 
+            type="text" 
+            value={formData.shiftNumber}
+            onChange={(e) => handleInputChange('shiftNumber', e.target.value)}
+            style={{ width: '90px', fontSize: '0.85rem' }}
+            placeholder="Report #"
+          />
 
           {/* Support Type */}
-          <div>
-            <label className="form-label">Support Type</label>
-            <select 
-              value={formData.supportType}
-              onChange={(e) => handleInputChange('supportType', e.target.value)}
-            >
-              <option value="Self-Care">Self-Care</option>
-              <option value="Community Participation">Community Participation</option>
-            </select>
-          </div>
+          <select 
+            value={formData.supportType}
+            onChange={(e) => handleInputChange('supportType', e.target.value)}
+            style={{ minWidth: '130px' }}
+          >
+            <option value="Self-Care">Self-Care</option>
+            <option value="Community Participation">Community Participation</option>
+          </select>
 
-          {/* Ratio */}
-          <div>
-            <label className="form-label">Ratio</label>
-            <select 
-              value={formData.ratio}
-              onChange={(e) => handleInputChange('ratio', e.target.value)}
-            >
-              <option value="1:1">1:1</option>
-              <option value="2:1">2:1</option>
-              <option value="2:3">2:3</option>
-            </select>
-          </div>
+          {/* Start Time */}
+          <select 
+            value={formData.startTime}
+            onChange={(e) => handleInputChange('startTime', e.target.value)}
+            className="time-input"
+            style={{ width: '80px' }}
+          >
+            {timeOptions.map(time => (
+              <option key={time.value} value={time.value}>{time.label}</option>
+            ))}
+          </select>
 
-          {/* Location */}
-          <div>
-            <label className="form-label">Location</label>
+          <span style={{ color: 'var(--text-muted)', fontSize: '0.9rem' }}>to</span>
+
+          {/* End Time */}
+          <select 
+            value={formData.endTime}
+            onChange={(e) => handleInputChange('endTime', e.target.value)}
+            className="time-input"
+            style={{ width: '80px' }}
+          >
+            {timeOptions.map(time => (
+              <option key={time.value} value={time.value}>{time.label}</option>
+            ))}
+          </select>
+
+          {/* Worker 1 */}
+          <select 
+            value={formData.workers[0] || ''}
+            onChange={(e) => handleWorkerChange(0, e.target.value)}
+            className="worker-select"
+            style={{ minWidth: '150px' }}
+          >
+            <option value="">Worker 1</option>
+            {workers.map(worker => (
+              <option key={worker.id} value={worker.id}>{worker.full_name}</option>
+            ))}
+          </select>
+
+          {/* Worker 2 - only if needed */}
+          {needsSecondWorker && (
             <select 
-              value={formData.location}
-              onChange={(e) => handleInputChange('location', e.target.value)}
+              value={formData.workers[1] || ''}
+              onChange={(e) => handleWorkerChange(1, e.target.value)}
+              className="worker-select"
+              style={{ minWidth: '150px' }}
             >
-              <option value="">Select location...</option>
-              {locations.map(location => (
-                <option key={location.id} value={location.id}>
-                  {location.name}
-                </option>
+              <option value="">Worker 2</option>
+              {workers.map(worker => (
+                <option key={worker.id} value={worker.id}>{worker.full_name}</option>
               ))}
             </select>
-          </div>
+          )}
 
-          {/* Duration Display */}
-          <div>
-            <label className="form-label">Duration</label>
-            <input 
-              type="text" 
-              value={`${duration} hours`}
-              readOnly 
-              style={{ background: 'var(--bg-tertiary)', color: 'var(--accent-primary)' }}
+          {/* Ratio */}
+          <select 
+            value={formData.ratio}
+            onChange={(e) => handleInputChange('ratio', e.target.value)}
+            style={{ width: '60px' }}
+          >
+            <option value="1:1">1:1</option>
+            <option value="2:1">2:1</option>
+            <option value="2:3">2:3</option>
+          </select>
+
+          {/* Location */}
+          <select 
+            value={formData.location}
+            onChange={(e) => handleInputChange('location', e.target.value)}
+            style={{ minWidth: '120px' }}
+          >
+            <option value="">Location</option>
+            {locations.map(location => (
+              <option key={location.id} value={location.id}>
+                {location.name}
+              </option>
+            ))}
+          </select>
+
+          {/* Action buttons */}
+          <button type="submit" className="btn btn-success" style={{ padding: '0.3rem 0.6rem', fontSize: '0.85rem' }}>
+            <Save size={14} />
+          </button>
+          <button type="button" onClick={onCancel} className="btn btn-secondary" style={{ padding: '0.3rem 0.6rem', fontSize: '0.85rem' }}>
+            <X size={14} />
+          </button>
+        </div>
+
+        {/* Notes row */}
+        {formData.notes || true ? (
+          <div style={{ padding: '0 0.5rem 0.5rem' }}>
+            <textarea 
+              value={formData.notes}
+              onChange={(e) => handleInputChange('notes', e.target.value)}
+              placeholder="Notes (optional)"
+              rows="2" 
+              style={{ 
+                width: '100%', 
+                fontSize: '0.85rem',
+                resize: 'vertical'
+              }}
             />
           </div>
-        </div>
-
-        {/* Worker Assignment */}
-        <div style={{ margin: '1rem 0' }}>
-          <label className="form-label">Assign Workers</label>
-          <div style={{ 
-            display: 'grid', 
-            gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', 
-            gap: '0.5rem',
-            maxHeight: '120px', 
-            overflowY: 'auto',
-            border: '1px solid var(--border-color)',
-            borderRadius: '4px',
-            padding: '0.5rem'
-          }}>
-            {workers.map(worker => (
-              <label key={worker.id} style={{ 
-                display: 'flex', 
-                alignItems: 'center', 
-                gap: '0.5rem',
-                padding: '0.25rem',
-                cursor: 'pointer',
-                fontSize: '0.9rem'
-              }}>
-                <input 
-                  type="checkbox" 
-                  checked={formData.workers.includes(worker.id)}
-                  onChange={() => handleWorkerToggle(worker.id)}
-                />
-                <span>{worker.full_name}</span>
-              </label>
-            ))}
-          </div>
-        </div>
-
-        {/* Notes */}
-        <div style={{ margin: '1rem 0' }}>
-          <label className="form-label">Notes</label>
-          <textarea 
-            value={formData.notes}
-            onChange={(e) => handleInputChange('notes', e.target.value)}
-            rows="2" 
-            placeholder="Additional shift notes..."
-            style={{ width: '100%' }}
-          />
-        </div>
-
-        {/* Actions */}
-        <div style={{ display: 'flex', gap: '0.5rem', justifyContent: 'flex-end' }}>
-          <button type="submit" className="btn btn-primary">
-            <Save size={16} /> {editingShift ? 'Update' : 'Create'}
-          </button>
-          <button type="button" onClick={onCancel} className="btn btn-secondary">
-            Cancel
-          </button>
-        </div>
+        ) : null}
       </form>
     </div>
   );
