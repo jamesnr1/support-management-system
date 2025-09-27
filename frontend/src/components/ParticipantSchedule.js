@@ -64,22 +64,32 @@ const ParticipantSchedule = ({
   const handleDeleteShift = (shiftIndex, date) => {
     if (window.confirm('Are you sure you want to delete this shift?')) {
       const newRosterData = { ...rosterData };
+      
+      // Ensure the participant exists in roster data
       if (!newRosterData[participant.code]) {
         newRosterData[participant.code] = {};
       }
+      
+      // Ensure the date exists
       if (!newRosterData[participant.code][date]) {
         newRosterData[participant.code][date] = [];
       }
       
-      newRosterData[participant.code][date].splice(shiftIndex, 1);
-      
-      // Remove empty arrays
-      if (newRosterData[participant.code][date].length === 0) {
-        delete newRosterData[participant.code][date];
+      // Remove the shift at the specified index
+      if (newRosterData[participant.code][date].length > shiftIndex) {
+        newRosterData[participant.code][date].splice(shiftIndex, 1);
+        
+        // Remove empty date arrays to keep data clean
+        if (newRosterData[participant.code][date].length === 0) {
+          delete newRosterData[participant.code][date];
+        }
+        
+        // Update the roster and show success message
+        onRosterUpdate(newRosterData);
+        toast.success('Shift deleted successfully');
+      } else {
+        toast.error('Error: Shift not found');
       }
-      
-      onRosterUpdate(newRosterData);
-      toast.success('Shift deleted successfully');
     }
   };
 
