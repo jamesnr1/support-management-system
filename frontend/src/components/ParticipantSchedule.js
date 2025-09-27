@@ -179,47 +179,6 @@ const ParticipantSchedule = ({
                 </div>
 
                 <div className="day-shifts">
-                  {/* Add Shift button when in edit mode - ALWAYS VISIBLE */}
-                  {editMode ? (
-                    <button 
-                      className="btn btn-primary"
-                      onClick={() => handleAddShift(date)}
-                      style={{ 
-                        marginBottom: '0.5rem',
-                        display: 'inline-flex',
-                        alignItems: 'center',
-                        gap: '0.25rem',
-                        fontSize: '0.9rem',
-                        padding: '0.4rem 0.8rem',
-                        background: 'var(--accent-primary)',
-                        color: 'var(--bg-primary)',
-                        border: '2px solid var(--accent-primary)',
-                        borderRadius: '6px'
-                      }}
-                    >
-                      <Plus size={16} /> Add Shift
-                    </button>
-                  ) : null}
-                  
-                  {/* Show shift form only for the selected date */}
-                  {showShiftForm && selectedDate === date && (
-                    <ShiftForm
-                      participant={participant}
-                      date={date}
-                      editingShift={editingShift}
-                      workers={workers}
-                      locations={locations}
-                      onSave={(shiftData) => {
-                        handleShiftSave({...shiftData, date});
-                        setShowShiftForm(false);
-                        setSelectedDate(null);
-                        setEditingShift(null);
-                      }}
-                      onCancel={handleShiftCancel}
-                      existingShifts={dayShifts}
-                    />
-                  )}
-                  
                   {/* Existing shifts */}
                   {dayShifts.map((shift, index) => (
                     <div key={index} className="shift-row">
@@ -299,6 +258,27 @@ const ParticipantSchedule = ({
                       )}
                     </div>
                   ))}
+                  
+                  {/* Add Shift button - AFTER existing shifts, small size like SMS_opus.html */}
+                  {editMode && (
+                    <button 
+                      className="btn btn-secondary"
+                      onClick={() => handleAddShift(date)}
+                      style={{ 
+                        padding: '0.5rem 1rem',
+                        fontSize: '0.9rem',
+                        fontWeight: '500',
+                        display: 'inline-flex',
+                        alignItems: 'center',
+                        gap: '0.5rem',
+                        marginTop: '0.5rem'
+                      }}
+                    >
+                      <Plus size={16} /> Add Shift
+                    </button>
+                  )}
+                  
+                  {/* Show shift form only for the selected date */}}
 
                   {/* Show "No shifts" only if not in edit mode and no shifts exist */}
                   {!editMode && dayShifts.length === 0 && (
