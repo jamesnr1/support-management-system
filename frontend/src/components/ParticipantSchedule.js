@@ -227,7 +227,7 @@ const ParticipantSchedule = ({
                         
                         {shift.location && (
                           <div className="shift-workers">
-                            📍 {getLocationName(shift.location)}
+                            {getLocationName(shift.location)}
                           </div>
                         )}
                         
