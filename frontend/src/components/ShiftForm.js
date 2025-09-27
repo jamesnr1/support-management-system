@@ -39,13 +39,30 @@ const ShiftForm = ({
     return '06:00'; // Default 6am start
   };
 
+  // Get default location for participant
+  const getDefaultLocation = () => {
+    if (editingShift) return editingShift.location;
+    
+    // Default locations based on participant
+    if (participant.code === 'LIB001') { // Libby
+      const glandore = locations.find(l => l.name === 'Glandore');
+      return glandore ? glandore.id : '';
+    }
+    if (participant.code === 'JAM001') { // James
+      const plympton = locations.find(l => l.name === 'Plympton Park');
+      return plympton ? plympton.id : '';
+    }
+    // For Ace, Grace, Milan - default to first location
+    return locations.length > 0 ? locations[0].id : '';
+  };
+
   const [formData, setFormData] = useState({
     startTime: getSmartStartTime(),
     endTime: editingShift?.endTime || '14:00',
     supportType: editingShift?.supportType || 'Self-Care',
     ratio: editingShift?.ratio || participant.default_ratio || '1:1',
     workers: editingShift?.workers || [],
-    location: editingShift?.location || '',
+    location: getDefaultLocation(),
     notes: editingShift?.notes || '',
     shiftNumber: editingShift?.shiftNumber || generateShiftNumber()
   });
