@@ -109,36 +109,45 @@ const RosteringSystem = () => {
     updateRosterMutation.mutate({ weekType: activeTab, data });
   };
 
-  // Export functionality
+  // Export functionality - CSV for shifts to support provider
   const exportRoster = async () => {
     try {
-      const allData = {
-        participants,
-        workers,
-        locations,
-        rosters: {}
-      };
+      let csvContent = "Participant,Date,Start Time,End Time,Duration,Support Type,Ratio,Workers,Location,Shift Number,Notes\n";
       
       // Fetch all roster data
       for (const tab of ['weekA', 'weekB', 'nextA', 'nextB']) {
         const response = await axios.get(`${API}/roster/${tab}`);
-        allData.rosters[tab] = response.data;
+        const tabData = response.data;
+        
+        Object.entries(tabData).forEach(([participantCode, participantData]) => {
+          const participant = participants.find(p => p.code === participantCode);
+          const participantName = participant ? participant.full_name : participantCode;
+          
+          Object.entries(participantData).forEach(([date, shifts]) => {
+            shifts.forEach(shift => {
+              const workerNames = shift.workers ? 
+                shift.workers.map(id => workers.find(w => w.id === id)?.full_name || `Worker-${id}`).join('; ') : '';
+              const locationName = shift.location ? 
+                locations.find(l => l.id === shift.location)?.name || `Location-${shift.location}` : '';
+              
+              csvContent += `"${participantName}","${date}","${shift.startTime}","${shift.endTime}","${shift.duration || '0'}h","${shift.supportType || 'Self-Care'}","${shift.ratio || '1:1'}","${workerNames}","${locationName}","${shift.shiftNumber || ''}","${shift.notes || ''}"\n`;
+            });
+          });
+        });
       }
       
-      // Create downloadable JSON file
-      const dataStr = JSON.stringify(allData, null, 2);
-      const dataUri = 'data:application/json;charset=utf-8,'+ encodeURIComponent(dataStr);
-      
-      const exportFileDefaultName = `roster_export_${new Date().toISOString().split('T')[0]}.json`;
-      
+      // Create downloadable CSV file
+      const blob = new Blob([csvContent], { type: 'text/csv' });
+      const url = window.URL.createObjectURL(blob);
       const linkElement = document.createElement('a');
-      linkElement.setAttribute('href', dataUri);
-      linkElement.setAttribute('download', exportFileDefaultName);
+      linkElement.setAttribute('href', url);
+      linkElement.setAttribute('download', `roster_shifts_${new Date().toISOString().split('T')[0]}.csv`);
       linkElement.click();
+      window.URL.revokeObjectURL(url);
       
-      toast.success('Roster data exported successfully');
+      toast.success('Shift roster exported to CSV successfully');
     } catch (error) {
-      toast.error('Failed to export data: ' + error.message);
+      toast.error('Failed to export roster: ' + error.message);
     }
   };
 
