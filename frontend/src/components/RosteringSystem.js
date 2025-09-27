@@ -155,33 +155,23 @@ const RosteringSystem = () => {
   const copyToTemplate = async () => {
     if (window.confirm('Copy Week A and Week B schedules to Next A and Next B?')) {
       try {
-        // Get the actual roster data from state
-        const weekAData = rosterData || {};
-        const weekBData = rosterData || {};
+        console.log('Current rosterData:', rosterData);
         
-        // Prepare the data for Next A and Next B
-        const nextAData = {};
-        const nextBData = {};
+        // Create new roster data with Next A and Next B copied from Week A and Week B
+        const newRosterData = {
+          ...rosterData,
+          nextA: { ...rosterData.weekA },
+          nextB: { ...rosterData.weekB }
+        };
         
-        // Copy all participant data from current weeks
-        Object.keys(weekAData).forEach(participantCode => {
-          if (weekAData[participantCode]) {
-            nextAData[participantCode] = { ...weekAData[participantCode] };
-          }
-        });
+        console.log('New roster data after copy:', newRosterData);
         
-        Object.keys(weekBData).forEach(participantCode => {
-          if (weekBData[participantCode]) {
-            nextBData[participantCode] = { ...weekBData[participantCode] };
-          }
-        });
-        
-        // Update roster with Next A and Next B data
-        onRosterUpdate(nextAData, 'nextA');
-        onRosterUpdate(nextBData, 'nextB');
+        // Update the roster state
+        handleRosterUpdate(newRosterData);
         
         toast.success('Templates copied successfully! Week A→Next A, Week B→Next B');
       } catch (error) {
+        console.error('Copy error:', error);
         toast.error('Failed to copy templates: ' + error.message);
       }
     }
