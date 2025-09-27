@@ -203,6 +203,12 @@ async def init_sample_data():
         existing = await db.workers.find_one({"_id": worker["_id"]})
         if not existing:
             await db.workers.insert_one(worker)
+        else:
+            # Update existing workers with telegram numbers
+            await db.workers.update_one(
+                {"_id": worker["_id"]}, 
+                {"$set": {"telegram": worker["telegram"]}}
+            )
     
     # Add participants
     participants_data = [
