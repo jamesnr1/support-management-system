@@ -240,16 +240,9 @@ const RosteringSystem = () => {
             <button 
               className="btn btn-primary"
               onClick={exportRoster}
-              title="Export all roster data to JSON"
+              title="Export all roster data to CSV"
             >
               💰 Export
-            </button>
-            <button 
-              className="btn btn-primary"
-              onClick={toggleHoursTracker}
-              title="View worker hours tracker"
-            >
-              ⏱️ Hours
             </button>
           </div>
         </div>
