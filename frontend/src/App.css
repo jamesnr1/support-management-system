@@ -281,17 +281,52 @@ select, input[type="time"], input[type="text"], input[type="email"], input[type=
   border-radius: 6px;
   font-size: 0.9rem;
   transition: all 0.2s ease;
+  appearance: none;
+  position: relative;
+}
+
+/* Custom dropdown arrow styling */
+select {
+  background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23E6B566' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6,9 12,15 18,9'%3e%3c/polyline%3e%3c/svg%3e");
+  background-repeat: no-repeat;
+  background-position: right 0.7rem center;
+  background-size: 1.2rem;
+  padding-right: 2.5rem;
 }
 
 select:hover, input:hover, textarea:hover {
   border-color: var(--accent-primary);
   background: var(--bg-secondary);
+  box-shadow: 0 0 0 2px rgba(230, 181, 102, 0.1);
 }
 
 select:focus, input:focus, textarea:focus {
   outline: none;
   border-color: var(--accent-primary);
-  box-shadow: 0 0 0 3px rgba(212, 165, 116, 0.1);
+  box-shadow: 0 0 0 3px rgba(230, 181, 102, 0.2);
+}
+
+/* Styled X button for cancel/delete */
+.btn-cancel-x {
+  background: var(--bg-secondary) !important;
+  border: 2px solid var(--accent-primary) !important;
+  color: var(--accent-primary) !important;
+  border-radius: 6px !important;
+  width: 40px !important;
+  height: 40px !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  padding: 0 !important;
+  font-size: 1.2rem !important;
+  font-weight: bold !important;
+  transition: all 0.2s ease !important;
+}
+
+.btn-cancel-x:hover {
+  background: var(--accent-primary) !important;
+  color: var(--bg-primary) !important;
+  transform: scale(1.05) !important;
 }
 
 /* Admin Section */
