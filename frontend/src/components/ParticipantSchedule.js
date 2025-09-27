@@ -296,8 +296,6 @@ const ParticipantSchedule = ({
                     />
                   )}
 
-                  {/* Show "No shifts" only if not in edit mode and no shifts exist */}}
-
                   {/* Show "No shifts" only if not in edit mode and no shifts exist */}
                   {!editMode && dayShifts.length === 0 && (
                     <div style={{ 
