@@ -4,7 +4,7 @@ Core worker scheduling logic - adapted from corrected_worker_logic.js
 from datetime import datetime, time as dt_time, timedelta
 from typing import List, Dict, Any, Optional, Tuple
 import asyncpg
-from .database import Database
+from database import Database
 import logging
 
 logger = logging.getLogger(__name__)
