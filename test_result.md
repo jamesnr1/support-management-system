@@ -158,6 +158,9 @@ backend:
       - working: "NA"
         agent: "main"
         comment: "Enhanced HoursTracker with calculations, CSV upload, export. Added close button. Needs testing."
+      - working: "NA"
+        agent: "testing"
+        comment: "⚠️ BACKEND LIMITATION: Hours tracking functionality cannot be tested via backend APIs as it's a frontend-only feature involving CSV upload/download and calculations. The backend provides roster data successfully, but hours calculations appear to be handled client-side. This is a frontend feature that requires UI testing."
 
 frontend:
   - task: "UI matches SMS_opus.html colors"
