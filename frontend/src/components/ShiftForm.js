@@ -100,13 +100,32 @@ const ShiftForm = ({
       return;
     }
 
+    // Ensure all data is properly structured
     const shiftData = {
-      ...formData,
       id: editingShift?.id || Date.now().toString(),
-      date
+      date,
+      startTime: formData.startTime,
+      endTime: formData.endTime,
+      supportType: formData.supportType,
+      ratio: formData.ratio,
+      workers: formData.workers.filter(w => w), // Remove empty worker slots
+      location: formData.location || '', // Ensure location is saved
+      notes: formData.notes || '',
+      shiftNumber: formData.shiftNumber,
+      duration: calculateDuration(formData.startTime, formData.endTime)
     };
 
+    console.log('Saving shift data:', shiftData); // Debug log
     onSave(shiftData);
+  };
+
+  // Calculate duration in hours
+  const calculateDuration = (start, end) => {
+    const startHour = parseInt(start.split(':')[0]);
+    const endHour = parseInt(end.split(':')[0]);
+    let duration = endHour - startHour;
+    if (duration <= 0) duration += 24; // Handle overnight
+    return duration.toFixed(1);
   };
 
   return (
