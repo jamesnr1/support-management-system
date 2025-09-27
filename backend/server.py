@@ -9,13 +9,13 @@ from datetime import datetime, date
 import asyncio
 
 # Import our modules
-from .database import Database, init_database
-from .models import (
+from database import Database, init_database
+from models import (
     Worker, WorkerCreate, AvailabilityRule, UnavailabilityPeriod, 
     Participant, Shift, WorkerAvailabilityCheck, ConflictCheck, 
     HoursCalculation, RosterState, TelegramMessage
 )
-from .worker_logic import (
+from worker_logic import (
     get_available_workers, check_worker_conflicts, calculate_worker_hours,
     validate_fair_work, calculate_shift_hours
 )
