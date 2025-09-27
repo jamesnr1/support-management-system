@@ -212,18 +212,18 @@ const ParticipantSchedule = ({
                               </span>
                             </div>
                             
-                            {/* Line 3: Workers with icon */}
-                            {shift.workers && shift.workers.length > 0 && (
-                              <div className="shift-workers" style={{ marginTop: '0.25rem' }}>
-                                <Users size={14} style={{ marginRight: '0.25rem' }} />
-                                {getWorkerNames(shift.workers)}
-                              </div>
-                            )}
-                            
-                            {/* Line 4: Notes */}
-                            {shift.notes && (
-                              <div className="shift-workers" style={{ marginTop: '0.25rem' }}>
-                                💬 {shift.notes}
+                            {/* Line 3: Workers with icon and notes on same line */}
+                            {(shift.workers?.length > 0 || shift.notes) && (
+                              <div className="shift-workers" style={{ marginTop: '0.25rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                                {shift.workers && shift.workers.length > 0 && (
+                                  <>
+                                    <Users size={14} />
+                                    <span>{getWorkerNames(shift.workers)}</span>
+                                  </>
+                                )}
+                                {shift.notes && (
+                                  <span>💬 {shift.notes}</span>
+                                )}
                               </div>
                             )}
                           </div>
