@@ -395,10 +395,6 @@ const WorkerManagement = ({ workers, locations, onWorkerUpdate }) => {
                   )}
                 </div>
               </div>
-                >
-                  <Trash2 size={14} /> Deactivate
-                </button>
-              </div>
             </div>
           ))}
         </div>
