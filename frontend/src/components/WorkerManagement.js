@@ -229,7 +229,7 @@ const WorkerManagement = ({ workers, locations, onWorkerUpdate }) => {
                 <div>
                   <div className="worker-name">{worker.full_name}</div>
                   <div className="worker-details">
-                    Code: {worker.code} | Max Hours: {worker.max_hours || 'Not set'}
+                    Max Hours: {worker.max_hours || 'Not set'} | Status: {worker.status}
                   </div>
                   <div className="worker-details">
                     {worker.email && `Email: ${worker.email}`}
