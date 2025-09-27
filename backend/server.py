@@ -110,7 +110,8 @@ async def init_sample_data():
             "status": "Active",
             "skills": "Manual Handling, First Aid",
             "car": "Yes",
-            "max_hours": 40
+            "max_hours": 40,
+            "telegram": 61423123456
         },
         {
             "_id": "worker2", 
@@ -121,7 +122,8 @@ async def init_sample_data():
             "status": "Active",
             "skills": "Personal Care, Community Support",
             "car": "Yes",
-            "max_hours": 35
+            "max_hours": 35,
+            "telegram": 61423234567
         },
         {
             "_id": "worker3", 
@@ -132,7 +134,8 @@ async def init_sample_data():
             "status": "Active",
             "skills": "Manual Handling, Driving",
             "car": "Yes",
-            "max_hours": 40
+            "max_hours": 40,
+            "telegram": 61423345678
         },
         {
             "_id": "worker4", 
@@ -143,7 +146,8 @@ async def init_sample_data():
             "status": "Active",
             "skills": "Personal Care, First Aid",
             "car": "No",
-            "max_hours": 30
+            "max_hours": 30,
+            "telegram": 61423456789
         },
         {
             "_id": "worker5", 
@@ -154,7 +158,8 @@ async def init_sample_data():
             "status": "Active",
             "skills": "Community Access, Driving",
             "car": "Yes",
-            "max_hours": 40
+            "max_hours": 40,
+            "telegram": 61423567890
         },
         {
             "_id": "worker6", 
@@ -165,7 +170,8 @@ async def init_sample_data():
             "status": "Active",
             "skills": "Personal Care, Community Support",
             "car": "No",
-            "max_hours": 25
+            "max_hours": 25,
+            "telegram": 61423678901
         },
         {
             "_id": "worker7", 
@@ -176,7 +182,8 @@ async def init_sample_data():
             "status": "Active",
             "skills": "Personal Care, ADL Support",
             "car": "No",
-            "max_hours": 30
+            "max_hours": 30,
+            "telegram": 61423789012
         },
         {
             "_id": "worker8", 
@@ -187,7 +194,8 @@ async def init_sample_data():
             "status": "Active",
             "skills": "Manual Handling, Community Access",
             "car": "Yes",
-            "max_hours": 35
+            "max_hours": 35,
+            "telegram": 61423890123
         }
     ]
     
