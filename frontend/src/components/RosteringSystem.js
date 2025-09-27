@@ -164,19 +164,21 @@ const RosteringSystem = () => {
     }
   };
 
-  console.log('Debug: participantsLoading:', participantsLoading, 'workersLoading:', workersLoading, 'locationsLoading:', locationsLoading);
-  console.log('Errors:', { participantsError, workersError, locationsError });
-
-  if (participantsLoading || workersLoading || locationsLoading) {
+  // Show loading only if participants aren't ready - we can proceed with just participants
+  if (participantsLoading) {
     return (
       <div className="loading">
         <div className="spinner"></div>
-        Loading system data...
-        <div style={{ fontSize: '12px', marginTop: '10px', color: 'var(--text-muted)' }}>
-          Participants: {participantsLoading ? 'Loading...' : 'Ready'}<br/>
-          Workers: {workersLoading ? 'Loading...' : 'Ready'}<br/>
-          Locations: {locationsLoading ? 'Loading...' : 'Ready'}
-        </div>
+        Loading participants...
+      </div>
+    );
+  }
+
+  // Show error if participants failed to load
+  if (participantsError) {
+    return (
+      <div className="error">
+        Failed to load participants: {participantsError.message}
       </div>
     );
   }
