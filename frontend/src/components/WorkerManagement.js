@@ -159,13 +159,12 @@ const WorkerManagement = ({ workers, locations, onWorkerUpdate }) => {
   };
 
   const handleManageAvailability = (worker) => {
-    setSelectedWorker(worker);
-    setShowAvailabilityModal(true);
+    toast.info(`Managing availability for ${worker.full_name}`);
+    // Add your availability management logic here
   };
 
   const handleManageUnavailability = (worker) => {
-    setSelectedWorker(worker);
-    setShowUnavailabilityModal(true);
+    setShowUnavailability(prev => ({ ...prev, [worker.id]: !prev[worker.id] }));
   };
 
   const handleAvailabilitySubmit = (e) => {
