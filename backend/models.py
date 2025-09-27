@@ -46,11 +46,11 @@ class UnavailabilityPeriod(BaseModel):
     created_at: Optional[datetime] = None
 
 class Participant(BaseModel):
-    id: Optional[int] = None
+    id: Optional[str] = None
     code: str
     full_name: str
     participant_number: Optional[str] = None
-    location_id: Optional[int] = None
+    location_id: Optional[str] = None
     default_ratio: Optional[str] = None
     plan_start: Optional[date] = None
     plan_end: Optional[date] = None
