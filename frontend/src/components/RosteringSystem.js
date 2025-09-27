@@ -228,9 +228,10 @@ const RosteringSystem = () => {
               📋 Copy to Template
             </button>
             <button 
-              className="btn btn-primary"
+              className="btn btn-secondary"
               onClick={exportRoster}
               title="Export all roster data to CSV"
+              style={{ padding: '0.5rem 1rem', fontSize: '0.9rem' }}
             >
               💰 Export
             </button>
