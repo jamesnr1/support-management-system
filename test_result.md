@@ -119,15 +119,18 @@ backend:
   
   - task: "Copy to Template functionality"
     implemented: true
-    working: "NA" 
+    working: true 
     file: "/app/frontend/src/components/RosteringSystem.js"
     stuck_count: 0
     priority: "high"
-    needs_retesting: true
+    needs_retesting: false
     status_history:
       - working: "NA"
         agent: "main" 
         comment: "Implemented async function to copy Week A/B to Next A/B. Enabled button. Needs backend testing."
+      - working: true
+        agent: "testing"
+        comment: "✅ BACKEND TESTED: Copy to Template functionality working perfectly. Successfully tested copying weekA to nextA and weekB to nextB. All API endpoints (GET/POST /api/roster/{weekType}) are functional and data persists correctly."
 
   - task: "Export functionality"
     implemented: true
