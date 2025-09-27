@@ -126,12 +126,22 @@ const ParticipantSchedule = ({
             <div>
               <div className="participant-name">{participant.full_name}</div>
               <div className="participant-details">
-                Default Ratio: {participant.default_ratio || '1:1'}
+                {/* Location and ratio based on participant and week logic */}
+                {participant.code === 'LIB001' && 'Glandore (Ratio:2:1)'}
+                {participant.code === 'JAM001' && 'Plympton Park (Ratio:2:1)'}
+                {(participant.code === 'ACE001' || participant.code === 'GRA001' || participant.code === 'MIL001') && (
+                  weekType === 'weekA' || weekType === 'nextA' 
+                    ? 'Glandore (Ratio:1:1)' 
+                    : 'Plympton Park (Ratio:1:1)'
+                )}
               </div>
             </div>
             <div style={{ textAlign: 'right' }}>
               <div style={{ color: 'var(--accent-primary)', fontWeight: 'bold' }}>
-                Week {weekType.slice(-1)}
+                {weekType === 'weekA' && 'Week A'}
+                {weekType === 'weekB' && 'Week B'}
+                {weekType === 'nextA' && 'Next A'}
+                {weekType === 'nextB' && 'Next B'}
               </div>
               <div style={{ color: 'var(--text-secondary)', fontSize: '0.9rem' }}>
                 {Object.keys(participantShifts).length} days scheduled
