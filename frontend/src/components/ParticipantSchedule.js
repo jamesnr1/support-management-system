@@ -259,25 +259,7 @@ const ParticipantSchedule = ({
                     </div>
                   ))}
                   
-                  {/* Add Shift button - AFTER existing shifts, small size like SMS_opus.html */}
-                  {editMode && (
-                    <button 
-                      className="btn btn-secondary"
-                      onClick={() => handleAddShift(date)}
-                      style={{ 
-                        padding: '0.5rem 1rem',
-                        fontSize: '0.9rem',
-                        fontWeight: '500',
-                        display: 'inline-flex',
-                        alignItems: 'center',
-                        gap: '0.5rem',
-                        marginTop: '0.5rem'
-                      }}
-                    >
-                      <Plus size={16} /> Add Shift
-                    </button>
-                  )}
-                  
+                  {/* Show shift form FIRST - when adding/editing */}
                   {showShiftForm && selectedDate === date && (
                     <ShiftForm
                       participant={participant}
@@ -294,6 +276,25 @@ const ParticipantSchedule = ({
                       onCancel={handleShiftCancel}
                       existingShifts={dayShifts}
                     />
+                  )}
+
+                  {/* Add Shift button AFTER the form - small size like SMS_opus.html */}
+                  {editMode && (
+                    <button 
+                      className="btn btn-secondary"
+                      onClick={() => handleAddShift(date)}
+                      style={{ 
+                        padding: '0.5rem 1rem',
+                        fontSize: '0.9rem',
+                        fontWeight: '500',
+                        display: 'inline-flex',
+                        alignItems: 'center',
+                        gap: '0.5rem',
+                        marginTop: '0.5rem'
+                      }}
+                    >
+                      <Plus size={16} /> Add Shift
+                    </button>
                   )}
 
                   {/* Show "No shifts" only if not in edit mode and no shifts exist */}
