@@ -232,17 +232,17 @@ const WorkerManagement = ({ workers, locations, onWorkerUpdate }) => {
                     Max Hours: {worker.max_hours || 'Not set'} | Status: {worker.status}
                   </div>
                   <div className="worker-details">
-                    {worker.email && `Email: ${worker.email}`}
+                    {worker.email && `📧 ${worker.email}`}
                   </div>
                   <div className="worker-details">
-                    {worker.phone && `Phone: ${worker.phone}`}
+                    {worker.phone && `📱 ${worker.phone}`}
                   </div>
                   <div className="worker-details">
-                    Skills: {worker.skills || 'None listed'}
+                    🚗 {worker.car || 'Not specified'} | 🎯 {worker.skills || 'None listed'}
                   </div>
                   {worker.telegram && (
-                    <div className="worker-details">
-                      Telegram: @{worker.telegram}
+                    <div className="worker-details" style={{ color: 'var(--accent-primary)' }}>
+                      📱 Telegram: {worker.telegram}
                     </div>
                   )}
                 </div>
