@@ -268,20 +268,6 @@ const ParticipantSchedule = ({
           })}
         </div>
       </div>
-
-      {/* Shift Form */}
-      {showShiftForm && (
-        <ShiftForm
-          participant={participant}
-          date={selectedDate}
-          editingShift={editingShift}
-          workers={workers}
-          locations={locations}
-          onSave={handleShiftSave}
-          onCancel={handleShiftCancel}
-          existingShifts={participantShifts[selectedDate] || []}
-        />
-      )}
     </div>
   );
 };
