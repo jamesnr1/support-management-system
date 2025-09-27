@@ -192,6 +192,10 @@ test_plan:
   stuck_tasks: []
   test_all: false
   test_priority: "high_first"
+  workflow_tests_completed:
+    - "Add/Edit/Delete shifts workflow"
+    - "Complete rostering system workflow"
+    - "Data persistence and consistency"
 
 agent_communication:
   - agent: "main"
