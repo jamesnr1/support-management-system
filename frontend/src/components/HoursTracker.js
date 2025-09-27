@@ -311,7 +311,7 @@ const HoursTracker = ({ participants, workers, rosterData }) => {
         {/* Header */}
         <div className="admin-section">
           <h1 style={{ color: 'var(--accent-primary)', fontSize: '24px', marginBottom: '15px' }}>
-            📊 Support Hours Tracker
+            📊 Hours Tracker - Support Management System
           </h1>
           <div style={{ display: 'flex', gap: '10px', marginBottom: '20px', alignItems: 'center' }}>
             <div style={{ display: 'flex', flexDirection: 'column', marginRight: '15px' }}>
