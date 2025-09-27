@@ -286,7 +286,10 @@ const WorkerManagement = ({ workers, locations, onWorkerUpdate }) => {
                   <Calendar size={14} /> Unavailable
                 </button>
                 {worker.telegram && (
-                  <button className="btn btn-secondary btn-sm">
+                  <button 
+                    className="btn btn-primary btn-sm"
+                    onClick={() => handleSendTelegramMessage(worker)}
+                  >
                     <MessageCircle size={14} /> Message
                   </button>
                 )}
