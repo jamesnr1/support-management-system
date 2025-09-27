@@ -24,13 +24,19 @@ const ParticipantSchedule = ({
   // Get participant's shifts for this week
   const participantShifts = rosterData[participant.code] || {};
 
-  // Generate week dates (simplified - in production would use proper date handling)
+  // Generate week dates starting from Monday
   const getWeekDates = () => {
     const dates = [];
-    const startDate = new Date();
+    const today = new Date();
+    const currentDay = today.getDay(); // 0=Sunday, 1=Monday, etc.
+    const daysFromMonday = currentDay === 0 ? 6 : currentDay - 1; // Convert to Monday=0
+    
+    const monday = new Date(today);
+    monday.setDate(today.getDate() - daysFromMonday);
+    
     for (let i = 0; i < 7; i++) {
-      const date = new Date(startDate);
-      date.setDate(startDate.getDate() + i);
+      const date = new Date(monday);
+      date.setDate(monday.getDate() + i);
       dates.push({
         date: date.toISOString().split('T')[0],
         day: date.toLocaleDateString('en-US', { weekday: 'long' }),
