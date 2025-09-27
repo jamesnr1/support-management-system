@@ -77,13 +77,13 @@ const ParticipantSchedule = ({
   const handleAddShift = (date) => {
     setSelectedDate(date);
     setEditingShift(null);
-    setShowShiftModal(true);
+    setShowShiftForm(true);
   };
 
   const handleEditShift = (shift, date) => {
     setSelectedDate(date);
     setEditingShift(shift);
-    setShowShiftModal(true);
+    setShowShiftForm(true);
   };
 
   const handleDeleteShift = (shiftIndex, date) => {
