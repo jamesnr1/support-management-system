@@ -180,7 +180,7 @@ const ParticipantSchedule = ({
                 </div>
 
                 <div className="day-shifts">
-                  {/* Always show shift form in edit mode */}
+                  {/* Always show shift form in edit mode for each day */}
                   {editMode && (
                     <ShiftForm
                       participant={participant}
@@ -188,7 +188,7 @@ const ParticipantSchedule = ({
                       editingShift={null}
                       workers={workers}
                       locations={locations}
-                      onSave={handleShiftSave}
+                      onSave={(shiftData) => handleShiftSave({...shiftData, date})}
                       onCancel={() => {}} // No cancel since always in edit mode
                       existingShifts={dayShifts}
                     />
