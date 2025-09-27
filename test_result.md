@@ -101,3 +101,86 @@
 #====================================================================================================
 # Testing Data - Main Agent and testing sub agent both should log testing data below this section
 #====================================================================================================
+
+user_problem_statement: "Create a working rostering system with support workers, participants, and shift scheduling. The user provided working HTML/SQL/JS files and is frustrated that existing functionality has been broken. Focus on preserving working features and implementing: 1) Copy to Template functionality 2) Export functionality 3) Hours tracking functionality. Apply exact colors from SMS_opus.html for dark, eye-friendly theme."
+
+backend:
+  - task: "Apply SMS_opus.html color scheme"
+    implemented: true
+    working: true
+    file: "/app/frontend/src/App.css"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+      - working: true
+        agent: "main"
+        comment: "Successfully applied exact color variables from SMS_opus.html - dark theme looks much better"
+  
+  - task: "Copy to Template functionality"
+    implemented: true
+    working: "NA" 
+    file: "/app/frontend/src/components/RosteringSystem.js"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+      - working: "NA"
+        agent: "main" 
+        comment: "Implemented async function to copy Week A/B to Next A/B. Enabled button. Needs backend testing."
+
+  - task: "Export functionality"
+    implemented: true
+    working: "NA"
+    file: "/app/frontend/src/components/RosteringSystem.js" 
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+      - working: "NA"
+        agent: "main"
+        comment: "Implemented JSON export of all roster data. Creates downloadable file. Needs testing."
+
+  - task: "Hours tracking functionality" 
+    implemented: true
+    working: "NA"
+    file: "/app/frontend/src/components/HoursTracker.js"
+    stuck_count: 0
+    priority: "high" 
+    needs_retesting: true
+    status_history:
+      - working: "NA"
+        agent: "main"
+        comment: "Enhanced HoursTracker with calculations, CSV upload, export. Added close button. Needs testing."
+
+frontend:
+  - task: "UI matches SMS_opus.html colors"
+    implemented: true
+    working: true
+    file: "/app/frontend/src/App.css" 
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+      - working: true
+        agent: "main"
+        comment: "Applied exact dark theme colors. Screenshot shows correct eye-friendly theme."
+
+metadata:
+  created_by: "main_agent"
+  version: "1.0"
+  test_sequence: 1
+  run_ui: true
+
+test_plan:
+  current_focus:
+    - "Copy to Template functionality"
+    - "Export functionality" 
+    - "Hours tracking functionality"
+  stuck_tasks: []
+  test_all: false
+  test_priority: "high_first"
+
+agent_communication:
+  - agent: "main"
+    message: "Fixed the main UI/UX issue by applying SMS_opus.html colors exactly. Implemented the three missing features: Copy to Template, Export, and Hours. Need to test backend functionality and ensure these new features work properly. The colors look much better - dark and eye-friendly as requested."
