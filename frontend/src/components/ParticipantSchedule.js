@@ -179,16 +179,39 @@ const ParticipantSchedule = ({
                 </div>
 
                 <div className="day-shifts">
-                  {/* Always show shift form in edit mode for each day */}
+                  {/* Add Shift button when in edit mode */}
                   {editMode && (
+                    <button 
+                      className="btn btn-primary"
+                      onClick={() => handleAddShift(date)}
+                      style={{ 
+                        marginBottom: '0.5rem',
+                        display: 'inline-flex',
+                        alignItems: 'center',
+                        gap: '0.25rem',
+                        fontSize: '0.9rem',
+                        padding: '0.4rem 0.8rem'
+                      }}
+                    >
+                      <Plus size={16} /> Add Shift
+                    </button>
+                  )}
+                  
+                  {/* Show shift form only for the selected date */}
+                  {showShiftForm && selectedDate === date && (
                     <ShiftForm
                       participant={participant}
                       date={date}
-                      editingShift={null}
+                      editingShift={editingShift}
                       workers={workers}
                       locations={locations}
-                      onSave={(shiftData) => handleShiftSave({...shiftData, date})}
-                      onCancel={() => {}} // No cancel since always in edit mode
+                      onSave={(shiftData) => {
+                        handleShiftSave({...shiftData, date});
+                        setShowShiftForm(false);
+                        setSelectedDate(null);
+                        setEditingShift(null);
+                      }}
+                      onCancel={handleShiftCancel}
                       existingShifts={dayShifts}
                     />
                   )}
