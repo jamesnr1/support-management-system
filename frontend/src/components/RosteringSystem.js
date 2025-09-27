@@ -172,9 +172,8 @@ const RosteringSystem = () => {
             </button>
             <button 
               className="btn btn-primary"
-              disabled
-              style={{ opacity: 0.5, cursor: 'not-allowed' }}
-              title="Available in next stage"
+              onClick={exportRoster}
+              title="Export all roster data to JSON"
             >
               💰 Export
             </button>
