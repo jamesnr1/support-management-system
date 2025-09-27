@@ -11,18 +11,16 @@ const ShiftForm = ({
   onCancel,
   existingShifts = []
 }) => {
-  // Generate time options starting from 6am with 15-minute intervals
+  // Generate time options starting from 6am with hourly increments
   const generateTimeOptions = () => {
     const times = [];
-    for (let hour = 6; hour < 30; hour++) { // 6am to 6am next day
-      for (let minute = 0; minute < 60; minute += 15) {
-        const displayHour = hour >= 24 ? hour - 24 : hour;
-        const time24 = `${displayHour.toString().padStart(2, '0')}:${minute.toString().padStart(2, '0')}`;
-        times.push({
-          value: time24,
-          label: time24
-        });
-      }
+    for (let hour = 6; hour <= 30; hour++) { // 6am to 6am next day (inclusive)
+      const displayHour = hour > 24 ? hour - 24 : hour;
+      const time24 = `${displayHour.toString().padStart(2, '0')}:00`;
+      times.push({
+        value: time24,
+        label: time24
+      });
     }
     return times;
   };
