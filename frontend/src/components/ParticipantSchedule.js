@@ -188,96 +188,137 @@ const ParticipantSchedule = ({
                 <div className="day-shifts">
                   {/* Existing shifts */}
                   {dayShifts.map((shift, index) => (
-                    <div key={index} className="shift-row">
-                      <div className="shift-info">
-                        <div className="shift-time">
-                          {shift.startTime} - {shift.endTime}
-                          <span style={{ 
-                            marginLeft: '0.5rem', 
-                            color: 'var(--text-muted)',
-                            fontSize: '1rem'
-                          }}>
-                            ({shift.duration || '0'}h)
-                          </span>
-                        </div>
-                        
-                        <div style={{ display: 'flex', gap: '0.5rem', marginTop: '0.25rem' }}>
-                          <span className="shift-type">{shift.supportType || 'Self-Care'}</span>
-                          <span className="shift-type" style={{ background: 'var(--accent-success)' }}>
-                            {shift.ratio || '1:1'}
-                          </span>
-                          {shift.shiftNumber && (
-                            <span className="shift-type" style={{ background: 'var(--bg-tertiary)', color: 'var(--text-secondary)' }}>
-                              #{shift.shiftNumber}
-                            </span>
-                          )}
-                        </div>
-                        
-                        {shift.workers && shift.workers.length > 0 && (
-                          <div className="shift-workers">
-                            <Users size={14} style={{ marginRight: '0.25rem' }} />
-                            {getWorkerNames(shift.workers)}
+                    <div key={index}>
+                      {/* Show edit form inline if this shift is being edited */}
+                      {showShiftForm && selectedDate === date && editingShift && editingShift.id === shift.id ? (
+                        <ShiftForm
+                          participant={participant}
+                          date={date}
+                          editingShift={editingShift}
+                          workers={workers}
+                          locations={locations}
+                          onSave={(shiftData) => {
+                            handleShiftSave({...shiftData, date});
+                            setShowShiftForm(false);
+                            setSelectedDate(null);
+                            setEditingShift(null);
+                          }}
+                          onCancel={handleShiftCancel}
+                          existingShifts={dayShifts}
+                        />
+                      ) : (
+                        /* Show normal shift display */
+                        <div className="shift-row">
+                          <div className="shift-info">
+                            <div className="shift-time">
+                              {shift.startTime} - {shift.endTime}
+                              <span style={{ 
+                                marginLeft: '0.5rem', 
+                                color: 'var(--text-muted)',
+                                fontSize: '1rem'
+                              }}>
+                                ({shift.duration || '0'}h)
+                              </span>
+                            </div>
+                            
+                            <div style={{ display: 'flex', gap: '0.5rem', marginTop: '0.25rem' }}>
+                              <span className="shift-type">{shift.supportType || 'Self-Care'}</span>
+                              <span className="shift-type" style={{ background: 'var(--accent-success)' }}>
+                                {shift.ratio || '1:1'}
+                              </span>
+                              {shift.shiftNumber && (
+                                <span className="shift-type" style={{ background: 'var(--bg-tertiary)', color: 'var(--text-secondary)' }}>
+                                  #{shift.shiftNumber}
+                                </span>
+                              )}
+                            </div>
+                            
+                            {shift.workers && shift.workers.length > 0 && (
+                              <div className="shift-workers">
+                                <Users size={14} style={{ marginRight: '0.25rem' }} />
+                                {getWorkerNames(shift.workers)}
+                              </div>
+                            )}
+                            
+                            {shift.location && (
+                              <div className="shift-workers">
+                                {getLocationName(shift.location)}
+                              </div>
+                            )}
+                            
+                            {shift.notes && (
+                              <div className="shift-workers">
+                                💬 {shift.notes}
+                              </div>
+                            )}
                           </div>
-                        )}
-                        
-                        {shift.location && (
-                          <div className="shift-workers">
-                            {getLocationName(shift.location)}
-                          </div>
-                        )}
-                        
-                        {shift.notes && (
-                          <div className="shift-workers">
-                            💬 {shift.notes}
-                          </div>
-                        )}
-                      </div>
 
-                      {editMode && (
-                        <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
-                          <button 
-                            className="btn btn-secondary"
-                            onClick={() => {
-                              console.log('Edit shift clicked:', shift, date);
-                              handleEditShift(shift, date);
-                            }}
-                            style={{ 
-                              fontSize: '0.9rem', 
-                              padding: '0.5rem 1rem',
-                              display: 'inline-flex',
-                              alignItems: 'center',
-                              gap: '0.25rem'
-                            }}
-                          >
-                            <Edit size={16} /> Edit
-                          </button>
-                          <button 
-                            className="btn btn-danger"
-                            onClick={() => {
-                              console.log('Delete shift clicked:', index, date);
-                              handleDeleteShift(index, date);
-                            }}
-                            style={{ 
-                              fontSize: '0.9rem', 
-                              padding: '0.5rem 1rem',
-                              display: 'inline-flex',
-                              alignItems: 'center',
-                              gap: '0.25rem'
-                            }}
-                          >
-                            <Trash2 size={16} /> Delete
-                          </button>
+                          {editMode && (
+                            <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
+                              <button 
+                                className="btn btn-secondary"
+                                onClick={() => {
+                                  console.log('Edit shift clicked:', shift, date);
+                                  handleEditShift(shift, date);
+                                }}
+                                style={{ 
+                                  fontSize: '0.9rem', 
+                                  padding: '0.5rem 1rem',
+                                  display: 'inline-flex',
+                                  alignItems: 'center',
+                                  gap: '0.25rem'
+                                }}
+                              >
+                                <Edit size={16} /> Edit
+                              </button>
+                              <button 
+                                className="btn btn-danger"
+                                onClick={() => {
+                                  console.log('Delete shift clicked:', index, date, shift);
+                                  if (window.confirm('Are you sure you want to delete this shift?')) {
+                                    const newRosterData = { ...rosterData };
+                                    
+                                    // Ensure the participant and date exist
+                                    if (newRosterData[participant.code] && newRosterData[participant.code][date]) {
+                                      // Remove the shift at the specified index
+                                      newRosterData[participant.code][date].splice(index, 1);
+                                      
+                                      // Remove empty date arrays to keep data clean
+                                      if (newRosterData[participant.code][date].length === 0) {
+                                        delete newRosterData[participant.code][date];
+                                      }
+                                      
+                                      console.log('Updated roster after delete:', newRosterData);
+                                      onRosterUpdate(newRosterData);
+                                      toast.success('Shift deleted successfully');
+                                    } else {
+                                      toast.error('Error: Could not find shift to delete');
+                                    }
+                                  }
+                                }}
+                                style={{ 
+                                  fontSize: '0.9rem', 
+                                  padding: '0.5rem 1rem',
+                                  display: 'inline-flex',
+                                  alignItems: 'center',
+                                  gap: '0.25rem'
+                                }}
+                              >
+                                <Trash2 size={16} /> Delete
+                              </button>
+                            </div>
+                          )}
                         </div>
                       )}
                     </div>
                   ))}
                   
-                  {/* Show shift form FIRST - when adding/editing */}
-                  {showShiftForm && selectedDate === date && (
+                  {/* Show NEW shift form at bottom - only for adding new shifts */}
+                  {showShiftForm && selectedDate === date && !editingShift && (
                     <ShiftForm
                       participant={participant}
                       date={date}
-                      editingShift={editingShift}
+                      editingShift={null}
                       workers={workers}
                       locations={locations}
                       onSave={(shiftData) => {
