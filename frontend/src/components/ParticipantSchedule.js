@@ -132,7 +132,16 @@ const ParticipantSchedule = ({
   };
 
   const getLocationName = (locationId) => {
-    return locations.find(l => l.id === parseInt(locationId))?.name || 'Unknown Location';
+    if (!locationId) return 'No location';
+    
+    // Try both string and number matching since IDs might be different types
+    const location = locations.find(l => 
+      l.id === locationId || 
+      l.id === parseInt(locationId) || 
+      l.id === locationId.toString()
+    );
+    
+    return location ? location.name : `Unknown Location (ID: ${locationId})`;
   };
 
   return (
