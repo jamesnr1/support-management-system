@@ -16,30 +16,42 @@ const RosteringSystem = () => {
   const queryClient = useQueryClient();
 
   // Fetch participants
-  const { data: participants = [], isLoading: participantsLoading } = useQuery({
+  const { data: participants = [], isLoading: participantsLoading, error: participantsError } = useQuery({
     queryKey: ['participants'],
     queryFn: async () => {
+      console.log('Fetching participants...');
       const response = await axios.get(`${API}/participants`);
+      console.log('Participants response:', response.data);
       return response.data;
-    }
+    },
+    retry: 2,
+    staleTime: 1000 * 60 * 5
   });
 
   // Fetch workers
-  const { data: workers = [], isLoading: workersLoading } = useQuery({
+  const { data: workers = [], isLoading: workersLoading, error: workersError } = useQuery({
     queryKey: ['workers'],
     queryFn: async () => {
+      console.log('Fetching workers...');
       const response = await axios.get(`${API}/workers`);
+      console.log('Workers response:', response.data);
       return response.data;
-    }
+    },
+    retry: 2,
+    staleTime: 1000 * 60 * 5
   });
 
   // Fetch locations
-  const { data: locations = [], isLoading: locationsLoading } = useQuery({
+  const { data: locations = [], isLoading: locationsLoading, error: locationsError } = useQuery({
     queryKey: ['locations'],
     queryFn: async () => {
+      console.log('Fetching locations...');
       const response = await axios.get(`${API}/locations`);
+      console.log('Locations response:', response.data);
       return response.data;
-    }
+    },
+    retry: 2,
+    staleTime: 1000 * 60 * 5
   });
 
   // Fetch roster data
