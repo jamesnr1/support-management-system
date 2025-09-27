@@ -310,9 +310,20 @@ const HoursTracker = ({ participants, workers, rosterData }) => {
         
         {/* Header */}
         <div className="admin-section">
-          <h1 style={{ color: 'var(--accent-primary)', fontSize: '24px', marginBottom: '15px' }}>
-            📊 Hours Tracker - Support Management System
-          </h1>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '15px' }}>
+            <h1 style={{ color: 'var(--accent-primary)', fontSize: '24px', margin: 0 }}>
+              📊 Hours Tracker - Support Management System
+            </h1>
+            {props.onClose && (
+              <button 
+                className="btn-cancel-x"
+                onClick={props.onClose}
+                title="Close Hours Tracker"
+              >
+                ✕
+              </button>
+            )}
+          </div>
           <div style={{ display: 'flex', gap: '10px', marginBottom: '20px', alignItems: 'center' }}>
             <div style={{ display: 'flex', flexDirection: 'column', marginRight: '15px' }}>
               <label style={{ color: 'var(--text-secondary)', fontSize: '12px', marginBottom: '3px' }}>
