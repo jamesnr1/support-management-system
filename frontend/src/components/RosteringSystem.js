@@ -82,6 +82,21 @@ const RosteringSystem = () => {
     updateRosterMutation.mutate({ weekType: activeTab, data });
   };
 
+  // Template copying function
+  const copyToTemplate = () => {
+    if (window.confirm('Copy Week A and Week B schedules to Next A and Next B?')) {
+      // Get current Week A and Week B data
+      const weekAData = rosterData.weekA || {};
+      const weekBData = rosterData.weekB || {};
+      
+      // Update Next A and Next B
+      updateRosterMutation.mutate({ weekType: 'nextA', data: weekAData });
+      updateRosterMutation.mutate({ weekType: 'nextB', data: weekBData });
+      
+      toast.success('Templates copied successfully! Week A→Next A, Week B→Next B');
+    }
+  };
+
   if (participantsLoading || workersLoading || locationsLoading) {
     return (
       <div className="loading">
