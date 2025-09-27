@@ -74,6 +74,10 @@ const RosteringSystem = () => {
     { id: 'admin', label: 'Admin', color: '#9A8F85' }
   ];
 
+  const toggleHoursTracker = () => {
+    setShowHoursTracker(!showHoursTracker);
+  };
+
   const toggleEditMode = () => {
     setEditMode(!editMode);
     toast.success(`Edit mode ${!editMode ? 'enabled' : 'disabled'}`);
