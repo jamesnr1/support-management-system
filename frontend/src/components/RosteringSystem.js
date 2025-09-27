@@ -32,12 +32,17 @@ const RosteringSystem = () => {
   const { data: workers = [], isLoading: workersLoading, error: workersError } = useQuery({
     queryKey: ['workers'],
     queryFn: async () => {
-      console.log('Fetching workers...');
-      const response = await axios.get(`${API}/workers`);
-      console.log('Workers response:', response.data);
-      return response.data;
+      console.log('Fetching workers from:', `${API}/workers`);
+      try {
+        const response = await axios.get(`${API}/workers`, { timeout: 10000 });
+        console.log('Workers response success:', response.data.length, 'workers');
+        return response.data;
+      } catch (error) {
+        console.error('Workers fetch error:', error);
+        throw error;
+      }
     },
-    retry: 2,
+    retry: 1,
     staleTime: 1000 * 60 * 5
   });
 
@@ -45,12 +50,17 @@ const RosteringSystem = () => {
   const { data: locations = [], isLoading: locationsLoading, error: locationsError } = useQuery({
     queryKey: ['locations'],
     queryFn: async () => {
-      console.log('Fetching locations...');
-      const response = await axios.get(`${API}/locations`);
-      console.log('Locations response:', response.data);
-      return response.data;
+      console.log('Fetching locations from:', `${API}/locations`);
+      try {
+        const response = await axios.get(`${API}/locations`, { timeout: 10000 });
+        console.log('Locations response success:', response.data.length, 'locations');
+        return response.data;
+      } catch (error) {
+        console.error('Locations fetch error:', error);
+        throw error;
+      }
     },
-    retry: 2,
+    retry: 1,
     staleTime: 1000 * 60 * 5
   });
 
