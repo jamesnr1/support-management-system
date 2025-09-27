@@ -92,7 +92,7 @@ async def load_locations():
 # Health check
 @api_router.get("/")
 async def root():
-    return {"message": "Support Worker Rostering System API", "status": "running"}
+    return {"message": "Support Management System API", "status": "running"}
 
 # Worker Management Routes
 @api_router.get("/workers", response_model=List[Worker])
