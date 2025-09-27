@@ -17,7 +17,7 @@ const ParticipantSchedule = ({
   editMode, 
   onRosterUpdate 
 }) => {
-  const [showShiftModal, setShowShiftModal] = useState(false);
+  const [showShiftForm, setShowShiftForm] = useState(false);
   const [editingShift, setEditingShift] = useState(null);
   const [selectedDate, setSelectedDate] = useState(null);
   const queryClient = useQueryClient();
