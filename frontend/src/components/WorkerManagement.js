@@ -110,51 +110,6 @@ const WorkerManagement = ({ workers, locations, onWorkerUpdate }) => {
     setShowUnavailability(prev => ({ ...prev, [worker.id]: !prev[worker.id] }));
   };
 
-  const handleAvailabilitySubmit = (e) => {
-    e.preventDefault();
-    const formData = new FormData(e.target);
-    
-    // Process each day of the week
-    const weekdays = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'];
-    
-    weekdays.forEach((day, index) => {
-      const isFullDay = formData.get(`${day}_full_day`) === 'on';
-      const fromTime = formData.get(`${day}_from_time`);
-      const toTime = formData.get(`${day}_to_time`);
-      
-      if (isFullDay || (fromTime && toTime)) {
-        const availabilityData = {
-          weekday: index, // 0 = Sunday, 1 = Monday, etc.
-          is_full_day: isFullDay,
-          from_time: isFullDay ? null : fromTime,
-          to_time: isFullDay ? null : toTime,
-          wraps_midnight: toTime && fromTime && toTime < fromTime
-        };
-        
-        setAvailabilityMutation.mutate({ 
-          workerId: selectedWorker.id, 
-          availabilityData 
-        });
-      }
-    });
-  };
-
-  const handleUnavailabilitySubmit = (e) => {
-    e.preventDefault();
-    const formData = new FormData(e.target);
-    
-    const unavailabilityData = {
-      from_date: formData.get('from_date'),
-      to_date: formData.get('to_date'),
-      reason: formData.get('reason')
-    };
-    
-    addUnavailabilityMutation.mutate({ 
-      workerId: selectedWorker.id, 
-      unavailabilityData 
-    });
-  };
-
   const handleSendTelegramMessage = (worker) => {
     const message = prompt(`Send message to ${worker.full_name}:`);
     if (message) {
