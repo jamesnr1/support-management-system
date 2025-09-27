@@ -82,6 +82,39 @@ const RosteringSystem = () => {
     updateRosterMutation.mutate({ weekType: activeTab, data });
   };
 
+  // Export functionality
+  const exportRoster = async () => {
+    try {
+      const allData = {
+        participants,
+        workers,
+        locations,
+        rosters: {}
+      };
+      
+      // Fetch all roster data
+      for (const tab of ['weekA', 'weekB', 'nextA', 'nextB']) {
+        const response = await axios.get(`${API}/roster/${tab}`);
+        allData.rosters[tab] = response.data;
+      }
+      
+      // Create downloadable JSON file
+      const dataStr = JSON.stringify(allData, null, 2);
+      const dataUri = 'data:application/json;charset=utf-8,'+ encodeURIComponent(dataStr);
+      
+      const exportFileDefaultName = `roster_export_${new Date().toISOString().split('T')[0]}.json`;
+      
+      const linkElement = document.createElement('a');
+      linkElement.setAttribute('href', dataUri);
+      linkElement.setAttribute('download', exportFileDefaultName);
+      linkElement.click();
+      
+      toast.success('Roster data exported successfully');
+    } catch (error) {
+      toast.error('Failed to export data: ' + error.message);
+    }
+  };
+
   // Template copying function
   const copyToTemplate = async () => {
     if (window.confirm('Copy Week A and Week B schedules to Next A and Next B?')) {
