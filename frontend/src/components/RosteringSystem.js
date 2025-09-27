@@ -271,8 +271,8 @@ const RosteringSystem = () => {
                   participant={participant}
                   weekType={activeTab}
                   rosterData={rosterData}
-                  workers={workers}
-                  locations={locations}
+                  workers={workers || []} // Ensure it's always an array
+                  locations={locations || []} // Ensure it's always an array
                   editMode={editMode}
                   onRosterUpdate={handleRosterUpdate}
                 />
