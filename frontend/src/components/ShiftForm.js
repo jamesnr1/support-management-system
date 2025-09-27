@@ -285,10 +285,12 @@ const ShiftForm = ({
           padding: '0.5rem 1rem', 
           fontSize: '1rem',
           borderRadius: '6px',
-          minWidth: '80px',
           background: 'var(--accent-success)',
           border: '2px solid var(--accent-success)',
-          color: 'white'
+          color: 'white',
+          display: 'inline-flex',
+          alignItems: 'center',
+          gap: '0.25rem'
         }}>
           <Save size={16} />
         </button>
