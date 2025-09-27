@@ -170,7 +170,7 @@ const ParticipantSchedule = ({
                 </div>
 
                 <div className="day-shifts">
-                  {dayShifts.length === 0 ? (
+                  {dayShifts.length === 0 && !showShiftForm ? (
                     <div style={{ 
                       color: 'var(--text-muted)', 
                       fontStyle: 'italic', 
@@ -179,73 +179,88 @@ const ParticipantSchedule = ({
                     }}>
                       No shifts scheduled
                     </div>
-                  ) : (
-                    dayShifts.map((shift, index) => (
-                      <div key={index} className="shift-row">
-                        <div className="shift-info">
-                          <div className="shift-time">
-                            {shift.startTime} - {shift.endTime}
-                            <span style={{ 
-                              marginLeft: '0.5rem', 
-                              color: 'var(--text-muted)',
-                              fontSize: '0.85rem'
-                            }}>
-                              ({shift.duration || '0'}h)
+                  ) : null}
+                  
+                  {/* Existing shifts */}
+                  {dayShifts.map((shift, index) => (
+                    <div key={index} className="shift-row">
+                      <div className="shift-info">
+                        <div className="shift-time">
+                          {shift.startTime} - {shift.endTime}
+                          <span style={{ 
+                            marginLeft: '0.5rem', 
+                            color: 'var(--text-muted)',
+                            fontSize: '0.85rem'
+                          }}>
+                            ({shift.duration || '0'}h)
+                          </span>
+                        </div>
+                        
+                        <div style={{ display: 'flex', gap: '0.5rem', marginTop: '0.25rem' }}>
+                          <span className="shift-type">{shift.supportType || 'Self-Care'}</span>
+                          <span className="shift-type" style={{ background: 'var(--accent-success)' }}>
+                            {shift.ratio || '1:1'}
+                          </span>
+                          {shift.shiftNumber && (
+                            <span className="shift-type" style={{ background: 'var(--bg-tertiary)', color: 'var(--text-secondary)' }}>
+                              #{shift.shiftNumber}
                             </span>
-                          </div>
-                          
-                          <div style={{ display: 'flex', gap: '0.5rem', marginTop: '0.25rem' }}>
-                            <span className="shift-type">{shift.supportType || 'Self-Care'}</span>
-                            <span className="shift-type" style={{ background: 'var(--accent-success)' }}>
-                              {shift.ratio || '1:1'}
-                            </span>
-                            {shift.shiftNumber && (
-                              <span className="shift-type" style={{ background: 'var(--bg-tertiary)', color: 'var(--text-secondary)' }}>
-                                #{shift.shiftNumber}
-                              </span>
-                            )}
-                          </div>
-                          
-                          {shift.workers && shift.workers.length > 0 && (
-                            <div className="shift-workers">
-                              <Users size={14} style={{ marginRight: '0.25rem' }} />
-                              {getWorkerNames(shift.workers)}
-                            </div>
-                          )}
-                          
-                          {shift.location && (
-                            <div className="shift-workers">
-                              📍 {getLocationName(shift.location)}
-                            </div>
-                          )}
-                          
-                          {shift.notes && (
-                            <div className="shift-workers">
-                              💬 {shift.notes}
-                            </div>
                           )}
                         </div>
-
-                        {editMode && (
-                          <div style={{ display: 'flex', gap: '0.25rem' }}>
-                            <button 
-                              className="btn btn-secondary btn-sm"
-                              onClick={() => handleEditShift(shift, date)}
-                              style={{ fontSize: '0.7rem', padding: '0.25rem 0.4rem' }}
-                            >
-                              <Edit size={10} />
-                            </button>
-                            <button 
-                              className="btn btn-danger btn-sm"
-                              onClick={() => handleDeleteShift(index, date)}
-                              style={{ fontSize: '0.7rem', padding: '0.25rem 0.4rem' }}
-                            >
-                              <Trash2 size={10} />
-                            </button>
+                        
+                        {shift.workers && shift.workers.length > 0 && (
+                          <div className="shift-workers">
+                            <Users size={14} style={{ marginRight: '0.25rem' }} />
+                            {getWorkerNames(shift.workers)}
+                          </div>
+                        )}
+                        
+                        {shift.location && (
+                          <div className="shift-workers">
+                            📍 {getLocationName(shift.location)}
+                          </div>
+                        )}
+                        
+                        {shift.notes && (
+                          <div className="shift-workers">
+                            💬 {shift.notes}
                           </div>
                         )}
                       </div>
-                    ))
+
+                      {editMode && (
+                        <div style={{ display: 'flex', gap: '0.25rem' }}>
+                          <button 
+                            className="btn btn-secondary btn-sm"
+                            onClick={() => handleEditShift(shift, date)}
+                            style={{ fontSize: '0.7rem', padding: '0.25rem 0.4rem' }}
+                          >
+                            <Edit size={10} />
+                          </button>
+                          <button 
+                            className="btn btn-danger btn-sm"
+                            onClick={() => handleDeleteShift(index, date)}
+                            style={{ fontSize: '0.7rem', padding: '0.25rem 0.4rem' }}
+                          >
+                            <Trash2 size={10} />
+                          </button>
+                        </div>
+                      )}
+                    </div>
+                  ))}
+
+                  {/* Inline shift form - appears exactly where Add button is */}
+                  {showShiftForm && selectedDate === date && (
+                    <ShiftForm
+                      participant={participant}
+                      date={selectedDate}
+                      editingShift={editingShift}
+                      workers={workers}
+                      locations={locations}
+                      onSave={handleShiftSave}
+                      onCancel={handleShiftCancel}
+                      existingShifts={dayShifts}
+                    />
                   )}
                 </div>
               </div>
