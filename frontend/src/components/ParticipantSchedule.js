@@ -187,20 +187,12 @@ const ParticipantSchedule = ({
                       ) : (
                         /* Show normal shift display */
                         <div className="shift-row">
-                          {/* Shift number in left column area */}
-                          <div style={{ 
-                            position: 'absolute', 
-                            left: '10px', 
-                            top: '50%', 
-                            transform: 'translateY(-50%)',
-                            fontSize: '0.75rem', 
-                            color: 'var(--text-muted)',
-                            minWidth: '100px'
-                          }}>
-                            {shift.shiftNumber && `#${shift.shiftNumber}`}
-                          </div>
-                          
-                          <div className="shift-info" style={{ marginLeft: '110px' }}>
+                          <div className="shift-info">
+                            {/* Shift number for this specific shift */}
+                            <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginBottom: '0.25rem' }}>
+                              {shift.shiftNumber && `#${shift.shiftNumber}`}
+                            </div>
+                            
                             {/* Line 1: Time and hours */}
                             <div className="shift-time">
                               {shift.startTime} - {shift.endTime} ({shift.duration || '0'}h)
