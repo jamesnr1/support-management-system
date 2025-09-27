@@ -24,7 +24,7 @@ ROOT_DIR = Path(__file__).parent
 load_dotenv(ROOT_DIR / '.env')
 
 # Create the main app
-app = FastAPI(title="Support Worker Rostering System")
+app = FastAPI(title="Support Management System")
 
 # Create router with /api prefix
 api_router = APIRouter(prefix="/api")
