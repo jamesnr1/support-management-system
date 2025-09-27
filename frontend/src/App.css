@@ -77,13 +77,12 @@ body {
 /* Tab Navigation */
 .tab-nav {
   display: flex;
-  background: linear-gradient(135deg, var(--bg-secondary), var(--bg-tertiary));
+  background: var(--bg-tertiary);
   position: fixed;
   top: 70px;
   left: 0;
   right: 0;
   z-index: 1000;
-  border-bottom: 1px solid var(--accent-primary);
 }
 
 .tab-btn {
