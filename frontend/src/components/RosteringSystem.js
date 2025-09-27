@@ -12,6 +12,7 @@ const API = `${BACKEND_URL}/api`;
 const RosteringSystem = () => {
   const [activeTab, setActiveTab] = useState('weekA');
   const [editMode, setEditMode] = useState(false);
+  const [showHoursTracker, setShowHoursTracker] = useState(false);
   const queryClient = useQueryClient();
 
   // Fetch participants
