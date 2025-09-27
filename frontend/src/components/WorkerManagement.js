@@ -269,35 +269,132 @@ const WorkerManagement = ({ workers, locations, onWorkerUpdate }) => {
               </div>
               
               <div className="worker-actions">
-                <button 
-                  className="btn btn-secondary btn-sm"
-                  onClick={() => handleEditWorker(worker)}
-                >
-                  <Edit size={14} /> Edit
-                </button>
-                <button 
-                  className="btn btn-secondary btn-sm"
-                  onClick={() => handleManageAvailability(worker)}
-                >
-                  <Calendar size={14} /> Availability
-                </button>
-                <button 
-                  className="btn btn-warning btn-sm"
-                  onClick={() => handleManageUnavailability(worker)}
-                >
-                  <Calendar size={14} /> Unavailable
-                </button>
-                {worker.telegram && (
+                <div style={{ display: 'flex', gap: '0.5rem', marginBottom: '1rem' }}>
                   <button 
-                    className="btn btn-primary btn-sm"
-                    onClick={() => handleSendTelegramMessage(worker)}
+                    className="btn btn-secondary btn-sm"
+                    onClick={() => handleEditWorker(worker)}
                   >
-                    <MessageCircle size={14} /> Message
+                    <Edit size={14} /> Edit
                   </button>
-                )}
-                <button 
-                  className="btn btn-danger btn-sm"
-                  onClick={() => handleDeleteWorker(worker)}
+                  <button 
+                    className="btn btn-secondary btn-sm"
+                    onClick={() => handleDeleteWorker(worker)}
+                  >
+                    <Trash2 size={14} /> Deactivate
+                  </button>
+                </div>
+                
+                {/* Availability Section */}
+                <div style={{ marginBottom: '1rem' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.5rem' }}>
+                    <strong style={{ color: 'var(--text-primary)', fontSize: '0.9rem' }}>Availability</strong>
+                    <button 
+                      className="btn btn-secondary btn-sm"
+                      onClick={() => setShowUnavailability(prev => ({ ...prev, [worker.id]: !prev[worker.id] }))}
+                    >
+                      {showUnavailability[worker.id] ? 'Cancel' : 'Set Unavailable'}
+                    </button>
+                  </div>
+                  
+                  {showUnavailability[worker.id] && (
+                    <div className="unavailability-form" style={{ 
+                      background: 'var(--bg-input)', 
+                      padding: '0.8rem', 
+                      borderRadius: '4px',
+                      marginTop: '0.5rem'
+                    }}>
+                      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 2fr', gap: '0.5rem', alignItems: 'end' }}>
+                        <div>
+                          <label style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', display: 'block' }}>From</label>
+                          <input
+                            type="date"
+                            value={unavailabilityData.from}
+                            onChange={(e) => setUnavailabilityData(prev => ({ ...prev, from: e.target.value }))}
+                            style={{
+                              padding: '0.4rem',
+                              borderRadius: '4px',
+                              border: '1px solid var(--border-color)',
+                              background: 'var(--bg-secondary)',
+                              color: 'var(--text-primary)',
+                              fontSize: '0.8rem',
+                              width: '100%'
+                            }}
+                          />
+                        </div>
+                        <div>
+                          <label style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', display: 'block' }}>To</label>
+                          <input
+                            type="date"
+                            value={unavailabilityData.to}
+                            onChange={(e) => setUnavailabilityData(prev => ({ ...prev, to: e.target.value }))}
+                            style={{
+                              padding: '0.4rem',
+                              borderRadius: '4px',
+                              border: '1px solid var(--border-color)',
+                              background: 'var(--bg-secondary)',
+                              color: 'var(--text-primary)',
+                              fontSize: '0.8rem',
+                              width: '100%'
+                            }}
+                          />
+                        </div>
+                        <div>
+                          <label style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', display: 'block' }}>Reason</label>
+                          <div style={{ display: 'flex', gap: '0.5rem' }}>
+                            <input
+                              type="text"
+                              placeholder="Enter reason..."
+                              value={unavailabilityData.reason}
+                              onChange={(e) => setUnavailabilityData(prev => ({ ...prev, reason: e.target.value }))}
+                              style={{
+                                padding: '0.4rem',
+                                borderRadius: '4px',
+                                border: '1px solid var(--border-color)',
+                                background: 'var(--bg-secondary)',
+                                color: 'var(--text-primary)',
+                                fontSize: '0.8rem',
+                                flex: 1
+                              }}
+                            />
+                            <button
+                              className="btn btn-success btn-sm"
+                              onClick={() => {
+                                if (unavailabilityData.from && unavailabilityData.to && unavailabilityData.reason) {
+                                  toast.success(`${worker.full_name} marked unavailable from ${unavailabilityData.from} to ${unavailabilityData.to}`);
+                                  setUnavailabilityData({ from: '', to: '', reason: '' });
+                                  setShowUnavailability(prev => ({ ...prev, [worker.id]: false }));
+                                } else {
+                                  toast.error('Please fill all fields');
+                                }
+                              }}
+                              style={{ fontSize: '0.8rem', padding: '0.4rem 0.8rem' }}
+                            >
+                              Save
+                            </button>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+                </div>
+                
+                <div style={{ display: 'flex', gap: '0.5rem' }}>
+                  <button 
+                    className="btn btn-secondary btn-sm"
+                    onClick={() => handleManageAvailability(worker)}
+                  >
+                    <Calendar size={14} /> Availability
+                  </button>
+                  {worker.telegram && (
+                    <button 
+                      className="btn btn-secondary btn-sm"
+                      onClick={() => handleSendTelegramMessage(worker)}
+                    >
+                      <MessageCircle size={14} /> Message
+                    </button>
+                  )}
+                </div>
+              </div>
                 >
                   <Trash2 size={14} /> Deactivate
                 </button>
