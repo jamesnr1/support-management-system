@@ -179,8 +179,8 @@ const ParticipantSchedule = ({
                 </div>
 
                 <div className="day-shifts">
-                  {/* Add Shift button when in edit mode */}
-                  {editMode && (
+                  {/* Add Shift button when in edit mode - ALWAYS VISIBLE */}
+                  {editMode ? (
                     <button 
                       className="btn btn-primary"
                       onClick={() => handleAddShift(date)}
@@ -199,7 +199,7 @@ const ParticipantSchedule = ({
                     >
                       <Plus size={16} /> Add Shift
                     </button>
-                  )}
+                  ) : null}
                   
                   {/* Show shift form only for the selected date */}
                   {showShiftForm && selectedDate === date && (
