@@ -46,7 +46,6 @@ body {
 .header {
   background: linear-gradient(135deg, var(--bg-secondary), var(--bg-tertiary));
   padding: 1rem 1.5rem;
-  border-bottom: 2px solid var(--accent-primary);
   position: fixed;
   top: 0;
   left: 0;
