@@ -20,19 +20,17 @@ const HoursTracker = (props) => {
         community: { used: 0, available: 56 }
       };
       
-      // Calculate hours from all weeks
-      ['weekA', 'weekB', 'nextA', 'nextB'].forEach(weekType => {
-        const weekData = rosterData[participant.code];
-        if (weekData) {
-          Object.values(weekData).forEach(dayShifts => {
-            dayShifts.forEach(shift => {
-              const duration = parseFloat(shift.duration) || 0;
-              if (shift.supportType === 'Community Access') {
-                hours[participant.code].community.used += duration;
-              } else {
-                hours[participant.code].selfCare.used += duration;
-              }
-            });
+      // Calculate hours from current roster data
+      const participantShifts = rosterData[participant.code] || {};
+      Object.values(participantShifts).forEach(dayShifts => {
+        if (Array.isArray(dayShifts)) {
+          dayShifts.forEach(shift => {
+            const duration = parseFloat(shift.duration) || 0;
+            if (shift.supportType === 'Community Access') {
+              hours[participant.code].community.used += duration;
+            } else {
+              hours[participant.code].selfCare.used += duration;
+            }
           });
         }
       });
