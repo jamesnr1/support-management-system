@@ -67,32 +67,6 @@ const WorkerManagement = ({ workers, locations, onWorkerUpdate }) => {
       toast.error(`Failed to deactivate worker: ${error.response?.data?.detail || error.message}`);
     }
   });
-    },
-    onSuccess: () => {
-      toast.success('Availability updated successfully');
-      queryClient.invalidateQueries(['availability', selectedWorker?.id]);
-    },
-    onError: (error) => {
-      toast.error(`Failed to update availability: ${error.response?.data?.detail || error.message}`);
-    }
-  });
-
-  // Add unavailability mutation
-  const addUnavailabilityMutation = useMutation({
-    mutationFn: async ({ workerId, unavailabilityData }) => {
-      const response = await axios.post(`${API}/workers/${workerId}/unavailability`, unavailabilityData);
-      return response.data;
-    },
-    onSuccess: () => {
-      toast.success('Unavailability period added successfully');
-      queryClient.invalidateQueries(['unavailability', selectedWorker?.id]);
-      setShowUnavailabilityModal(false);
-    },
-    onError: (error) => {
-      toast.error(`Failed to add unavailability: ${error.response?.data?.detail || error.message}`);
-    }
-  });
-
   const handleWorkerSubmit = (e) => {
     e.preventDefault();
     const formData = new FormData(e.target);
