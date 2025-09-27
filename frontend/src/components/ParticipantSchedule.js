@@ -229,20 +229,20 @@ const ParticipantSchedule = ({
                       </div>
 
                       {editMode && (
-                        <div style={{ display: 'flex', gap: '0.25rem' }}>
+                        <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
                           <button 
-                            className="btn btn-secondary btn-sm"
+                            className="btn btn-secondary"
                             onClick={() => handleEditShift(shift, date)}
-                            style={{ fontSize: '0.7rem', padding: '0.25rem 0.4rem' }}
+                            style={{ fontSize: '0.85rem', padding: '0.4rem 0.8rem' }}
                           >
-                            <Edit size={10} />
+                            <Edit size={14} /> Edit
                           </button>
                           <button 
-                            className="btn btn-danger btn-sm"
+                            className="btn btn-danger"
                             onClick={() => handleDeleteShift(index, date)}
-                            style={{ fontSize: '0.7rem', padding: '0.25rem 0.4rem' }}
+                            style={{ fontSize: '0.85rem', padding: '0.4rem 0.8rem' }}
                           >
-                            <Trash2 size={10} />
+                            <Trash2 size={14} /> Delete
                           </button>
                         </div>
                       )}
