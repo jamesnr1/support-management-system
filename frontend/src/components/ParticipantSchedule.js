@@ -170,11 +170,11 @@ const ParticipantSchedule = ({
                   </div>
                   {editMode && (
                     <button 
-                      className="btn btn-primary btn-sm"
+                      className="btn btn-primary"
                       onClick={() => handleAddShift(date)}
-                      style={{ marginTop: '0.5rem', fontSize: '0.8rem', padding: '0.25rem 0.5rem' }}
+                      style={{ marginTop: '0.5rem', fontSize: '1rem', padding: '0.5rem 1rem' }}
                     >
-                      <Plus size={12} /> Add
+                      <Plus size={16} /> Add Shift
                     </button>
                   )}
                 </div>
