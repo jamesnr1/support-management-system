@@ -199,37 +199,31 @@ const ParticipantSchedule = ({
                         /* Show normal shift display */
                         <div className="shift-row">
                           <div className="shift-info">
+                            {/* Line 1: Time and hours */}
                             <div className="shift-time">
                               {shift.startTime} - {shift.endTime} ({shift.duration || '0'}h)
-                              <span className="shift-type" style={{ marginLeft: '0.5rem' }}>{shift.supportType || 'Self-Care'}</span>
-                              <span className="shift-type" style={{ background: 'var(--accent-success)', marginLeft: '0.25rem' }}>
-                                {shift.ratio || '1:1'}
-                              </span>
-                              {shift.shiftNumber && (
-                                <span className="shift-type" style={{ background: 'var(--bg-tertiary)', color: 'var(--text-secondary)', marginLeft: '0.25rem' }}>
-                                  #{shift.shiftNumber}
-                                </span>
-                              )}
                             </div>
                             
-                            {(shift.workers?.length > 0 || shift.location || shift.notes) && (
+                            {/* Line 2: Shift type and ratio */}
+                            <div style={{ marginTop: '0.25rem' }}>
+                              <span className="shift-type">{shift.supportType || 'Self-Care'}</span>
+                              <span className="shift-type" style={{ background: 'var(--accent-success)', marginLeft: '0.5rem' }}>
+                                {shift.ratio || '1:1'}
+                              </span>
+                            </div>
+                            
+                            {/* Line 3: Workers with icon */}
+                            {shift.workers && shift.workers.length > 0 && (
                               <div className="shift-workers" style={{ marginTop: '0.25rem' }}>
-                                {shift.workers && shift.workers.length > 0 && (
-                                  <>
-                                    <Users size={14} style={{ marginRight: '0.25rem' }} />
-                                    {getWorkerNames(shift.workers)}
-                                  </>
-                                )}
-                                {shift.location && (
-                                  <span style={{ marginLeft: shift.workers?.length > 0 ? '0.5rem' : '0' }}>
-                                    📍 {getLocationName(shift.location)}
-                                  </span>
-                                )}
-                                {shift.notes && (
-                                  <span style={{ marginLeft: '0.5rem' }}>
-                                    💬 {shift.notes}
-                                  </span>
-                                )}
+                                <Users size={14} style={{ marginRight: '0.25rem' }} />
+                                {getWorkerNames(shift.workers)}
+                              </div>
+                            )}
+                            
+                            {/* Line 4: Notes */}
+                            {shift.notes && (
+                              <div className="shift-workers" style={{ marginTop: '0.25rem' }}>
+                                💬 {shift.notes}
                               </div>
                             )}
                           </div>
