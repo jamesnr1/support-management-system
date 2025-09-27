@@ -67,37 +67,6 @@ const WorkerManagement = ({ workers, locations, onWorkerUpdate }) => {
       toast.error(`Failed to deactivate worker: ${error.response?.data?.detail || error.message}`);
     }
   });
-
-  // Fetch worker availability
-  const { data: workerAvailability = [] } = useQuery({
-    queryKey: ['availability', selectedWorker?.id],
-    queryFn: async () => {
-      if (!selectedWorker) return [];
-      const response = await axios.get(`${API}/workers/${selectedWorker.id}/availability`);
-      return response.data;
-    },
-    enabled: !!selectedWorker
-  });
-
-  // Fetch worker unavailability
-  const { data: workerUnavailability = [] } = useQuery({
-    queryKey: ['unavailability', selectedWorker?.id],
-    queryFn: async () => {
-      if (!selectedWorker) return [];
-      const response = await axios.get(`${API}/workers/${selectedWorker.id}/unavailability`);
-      return response.data;
-    },
-    onError: (error) => {
-      console.error('Error fetching unavailability:', error);
-    },
-    enabled: !!selectedWorker
-  });
-
-  // Set availability mutation
-  const setAvailabilityMutation = useMutation({
-    mutationFn: async ({ workerId, availabilityData }) => {
-      const response = await axios.post(`${API}/workers/${workerId}/availability`, availabilityData);
-      return response.data;
     },
     onSuccess: () => {
       toast.success('Availability updated successfully');
