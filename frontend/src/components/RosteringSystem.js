@@ -184,9 +184,8 @@ const RosteringSystem = () => {
             </button>
             <button 
               className="btn btn-primary"
-              disabled
-              style={{ opacity: 0.5, cursor: 'not-allowed' }}
-              title="Available in next stage"
+              onClick={toggleHoursTracker}
+              title="View worker hours tracker"
             >
               ⏱️ Hours
             </button>
