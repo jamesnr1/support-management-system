@@ -99,23 +99,22 @@ const ParticipantSchedule = ({
     if (!newRosterData[participant.code]) {
       newRosterData[participant.code] = {};
     }
-    if (!newRosterData[participant.code][selectedDate]) {
-      newRosterData[participant.code][selectedDate] = [];
+    if (!newRosterData[participant.code][shiftData.date]) {
+      newRosterData[participant.code][shiftData.date] = [];
     }
 
     if (editingShift) {
       // Update existing shift
-      const shiftIndex = newRosterData[participant.code][selectedDate].findIndex(s => s.id === editingShift.id);
+      const shiftIndex = newRosterData[participant.code][shiftData.date].findIndex(s => s.id === editingShift.id);
       if (shiftIndex !== -1) {
-        newRosterData[participant.code][selectedDate][shiftIndex] = shiftData;
+        newRosterData[participant.code][shiftData.date][shiftIndex] = shiftData;
       }
     } else {
       // Add new shift
-      newRosterData[participant.code][selectedDate].push(shiftData);
+      newRosterData[participant.code][shiftData.date].push(shiftData);
     }
 
     onRosterUpdate(newRosterData);
-    setShowShiftForm(false);
     toast.success(`Shift ${editingShift ? 'updated' : 'created'} successfully`);
   };
 
