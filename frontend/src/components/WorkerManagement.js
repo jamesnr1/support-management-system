@@ -258,11 +258,9 @@ const WorkerManagement = ({ workers, locations, onWorkerUpdate }) => {
                   <div className="worker-details">
                     🚗 {worker.car || 'Not specified'} | 🎯 {worker.skills || 'None listed'}
                   </div>
-                  {worker.telegram && (
-                    <div className="worker-details" style={{ color: 'var(--accent-primary)' }}>
-                      📱 Telegram: {worker.telegram}
-                    </div>
-                  )}
+                  <div className="worker-details" style={{ color: 'var(--accent-primary)' }}>
+                    📱 Telegram: {worker.telegram || 'Not set'}
+                  </div>
                 </div>
               </div>
               
