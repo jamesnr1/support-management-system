@@ -171,20 +171,28 @@ const RosteringSystem = () => {
             rosterData={rosterData}
           />
         ) : (
-          <div>
-            {participants.map(participant => (
-              <ParticipantSchedule
-                key={participant.id}
-                participant={participant}
-                weekType={activeTab}
-                rosterData={rosterData}
-                workers={workers}
-                locations={locations}
-                editMode={editMode}
-                onRosterUpdate={handleRosterUpdate}
-              />
-            ))}
-          </div>
+          <>
+            {rosterLoading ? (
+              <div className="loading">
+                <div className="spinner"></div>
+                Loading roster data...
+              </div>
+            ) : (
+              participants.map(participant => (
+                <ParticipantSchedule
+                  key={participant.id}
+                  participant={participant}
+                  weekType={activeTab}
+                  rosterData={rosterData}
+                  workers={workers}
+                  locations={locations}
+                  editMode={editMode}
+                  onRosterUpdate={handleRosterUpdate}
+                />
+              ))
+            )}
+          </>
+        )}
           </div>
         )}
       </div>
