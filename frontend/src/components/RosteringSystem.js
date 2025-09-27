@@ -190,6 +190,12 @@ const RosteringSystem = () => {
         <div className="header-top">
           <div>
             <h1 className="header-title">🏠 Support Management System</h1>
+            {(workersLoading || locationsLoading) && (
+              <div style={{ fontSize: '12px', color: 'var(--text-muted)', marginTop: '4px' }}>
+                {workersLoading && 'Loading workers... '}
+                {locationsLoading && 'Loading locations... '}
+              </div>
+            )}
           </div>
           <div className="header-controls">
             {activeTab !== 'admin' && (
