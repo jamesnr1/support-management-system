@@ -212,17 +212,18 @@ const RosteringSystem = () => {
 
       {/* Content Area */}
       <div className="tab-content">
-        {activeTab === 'admin' ? (
-          <WorkerManagement 
-            workers={workers}
-            locations={locations}
-            onWorkerUpdate={() => queryClient.invalidateQueries(['workers'])}
-          />
-        ) : activeTab === 'hours' ? (
+        {showHoursTracker ? (
           <HoursTracker 
             participants={participants}
             workers={workers}
             rosterData={rosterData}
+            onClose={toggleHoursTracker}
+          />
+        ) : activeTab === 'admin' ? (
+          <WorkerManagement 
+            workers={workers}
+            locations={locations}
+            onWorkerUpdate={() => queryClient.invalidateQueries(['workers'])}
           />
         ) : (
           <>
