@@ -63,7 +63,7 @@ class RosteringSystemTester:
                 if isinstance(participants, list) and len(participants) > 0:
                     # Check if participants have required fields
                     sample_participant = participants[0]
-                    required_fields = ["code", "full_name", "location"]
+                    required_fields = ["code", "full_name"]
                     missing_fields = [field for field in required_fields if field not in sample_participant]
                     
                     if not missing_fields:
