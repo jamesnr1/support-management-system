@@ -189,16 +189,19 @@ const ParticipantSchedule = ({
                 </div>
 
                 <div className="day-shifts">
-                  {dayShifts.length === 0 && !showShiftForm ? (
-                    <div style={{ 
-                      color: 'var(--text-muted)', 
-                      fontStyle: 'italic', 
-                      padding: '1rem',
-                      textAlign: 'center' 
-                    }}>
-                      No shifts scheduled
-                    </div>
-                  ) : null}
+                  {/* Always show shift form in edit mode */}
+                  {editMode && (
+                    <ShiftForm
+                      participant={participant}
+                      date={date}
+                      editingShift={null}
+                      workers={workers}
+                      locations={locations}
+                      onSave={handleShiftSave}
+                      onCancel={() => {}} // No cancel since always in edit mode
+                      existingShifts={dayShifts}
+                    />
+                  )}
                   
                   {/* Existing shifts */}
                   {dayShifts.map((shift, index) => (
@@ -268,18 +271,16 @@ const ParticipantSchedule = ({
                     </div>
                   ))}
 
-                  {/* Inline shift form - appears exactly where Add button is */}
-                  {showShiftForm && selectedDate === date && (
-                    <ShiftForm
-                      participant={participant}
-                      date={selectedDate}
-                      editingShift={editingShift}
-                      workers={workers}
-                      locations={locations}
-                      onSave={handleShiftSave}
-                      onCancel={handleShiftCancel}
-                      existingShifts={dayShifts}
-                    />
+                  {/* Show "No shifts" only if not in edit mode and no shifts exist */}
+                  {!editMode && dayShifts.length === 0 && (
+                    <div style={{ 
+                      color: 'var(--text-muted)', 
+                      fontStyle: 'italic', 
+                      padding: '1rem',
+                      textAlign: 'center' 
+                    }}>
+                      No shifts scheduled
+                    </div>
                   )}
                 </div>
               </div>
