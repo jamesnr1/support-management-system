@@ -126,13 +126,26 @@ const RosteringSystem = () => {
             <button 
               className="btn btn-primary"
               onClick={copyToTemplate}
+              disabled
+              style={{ opacity: 0.5, cursor: 'not-allowed' }}
+              title="Available in next stage"
             >
               📋 Copy to Template
             </button>
-            <button className="btn btn-primary">
+            <button 
+              className="btn btn-primary"
+              disabled
+              style={{ opacity: 0.5, cursor: 'not-allowed' }}
+              title="Available in next stage"
+            >
               💰 Export
             </button>
-            <button className="btn btn-primary">
+            <button 
+              className="btn btn-primary"
+              disabled
+              style={{ opacity: 0.5, cursor: 'not-allowed' }}
+              title="Available in next stage"
+            >
               ⏱️ Hours
             </button>
           </div>
