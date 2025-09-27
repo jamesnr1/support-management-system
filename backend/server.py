@@ -195,6 +195,20 @@ async def init_sample_data():
         existing = await db.workers.find_one({"_id": worker["_id"]})
         if not existing:
             await db.workers.insert_one(worker)
+    
+    # Add participants
+    participants_data = [
+        {"code": "LIB001", "full_name": "Libby", "location": "loc1", "default_ratio": "2:1", "_id": str(uuid.uuid4())},
+        {"code": "JAM001", "full_name": "James", "location": "loc2", "default_ratio": "2:1", "_id": str(uuid.uuid4())},
+        {"code": "ACE001", "full_name": "Ace", "location": "loc1", "default_ratio": "1:1", "_id": str(uuid.uuid4())},
+        {"code": "GRA001", "full_name": "Grace", "location": "loc1", "default_ratio": "1:1", "_id": str(uuid.uuid4())},
+        {"code": "MIL001", "full_name": "Milan", "location": "loc1", "default_ratio": "1:1", "_id": str(uuid.uuid4())}
+    ]
+    
+    for participant in participants_data:
+        existing = await db.participants.find_one({"code": participant["code"]})
+        if not existing:
+            await db.participants.insert_one(participant)
 
 async def load_participants():
     """Load participants from database"""
