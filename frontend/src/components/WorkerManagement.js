@@ -348,7 +348,7 @@ const WorkerManagement = ({ workers = [], locations = [], onWorkerUpdate }) => {
       {/* Availability Modal */}
       {showAvailabilityModal && selectedWorker && (
         <div className="modal-overlay" onClick={() => setShowAvailabilityModal(false)}>
-          <div className="modal-content" onClick={(e) => e.stopPropagation()} style={{ width: '600px' }}>
+          <div className="modal-content" onClick={(e) => e.stopPropagation()} style={{ width: '800px', maxWidth: '90vw' }}>
             <div className="modal-header">
               <h3>Availability - {selectedWorker.full_name}</h3>
               <button 
@@ -401,6 +401,81 @@ const WorkerManagement = ({ workers = [], locations = [], onWorkerUpdate }) => {
                       </div>
                     </div>
                   ))}
+                </div>
+              </div>
+              
+              {/* Unavailable periods section - INSIDE the availability modal */}
+              <div style={{ marginBottom: '1.5rem', borderTop: '1px solid var(--border-color)', paddingTop: '1rem' }}>
+                <h4 style={{ marginBottom: '1rem', color: 'var(--accent-primary)' }}>Set Unavailable Period</h4>
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 2fr 1fr', gap: '1rem', alignItems: 'end' }}>
+                  <div>
+                    <label style={{ fontSize: '0.9rem', color: 'var(--text-secondary)', display: 'block', marginBottom: '0.5rem' }}>From Date</label>
+                    <input
+                      type="date"
+                      value={unavailabilityData.from}
+                      onChange={(e) => setUnavailabilityData(prev => ({ ...prev, from: e.target.value }))}
+                      style={{
+                        padding: '0.5rem',
+                        borderRadius: '4px',
+                        border: '1px solid var(--border-color)',
+                        background: 'var(--bg-input)',
+                        color: 'var(--text-primary)',
+                        fontSize: '0.9rem',
+                        width: '100%'
+                      }}
+                    />
+                  </div>
+                  <div>
+                    <label style={{ fontSize: '0.9rem', color: 'var(--text-secondary)', display: 'block', marginBottom: '0.5rem' }}>To Date</label>
+                    <input
+                      type="date"
+                      value={unavailabilityData.to}
+                      onChange={(e) => setUnavailabilityData(prev => ({ ...prev, to: e.target.value }))}
+                      style={{
+                        padding: '0.5rem',
+                        borderRadius: '4px',
+                        border: '1px solid var(--border-color)',
+                        background: 'var(--bg-input)',
+                        color: 'var(--text-primary)',
+                        fontSize: '0.9rem',
+                        width: '100%'
+                      }}
+                    />
+                  </div>
+                  <div>
+                    <label style={{ fontSize: '0.9rem', color: 'var(--text-secondary)', display: 'block', marginBottom: '0.5rem' }}>Reason</label>
+                    <input
+                      type="text"
+                      placeholder="Enter reason..."
+                      value={unavailabilityData.reason}
+                      onChange={(e) => setUnavailabilityData(prev => ({ ...prev, reason: e.target.value }))}
+                      style={{
+                        padding: '0.5rem',
+                        borderRadius: '4px',
+                        border: '1px solid var(--border-color)',
+                        background: 'var(--bg-input)',
+                        color: 'var(--text-primary)',
+                        fontSize: '0.9rem',
+                        width: '100%'
+                      }}
+                    />
+                  </div>
+                  <div>
+                    <button
+                      className="btn btn-success"
+                      onClick={() => {
+                        if (unavailabilityData.from && unavailabilityData.to && unavailabilityData.reason) {
+                          toast.success(`${selectedWorker.full_name} unavailable from ${unavailabilityData.from} to ${unavailabilityData.to}: ${unavailabilityData.reason}`);
+                          setUnavailabilityData({ from: '', to: '', reason: '' });
+                        } else {
+                          toast.error('Please fill all fields');
+                        }
+                      }}
+                      style={{ padding: '0.5rem 1rem' }}
+                    >
+                      Save Unavailable
+                    </button>
+                  </div>
                 </div>
               </div>
               
