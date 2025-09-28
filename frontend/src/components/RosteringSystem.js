@@ -151,33 +151,46 @@ const RosteringSystem = () => {
     }
   };
 
-  // Template copying function - Actually fetch and copy Week A/B data
+  // Template copying function - Debug and fix
   const copyToTemplate = async () => {
     if (window.confirm('Copy Week A and Week B schedules to Next A and Next B?')) {
       try {
+        console.log('Starting copy template process...');
+        
         // Fetch Week A and Week B data separately
+        console.log('Fetching Week A data...');
         const weekAResponse = await axios.get(`${API}/roster/weekA`);
+        console.log('Week A response:', weekAResponse.data);
+        
+        console.log('Fetching Week B data...');
         const weekBResponse = await axios.get(`${API}/roster/weekB`);
+        console.log('Week B response:', weekBResponse.data);
         
         const weekAData = weekAResponse.data;
         const weekBData = weekBResponse.data;
         
-        console.log('Week A data:', weekAData);
-        console.log('Week B data:', weekBData);
-        
-        // Post the data to Next A and Next B
-        await axios.post(`${API}/roster/nextA`, weekAData);
-        await axios.post(`${API}/roster/nextB`, weekBData);
-        
-        // Refresh the current view if we're on Next A or Next B
-        if (activeTab === 'nextA' || activeTab === 'nextB') {
-          queryClient.invalidateQueries(['roster', activeTab]);
+        // Check if there's data to copy
+        if (Object.keys(weekAData).length === 0 && Object.keys(weekBData).length === 0) {
+          toast.error('No data found in Week A or Week B to copy');
+          return;
         }
         
-        toast.success('Templates copied successfully! Week A→Next A, Week B→Next B');
+        console.log('Posting Week A data to Next A...');
+        await axios.post(`${API}/roster/nextA`, weekAData);
+        console.log('Posted to Next A successfully');
+        
+        console.log('Posting Week B data to Next B...');
+        await axios.post(`${API}/roster/nextB`, weekBData);
+        console.log('Posted to Next B successfully');
+        
+        // Refresh the current view
+        queryClient.invalidateQueries(['roster']);
+        
+        toast.success(`Templates copied! Week A (${Object.keys(weekAData).length} participants) → Next A, Week B (${Object.keys(weekBData).length} participants) → Next B`);
       } catch (error) {
-        console.error('Copy error:', error);
-        toast.error('Failed to copy templates: ' + error.message);
+        console.error('Copy template error:', error);
+        console.error('Error response:', error.response?.data);
+        toast.error('Failed to copy templates: ' + (error.response?.data?.detail || error.message));
       }
     }
   };
