@@ -1,74 +1,54 @@
 {
   "weekA": {
     "shifts": {
-      "monday": {
+      "friday": {
         "morning": {
           "participants": [
-            "LIB001",
-            "ACE001"
+            "LIB001"
           ],
           "workers": [
-            "GAU001",
-            "VER001"
+            "GAU001"
           ],
           "location": "Glandore",
-          "hours": 6,
-          "startTime": "09:00",
-          "endTime": "15:00"
-        }
-      },
-      "tuesday": {
-        "afternoon": {
-          "participants": [
-            "JAM001"
-          ],
-          "workers": [
-            "SAN001",
-            "KRU001"
-          ],
-          "location": "Plympton Park",
-          "hours": 4,
-          "startTime": "13:00",
-          "endTime": "17:00"
+          "hours": 3
         }
       }
     },
-    "updated_at": "2024-01-15T10:00:00Z"
+    "consistency_test": true,
+    "updated_at": "2024-01-15T13:00:00Z"
   },
   "weekB": {
     "shifts": {
       "wednesday": {
         "morning": {
           "participants": [
-            "MIL001",
-            "GRA001"
+            "MIL001"
           ],
           "workers": [
             "MIH001",
-            "CHA001"
+            "GAU001"
           ],
           "location": "Glandore",
-          "hours": 5,
-          "startTime": "08:00",
-          "endTime": "13:00"
+          "hours": 4
         }
       },
       "thursday": {
         "afternoon": {
           "participants": [
-            "LIB001"
+            "LIB001",
+            "JAM001"
           ],
           "workers": [
+            "VER001",
             "HAP001",
-            "MEE001"
+            "SAN001"
           ],
           "location": "Plympton Park",
-          "hours": 6,
-          "startTime": "12:00",
-          "endTime": "18:00"
+          "hours": 6
         }
       }
     },
+    "template_source": "weekB",
     "updated_at": "2024-01-15T10:00:00Z"
   },
   "nextA": {
@@ -81,15 +61,12 @@
           ],
           "workers": [
             "GAU001",
-            "VER001"
+            "VER001",
+            "HAP001"
           ],
           "location": "Glandore",
-          "hours": 6,
-          "startTime": "09:00",
-          "endTime": "15:00"
-        }
-      },
-      "tuesday": {
+          "hours": 6
+        },
         "afternoon": {
           "participants": [
             "JAM001"
@@ -99,14 +76,25 @@
             "KRU001"
           ],
           "location": "Plympton Park",
-          "hours": 4,
-          "startTime": "13:00",
-          "endTime": "17:00"
+          "hours": 4
+        }
+      },
+      "tuesday": {
+        "morning": {
+          "participants": [
+            "GRA001"
+          ],
+          "workers": [
+            "CHA001",
+            "MEE001"
+          ],
+          "location": "Glandore",
+          "hours": 5
         }
       }
     },
-    "updated_at": "2024-01-15T10:00:00Z",
     "template_source": "weekA",
+    "updated_at": "2024-01-15T10:00:00Z",
     "copied_at": "2024-01-15T11:00:00Z"
   },
   "nextB": {
@@ -114,37 +102,34 @@
       "wednesday": {
         "morning": {
           "participants": [
-            "MIL001",
-            "GRA001"
+            "MIL001"
           ],
           "workers": [
             "MIH001",
-            "CHA001"
+            "GAU001"
           ],
           "location": "Glandore",
-          "hours": 5,
-          "startTime": "08:00",
-          "endTime": "13:00"
+          "hours": 4
         }
       },
       "thursday": {
         "afternoon": {
           "participants": [
-            "LIB001"
+            "LIB001",
+            "JAM001"
           ],
           "workers": [
+            "VER001",
             "HAP001",
-            "MEE001"
+            "SAN001"
           ],
           "location": "Plympton Park",
-          "hours": 6,
-          "startTime": "12:00",
-          "endTime": "18:00"
+          "hours": 6
         }
       }
     },
-    "updated_at": "2024-01-15T10:00:00Z",
     "template_source": "weekB",
+    "updated_at": "2024-01-15T10:00:00Z",
     "copied_at": "2024-01-15T11:00:00Z"
   },
   "admin": {}
