@@ -442,7 +442,17 @@ select:focus, input:focus, textarea:focus {
 .form-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 1rem;
+  gap: 1.5rem;
+  align-items: start;
+}
+
+.form-grid .form-group input,
+.form-grid .form-group select,
+.form-grid .form-group textarea {
+  width: 100%;
+  max-width: 250px;
+  padding: 0.75rem;
+  font-size: 0.9rem;
 }
 
 .form-label {
