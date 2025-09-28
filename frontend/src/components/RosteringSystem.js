@@ -151,30 +151,36 @@ const RosteringSystem = () => {
     }
   };
 
-  // Template copying function - Actually working version
+  // Template copying function - Fixed version
   const copyToTemplate = async () => {
-    if (window.confirm('Copy Week A and Week B schedules to Next A and Next B?')) {
-      try {
-        // Fetch Week A and Week B data
-        const weekAResponse = await axios.get(`${API}/roster/weekA`);
-        const weekBResponse = await axios.get(`${API}/roster/weekB`);
-        
-        const weekAData = weekAResponse.data || {};
-        const weekBData = weekBResponse.data || {};
-        
-        // Post data to Next A and Next B
-        await axios.post(`${API}/roster/nextA`, weekAData);
-        await axios.post(`${API}/roster/nextB`, weekBData);
-        
-        // Refresh queries
-        queryClient.invalidateQueries(['roster']);
-        
-        toast.success(`Templates copied! Week A → Next A, Week B → Next B`);
-        
-      } catch (error) {
-        console.error('Copy template error:', error);
-        toast.error(`Failed to copy templates: ${error.message}`);
+    try {
+      if (!window.confirm('Copy Week A and Week B schedules to Next A and Next B?')) {
+        return;
       }
+      
+      // Fetch Week A and Week B data
+      const [weekAResponse, weekBResponse] = await Promise.all([
+        axios.get(`${API}/roster/weekA`),
+        axios.get(`${API}/roster/weekB`)
+      ]);
+      
+      const weekAData = weekAResponse.data || {};
+      const weekBData = weekBResponse.data || {};
+      
+      // Post data to Next A and Next B
+      await Promise.all([
+        axios.post(`${API}/roster/nextA`, weekAData),
+        axios.post(`${API}/roster/nextB`, weekBData)
+      ]);
+      
+      // Refresh the roster data
+      queryClient.invalidateQueries(['roster']);
+      
+      toast.success(`Copy completed! Week A → Next A, Week B → Next B`);
+      
+    } catch (error) {
+      console.error('Copy template error:', error);
+      toast.error('Failed to copy templates: ' + (error.message || 'Unknown error'));
     }
   };
 
