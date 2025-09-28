@@ -90,7 +90,7 @@ const ParticipantSchedule = ({
 
     console.log('New roster data after save:', newRosterData);
     onRosterUpdate(newRosterData);
-    toast.success(`Shift ${editingShift ? 'updated' : 'created'} successfully`);
+    // Removed shift notifications - user only wants Copy Template notifications
   };
 
   const handleShiftCancel = () => {
