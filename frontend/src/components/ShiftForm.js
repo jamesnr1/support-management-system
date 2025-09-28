@@ -139,7 +139,7 @@ const ShiftForm = ({
       alignItems: 'center',
       gap: '0.8rem'
     }}>
-      <form onSubmit={handleSubmit} style={{ display: 'flex', alignItems: 'center', gap: '0.8rem', width: '100%' }}>
+      <form onSubmit={handleSubmit} style={{ display: 'flex', alignItems: 'center', gap: '0.8rem', width: '100%', maxWidth: '95%' }}>
         
         {/* Time - FIRST as requested */}
         <select 
