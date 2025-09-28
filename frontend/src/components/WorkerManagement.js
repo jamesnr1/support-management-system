@@ -220,7 +220,7 @@ const WorkerManagement = ({ workers = [], locations = [], onWorkerUpdate }) => {
                       )}
                     </div>
                     
-                    {/* Availability form - shown when availability is clicked */}
+                    {/* Availability functionality - when availability button is clicked */}
                     {showUnavailability[worker.id] && (
                       <div className="unavailability-form" style={{ 
                         background: 'var(--bg-input)', 
@@ -228,61 +228,32 @@ const WorkerManagement = ({ workers = [], locations = [], onWorkerUpdate }) => {
                         borderRadius: '4px',
                         marginTop: '0.5rem'
                       }}>
+                        {/* Weekly availability schedule */}
                         <div style={{ marginBottom: '1rem' }}>
-                          <div style={{ marginBottom: '0.5rem', fontSize: '0.9rem', color: 'var(--text-primary)' }}>
-                            Worker Availability Management
-                          </div>
-                          <div style={{ fontSize: '0.8rem', color: 'var(--text-secondary)' }}>
-                            Current availability: Available (no restrictions set)
+                          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', gap: '0.5rem', fontSize: '0.8rem' }}>
+                            {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map(day => (
+                              <div key={day} style={{ textAlign: 'center', color: 'var(--text-secondary)' }}>
+                                <div style={{ marginBottom: '0.25rem' }}>{day}</div>
+                                <input type="checkbox" defaultChecked style={{ marginBottom: '0.25rem' }} />
+                                <div style={{ fontSize: '0.7rem' }}>
+                                  <input type="time" defaultValue="09:00" style={{ width: '60px', fontSize: '0.7rem', padding: '2px' }} />
+                                  <div>to</div>
+                                  <input type="time" defaultValue="17:00" style={{ width: '60px', fontSize: '0.7rem', padding: '2px' }} />
+                                </div>
+                              </div>
+                            ))}
                           </div>
                         </div>
                         
-                        <div style={{ marginBottom: '0.5rem', fontSize: '0.9rem', color: 'var(--text-primary)', borderTop: '1px solid var(--border-color)', paddingTop: '0.5rem' }}>
-                          Set Unavailable Period
-                        </div>
-                        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 3fr', gap: '0.5rem', alignItems: 'end' }}>
-                          <div>
-                            <label style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', display: 'block' }}>From</label>
-                            <input
-                              type="date"
-                              value={unavailabilityData.from}
-                              onChange={(e) => setUnavailabilityData(prev => ({ ...prev, from: e.target.value }))}
-                              style={{
-                                padding: '0.4rem',
-                                borderRadius: '4px',
-                                border: '1px solid var(--border-color)',
-                                background: 'var(--bg-secondary)',
-                                color: 'var(--text-primary)',
-                                fontSize: '0.8rem',
-                                width: '100%'
-                              }}
-                            />
-                          </div>
-                          <div>
-                            <label style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', display: 'block' }}>To</label>
-                            <input
-                              type="date"
-                              value={unavailabilityData.to}
-                              onChange={(e) => setUnavailabilityData(prev => ({ ...prev, to: e.target.value }))}
-                              style={{
-                                padding: '0.4rem',
-                                borderRadius: '4px',
-                                border: '1px solid var(--border-color)',
-                                background: 'var(--bg-secondary)',
-                                color: 'var(--text-primary)',
-                                fontSize: '0.8rem',
-                                width: '100%'
-                              }}
-                            />
-                          </div>
-                          <div>
-                            <label style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', display: 'block' }}>Reason</label>
-                            <div style={{ display: 'flex', gap: '0.5rem' }}>
+                        {/* Set unavailable period at bottom */}
+                        <div style={{ borderTop: '1px solid var(--border-color)', paddingTop: '0.5rem' }}>
+                          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 2fr', gap: '0.5rem', alignItems: 'end' }}>
+                            <div>
+                              <label style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', display: 'block' }}>From</label>
                               <input
-                                type="text"
-                                placeholder="Enter reason..."
-                                value={unavailabilityData.reason}
-                                onChange={(e) => setUnavailabilityData(prev => ({ ...prev, reason: e.target.value }))}
+                                type="date"
+                                value={unavailabilityData.from}
+                                onChange={(e) => setUnavailabilityData(prev => ({ ...prev, from: e.target.value }))}
                                 style={{
                                   padding: '0.4rem',
                                   borderRadius: '4px',
@@ -290,23 +261,60 @@ const WorkerManagement = ({ workers = [], locations = [], onWorkerUpdate }) => {
                                   background: 'var(--bg-secondary)',
                                   color: 'var(--text-primary)',
                                   fontSize: '0.8rem',
-                                  width: '150px'
+                                  width: '100%'
                                 }}
                               />
-                              <button
-                                className="btn btn-success btn-sm"
-                                onClick={() => handleUnavailabilitySubmit(worker.id)}
-                                style={{ fontSize: '0.8rem', padding: '0.4rem 0.8rem' }}
-                              >
-                                Save
-                              </button>
-                              <button
-                                className="btn btn-secondary btn-sm"
-                                onClick={() => setShowUnavailability(prev => ({ ...prev, [worker.id]: false }))}
-                                style={{ fontSize: '0.8rem', padding: '0.4rem 0.8rem' }}
-                              >
-                                Cancel
-                              </button>
+                            </div>
+                            <div>
+                              <label style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', display: 'block' }}>To</label>
+                              <input
+                                type="date"
+                                value={unavailabilityData.to}
+                                onChange={(e) => setUnavailabilityData(prev => ({ ...prev, to: e.target.value }))}
+                                style={{
+                                  padding: '0.4rem',
+                                  borderRadius: '4px',
+                                  border: '1px solid var(--border-color)',
+                                  background: 'var(--bg-secondary)',
+                                  color: 'var(--text-primary)',
+                                  fontSize: '0.8rem',
+                                  width: '100%'
+                                }}
+                              />
+                            </div>
+                            <div>
+                              <label style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', display: 'block' }}>Reason</label>
+                              <div style={{ display: 'flex', gap: '0.5rem' }}>
+                                <input
+                                  type="text"
+                                  placeholder="Enter reason..."
+                                  value={unavailabilityData.reason}
+                                  onChange={(e) => setUnavailabilityData(prev => ({ ...prev, reason: e.target.value }))}
+                                  style={{
+                                    padding: '0.4rem',
+                                    borderRadius: '4px',
+                                    border: '1px solid var(--border-color)',
+                                    background: 'var(--bg-secondary)',
+                                    color: 'var(--text-primary)',
+                                    fontSize: '0.8rem',
+                                    width: '120px'
+                                  }}
+                                />
+                                <button
+                                  className="btn btn-success btn-sm"
+                                  onClick={() => handleUnavailabilitySubmit(worker.id)}
+                                  style={{ fontSize: '0.8rem', padding: '0.4rem 0.8rem' }}
+                                >
+                                  Save
+                                </button>
+                                <button
+                                  className="btn btn-secondary btn-sm"
+                                  onClick={() => setShowUnavailability(prev => ({ ...prev, [worker.id]: false }))}
+                                  style={{ fontSize: '0.8rem', padding: '0.4rem 0.8rem' }}
+                                >
+                                  Close
+                                </button>
+                              </div>
                             </div>
                           </div>
                         </div>
