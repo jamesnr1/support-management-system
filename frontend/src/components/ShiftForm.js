@@ -99,6 +99,13 @@ const ShiftForm = ({
       alert('End time must be after start time');
       return;
     }
+    
+    // Check if at least one support worker is selected
+    const hasWorkers = formData.workers && formData.workers.some(worker => worker && worker.trim() !== '');
+    if (!hasWorkers) {
+      alert('Please select at least one support worker');
+      return;
+    }
 
     // Ensure all data is properly structured
     const shiftData = {
