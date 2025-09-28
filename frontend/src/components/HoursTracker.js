@@ -285,9 +285,6 @@ const HoursTracker = (props) => {
                 fontSize: '0.9rem'
               }}
             />
-            <div style={{ fontSize: '0.8rem', color: 'var(--text-muted)', marginTop: '0.25rem' }}>
-              Format: ParticipantCode,SCWD,SCWE,SCWN,SCSat,SCSun,SCPH,CPWD,CPWE,CPSat,CPSun,CPPH
-            </div>
           </div>
           
           <div style={{ alignSelf: 'end' }}>
