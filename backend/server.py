@@ -161,17 +161,13 @@ async def get_roster(week_type: str):
 async def update_roster(week_type: str, roster_data: Dict[str, Any]):
     """Update roster for specific week type in database"""
     try:
-        # Save to database
-        db.save_roster_data(week_type, roster_data)
-        # Also update memory cache
+        # Use memory storage only for now
         ROSTER_DATA[week_type] = roster_data
         logger.info(f"Updated roster {week_type} with {len(roster_data)} participants")
         return {"message": f"Roster {week_type} updated successfully"}
     except Exception as e:
         logger.error(f"Error updating roster {week_type}: {e}")
-        # Fallback to memory only
-        ROSTER_DATA[week_type] = roster_data
-        return {"message": f"Roster {week_type} updated successfully (memory only)"}
+        return {"message": f"Error updating roster {week_type}"}
 
 # Location Routes
 @api_router.get("/locations")
