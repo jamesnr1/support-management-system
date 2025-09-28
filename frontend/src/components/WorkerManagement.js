@@ -9,6 +9,8 @@ const API = `${BACKEND_URL}/api`;
 
 const WorkerManagement = ({ workers = [], locations = [], onWorkerUpdate }) => {
   const [showWorkerModal, setShowWorkerModal] = useState(false);
+  const [showAvailabilityModal, setShowAvailabilityModal] = useState(false);
+  const [selectedWorker, setSelectedWorker] = useState(null);
   const [editingWorker, setEditingWorker] = useState(null);
   const [showUnavailability, setShowUnavailability] = useState({});
   const [unavailabilityData, setUnavailabilityData] = useState({
