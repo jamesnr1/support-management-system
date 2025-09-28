@@ -152,7 +152,10 @@ const WorkerManagement = ({ workers = [], locations = [], onWorkerUpdate }) => {
           <h3>Support Workers</h3>
           <button 
             className="btn btn-primary" 
-            onClick={() => setShowWorkerModal(true)}
+            onClick={() => {
+              setEditingWorker(null);  // Clear any existing worker data
+              setShowWorkerModal(true);
+            }}
           >
             <Plus size={16} /> Add Worker
           </button>
