@@ -334,7 +334,10 @@ const WorkerManagement = ({ workers = [], locations = [], onWorkerUpdate }) => {
                 <button 
                   type="button" 
                   className="btn btn-secondary"
-                  onClick={() => setShowWorkerModal(false)}
+                  onClick={() => {
+                    setShowWorkerModal(false);
+                    setEditingWorker(null);
+                  }}
                 >
                   Cancel
                 </button>
