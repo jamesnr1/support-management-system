@@ -196,54 +196,41 @@ const RosteringSystem = () => {
     }
   };
 
-  // Template copying function - Simple and working
+  // Template copying function - Fixed without page reload
   const copyToTemplate = async () => {
     try {
+      console.log('Copy Template started');
       if (!window.confirm('Copy Week A and Week B schedules to Next A and Next B?')) {
         return;
       }
       
-      // Show loading message
       toast.info('Copying templates...');
       
-      // Get current roster data from backend using direct curl equivalent
-      const weekAResponse = await fetch(`${import.meta.env.REACT_APP_BACKEND_URL}/api/roster/weekA`);
-      const weekBResponse = await fetch(`${import.meta.env.REACT_APP_BACKEND_URL}/api/roster/weekB`);
+      // Use axios with the existing API constant  
+      const weekAResponse = await axios.get(`${API}/roster/weekA`);
+      const weekBResponse = await axios.get(`${API}/roster/weekB`);
       
-      if (!weekAResponse.ok || !weekBResponse.ok) {
-        throw new Error('Failed to fetch roster data');
-      }
+      const weekAData = weekAResponse.data;
+      const weekBData = weekBResponse.data;
       
-      const weekAData = await weekAResponse.json();
-      const weekBData = await weekBResponse.json();
+      console.log('Fetched data:', { weekA: Object.keys(weekAData).length, weekB: Object.keys(weekBData).length });
       
       // Post to next weeks
-      const nextAResponse = await fetch(`${import.meta.env.REACT_APP_BACKEND_URL}/api/roster/nextA`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(weekAData)
-      });
+      await axios.post(`${API}/roster/nextA`, weekAData);
+      await axios.post(`${API}/roster/nextB`, weekBData);
       
-      const nextBResponse = await fetch(`${import.meta.env.REACT_APP_BACKEND_URL}/api/roster/nextB`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(weekBData)
-      });
+      // Invalidate all roster queries
+      queryClient.invalidateQueries(['roster']);
+      queryClient.invalidateQueries(['workers']);
+      queryClient.invalidateQueries(['participants']);
+      queryClient.invalidateQueries(['locations']);
       
-      if (!nextAResponse.ok || !nextBResponse.ok) {
-        throw new Error('Failed to copy data');
-      }
-      
-      toast.success('Copy completed successfully!');
-      
-      // Reload page to show updated data
-      setTimeout(() => {
-        window.location.reload();
-      }, 1000);
+      toast.success(`Copy completed! Week A (${Object.keys(weekAData).length} participants) → Next A, Week B (${Object.keys(weekBData).length} participants) → Next B`);
+      console.log('Copy Template completed successfully');
       
     } catch (error) {
       console.error('Copy error:', error);
-      toast.error('Copy failed: ' + error.message);
+      toast.error('Copy failed: ' + (error.response?.data?.message || error.message));
     }
   };
 
