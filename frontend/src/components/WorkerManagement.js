@@ -200,14 +200,12 @@ const WorkerManagement = ({ workers = [], locations = [], onWorkerUpdate }) => {
                     </button>
                   </div>
                   
-                  {/* Availability Section */}
+                  {/* Availability Section - no header text */}
                   <div style={{ marginBottom: '1rem' }}>
-                    <strong style={{ color: 'var(--text-primary)', fontSize: '0.9rem', display: 'block', marginBottom: '0.5rem' }}>Availability</strong>
-                    
                     <div style={{ display: 'flex', gap: '0.5rem', marginBottom: '0.5rem' }}>
                       <button 
                         className="btn btn-secondary btn-sm"
-                        onClick={() => toast.info(`Viewing availability for ${worker.full_name}`)}
+                        onClick={() => setShowUnavailability(prev => ({ ...prev, [worker.id]: !prev[worker.id] }))}
                       >
                         <Calendar size={14} /> Availability
                       </button>
@@ -221,14 +219,7 @@ const WorkerManagement = ({ workers = [], locations = [], onWorkerUpdate }) => {
                       )}
                     </div>
                     
-                    <button 
-                      className="btn btn-secondary btn-sm"
-                      onClick={() => setShowUnavailability(prev => ({ ...prev, [worker.id]: !prev[worker.id] }))}
-                    >
-                      {showUnavailability[worker.id] ? 'Cancel' : 'Set Unavailable'}
-                    </button>
-                    
-                    {/* Set Unavailability Form - appears under everything */}
+                    {/* Unavailability form - shown when availability is clicked */}
                     {showUnavailability[worker.id] && (
                       <div className="unavailability-form" style={{ 
                         background: 'var(--bg-input)', 
@@ -236,6 +227,9 @@ const WorkerManagement = ({ workers = [], locations = [], onWorkerUpdate }) => {
                         borderRadius: '4px',
                         marginTop: '0.5rem'
                       }}>
+                        <div style={{ marginBottom: '0.5rem', fontSize: '0.9rem', color: 'var(--text-primary)' }}>
+                          Set Unavailable Period
+                        </div>
                         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 2fr', gap: '0.5rem', alignItems: 'end' }}>
                           <div>
                             <label style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', display: 'block' }}>From</label>
@@ -295,6 +289,13 @@ const WorkerManagement = ({ workers = [], locations = [], onWorkerUpdate }) => {
                                 style={{ fontSize: '0.8rem', padding: '0.4rem 0.8rem' }}
                               >
                                 Save
+                              </button>
+                              <button
+                                className="btn btn-secondary btn-sm"
+                                onClick={() => setShowUnavailability(prev => ({ ...prev, [worker.id]: false }))}
+                                style={{ fontSize: '0.8rem', padding: '0.4rem 0.8rem' }}
+                              >
+                                Cancel
                               </button>
                             </div>
                           </div>
