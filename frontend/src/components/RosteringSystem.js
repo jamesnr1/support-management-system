@@ -109,10 +109,24 @@ const RosteringSystem = () => {
     updateRosterMutation.mutate({ weekType: activeTab, data });
   };
 
-  // Export functionality - CSV for shifts to support provider
+  // Export functionality - Two formats: Payroll and Shift Report
   const exportRoster = async () => {
     try {
-      let csvContent = "Participant,Date,Start Time,End Time,Duration,Support Type,Ratio,Workers,Location,Shift Number,Notes\n";
+      // Ask user which format they want
+      const exportType = window.confirm('Choose export format:\nOK = Payroll Export\nCancel = Shift Report Export');
+      
+      let csvContent = '';
+      let filename = '';
+      
+      if (exportType) {
+        // PAYROLL EXPORT FORMAT
+        csvContent = "Worker Name,Participant Name,Shift Date,Start Time,End Time,Total Hours,Location,Support Type,Support Ratio,Funding Code\n";
+        filename = `payroll_export_${new Date().toISOString().split('T')[0]}.csv`;
+      } else {
+        // SHIFT REPORT EXPORT FORMAT  
+        csvContent = "Shift ID,Shift Number,Shift Date,Start Time,End Time,Total Hours,Location,Support Workers,Participants,Support Type,Support Ratio,Shift Category,Status\n";
+        filename = `shift_report_${new Date().toISOString().split('T')[0]}.csv`;
+      }
       
       // Fetch all roster data
       for (const tab of ['weekA', 'weekB', 'nextA', 'nextB']) {
@@ -124,13 +138,45 @@ const RosteringSystem = () => {
           const participantName = participant ? participant.full_name : participantCode;
           
           Object.entries(participantData).forEach(([date, shifts]) => {
-            shifts.forEach(shift => {
+            shifts.forEach((shift, index) => {
               const workerNames = shift.workers ? 
                 shift.workers.map(id => workers.find(w => w.id === id)?.full_name || `Worker-${id}`).join('; ') : '';
               const locationName = shift.location ? 
                 locations.find(l => l.id === shift.location)?.name || `Location-${shift.location}` : '';
               
-              csvContent += `"${participantName}","${date}","${shift.startTime}","${shift.endTime}","${shift.duration || '0'}h","${shift.supportType || 'Self-Care'}","${shift.ratio || '1:1'}","${workerNames}","${locationName}","${shift.shiftNumber || ''}","${shift.notes || ''}"\n`;
+              // Calculate funding code based on time and day
+              const shiftDate = new Date(date);
+              const startTime = parseInt(shift.startTime?.split(':')[0] || '9');
+              const dayOfWeek = shiftDate.getDay();
+              
+              let fundingCode = '';
+              let shiftCategory = '';
+              
+              if (dayOfWeek === 6) { // Saturday
+                fundingCode = shift.supportType === 'Community Participation' ? 'CPSat' : 'SCSat';
+                shiftCategory = 'Saturday';
+              } else if (dayOfWeek === 0) { // Sunday
+                fundingCode = shift.supportType === 'Community Participation' ? 'CPSun' : 'SCSun';
+                shiftCategory = 'Sunday';
+              } else if (startTime >= 20 || startTime < 6) { // Night
+                fundingCode = shift.supportType === 'Community Participation' ? 'CPWN' : 'SCWN';
+                shiftCategory = 'Night';
+              } else if (startTime >= 18) { // Evening
+                fundingCode = shift.supportType === 'Community Participation' ? 'CPWE' : 'SCWE';
+                shiftCategory = 'Evening';
+              } else { // Weekday
+                fundingCode = shift.supportType === 'Community Participation' ? 'CPWD' : 'SCWD';
+                shiftCategory = 'Weekday';
+              }
+              
+              if (exportType) {
+                // PAYROLL FORMAT
+                csvContent += `"${workerNames}","${participantName}","${date}","${shift.startTime}","${shift.endTime}","${shift.duration || '0'}","${locationName}","${shift.supportType || 'Self-Care'}","${shift.ratio || '1:1'}","${fundingCode}"\n`;
+              } else {
+                // SHIFT REPORT FORMAT
+                const shiftId = `${participantCode}-${date}-${index}`;
+                csvContent += `"${shiftId}","${shift.shiftNumber || ''}","${date}","${shift.startTime}","${shift.endTime}","${shift.duration || '0'}","${locationName}","${workerNames}","${participantName}","${shift.supportType || 'Self-Care'}","${shift.ratio || '1:1'}","${shiftCategory}","Scheduled"\n`;
+              }
             });
           });
         });
@@ -141,11 +187,11 @@ const RosteringSystem = () => {
       const url = window.URL.createObjectURL(blob);
       const linkElement = document.createElement('a');
       linkElement.setAttribute('href', url);
-      linkElement.setAttribute('download', `roster_shifts_${new Date().toISOString().split('T')[0]}.csv`);
+      linkElement.setAttribute('download', filename);
       linkElement.click();
       window.URL.revokeObjectURL(url);
       
-      toast.success('Shift roster exported to CSV successfully');
+      toast.success(`${exportType ? 'Payroll' : 'Shift Report'} exported successfully`);
     } catch (error) {
       toast.error('Failed to export roster: ' + error.message);
     }
