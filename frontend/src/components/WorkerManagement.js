@@ -61,20 +61,10 @@ const WorkerManagement = ({ workers = [], locations = [], onWorkerUpdate }) => {
       return response.data;
     },
     onSuccess: () => {
-      console.log('Delete successful, calling onWorkerUpdate');
+      console.log('Delete successful, reloading page');
       toast.success('Worker deleted successfully');
-      // Force refresh workers data immediately
-      queryClient.invalidateQueries(['workers']);
-      queryClient.refetchQueries(['workers']);
-      queryClient.removeQueries(['workers']);
-      if (onWorkerUpdate) {
-        console.log('Calling onWorkerUpdate');
-        onWorkerUpdate();
-      } else {
-        console.log('onWorkerUpdate is undefined');
-      }
-      // Force a page reload as last resort
-      setTimeout(() => window.location.reload(), 1000);
+      // Just reload the page immediately to ensure the worker is gone
+      window.location.reload();
     },
     onError: (error) => {
       toast.error(`Failed to deactivate worker: ${error.response?.data?.detail || error.message}`);
