@@ -102,7 +102,8 @@ const WorkerManagement = ({ workers = [], locations = [], onWorkerUpdate }) => {
   };
 
   const handleManageAvailability = (worker) => {
-    toast.info(`Managing availability for ${worker.full_name}`);
+    // Actually manage availability - show weekly schedule form
+    setShowUnavailability(prev => ({ ...prev, [worker.id]: !prev[worker.id] }));
   };
 
   const handleSendTelegramMessage = (worker) => {
