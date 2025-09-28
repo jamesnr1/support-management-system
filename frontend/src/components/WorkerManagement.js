@@ -246,90 +246,103 @@ const WorkerManagement = ({ workers = [], locations = [], onWorkerUpdate }) => {
             </div>
             
             <form onSubmit={handleWorkerSubmit} style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '2rem', alignItems: 'start' }}>
-              <div className="form-grid">
-                <div className="form-group">
-                  <label>Worker Code</label>
-                  <input
-                    type="text"
-                    name="code"
-                    defaultValue={editingWorker?.code || ''}
-                    required
-                  />
-                </div>
-                
-                <div className="form-group">
-                  <label>Full Name</label>
-                  <input
-                    type="text"
-                    name="full_name"
-                    defaultValue={editingWorker?.full_name || ''}
-                    required
-                  />
-                </div>
-                
-                <div className="form-group">
-                  <label>Email</label>
-                  <input
-                    type="email"
-                    name="email"
-                    defaultValue={editingWorker?.email || ''}
-                  />
-                </div>
-                
-                <div className="form-group">
-                  <label>Phone</label>
-                  <input
-                    type="text"
-                    name="phone"
-                    defaultValue={editingWorker?.phone || ''}
-                  />
-                </div>
-                
-                <div className="form-group">
-                  <label>Max Hours</label>
-                  <input
-                    type="number"
-                    name="max_hours"
-                    defaultValue={editingWorker?.max_hours || ''}
-                  />
-                </div>
-                
-                <div className="form-group">
-                  <label>Car</label>
-                  <select name="car" defaultValue={editingWorker?.car || ''}>
-                    <option value="">Select...</option>
-                    <option value="Yes">Yes</option>
-                    <option value="No">No</option>
-                  </select>
-                </div>
-                
-                <div className="form-group">
-                  <label>Skills</label>
-                  <input
-                    type="text"
-                    name="skills"
-                    defaultValue={editingWorker?.skills || ''}
-                  />
-                </div>
-                
-                <div className="form-group">
-                  <label>Gender</label>
-                  <select name="sex" defaultValue={editingWorker?.sex || ''}>
-                    <option value="">Select...</option>
-                    <option value="M">Male</option>
-                    <option value="F">Female</option>
-                    <option value="O">Other</option>
-                  </select>
-                </div>
-                
-                <div className="form-group">
-                  <label>Telegram Number</label>
-                  <input
-                    type="number"
-                    name="telegram"
-                    defaultValue={editingWorker?.telegram || ''}
-                  />
-                </div>
+              <div className="form-group">
+                <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: '500' }}>Worker Code</label>
+                <input
+                  type="text"
+                  name="code"
+                  defaultValue={editingWorker?.code || ''}
+                  required
+                  style={{ width: '100%', padding: '0.75rem', borderRadius: '4px', border: '1px solid var(--border-color)', background: 'var(--bg-input)', color: 'var(--text-primary)' }}
+                />
+              </div>
+              
+              <div className="form-group">
+                <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: '500' }}>Full Name</label>
+                <input
+                  type="text"
+                  name="full_name"
+                  defaultValue={editingWorker?.full_name || ''}
+                  required
+                  style={{ width: '100%', padding: '0.75rem', borderRadius: '4px', border: '1px solid var(--border-color)', background: 'var(--bg-input)', color: 'var(--text-primary)' }}
+                />
+              </div>
+              
+              <div className="form-group">
+                <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: '500' }}>Email</label>
+                <input
+                  type="email"
+                  name="email"
+                  defaultValue={editingWorker?.email || ''}
+                  style={{ width: '100%', padding: '0.75rem', borderRadius: '4px', border: '1px solid var(--border-color)', background: 'var(--bg-input)', color: 'var(--text-primary)' }}
+                />
+              </div>
+              
+              <div className="form-group">
+                <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: '500' }}>Phone</label>
+                <input
+                  type="text"
+                  name="phone"
+                  defaultValue={editingWorker?.phone || ''}
+                  style={{ width: '100%', padding: '0.75rem', borderRadius: '4px', border: '1px solid var(--border-color)', background: 'var(--bg-input)', color: 'var(--text-primary)' }}
+                />
+              </div>
+              
+              <div className="form-group">
+                <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: '500' }}>Max Hours</label>
+                <input
+                  type="number"
+                  name="max_hours"
+                  defaultValue={editingWorker?.max_hours || ''}
+                  style={{ width: '100%', padding: '0.75rem', borderRadius: '4px', border: '1px solid var(--border-color)', background: 'var(--bg-input)', color: 'var(--text-primary)' }}
+                />
+              </div>
+              
+              <div className="form-group">
+                <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: '500' }}>Skills</label>
+                <input
+                  type="text"
+                  name="skills"
+                  defaultValue={editingWorker?.skills || ''}
+                  style={{ width: '100%', padding: '0.75rem', borderRadius: '4px', border: '1px solid var(--border-color)', background: 'var(--bg-input)', color: 'var(--text-primary)' }}
+                />
+              </div>
+              
+              <div className="form-group">
+                <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: '500' }}>Car</label>
+                <select 
+                  name="car" 
+                  defaultValue={editingWorker?.car || ''}
+                  style={{ width: '100%', padding: '0.75rem', borderRadius: '4px', border: '1px solid var(--border-color)', background: 'var(--bg-input)', color: 'var(--text-primary)' }}
+                >
+                  <option value="">Select...</option>
+                  <option value="Yes">Yes</option>
+                  <option value="No">No</option>
+                </select>
+              </div>
+              
+              <div className="form-group">
+                <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: '500' }}>Gender</label>
+                <select 
+                  name="sex" 
+                  defaultValue={editingWorker?.sex || ''}
+                  style={{ width: '100%', padding: '0.75rem', borderRadius: '4px', border: '1px solid var(--border-color)', background: 'var(--bg-input)', color: 'var(--text-primary)' }}
+                >
+                  <option value="">Select...</option>
+                  <option value="M">Male</option>
+                  <option value="F">Female</option>
+                  <option value="O">Other</option>
+                </select>
+              </div>
+              
+              <div className="form-group" style={{ gridColumn: 'span 2' }}>
+                <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: '500' }}>Telegram Number</label>
+                <input
+                  type="number"
+                  name="telegram"
+                  defaultValue={editingWorker?.telegram || ''}
+                  style={{ width: '100%', padding: '0.75rem', borderRadius: '4px', border: '1px solid var(--border-color)', background: 'var(--bg-input)', color: 'var(--text-primary)' }}
+                />
               </div>
               
               <div className="modal-actions">
