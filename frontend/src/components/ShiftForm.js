@@ -94,16 +94,12 @@ const ShiftForm = ({
   const handleSubmit = (e) => {
     e.preventDefault();
     
-    // Validation
+    // Debug form data
+    console.log('Form submitted with data:', formData);
+    
+    // Basic validation only
     if (formData.startTime >= formData.endTime) {
       alert('End time must be after start time');
-      return;
-    }
-    
-    // Check if at least one support worker is selected
-    const hasWorkers = formData.workers && formData.workers.some(worker => worker && worker.trim() !== '');
-    if (!hasWorkers) {
-      alert('Please select at least one support worker');
       return;
     }
 
