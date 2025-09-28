@@ -281,7 +281,7 @@ const ShiftForm = ({
         />
 
         {/* Save and Cancel buttons */}
-        <div style={{ display: 'flex', gap: '0.5rem', justifyContent: 'flex-start', alignItems: 'center', marginTop: '1rem' }}>
+        <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center', flexShrink: 0, minWidth: 'fit-content' }}>
           <button type="submit" className="btn btn-success" style={{ 
             padding: '0.5rem 1rem', 
             fontSize: '1rem',
@@ -291,12 +291,13 @@ const ShiftForm = ({
             color: 'white',
             display: 'inline-flex',
             alignItems: 'center',
-            gap: '0.25rem'
+            gap: '0.25rem',
+            whiteSpace: 'nowrap'
           }}>
             <Save size={16} />
           </button>
           
-          <button type="button" onClick={onCancel} className="btn-cancel-x">
+          <button type="button" onClick={onCancel} className="btn-cancel-x" style={{ flexShrink: 0 }}>
             ×
           </button>
         </div>
