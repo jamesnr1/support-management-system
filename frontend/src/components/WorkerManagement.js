@@ -203,8 +203,8 @@ const WorkerManagement = ({ workers = [], locations = [], onWorkerUpdate }) => {
                     </button>
                   </div>
                   
-                  {/* Clean availability section */}
-                  <div style={{ display: 'flex', gap: '0.5rem', marginBottom: '1rem' }}>
+                  {/* Only availability and message buttons */}
+                  <div style={{ display: 'flex', gap: '0.5rem' }}>
                     <button 
                       className="btn btn-secondary btn-sm"
                       onClick={() => handleManageAvailability(worker)}
@@ -220,90 +220,6 @@ const WorkerManagement = ({ workers = [], locations = [], onWorkerUpdate }) => {
                       </button>
                     )}
                   </div>
-                  
-                  {/* Set unavailable section at bottom */}
-                  <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center', marginTop: '0.5rem' }}>
-                    <button 
-                      className="btn btn-secondary btn-sm"
-                      onClick={() => setShowUnavailability(prev => ({ ...prev, [worker.id]: !prev[worker.id] }))}
-                    >
-                      {showUnavailability[worker.id] ? 'Cancel' : 'Set Unavailable'}
-                    </button>
-                  </div>
-                  
-                  {/* Unavailable form - inline when opened */}
-                  {showUnavailability[worker.id] && (
-                    <div className="unavailability-form" style={{ 
-                      background: 'var(--bg-input)', 
-                      padding: '0.8rem', 
-                      borderRadius: '4px',
-                      marginTop: '0.5rem'
-                    }}>
-                      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 2fr', gap: '0.5rem', alignItems: 'end' }}>
-                        <div>
-                          <label style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', display: 'block' }}>From</label>
-                          <input
-                            type="date"
-                            value={unavailabilityData.from}
-                            onChange={(e) => setUnavailabilityData(prev => ({ ...prev, from: e.target.value }))}
-                            style={{
-                              padding: '0.4rem',
-                              borderRadius: '4px',
-                              border: '1px solid var(--border-color)',
-                              background: 'var(--bg-secondary)',
-                              color: 'var(--text-primary)',
-                              fontSize: '0.8rem',
-                              width: '100%'
-                            }}
-                          />
-                        </div>
-                        <div>
-                          <label style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', display: 'block' }}>To</label>
-                          <input
-                            type="date"
-                            value={unavailabilityData.to}
-                            onChange={(e) => setUnavailabilityData(prev => ({ ...prev, to: e.target.value }))}
-                            style={{
-                              padding: '0.4rem',
-                              borderRadius: '4px',
-                              border: '1px solid var(--border-color)',
-                              background: 'var(--bg-secondary)',
-                              color: 'var(--text-primary)',
-                              fontSize: '0.8rem',
-                              width: '100%'
-                            }}
-                          />
-                        </div>
-                        <div>
-                          <label style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', display: 'block' }}>Reason</label>
-                          <div style={{ display: 'flex', gap: '0.5rem' }}>
-                            <input
-                              type="text"
-                              placeholder="Enter reason..."
-                              value={unavailabilityData.reason}
-                              onChange={(e) => setUnavailabilityData(prev => ({ ...prev, reason: e.target.value }))}
-                              style={{
-                                padding: '0.4rem',
-                                borderRadius: '4px',
-                                border: '1px solid var(--border-color)',
-                                background: 'var(--bg-secondary)',
-                                color: 'var(--text-primary)',
-                                fontSize: '0.8rem',
-                                width: '120px'
-                              }}
-                            />
-                            <button
-                              className="btn btn-success btn-sm"
-                              onClick={() => handleUnavailabilitySubmit(worker.id)}
-                              style={{ fontSize: '0.8rem', padding: '0.4rem 0.8rem' }}
-                            >
-                              Save
-                            </button>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  )}
                 </div>
               </div>
             ))}
