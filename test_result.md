@@ -181,6 +181,18 @@ frontend:
         agent: "main"
         comment: "Applied exact dark theme colors. Screenshot shows correct eye-friendly theme."
 
+  - task: "Admin worker card sizing and save button consolidation"
+    implemented: false
+    working: false
+    file: "/app/frontend/src/components/WorkerManagement.js"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+      - working: false
+        agent: "user"
+        comment: "USER FEEDBACK: Worker cards are too large and not compact. Save unavailable button is oversized. Need ONE save button instead of separate 'Save Availability' and 'Save Unavailable' buttons."
+
 metadata:
   created_by: "main_agent"
   version: "1.0"
