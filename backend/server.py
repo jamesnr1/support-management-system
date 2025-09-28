@@ -88,18 +88,47 @@ async def get_workers():
 
 @api_router.post("/workers", response_model=Worker)
 async def create_worker(worker: WorkerCreate):
-    """Create a new worker - TODO: Implement Supabase integration"""
-    raise HTTPException(status_code=501, detail="Create worker not implemented yet")
+    """Create a new worker in Supabase"""
+    try:
+        worker_data = worker.dict()
+        worker_data['status'] = 'Active'
+        
+        created_worker = db.create_support_worker(worker_data)
+        if created_worker:
+            return Worker(**created_worker)
+        else:
+            raise HTTPException(status_code=400, detail="Failed to create worker")
+    except Exception as e:
+        logger.error(f"Error creating worker: {e}")
+        raise HTTPException(status_code=400, detail=str(e))
 
 @api_router.put("/workers/{worker_id}", response_model=Worker)
 async def update_worker(worker_id: str, worker: WorkerCreate):
-    """Update a worker - TODO: Implement Supabase integration"""
-    raise HTTPException(status_code=501, detail="Update worker not implemented yet")
+    """Update a worker in Supabase"""
+    try:
+        worker_data = worker.dict()
+        
+        updated_worker = db.update_support_worker(worker_id, worker_data)
+        if updated_worker:
+            return Worker(**updated_worker)
+        else:
+            raise HTTPException(status_code=404, detail="Worker not found")
+    except Exception as e:
+        logger.error(f"Error updating worker: {e}")
+        raise HTTPException(status_code=400, detail=str(e))
 
 @api_router.delete("/workers/{worker_id}")
 async def delete_worker(worker_id: str):
-    """Delete a worker - TODO: Implement Supabase integration"""
-    raise HTTPException(status_code=501, detail="Delete worker not implemented yet")
+    """Delete (deactivate) a worker in Supabase"""
+    try:
+        success = db.delete_support_worker(worker_id)
+        if success:
+            return {"message": "Worker deactivated successfully"}
+        else:
+            raise HTTPException(status_code=404, detail="Worker not found")
+    except Exception as e:
+        logger.error(f"Error deleting worker: {e}")
+        raise HTTPException(status_code=400, detail=str(e))
 
 # Participant Management Routes
 @api_router.get("/participants", response_model=List[Participant])
