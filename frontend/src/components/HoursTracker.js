@@ -2,21 +2,21 @@ import React, { useState, useEffect } from 'react';
 import { Calendar, Download, Upload, Users } from 'lucide-react';
 
 const HoursTracker = (props) => {
-  const { participants, workers, rosterData } = props;
+  const { participants, workers } = props;
   
   const [participantHours, setParticipantHours] = useState({});
 
   useEffect(() => {
-    console.log('HoursTracker - rosterData:', rosterData);
-    console.log('HoursTracker - participants:', participants);
     calculateHours();
-  }, [rosterData, participants]);
+  }, [participants]);
 
-  const calculateHours = () => {
+  const calculateHours = async () => {
     console.log('Calculating hours...');
     const hours = {};
     
-    participants.forEach(participant => {
+    const API = `${process.env.REACT_APP_BACKEND_URL}/api`;
+    
+    for (const participant of participants) {
       console.log('Processing participant:', participant.code);
       hours[participant.code] = {
         participant,
@@ -24,31 +24,35 @@ const HoursTracker = (props) => {
         community: { used: 0, available: 56 }
       };
       
-      // Calculate hours from current roster data for this participant
-      if (rosterData && rosterData[participant.code]) {
-        console.log('Found roster data for:', participant.code, rosterData[participant.code]);
-        
-        Object.values(rosterData[participant.code]).forEach(dayShifts => {
-          if (Array.isArray(dayShifts)) {
-            console.log('Processing day shifts:', dayShifts);
-            dayShifts.forEach(shift => {
-              const duration = parseFloat(shift.duration) || 0;
-              console.log('Shift duration:', duration, 'Type:', shift.supportType);
-              
-              if (shift.supportType === 'Community Access') {
-                hours[participant.code].community.used += duration;
-              } else {
-                hours[participant.code].selfCare.used += duration;
+      try {
+        // Fetch data for all weeks
+        for (const weekType of ['weekA', 'weekB', 'nextA', 'nextB']) {
+          const response = await axios.get(`${API}/roster/${weekType}`);
+          const weekData = response.data;
+          
+          if (weekData[participant.code]) {
+            Object.values(weekData[participant.code]).forEach(dayShifts => {
+              if (Array.isArray(dayShifts)) {
+                dayShifts.forEach(shift => {
+                  const duration = parseFloat(shift.duration) || 0;
+                  console.log(`${participant.code} - ${weekType}: ${duration}h ${shift.supportType}`);
+                  
+                  if (shift.supportType === 'Community Access') {
+                    hours[participant.code].community.used += duration;
+                  } else {
+                    hours[participant.code].selfCare.used += duration;
+                  }
+                });
               }
             });
           }
-        });
-      } else {
-        console.log('No roster data found for:', participant.code);
+        }
+      } catch (error) {
+        console.error('Error fetching hours for', participant.code, error);
       }
       
       console.log('Final hours for', participant.code, hours[participant.code]);
-    });
+    }
     
     console.log('All calculated hours:', hours);
     setParticipantHours(hours);
