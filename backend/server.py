@@ -300,9 +300,16 @@ async def delete_worker(worker_id: str):
 # Participant Management Routes
 @api_router.get("/participants", response_model=List[Participant])
 async def get_participants():
-    """Get all participants"""
-    await load_participants()
-    return ROSTER_STATE.participants
+    """Get all participants from Supabase"""
+    try:
+        participants_data = db.get_participants()
+        participants = []
+        for participant_data in participants_data:
+            participants.append(Participant(**participant_data))
+        return participants
+    except Exception as e:
+        logger.error(f"Error fetching participants: {e}")
+        raise HTTPException(status_code=500, detail="Failed to fetch participants")
 
 # Roster Management Routes
 @api_router.get("/roster/{week_type}")
