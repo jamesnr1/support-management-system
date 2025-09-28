@@ -303,33 +303,27 @@ const HoursTracker = (props) => {
               
               <div style={{ padding: '1rem' }}>
                 <div className="hour-grid">
-                  <div className="hour-block">
-                    <div className="hour-type">Self-Care Hours</div>
-                    <div className="hour-bar">
-                      <div 
-                        className={`hour-fill ${getHourFillClass(data.selfCare.used, data.selfCare.available)}`}
-                        style={{ width: `${getHourFillWidth(data.selfCare.used, data.selfCare.available)}%` }}
-                      ></div>
-                    </div>
-                    <div className="hour-text">
-                      <span>{data.selfCare.used}h used</span>
-                      <span>{data.selfCare.available - data.selfCare.used}h remaining</span>
-                    </div>
-                  </div>
-                  
-                  <div className="hour-block">
-                    <div className="hour-type">Community Access Hours</div>
-                    <div className="hour-bar">
-                      <div 
-                        className={`hour-fill ${getHourFillClass(data.community.used, data.community.available)}`}
-                        style={{ width: `${getHourFillWidth(data.community.used, data.community.available)}%` }}
-                      ></div>
-                    </div>
-                    <div className="hour-text">
-                      <span>{data.community.used}h used</span>
-                      <span>{data.community.available - data.community.used}h remaining</span>
-                    </div>
-                  </div>
+                  {hourCategories.map(category => {
+                    const hourData = data.hours[category.code];
+                    if (!hourData) return null;
+                    
+                    return (
+                      <div key={category.code} className="hour-block">
+                        <div className="hour-type">{category.code}</div>
+                        <div className="hour-bar">
+                          <div 
+                            className={`hour-fill ${getHourFillClass(hourData.remaining, hourData.available)}`}
+                            style={{ width: `${getHourFillWidth(hourData.remaining, hourData.available)}%` }}
+                          ></div>
+                        </div>
+                        <div className="hour-text">
+                          <span className="remaining-hours">{hourData.remaining}h</span>
+                          <span className="total-hours">/{hourData.available}h</span>
+                        </div>
+                        <div className="ratio-multiplier">2:1 ratio (2x cost)</div>
+                      </div>
+                    );
+                  })}
                 </div>
               </div>
             </div>
