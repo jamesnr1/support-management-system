@@ -61,7 +61,9 @@ const WorkerManagement = ({ workers = [], locations = [], onWorkerUpdate }) => {
       return response.data;
     },
     onSuccess: () => {
-      toast.success('Worker deactivated successfully');
+      toast.success('Worker deleted successfully');
+      // Force refresh workers data
+      queryClient.invalidateQueries(['workers']);
       if (onWorkerUpdate) onWorkerUpdate();
     },
     onError: (error) => {
