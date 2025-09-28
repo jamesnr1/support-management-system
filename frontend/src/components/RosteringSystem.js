@@ -154,10 +154,13 @@ const RosteringSystem = () => {
   // Template copying function - Clean version
   const copyToTemplate = async () => {
     try {
+      console.log('Copy Template function called!');
       if (!window.confirm('Copy Week A and Week B schedules to Next A and Next B?')) {
+        console.log('User cancelled the copy operation');
         return;
       }
       
+      console.log('Fetching Week A and Week B data...');
       // Fetch Week A and Week B data
       const [weekAResponse, weekBResponse] = await Promise.all([
         axios.get(`${API}/roster/weekA`),
@@ -167,7 +170,11 @@ const RosteringSystem = () => {
       const weekAData = weekAResponse.data || {};
       const weekBData = weekBResponse.data || {};
       
+      console.log('Week A data:', Object.keys(weekAData).length, 'participants');
+      console.log('Week B data:', Object.keys(weekBData).length, 'participants');
+      
       // Post data to Next A and Next B
+      console.log('Posting data to Next A and Next B...');
       await Promise.all([
         axios.post(`${API}/roster/nextA`, weekAData),
         axios.post(`${API}/roster/nextB`, weekBData)
@@ -177,6 +184,7 @@ const RosteringSystem = () => {
       queryClient.invalidateQueries(['roster']);
       
       toast.success(`Copy completed! Week A → Next A, Week B → Next B`);
+      console.log('Copy template completed successfully');
       
     } catch (error) {
       console.error('Copy template error:', error);
