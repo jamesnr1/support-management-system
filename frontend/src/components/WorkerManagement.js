@@ -165,52 +165,50 @@ const WorkerManagement = ({ workers = [], locations = [], onWorkerUpdate }) => {
         ) : (
           <div className="workers-grid">
             {workers.map(worker => (
-              <div key={worker.id} className="worker-card">
-                <div className="worker-header">
+              <div key={worker.id} className="worker-card" style={{ padding: '0.75rem', minHeight: 'auto' }}>
+                <div className="worker-header" style={{ marginBottom: '0.5rem' }}>
                   <div>
-                    <div className="worker-name">{worker.full_name}</div>
-                    <div className="worker-details" style={{ fontSize: '0.8rem', lineHeight: '1.2' }}>
-                      {worker.email && `📧 ${worker.email}`} {worker.phone && `| 📱 ${worker.phone}`}
+                    <div className="worker-name" style={{ fontSize: '1rem', fontWeight: 'bold', marginBottom: '0.25rem' }}>{worker.full_name}</div>
+                    <div className="worker-details" style={{ fontSize: '0.75rem', lineHeight: '1.1', color: 'var(--text-secondary)' }}>
+                      {worker.email && `📧 ${worker.email.substring(0, 20)}...`} {worker.phone && `📱 ${worker.phone}`}
                     </div>
-                    <div className="worker-details" style={{ fontSize: '0.8rem', lineHeight: '1.2' }}>
-                      🚗 {worker.car || 'N/A'} | 🎯 {worker.skills || 'None'} | ⏰ {worker.max_hours || 'N/A'}h | 📱 T:{worker.telegram || 'N/A'}
+                    <div className="worker-details" style={{ fontSize: '0.75rem', lineHeight: '1.1', color: 'var(--text-secondary)' }}>
+                      🚗 {worker.car || 'N/A'} | ⏰ {worker.max_hours || 'N/A'}h | 📱 {worker.telegram || 'N/A'}
                     </div>
                   </div>
                 </div>
                 
-                <div className="worker-actions" style={{ padding: '0.5rem' }}>
-                  <div style={{ display: 'flex', gap: '0.5rem', marginBottom: '0.5rem' }}>
+                <div className="worker-actions" style={{ display: 'flex', flexWrap: 'wrap', gap: '0.25rem' }}>
+                  <button 
+                    className="btn btn-secondary"
+                    onClick={() => handleEditWorker(worker)}
+                    style={{ fontSize: '0.75rem', padding: '0.25rem 0.5rem' }}
+                  >
+                    <Edit size={12} /> Edit
+                  </button>
+                  <button 
+                    className="btn btn-secondary"
+                    onClick={() => handleDeleteWorker(worker)}
+                    style={{ fontSize: '0.75rem', padding: '0.25rem 0.5rem' }}
+                  >
+                    <Trash2 size={12} /> Deactivate
+                  </button>
+                  <button 
+                    className="btn btn-secondary"
+                    onClick={() => handleManageAvailability(worker)}
+                    style={{ fontSize: '0.75rem', padding: '0.25rem 0.5rem' }}
+                  >
+                    <Calendar size={12} /> Availability
+                  </button>
+                  {worker.telegram && (
                     <button 
-                      className="btn btn-secondary btn-sm"
-                      onClick={() => handleEditWorker(worker)}
+                      className="btn btn-secondary"
+                      onClick={() => handleSendTelegramMessage(worker)}
+                      style={{ fontSize: '0.75rem', padding: '0.25rem 0.5rem' }}
                     >
-                      <Edit size={14} /> Edit
+                      <MessageCircle size={12} /> Message
                     </button>
-                    <button 
-                      className="btn btn-secondary btn-sm"
-                      onClick={() => handleDeleteWorker(worker)}
-                    >
-                      <Trash2 size={14} /> Deactivate
-                    </button>
-                  </div>
-                  
-                  {/* Only availability and message buttons */}
-                  <div style={{ display: 'flex', gap: '0.5rem' }}>
-                    <button 
-                      className="btn btn-secondary btn-sm"
-                      onClick={() => handleManageAvailability(worker)}
-                    >
-                      <Calendar size={14} /> Availability
-                    </button>
-                    {worker.telegram && (
-                      <button 
-                        className="btn btn-secondary btn-sm"
-                        onClick={() => handleSendTelegramMessage(worker)}
-                      >
-                        <MessageCircle size={14} /> Message
-                      </button>
-                    )}
-                  </div>
+                  )}
                 </div>
               </div>
             ))}
