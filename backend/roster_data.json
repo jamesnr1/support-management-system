@@ -10,6 +10,42 @@
           "duration": "8.0"
         }
       ]
+    },
+    "LIB001": {
+      "2025-09-22": [
+        {
+          "id": "1759056391560",
+          "date": "2025-09-22",
+          "startTime": "06:00",
+          "endTime": "14:00",
+          "supportType": "Self-Care",
+          "ratio": "2:1",
+          "workers": [
+            "121",
+            "125"
+          ],
+          "location": "1",
+          "notes": "",
+          "shiftNumber": "20250922L420",
+          "duration": "8.0"
+        },
+        {
+          "id": "1759056407862",
+          "date": "2025-09-22",
+          "startTime": "14:00",
+          "endTime": "21:00",
+          "supportType": "Self-Care",
+          "ratio": "2:1",
+          "workers": [
+            "128",
+            "131"
+          ],
+          "location": "1",
+          "notes": "",
+          "shiftNumber": "20250922L261",
+          "duration": "7.0"
+        }
+      ]
     }
   },
   "weekB": {},
