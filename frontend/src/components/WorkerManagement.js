@@ -168,17 +168,19 @@ const WorkerManagement = ({ workers = [], locations = [], onWorkerUpdate }) => {
               <div key={worker.id} className="worker-card" style={{ padding: '0.75rem', minHeight: 'auto' }}>
                 <div className="worker-header" style={{ marginBottom: '0.5rem' }}>
                   <div>
-                    <div className="worker-name" style={{ fontSize: '1rem', fontWeight: 'bold', marginBottom: '0.25rem' }}>{worker.full_name}</div>
-                    <div className="worker-details" style={{ fontSize: '0.75rem', lineHeight: '1.1', color: 'var(--text-secondary)' }}>
-                      {worker.email && `📧 ${worker.email.substring(0, 20)}...`} {worker.phone && `📱 ${worker.phone}`}
+                    <div className="worker-name" style={{ fontSize: '1rem', fontWeight: 'bold', marginBottom: '0.25rem' }}>
+                      {worker.full_name} {worker.car && `🚗 ${worker.car}`}
                     </div>
                     <div className="worker-details" style={{ fontSize: '0.75rem', lineHeight: '1.1', color: 'var(--text-secondary)' }}>
-                      🚗 {worker.car || 'N/A'} | ⏰ {worker.max_hours || 'N/A'}h | 📱 {worker.telegram || 'N/A'}
+                      📱 {worker.phone || 'N/A'} | Maximum hours: {worker.max_hours || 'N/A'}h
+                    </div>
+                    <div className="worker-details" style={{ fontSize: '0.75rem', lineHeight: '1.1', color: 'var(--text-secondary)' }}>
+                      💬 {worker.telegram || 'N/A'}
                     </div>
                   </div>
                 </div>
                 
-                <div className="worker-actions" style={{ display: 'flex', flexWrap: 'wrap', gap: '0.25rem' }}>
+                <div className="worker-actions" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.25rem' }}>
                   <button 
                     className="btn btn-secondary"
                     onClick={() => handleEditWorker(worker)}
@@ -191,7 +193,7 @@ const WorkerManagement = ({ workers = [], locations = [], onWorkerUpdate }) => {
                     onClick={() => handleDeleteWorker(worker)}
                     style={{ fontSize: '0.75rem', padding: '0.25rem 0.5rem' }}
                   >
-                    <Trash2 size={12} /> Deactivate
+                    <Trash2 size={12} /> Delete
                   </button>
                   <button 
                     className="btn btn-secondary"
@@ -200,7 +202,7 @@ const WorkerManagement = ({ workers = [], locations = [], onWorkerUpdate }) => {
                   >
                     <Calendar size={12} /> Availability
                   </button>
-                  {worker.telegram && (
+                  {worker.telegram ? (
                     <button 
                       className="btn btn-secondary"
                       onClick={() => handleSendTelegramMessage(worker)}
@@ -208,6 +210,8 @@ const WorkerManagement = ({ workers = [], locations = [], onWorkerUpdate }) => {
                     >
                       <MessageCircle size={12} /> Message
                     </button>
+                  ) : (
+                    <div></div>
                   )}
                 </div>
               </div>
