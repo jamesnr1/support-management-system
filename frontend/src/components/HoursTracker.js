@@ -247,6 +247,42 @@ const HoursTracker = (props) => {
           )}
         </div>
         
+        {/* Controls for CSV upload and export */}
+        <div className="controls-row" style={{ display: 'flex', gap: '1rem', marginBottom: '1.5rem', flexWrap: 'wrap' }}>
+          <div>
+            <label style={{ display: 'block', marginBottom: '0.5rem', color: 'var(--text-secondary)', fontSize: '0.9rem' }}>
+              Upload Plan Data (CSV):
+            </label>
+            <input
+              type="file"
+              accept=".csv"
+              onChange={handlePlanUpload}
+              style={{
+                padding: '0.5rem',
+                borderRadius: '4px',
+                border: '1px solid var(--border-color)',
+                background: 'var(--bg-input)',
+                color: 'var(--text-primary)',
+                fontSize: '0.9rem'
+              }}
+            />
+            <div style={{ fontSize: '0.8rem', color: 'var(--text-muted)', marginTop: '0.25rem' }}>
+              Format: ParticipantCode,SelfCareHours,CommunityHours
+            </div>
+          </div>
+          
+          <div style={{ alignSelf: 'end' }}>
+            <button 
+              onClick={exportHoursSummary}
+              className="btn btn-primary"
+              style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', padding: '0.5rem 1rem' }}
+            >
+              <Download size={16} />
+              Export Summary
+            </button>
+          </div>
+        </div>
+        
         <div id="participantHourCards">
           {Object.entries(participantHours).map(([code, data]) => (
             <div key={code} className="participant-card">
