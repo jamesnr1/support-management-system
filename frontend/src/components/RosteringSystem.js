@@ -153,10 +153,13 @@ const RosteringSystem = () => {
 
   // Template copying function - Fixed version
   const copyToTemplate = async () => {
+    console.log("COPY TEMPLATE FUNCTION CALLED!");
     try {
       if (!window.confirm('Copy Week A and Week B schedules to Next A and Next B?')) {
         return;
       }
+      
+      console.log("User confirmed, proceeding...");
       
       // Fetch Week A and Week B data
       const [weekAResponse, weekBResponse] = await Promise.all([
@@ -167,11 +170,15 @@ const RosteringSystem = () => {
       const weekAData = weekAResponse.data || {};
       const weekBData = weekBResponse.data || {};
       
+      console.log("Fetched data, posting to backend...");
+      
       // Post data to Next A and Next B
       await Promise.all([
         axios.post(`${API}/roster/nextA`, weekAData),
         axios.post(`${API}/roster/nextB`, weekBData)
       ]);
+      
+      console.log("Posted to backend successfully");
       
       // Refresh the roster data
       queryClient.invalidateQueries(['roster']);
