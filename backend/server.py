@@ -328,9 +328,12 @@ async def update_roster(week_type: str, roster_data: Dict[str, Any]):
 # Location Routes
 @api_router.get("/locations")
 async def get_locations():
-    """Get all locations"""
-    await load_locations()
-    return ROSTER_STATE.locations
+    """Get all locations from Supabase"""
+    try:
+        return db.get_locations()
+    except Exception as e:
+        logger.error(f"Error fetching locations: {e}")
+        raise HTTPException(status_code=500, detail="Failed to fetch locations")
 
 # Availability Routes (simplified)
 @api_router.get("/workers/{worker_id}/availability")
