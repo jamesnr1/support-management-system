@@ -71,12 +71,18 @@ const HoursTracker = (props) => {
     
     const API = `${process.env.REACT_APP_BACKEND_URL}/api`;
     
-    for (const participant of participants) {
+    participants.forEach(participant => {
       console.log('Processing participant:', participant.code);
+      
+      // Use uploaded plan data if available, otherwise defaults
+      const planData = uploadedPlan?.[participant.code];
+      const selfCareAvailable = planData?.selfCare || 168;
+      const communityAvailable = planData?.community || 56;
+      
       hours[participant.code] = {
         participant,
-        selfCare: { used: 0, available: 168 }, // Weekly hours
-        community: { used: 0, available: 56 }
+        selfCare: { used: 0, available: selfCareAvailable },
+        community: { used: 0, available: communityAvailable }
       };
       
       try {
