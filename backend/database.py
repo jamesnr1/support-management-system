@@ -76,10 +76,10 @@ class SupabaseDatabase:
         try:
             response = self.client.table('locations').select('*').execute()
             locations = []
-            for l in response.data:
+            for location in response.data:
                 locations.append({
-                    'id': str(l['id']),
-                    'name': l['name']
+                    'id': str(location['id']),
+                    'name': location['name']
                 })
             return locations
         except Exception as e:
