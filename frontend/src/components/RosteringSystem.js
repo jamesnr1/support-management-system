@@ -196,7 +196,7 @@ const RosteringSystem = () => {
     }
   };
 
-  // Template copying function - Clean version
+  // Template copying function - Simplified version
   const copyToTemplate = async () => {
     try {
       console.log('Copy Template function called!');
@@ -205,42 +205,38 @@ const RosteringSystem = () => {
         return;
       }
       
-      console.log('Fetching FRESH Week A and Week B data...');
-      // Force fresh fetch of Week A and Week B data (bypassing cache)
-      let weekAResponse, weekBResponse;
-      try {
-        weekAResponse = await axios.get(`${API}/roster/weekA?t=${Date.now()}`, { timeout: 10000 });
-        console.log('Week A fetch successful:', weekAResponse.status);
-      } catch (error) {
-        console.error('Week A fetch failed:', error.message);
-        throw new Error(`Failed to fetch Week A data: ${error.message}`);
-      }
+      console.log('Fetching Week A and Week B data...');
       
-      try {
-        weekBResponse = await axios.get(`${API}/roster/weekB?t=${Date.now()}`, { timeout: 10000 });
-        console.log('Week B fetch successful:', weekBResponse.status);
-      } catch (error) {
-        console.error('Week B fetch failed:', error.message);
-        throw new Error(`Failed to fetch Week B data: ${error.message}`);
-      }
+      // Use fetch instead of axios to avoid CORS issues
+      const weekAResponse = await fetch(`${API}/roster/weekA?t=${Date.now()}`);
+      const weekBResponse = await fetch(`${API}/roster/weekB?t=${Date.now()}`);
       
-      const weekAData = weekAResponse.data || {};
-      const weekBData = weekBResponse.data || {};
+      if (!weekAResponse.ok) throw new Error('Failed to fetch Week A');
+      if (!weekBResponse.ok) throw new Error('Failed to fetch Week B');
       
-      console.log('Fresh Week A data:', JSON.stringify(weekAData, null, 2));
-      console.log('Fresh Week B data:', JSON.stringify(weekBData, null, 2));
+      const weekAData = await weekAResponse.json();
+      const weekBData = await weekBResponse.json();
+      
       console.log('Week A participants:', Object.keys(weekAData).length);
       console.log('Week B participants:', Object.keys(weekBData).length);
       
       // Post data to Next A and Next B
       console.log('Posting data to Next A and Next B...');
-      const [nextAResponse, nextBResponse] = await Promise.all([
-        axios.post(`${API}/roster/nextA`, weekAData),
-        axios.post(`${API}/roster/nextB`, weekBData)
-      ]);
       
-      console.log('Next A response:', nextAResponse.data);
-      console.log('Next B response:', nextBResponse.data);
+      const nextAResponse = await fetch(`${API}/roster/nextA`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(weekAData)
+      });
+      
+      const nextBResponse = await fetch(`${API}/roster/nextB`, {
+        method: 'POST', 
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(weekBData)
+      });
+      
+      if (!nextAResponse.ok) throw new Error('Failed to post to Next A');
+      if (!nextBResponse.ok) throw new Error('Failed to post to Next B');
       
       // Refresh the roster data
       queryClient.invalidateQueries(['roster']);
@@ -250,7 +246,7 @@ const RosteringSystem = () => {
       
     } catch (error) {
       console.error('Copy template error:', error);
-      toast.error('Failed to copy templates: ' + (error.response?.data?.detail || error.message));
+      toast.error('Copy template failed: ' + error.message);
     }
   };
 
