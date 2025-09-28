@@ -104,8 +104,8 @@ const WorkerManagement = ({ workers = [], locations = [], onWorkerUpdate }) => {
   };
 
   const handleManageAvailability = (worker) => {
-    // Actually manage availability - show weekly schedule form
-    setShowUnavailability(prev => ({ ...prev, [worker.id]: !prev[worker.id] }));
+    setSelectedWorker(worker);
+    setShowAvailabilityModal(true);
   };
 
   const handleSendTelegramMessage = (worker) => {
