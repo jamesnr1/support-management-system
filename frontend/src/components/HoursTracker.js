@@ -1,15 +1,69 @@
 import React, { useState, useEffect } from 'react';
 import { Calendar, Download, Upload, Users } from 'lucide-react';
 import axios from 'axios';
+import { toast } from 'react-hot-toast';
 
 const HoursTracker = (props) => {
   const { participants, workers } = props;
   
   const [participantHours, setParticipantHours] = useState({});
+  const [uploadedPlan, setUploadedPlan] = useState(null);
 
   useEffect(() => {
     calculateHours();
-  }, [participants]);
+  }, [participants, uploadedPlan]);
+
+  const handlePlanUpload = (event) => {
+    const file = event.target.files[0];
+    if (!file) return;
+    
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      try {
+        const csv = e.target.result;
+        const lines = csv.split('\n');
+        const planData = {};
+        
+        lines.slice(1).forEach(line => {
+          if (line.trim()) {
+            const [participantCode, selfCareHours, communityHours] = line.split(',');
+            planData[participantCode?.trim()] = {
+              selfCare: parseFloat(selfCareHours?.trim()) || 168,
+              community: parseFloat(communityHours?.trim()) || 56
+            };
+          }
+        });
+        
+        setUploadedPlan(planData);
+        toast.success('Plan data uploaded successfully');
+        calculateHours();
+      } catch (error) {
+        console.error('Error parsing CSV:', error);
+        toast.error('Error parsing CSV file');
+      }
+    };
+    reader.readAsText(file);
+  };
+
+  const exportHoursSummary = () => {
+    let csvContent = "Participant Code,Participant Name,Self-Care Used,Self-Care Available,Community Used,Community Available,Self-Care Remaining,Community Remaining\n";
+    
+    Object.entries(participantHours).forEach(([code, data]) => {
+      const selfCareRemaining = data.selfCare.available - data.selfCare.used;
+      const communityRemaining = data.community.available - data.community.used;
+      
+      csvContent += `${code},${data.participant.full_name},${data.selfCare.used},${data.selfCare.available},${data.community.used},${data.community.available},${selfCareRemaining},${communityRemaining}\n`;
+    });
+    
+    const blob = new Blob([csvContent], { type: 'text/csv' });
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `hours_summary_${new Date().toISOString().split('T')[0]}.csv`;
+    a.click();
+    window.URL.revokeObjectURL(url);
+    toast.success('Hours summary exported');
+  };
 
   const calculateHours = async () => {
     console.log('Calculating hours...');
