@@ -54,9 +54,9 @@ class SupabaseDatabase:
             return []
     
     def get_support_workers(self) -> List[Dict]:
-        """Get all support workers from Supabase"""
+        """Get all support workers from Supabase, sorted alphabetically"""
         try:
-            response = self.client.table('support_workers').select('*').execute()
+            response = self.client.table('support_workers').select('*').order('full_name').execute()
             workers = []
             for w in response.data:
                 workers.append({
