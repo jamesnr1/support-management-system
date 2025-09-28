@@ -174,6 +174,21 @@ backend:
         agent: "testing"
         comment: "✅ BACKEND SUPPORT VERIFIED: Backend provides all necessary data for hours tracking functionality. Successfully tested data retrieval for 5 participants and 4 week types (weekA, weekB, nextA, nextB). The HoursTracker component can access all required participant and roster data through the backend APIs. Frontend calculations are working as designed."
 
+  - task: "Delete Worker functionality"
+    implemented: true
+    working: true
+    file: "/app/backend/server.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+      - working: false
+        agent: "user"
+        comment: "USER FEEDBACK: Delete button for support workers in the Admin tab isn't working. User has been dealing with broken functionality for over 24 hours."
+      - working: true
+        agent: "testing"
+        comment: "✅ DELETE WORKER BACKEND FULLY FUNCTIONAL: Comprehensive testing performed as requested in review. Results: (1) GET /api/workers returns 23 active workers ✓ (2) DELETE /api/workers/118 successfully executed with HTTP 200 response ✓ (3) Worker 118 (Artiben Patel) completely removed from active workers list ✓ (4) Verification GET /api/workers shows 22 workers (down from 23) ✓ (5) Backend logs confirm PATCH request to mark worker as inactive and successful deletion ✓. Delete worker functionality is working perfectly at the backend level. If user still reports issues, the problem is in the frontend implementation."
+
 frontend:
   - task: "UI matches SMS_opus.html colors"
     implemented: true
