@@ -224,6 +224,7 @@ const HoursTracker = (props) => {
         .hour-fill.good { background: linear-gradient(90deg, #5A7A5A, #6B8B6B); }
         .hour-fill.warning { background: linear-gradient(90deg, #D4A574, #E5B685); }
         .hour-fill.critical { background: linear-gradient(90deg, #C47F7F, #D48F8F); }
+        .hour-fill.empty { background: linear-gradient(90deg, #444, #555); }
         
         .hour-text {
           display: flex;
@@ -231,6 +232,22 @@ const HoursTracker = (props) => {
           font-size: 0.85rem;
           margin-top: 4px;
           color: var(--text-secondary);
+        }
+        
+        .remaining-hours {
+          font-weight: bold;
+          font-size: 11px;
+        }
+        
+        .total-hours {
+          font-size: 11px;
+          color: var(--text-muted);
+        }
+        
+        .ratio-multiplier {
+          font-size: 10px;
+          color: var(--text-muted);
+          margin-top: 4px;
         }
       `}</style>
       
