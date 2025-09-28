@@ -217,7 +217,7 @@ const RosteringSystem = () => {
       <header className="header">
         <div className="header-top">
           <div>
-            <h1 className="header-title">🏠 Support Management System</h1>
+            <h1 className="header-title">Support Management System</h1>
             {(workersLoading || locationsLoading) && (
               <div style={{ fontSize: '12px', color: 'var(--text-muted)', marginTop: '4px' }}>
                 {workersLoading && 'Loading workers... '}
