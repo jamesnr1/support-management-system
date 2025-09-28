@@ -208,17 +208,13 @@ const WorkerManagement = ({ workers = [], locations = [], onWorkerUpdate }) => {
                   >
                     <Calendar size={12} /> Availability
                   </button>
-                  {worker.telegram ? (
-                    <button 
-                      className="btn btn-secondary"
-                      onClick={() => handleSendTelegramMessage(worker)}
-                      style={{ fontSize: '0.75rem', padding: '0.25rem 0.5rem' }}
-                    >
-                      <MessageCircle size={12} /> Message
-                    </button>
-                  ) : (
-                    <div></div>
-                  )}
+                  <button 
+                    className="btn btn-secondary"
+                    onClick={() => handleSendTelegramMessage(worker)}
+                    style={{ fontSize: '0.75rem', padding: '0.25rem 0.5rem' }}
+                  >
+                    <MessageCircle size={12} /> Message
+                  </button>
                 </div>
               </div>
             ))}
