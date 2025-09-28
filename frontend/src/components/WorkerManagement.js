@@ -203,125 +203,107 @@ const WorkerManagement = ({ workers = [], locations = [], onWorkerUpdate }) => {
                     </button>
                   </div>
                   
-                  {/* Availability Section - no header text */}
-                  <div style={{ marginBottom: '1rem' }}>
-                    <div style={{ display: 'flex', gap: '0.5rem', marginBottom: '0.5rem' }}>
+                  {/* Clean availability section */}
+                  <div style={{ display: 'flex', gap: '0.5rem', marginBottom: '1rem' }}>
+                    <button 
+                      className="btn btn-secondary btn-sm"
+                      onClick={() => handleManageAvailability(worker)}
+                    >
+                      <Calendar size={14} /> Availability
+                    </button>
+                    {worker.telegram && (
                       <button 
                         className="btn btn-secondary btn-sm"
-                        onClick={() => handleManageAvailability(worker)}
+                        onClick={() => handleSendTelegramMessage(worker)}
                       >
-                        <Calendar size={14} /> Availability
+                        <MessageCircle size={14} /> Message
                       </button>
-                      {worker.telegram && (
-                        <button 
-                          className="btn btn-secondary btn-sm"
-                          onClick={() => handleSendTelegramMessage(worker)}
-                        >
-                          <MessageCircle size={14} /> Message
-                        </button>
-                      )}
-                    </div>
-                    
-                    {/* Availability functionality - when availability button is clicked */}
-                    {showUnavailability[worker.id] && (
-                      <div className="unavailability-form" style={{ 
-                        background: 'var(--bg-input)', 
-                        padding: '0.8rem', 
-                        borderRadius: '4px',
-                        marginTop: '0.5rem'
-                      }}>
-                        {/* Weekly availability schedule */}
-                        <div style={{ marginBottom: '1rem' }}>
-                          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', gap: '0.5rem', fontSize: '0.8rem' }}>
-                            {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map(day => (
-                              <div key={day} style={{ textAlign: 'center', color: 'var(--text-secondary)' }}>
-                                <div style={{ marginBottom: '0.25rem' }}>{day}</div>
-                                <input type="checkbox" defaultChecked style={{ marginBottom: '0.25rem' }} />
-                                <div style={{ fontSize: '0.7rem' }}>
-                                  <input type="time" defaultValue="09:00" style={{ width: '60px', fontSize: '0.7rem', padding: '2px' }} />
-                                  <div>to</div>
-                                  <input type="time" defaultValue="17:00" style={{ width: '60px', fontSize: '0.7rem', padding: '2px' }} />
-                                </div>
-                              </div>
-                            ))}
-                          </div>
+                    )}
+                  </div>
+                  
+                  {/* Set unavailable section at bottom */}
+                  <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center', marginTop: '0.5rem' }}>
+                    <button 
+                      className="btn btn-secondary btn-sm"
+                      onClick={() => setShowUnavailability(prev => ({ ...prev, [worker.id]: !prev[worker.id] }))}
+                    >
+                      {showUnavailability[worker.id] ? 'Cancel' : 'Set Unavailable'}
+                    </button>
+                  </div>
+                  
+                  {/* Unavailable form - inline when opened */}
+                  {showUnavailability[worker.id] && (
+                    <div className="unavailability-form" style={{ 
+                      background: 'var(--bg-input)', 
+                      padding: '0.8rem', 
+                      borderRadius: '4px',
+                      marginTop: '0.5rem'
+                    }}>
+                      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 2fr', gap: '0.5rem', alignItems: 'end' }}>
+                        <div>
+                          <label style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', display: 'block' }}>From</label>
+                          <input
+                            type="date"
+                            value={unavailabilityData.from}
+                            onChange={(e) => setUnavailabilityData(prev => ({ ...prev, from: e.target.value }))}
+                            style={{
+                              padding: '0.4rem',
+                              borderRadius: '4px',
+                              border: '1px solid var(--border-color)',
+                              background: 'var(--bg-secondary)',
+                              color: 'var(--text-primary)',
+                              fontSize: '0.8rem',
+                              width: '100%'
+                            }}
+                          />
                         </div>
-                        
-                        {/* Set unavailable period at bottom */}
-                        <div style={{ borderTop: '1px solid var(--border-color)', paddingTop: '0.5rem' }}>
-                          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 2fr', gap: '0.5rem', alignItems: 'end' }}>
-                            <div>
-                              <label style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', display: 'block' }}>From</label>
-                              <input
-                                type="date"
-                                value={unavailabilityData.from}
-                                onChange={(e) => setUnavailabilityData(prev => ({ ...prev, from: e.target.value }))}
-                                style={{
-                                  padding: '0.4rem',
-                                  borderRadius: '4px',
-                                  border: '1px solid var(--border-color)',
-                                  background: 'var(--bg-secondary)',
-                                  color: 'var(--text-primary)',
-                                  fontSize: '0.8rem',
-                                  width: '100%'
-                                }}
-                              />
-                            </div>
-                            <div>
-                              <label style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', display: 'block' }}>To</label>
-                              <input
-                                type="date"
-                                value={unavailabilityData.to}
-                                onChange={(e) => setUnavailabilityData(prev => ({ ...prev, to: e.target.value }))}
-                                style={{
-                                  padding: '0.4rem',
-                                  borderRadius: '4px',
-                                  border: '1px solid var(--border-color)',
-                                  background: 'var(--bg-secondary)',
-                                  color: 'var(--text-primary)',
-                                  fontSize: '0.8rem',
-                                  width: '100%'
-                                }}
-                              />
-                            </div>
-                            <div>
-                              <label style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', display: 'block' }}>Reason</label>
-                              <div style={{ display: 'flex', gap: '0.5rem' }}>
-                                <input
-                                  type="text"
-                                  placeholder="Enter reason..."
-                                  value={unavailabilityData.reason}
-                                  onChange={(e) => setUnavailabilityData(prev => ({ ...prev, reason: e.target.value }))}
-                                  style={{
-                                    padding: '0.4rem',
-                                    borderRadius: '4px',
-                                    border: '1px solid var(--border-color)',
-                                    background: 'var(--bg-secondary)',
-                                    color: 'var(--text-primary)',
-                                    fontSize: '0.8rem',
-                                    width: '120px'
-                                  }}
-                                />
-                                <button
-                                  className="btn btn-success btn-sm"
-                                  onClick={() => handleUnavailabilitySubmit(worker.id)}
-                                  style={{ fontSize: '0.8rem', padding: '0.4rem 0.8rem' }}
-                                >
-                                  Save
-                                </button>
-                                <button
-                                  className="btn btn-secondary btn-sm"
-                                  onClick={() => setShowUnavailability(prev => ({ ...prev, [worker.id]: false }))}
-                                  style={{ fontSize: '0.8rem', padding: '0.4rem 0.8rem' }}
-                                >
-                                  Close
-                                </button>
-                              </div>
-                            </div>
+                        <div>
+                          <label style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', display: 'block' }}>To</label>
+                          <input
+                            type="date"
+                            value={unavailabilityData.to}
+                            onChange={(e) => setUnavailabilityData(prev => ({ ...prev, to: e.target.value }))}
+                            style={{
+                              padding: '0.4rem',
+                              borderRadius: '4px',
+                              border: '1px solid var(--border-color)',
+                              background: 'var(--bg-secondary)',
+                              color: 'var(--text-primary)',
+                              fontSize: '0.8rem',
+                              width: '100%'
+                            }}
+                          />
+                        </div>
+                        <div>
+                          <label style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', display: 'block' }}>Reason</label>
+                          <div style={{ display: 'flex', gap: '0.5rem' }}>
+                            <input
+                              type="text"
+                              placeholder="Enter reason..."
+                              value={unavailabilityData.reason}
+                              onChange={(e) => setUnavailabilityData(prev => ({ ...prev, reason: e.target.value }))}
+                              style={{
+                                padding: '0.4rem',
+                                borderRadius: '4px',
+                                border: '1px solid var(--border-color)',
+                                background: 'var(--bg-secondary)',
+                                color: 'var(--text-primary)',
+                                fontSize: '0.8rem',
+                                width: '120px'
+                              }}
+                            />
+                            <button
+                              className="btn btn-success btn-sm"
+                              onClick={() => handleUnavailabilitySubmit(worker.id)}
+                              style={{ fontSize: '0.8rem', padding: '0.4rem 0.8rem' }}
+                            >
+                              Save
+                            </button>
                           </div>
                         </div>
                       </div>
-                    )}
+                    </div>
+                  )}
                   </div>
                 </div>
               </div>
