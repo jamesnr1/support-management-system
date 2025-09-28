@@ -92,6 +92,63 @@ class SupabaseDatabase:
             logger.error(f"Error fetching locations: {e}")
             return []
     
+    def create_support_worker(self, worker_data: Dict) -> Optional[Dict]:
+        """Create a new support worker in Supabase"""
+        try:
+            response = self.client.table('support_workers').insert(worker_data).execute()
+            if response.data:
+                worker = response.data[0]
+                return {
+                    'id': str(worker['id']),
+                    'code': worker['code'],
+                    'full_name': worker['full_name'],
+                    'email': worker.get('email'),
+                    'phone': worker.get('phone'),
+                    'status': worker.get('status', 'Active'),
+                    'max_hours': worker.get('max_hours'),
+                    'car': worker.get('car'),
+                    'skills': worker.get('skills'),
+                    'sex': worker.get('sex'),
+                    'telegram': worker.get('telegram')
+                }
+            return None
+        except Exception as e:
+            logger.error(f"Error creating support worker: {e}")
+            return None
+    
+    def update_support_worker(self, worker_id: str, worker_data: Dict) -> Optional[Dict]:
+        """Update a support worker in Supabase"""
+        try:
+            response = self.client.table('support_workers').update(worker_data).eq('id', worker_id).execute()
+            if response.data:
+                worker = response.data[0]
+                return {
+                    'id': str(worker['id']),
+                    'code': worker['code'],
+                    'full_name': worker['full_name'],
+                    'email': worker.get('email'),
+                    'phone': worker.get('phone'),
+                    'status': worker.get('status', 'Active'),
+                    'max_hours': worker.get('max_hours'),
+                    'car': worker.get('car'),
+                    'skills': worker.get('skills'),
+                    'sex': worker.get('sex'),
+                    'telegram': worker.get('telegram')
+                }
+            return None
+        except Exception as e:
+            logger.error(f"Error updating support worker: {e}")
+            return None
+    
+    def delete_support_worker(self, worker_id: str) -> bool:
+        """Delete (deactivate) a support worker in Supabase"""
+        try:
+            response = self.client.table('support_workers').update({'status': 'Inactive'}).eq('id', worker_id).execute()
+            return len(response.data) > 0
+        except Exception as e:
+            logger.error(f"Error deleting support worker: {e}")
+            return False
+    
     def get_roster_data(self, week_type: str) -> Dict:
         """Get roster data for a specific week type"""
         try:
