@@ -172,13 +172,13 @@ const WorkerManagement = ({ workers = [], locations = [], onWorkerUpdate }) => {
                 <div className="worker-header" style={{ marginBottom: '0.5rem' }}>
                   <div>
                     <div className="worker-name" style={{ fontSize: '1rem', fontWeight: 'bold', marginBottom: '0.25rem' }}>
-                      {worker.full_name} {worker.car && `🚗 ${worker.car}`}
+                      {worker.full_name}
                     </div>
                     <div className="worker-details" style={{ fontSize: '0.75rem', lineHeight: '1.1', color: 'var(--text-secondary)' }}>
-                      📱 {worker.phone || 'N/A'} | Maximum hours: {worker.max_hours || 'N/A'}h
+                      📱 {worker.phone || 'N/A'} | Maximum hours: {worker.max_hours || 'N/A'}h | {worker.sex || 'Gender N/A'}
                     </div>
                     <div className="worker-details" style={{ fontSize: '0.75rem', lineHeight: '1.1', color: 'var(--text-secondary)' }}>
-                      💬 {worker.telegram || 'N/A'}
+                      💬 {worker.telegram || 'N/A'} {worker.car === 'Yes' && '🚗'}
                     </div>
                   </div>
                 </div>
