@@ -119,11 +119,11 @@ backend:
   
   - task: "Copy to Template functionality"
     implemented: true
-    working: true 
+    working: false 
     file: "/app/frontend/src/components/RosteringSystem.js"
-    stuck_count: 0
+    stuck_count: 1
     priority: "high"
-    needs_retesting: false
+    needs_retesting: true
     status_history:
       - working: "NA"
         agent: "main" 
@@ -131,6 +131,9 @@ backend:
       - working: true
         agent: "testing"
         comment: "✅ BACKEND TESTED: Copy to Template functionality working perfectly. Successfully tested copying weekA to nextA and weekB to nextB. All API endpoints (GET/POST /api/roster/{weekType}) are functional and data persists correctly."
+      - working: false
+        agent: "user"
+        comment: "USER FEEDBACK: Copy Template is NOT working at all on the frontend. Button doesn't function despite backend testing showing it works. Frontend issue needs investigation."
 
   - task: "Export functionality"
     implemented: true
