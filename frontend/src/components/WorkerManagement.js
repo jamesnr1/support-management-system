@@ -219,7 +219,7 @@ const WorkerManagement = ({ workers = [], locations = [], onWorkerUpdate }) => {
                       )}
                     </div>
                     
-                    {/* Unavailability form - shown when availability is clicked */}
+                    {/* Availability form - shown when availability is clicked */}
                     {showUnavailability[worker.id] && (
                       <div className="unavailability-form" style={{ 
                         background: 'var(--bg-input)', 
@@ -227,10 +227,19 @@ const WorkerManagement = ({ workers = [], locations = [], onWorkerUpdate }) => {
                         borderRadius: '4px',
                         marginTop: '0.5rem'
                       }}>
-                        <div style={{ marginBottom: '0.5rem', fontSize: '0.9rem', color: 'var(--text-primary)' }}>
+                        <div style={{ marginBottom: '1rem' }}>
+                          <div style={{ marginBottom: '0.5rem', fontSize: '0.9rem', color: 'var(--text-primary)' }}>
+                            Worker Availability Management
+                          </div>
+                          <div style={{ fontSize: '0.8rem', color: 'var(--text-secondary)' }}>
+                            Current availability: Available (no restrictions set)
+                          </div>
+                        </div>
+                        
+                        <div style={{ marginBottom: '0.5rem', fontSize: '0.9rem', color: 'var(--text-primary)', borderTop: '1px solid var(--border-color)', paddingTop: '0.5rem' }}>
                           Set Unavailable Period
                         </div>
-                        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 2fr', gap: '0.5rem', alignItems: 'end' }}>
+                        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 3fr', gap: '0.5rem', alignItems: 'end' }}>
                           <div>
                             <label style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', display: 'block' }}>From</label>
                             <input
@@ -280,7 +289,7 @@ const WorkerManagement = ({ workers = [], locations = [], onWorkerUpdate }) => {
                                   background: 'var(--bg-secondary)',
                                   color: 'var(--text-primary)',
                                   fontSize: '0.8rem',
-                                  flex: 1
+                                  width: '150px'
                                 }}
                               />
                               <button
