@@ -153,7 +153,11 @@ const RosteringSystem = () => {
 
   // Template copying function - Properly fixed
   const copyToTemplate = async () => {
+    alert('Copy to Template button clicked!'); // Debug alert
+    
     if (window.confirm('Copy Week A and Week B schedules to Next A and Next B?')) {
+      alert('User confirmed, proceeding with copy...'); // Debug alert
+      
       try {
         console.log('Starting copy template process...');
         
@@ -172,6 +176,7 @@ const RosteringSystem = () => {
         const hasBothData = hasWeekAData && Object.keys(weekBData).length > 0;
         
         if (!hasWeekAData && Object.keys(weekBData).length === 0) {
+          alert('No data found to copy');
           toast.error('No data found in Week A or Week B to copy. Please add some shifts first.');
           return;
         }
@@ -180,11 +185,13 @@ const RosteringSystem = () => {
         if (hasWeekAData) {
           console.log('Copying Week A to Next A...');
           await axios.post(`${API}/roster/nextA`, weekAData);
+          alert('Week A copied to Next A');
         }
         
         if (Object.keys(weekBData).length > 0) {
           console.log('Copying Week B to Next B...');
           await axios.post(`${API}/roster/nextB`, weekBData);
+          alert('Week B copied to Next B');
         }
         
         // Refresh queries for Next weeks
@@ -197,13 +204,17 @@ const RosteringSystem = () => {
             ? `Successfully copied Week A (${Object.keys(weekAData).length} participants) → Next A. Week B was empty.`
             : `Successfully copied Week B (${Object.keys(weekBData).length} participants) → Next B. Week A was empty.`;
             
+        alert(message); // Debug alert
         toast.success(message);
         
       } catch (error) {
         console.error('Copy template error:', error);
         const errorMessage = error.response?.data?.detail || error.message || 'Unknown error';
+        alert(`Error: ${errorMessage}`); // Debug alert
         toast.error(`Failed to copy templates: ${errorMessage}`);
       }
+    } else {
+      alert('User cancelled copy operation'); // Debug alert
     }
   };
 
