@@ -11,7 +11,7 @@ from typing import Dict, Any, List
 import uuid
 
 # Configuration
-BASE_URL = "https://staffhub-62.preview.emergentagent.com/api"
+BASE_URL = "https://shift-master-27.preview.emergentagent.com/api"
 HEADERS = {"Content-Type": "application/json"}
 
 class RosteringSystemTester:

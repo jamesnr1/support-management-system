@@ -1,53 +1,23 @@
 <analysis>
-The AI engineer was tasked with creating a working rostering system, starting from existing problematic files and adapting to user feedback. Initially, the AI proposed a full-stack architecture (React, FastAPI, PostgreSQL) and prioritized features like worker/participant management, shift scheduling, and hours tracking. Early attempts to set up PostgreSQL failed, leading to a pivot to MongoDB.
-
-The bulk of the work involved translating user-provided HTML/JS logic and design specifications into the React/FastAPI stack. This included implementing core logic for worker availability, conflict detection, and hours tracking. A significant portion of the trajectory details iterative UI/UX refinements, with the user frequently correcting the AI's interpretations of layout, styling, and functionality (e.g., dropdowns vs. popups, specific field order, Monday-Sunday week, no NDIS references, dark theme). The AI struggled with adhering precisely to the user's visual guidelines, especially regarding  and a recent screenshot, leading to repeated corrections. The current state reflects ongoing efforts to match the user's exact aesthetic and functional requirements.
+The AI engineer was tasked with developing a rostering system, leveraging existing problematic files and continuous user feedback. The core challenge was translating detailed UI/UX specifications, often presented via  and screenshots, into a React/FastAPI/MongoDB stack. The AI repeatedly struggled with accurately implementing these visual and functional requirements. Recurring issues included misinterpreting the dark theme, inconsistent component placement (e.g., Add Shift buttons, unavailability forms), and persistent failures in key functionalities like Copy Template and the Admin tab. The user expressed significant frustration over the AI's inefficiency, constant re-work, and occasional removal of critical features without consent. Debugging involved reviewing logs, direct API testing, and using a troubleshoot agent, often revealing data handling errors or JSX syntax issues. The trajectory concludes with the AI acknowledging its failures and focusing on refining UI elements and consolidating availability features, with several core problems still unresolved.
 </analysis>
 
 <product_requirements>
-The primary goal is to create a working rostering system. The user provided initial HTML/SQL files and JavaScript logic.
-
-**Core Functionality:**
-*   Manage support workers and participants (CRUD operations).
-*   Schedule shifts with availability/unavailability management.
-*   Implement advanced workforce management algorithms (worker availability, conflict detection, hours tracking, Fair Work compliance).
-*   Roster view for Week A/B and Next A/B patterns.
-*   Shift report number generation.
-*   Telegram integration for workers.
-
-**Database & Backend:**
-*   Initial preference for PostgreSQL (later switched to MongoDB due to setup issues).
-*   Remove NDIS references from the database and UI.
-*   Utilize existing worker logic and hours tracking system.
-
-**Frontend UI/UX:**
-*   Week view to start Monday and end Sunday.
-*   Remove redundant text (e.g., Week A Schedule).
-*   Remove code names and participant numbers from the main display.
-*   Implement inline shift creation/editing (no popups).
-*   All shift inputs (including time) to be dropdown menus.
-*   Shifts to start from 6 am, with subsequent shifts suggesting the previous end time.
-*   Implement a Copy to Template function (Week A/B to Next A/B).
-*   Display all support workers with Telegram numbers in the Admin tab.
-*   Hourly blocks for shifts, not 15-minute increments.
-*   Default locations for specific participants (Glandore for Libby, Plympton Park for James).
-*   Correctly display location outside edit mode, without pin icons.
-*   Ensure edit/delete buttons are appropriately sized and functional.
-*   Match the layout and visual styling (dropdown arrows, cross button, overall color scheme, text size) as provided in  and a screenshot, specifically favoring a darker, eye-friendly theme with uplifting colors (user later clarified this to be from ).
+The primary goal is to create a working rostering system, moving from initial HTML/JS/SQL logic to a React/FastAPI/MongoDB stack. Core features include worker/participant/shift management, advanced scheduling (availability, conflict detection), and hours tracking. UI/UX is critical, demanding strict adherence to  for a dark, eye-friendly theme, specific layout, and component styling. Inline shift creation, detailed participant headers (, ), compact shift info (shift number, time, type, workers/notes), and accurate Copy Template (Week A/B to Next A/B) and Export (CSV) functionalities are required. The Hours tracking should be a tab, reflecting specific hour categories via CSV upload/export. The Admin tab needs robust worker management with integrated unavailability (within an availability popup modal), and smaller worker cards.
 </product_requirements>
 
 <key_technical_concepts>
 -   **Full-stack Architecture:** React for frontend, FastAPI for backend.
--   **Database:** MongoDB (initially planned PostgreSQL).
--   **Styling:** Tailwind CSS.
--   **Asynchronous Programming:**  (for PostgreSQL, though not fully utilized).
--   **Process Management:** backend                          STARTING  
-code-server                      STARTING  
+-   **Database:** MongoDB (using  and ).
+-   **Styling:** Tailwind CSS, direct CSS application from .
+-   **Frontend Data Management:** React Query for data fetching, component state.
+-   **API Integration:**  for backend calls,  prefix, environment variables ().
+-   **Process Management:** backend                          RUNNING   pid 41, uptime 0:00:02
+code-server                      RUNNING   pid 43, uptime 0:00:02
 frontend                         STOPPING  
-mongodb                          STARTING  
-supervisor>  for running frontend/backend services.
--   **Environment Variables:**  files for configuration (, ).
--   **API Design:**  prefix for all backend routes.
+mongodb                          RUNNING   pid 48, uptime 0:00:02
+supervisor>  for running services.
+-   **Data Serialization:** UUIDs for IDs, ISO strings for DateTime (MongoDB adherence).
 </key_technical_concepts>
 
 <code_architecture>
@@ -55,43 +25,49 @@ The application follows a standard full-stack structure:
 
 
 -   ****:
-    -   **Summary**: Main FastAPI application entry point, defines API routes and connects to the database.
-    -   **Changes**: Initial setup for MongoDB connection (after PostgreSQL failure), worker/participant/shift management endpoints, integration of JavaScript logic for scheduling and hours tracking. Error handling for database operations was added. Updates to import statements ().
+    -   **Summary**: Main FastAPI application entry point, defines API routes and connects to MongoDB.
+    -   **Changes**: Initial setup for MongoDB connection, worker/participant/shift management endpoints, integration of JavaScript logic for scheduling and hours tracking. Verified  and  endpoints.
 -   ****:
     -   **Summary**: Handles the database connection and MongoDB operations.
-    -   **Changes**: Initially configured for PostgreSQL, then refactored to use  for MongoDB connection and CRUD operations for , , and  collections. Includes functions for initializing the database and managing worker data.
+    -   **Changes**: Refactored to use  for MongoDB connection and CRUD operations for , , and  collections.
 -   ****:
     -   **Summary**: Main React component, handles routing and overall application layout.
-    -   **Changes**: Implemented main navigation tabs (Week A, Week B, Next A, Next B, Admin), state management for active tab, and rendering of , , and  components. Disabled non-functional buttons like Copy to Template, Export, Hours for now.
+    -   **Changes**: Implemented main navigation tabs (Week A, B, Next A, B, Admin, Hours). Initially disabled Copy to Template, Export, Hours, later re-enabled, and finally moved Hours to a dedicated tab after Admin. Removed a horizontal line.
 -   ** / **:
     -   **Summary**: Global and component-specific CSS styling, primarily using Tailwind CSS.
-    -   **Changes**: Extensive modifications to align with user's UI/UX requests, including adjusting text sizes, layout for participant cards, shift forms, button styling (edit/delete, dropdown arrows, 'X' button), and overall color scheme to match  (multiple iterations).
+    -   **Changes**: Extensive modifications to align with  for a dark theme, participant cards, shift forms, buttons, removing amber lines, and adding hour category styling in .
 -   ****:
     -   **Summary**: Manages the main rostering display, including participants and their schedules.
-    -   **Changes**: Integrated  and  components. Implemented logic for week navigation (Monday-Sunday), participant data display without extraneous info, and inline shift creation/editing.
+    -   **Changes**: Integrated  and . Implemented week navigation. Copy Template logic (fetching Week A/B, posting to Next A/B) was repeatedly debugged for functionality and API calls. Export implemented. Debugging for loading states (participants, workers, locations) and React Query.
 -   ****:
     -   **Summary**: Displays individual participant information and contains shift slots.
-    -   **Changes**: Refined display to remove unnecessary details, incorporated  for inline editing, and updated styling for a cleaner look.
+    -   **Changes**: Refined display, updated participant header to show , .
 -   ****:
     -   **Summary**: Form for creating and editing shifts.
-    -   **Changes**: Transformed from a modal/popup to an inline form with dropdowns for time, support type, workers, and location. Reordered fields based on user's exact specification. Implemented logic for default locations and smart time progression. Styling for dropdowns and 'X' button.
+    -   **Changes**: Transformed from a modal to an inline form with dropdowns. Reordered fields. Button sizing made consistent across Save, Edit, Delete, Cancel.
 -   ****:
     -   **Summary**: Admin interface for managing support workers.
-    -   **Changes**: Enhanced to display all worker information, including Telegram numbers. Included functionality to add, edit, and delete workers.
+    -   **Changes**: Repeatedly modified for Set Unavailability functionality, moving from inline to a popup modal within the Availability section. Involved fixing numerous runtime and JSX syntax errors, removing unused state/mutations/functions, and refining button layouts. A key goal is to make worker cards smaller.
 -   ****:
     -   **Summary**: Component for tracking worker hours.
-    -   **Changes**: Basic structure implemented, but its functionality wasn't a primary focus during the debugging and UI refinement phases.
+    -   **Changes**: Revamped to use specific hour category codes (SCWD, CPWD, etc.) and a layout matching  / . CSV upload and export functionality for participant plans restored and refined. Fixed an  in a non-async function. Removed format description.
+-   ****:
+    -   **Summary**: Displays shifts for a participant for a given week.
+    -   **Changes**: Logic for Add Shift button visibility in edit mode. / functions refined to work inline. Shift number placement adjusted multiple times (currently after shift type/ratio). Worker icon placement (before name). Notes placement (same line as workers). Fixed JSX syntax errors.
 </code_architecture>
 
 <pending_tasks>
--   Implement functionality for Copy to Template, Export, and Hours buttons (currently disabled as they are for a next stage).
--   Further refine the UI/UX to precisely match the  file, particularly regarding the overall color scheme, contrast, and subtle design elements, as the user is still unsatisfied with the current visual output.
+-   **Copy Template functionality**: Still reported by the user as not working on the frontend.
+-   **Admin Layout and Unavailability**: The unavailability feature needs to be correctly integrated *within* the availability popup modal, with proper sizing for the reason text box.
+-   **Worker Card Sizing**: Make worker cards smaller and more compact as per user request.
 </pending_tasks>
 
 <current_work>
-Immediately before this summary request, the AI was attempting to rectify UI/UX issues based on extensive user feedback. The user explicitly stated that the previous attempts to apply an uplifting color scheme misinterpreted their preference, which was a dark, eye-friendly theme as seen in the  file. The user also reiterated specific layout issues: the created shift appearing under other elements, amber lines around tabs being unnecessary, and needing the overall webpage to look not as sad while maintaining a dark theme. The AI acknowledged these points, specifically the need to strictly adhere to the  file for styling and layout, and was about to extract styling from that file.
+Immediately before this summary request, the AI was attempting to address the user's frustration regarding several persistent issues. The user reiterated that the Copy Template functionality was still not working, the Admin tab's availability window was incorrectly sized, and the unavailability feature was still not integrated into the availability modal as a sub-section but rather a separate button. The user also explicitly requested that the worker cards in the Admin tab be made smaller and more compact to improve scannability for a large number of workers.
+
+The AI acknowledged these points and planned to integrate unavailable dates inside the availability popup, remove the separate Set Unavailable button, fix the modal size, and make worker cards smaller. The very last action recorded in the trajectory was an edit that was successful, followed by the AI's internal thought, Now let me make the worker cards smaller and more compact:. This indicates the AI was actively working on, or had just completed, an edit to reduce the size of worker cards, as part of the broader plan to address the Admin tab layout and functionality.
 </current_work>
 
 <optional_next_step>
-Re-examine  to extract its exact styling and apply it to the application, focusing on the dark theme, layout, and visual elements.
+Continue making worker cards smaller and more compact, and integrate unavailability into the availability modal with correct sizing.
 </optional_next_step>
