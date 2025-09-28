@@ -110,15 +110,9 @@ const RosteringSystem = () => {
   };
 
   // Export functionality - Two formats: Payroll and Shift Report
-  const exportRoster = async () => {
+  const exportRoster = async (type) => {
     try {
-      // Ask user which format they want
-      const choice = prompt('Choose export format:\n1 = Payroll Export\n2 = Shift Report Export\n\nEnter 1 or 2:');
-      if (!choice || (choice !== '1' && choice !== '2')) {
-        toast.info('Export cancelled');
-        return;
-      }
-      const exportType = choice === '1';
+      const exportType = type === 'payroll';
       
       let csvContent = '';
       let filename = '';
