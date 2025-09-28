@@ -231,7 +231,10 @@ const WorkerManagement = ({ workers = [], locations = [], onWorkerUpdate }) => {
               <h3>{editingWorker ? 'Edit Worker' : 'Add New Worker'}</h3>
               <button 
                 className="btn-cancel-x"
-                onClick={() => setShowWorkerModal(false)}
+                onClick={() => {
+                  setShowWorkerModal(false);
+                  setEditingWorker(null);
+                }}
               >
                 <X size={20} />
               </button>
