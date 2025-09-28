@@ -22,7 +22,28 @@
     }
   },
   "weekB": {},
-  "nextA": {},
+  "nextA": {
+    "LIB001": {
+      "2025-09-30": [
+        {
+          "id": "shift1",
+          "date": "2025-09-30",
+          "startTime": "09:00",
+          "endTime": "17:00",
+          "supportType": "Self-Care",
+          "ratio": "2:1",
+          "workers": [
+            "118",
+            "119"
+          ],
+          "location": "1",
+          "notes": "Test shift",
+          "shiftNumber": "30L001",
+          "duration": "8.0"
+        }
+      ]
+    }
+  },
   "nextB": {},
   "admin": {}
 }
