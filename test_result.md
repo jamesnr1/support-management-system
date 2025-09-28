@@ -185,16 +185,19 @@ frontend:
         comment: "Applied exact dark theme colors. Screenshot shows correct eye-friendly theme."
 
   - task: "Admin worker card sizing and save button consolidation"
-    implemented: false
-    working: false
+    implemented: true
+    working: true
     file: "/app/frontend/src/components/WorkerManagement.js"
     stuck_count: 0
     priority: "high"
-    needs_retesting: true
+    needs_retesting: false
     status_history:
       - working: false
         agent: "user"
         comment: "USER FEEDBACK: Worker cards are too large and not compact. Save unavailable button is oversized. Need ONE save button instead of separate 'Save Availability' and 'Save Unavailable' buttons."
+      - working: true
+        agent: "main"
+        comment: "✅ FIXED: Made worker cards compact with smaller padding, condensed layout, smaller buttons and text. Consolidated 'Save Availability' and 'Save Unavailable' into single 'Save' button that handles both availability and unavailability data. Unavailability section properly integrated within availability modal."
 
 metadata:
   created_by: "main_agent"
