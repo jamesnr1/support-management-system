@@ -206,35 +206,40 @@ const RosteringSystem = () => {
         return;
       }
       
-      console.log('Fetching Week A and Week B data...');
-      // Fetch Week A and Week B data
+      console.log('Fetching FRESH Week A and Week B data...');
+      // Force fresh fetch of Week A and Week B data (bypassing cache)
       const [weekAResponse, weekBResponse] = await Promise.all([
-        axios.get(`${API}/roster/weekA`),
-        axios.get(`${API}/roster/weekB`)
+        axios.get(`${API}/roster/weekA?t=${Date.now()}`),  // Add timestamp to bypass cache
+        axios.get(`${API}/roster/weekB?t=${Date.now()}`)   // Add timestamp to bypass cache
       ]);
       
       const weekAData = weekAResponse.data || {};
       const weekBData = weekBResponse.data || {};
       
-      console.log('Week A data:', Object.keys(weekAData).length, 'participants');
-      console.log('Week B data:', Object.keys(weekBData).length, 'participants');
+      console.log('Fresh Week A data:', JSON.stringify(weekAData, null, 2));
+      console.log('Fresh Week B data:', JSON.stringify(weekBData, null, 2));
+      console.log('Week A participants:', Object.keys(weekAData).length);
+      console.log('Week B participants:', Object.keys(weekBData).length);
       
       // Post data to Next A and Next B
       console.log('Posting data to Next A and Next B...');
-      await Promise.all([
+      const [nextAResponse, nextBResponse] = await Promise.all([
         axios.post(`${API}/roster/nextA`, weekAData),
         axios.post(`${API}/roster/nextB`, weekBData)
       ]);
       
+      console.log('Next A response:', nextAResponse.data);
+      console.log('Next B response:', nextBResponse.data);
+      
       // Refresh the roster data
       queryClient.invalidateQueries(['roster']);
       
-      toast.success(`Copy completed! Week A → Next A, Week B → Next B`);
+      toast.success(`Copy completed! Week A (${Object.keys(weekAData).length} participants) → Next A, Week B (${Object.keys(weekBData).length} participants) → Next B`);
       console.log('Copy template completed successfully');
       
     } catch (error) {
       console.error('Copy template error:', error);
-      toast.error('Failed to copy templates: ' + (error.message || 'Unknown error'));
+      toast.error('Failed to copy templates: ' + (error.response?.data?.detail || error.message));
     }
   };
 
