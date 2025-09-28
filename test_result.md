@@ -220,12 +220,14 @@ frontend:
 metadata:
   created_by: "main_agent"
   version: "1.0"
-  test_sequence: 3
+  test_sequence: 4
   run_ui: true
   comprehensive_workflow_testing: "completed"
   backend_test_coverage: "100%"
   copy_template_focused_testing: "completed"
   review_requirements_testing: "completed"
+  user_reported_issues_testing: "completed"
+  delete_worker_testing: "completed"
 
 test_plan:
   current_focus:
