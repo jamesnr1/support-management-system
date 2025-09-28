@@ -108,7 +108,26 @@ const WorkerManagement = ({ workers = [], locations = [], onWorkerUpdate }) => {
   const handleSendTelegramMessage = (worker) => {
     const message = prompt(`Send message to ${worker.full_name}:`);
     if (message && message.trim()) {
-      toast.success(`Message sent to ${worker.full_name}: "${message}"`);
+      // Actually send the message via API
+      fetch(`${API}/telegram/send`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          worker_id: worker.id,
+          message: message,
+          urgent: false
+        })
+      })
+      .then(response => {
+        if (response.ok) {
+          toast.success(`Message sent to ${worker.full_name}`);
+        } else {
+          throw new Error('Failed to send message');
+        }
+      })
+      .catch(() => {
+        toast.error('Failed to send message');
+      });
     }
   };
 
