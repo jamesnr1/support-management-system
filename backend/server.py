@@ -77,6 +77,7 @@ def save_roster_data():
 async def startup_event():
     """Initialize application"""
     try:
+        load_roster_data()
         logger.info("Application started successfully - using Supabase database")
     except Exception as e:
         logger.error(f"Failed to start application: {e}")
