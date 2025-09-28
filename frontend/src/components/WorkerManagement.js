@@ -102,8 +102,18 @@ const WorkerManagement = ({ workers, locations, onWorkerUpdate }) => {
           </button>
         </div>
         
-        <div className="workers-grid">
-          {workers.map(worker => (
+        {!workers ? (
+          <div className="loading">
+            <div className="spinner"></div>
+            Loading workers...
+          </div>
+        ) : workers.length === 0 ? (
+          <div style={{ textAlign: 'center', color: 'var(--text-muted)', padding: '2rem' }}>
+            No workers found. Click "Add Worker" to create the first worker.
+          </div>
+        ) : (
+          <div className="workers-grid">
+            {workers.map(worker => (
             <div key={worker.id} className="worker-card">
               <div className="worker-header">
                 <div>
