@@ -206,7 +206,7 @@ const WorkerManagement = ({ workers = [], locations = [], onWorkerUpdate }) => {
                     <div style={{ display: 'flex', gap: '0.5rem', marginBottom: '0.5rem' }}>
                       <button 
                         className="btn btn-secondary btn-sm"
-                        onClick={() => setShowUnavailability(prev => ({ ...prev, [worker.id]: !prev[worker.id] }))}
+                        onClick={() => handleManageAvailability(worker)}
                       >
                         <Calendar size={14} /> Availability
                       </button>
