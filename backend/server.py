@@ -6,12 +6,12 @@ import logging
 from pathlib import Path
 from typing import List, Dict, Any, Optional
 from datetime import datetime, date
-import asyncio
-from motor.motor_asyncio import AsyncIOMotorClient
-from bson import ObjectId
 import uuid
 
-# Import our modules
+# Import database
+from database import db
+
+# Import our models
 from models import (
     Worker, WorkerCreate, AvailabilityRule, UnavailabilityPeriod, 
     Participant, Shift, WorkerAvailabilityCheck, ConflictCheck, 
@@ -40,12 +40,13 @@ app.add_middleware(
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-# MongoDB connection
-client = None
-db = None
-
-# Global roster state
-ROSTER_STATE = RosterState()
+# Global roster state - we'll use a simple dict for now
+ROSTER_DATA = {
+    'weekA': {},
+    'weekB': {},
+    'nextA': {},
+    'nextB': {}
+}
 
 async def connect_to_mongo():
     """Create database connection"""
