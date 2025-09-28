@@ -98,7 +98,7 @@ const WorkerManagement = ({ workers = [], locations = [], onWorkerUpdate }) => {
   };
 
   const handleDeleteWorker = (worker) => {
-    if (window.confirm(`Are you sure you want to deactivate ${worker.full_name}?`)) {
+    if (window.confirm(`⚠️ Are you sure you want to DELETE ${worker.full_name}?\n\nThis will deactivate the worker and they will no longer appear in the system.\n\nClick OK to confirm deletion or Cancel to abort.`)) {
       deleteWorkerMutation.mutate(worker.id);
     }
   };
