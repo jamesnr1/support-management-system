@@ -196,57 +196,54 @@ const RosteringSystem = () => {
     }
   };
 
-  // Template copying function - Simplified version
+  // Template copying function - Simple and working
   const copyToTemplate = async () => {
     try {
-      console.log('Copy Template function called!');
       if (!window.confirm('Copy Week A and Week B schedules to Next A and Next B?')) {
-        console.log('User cancelled the copy operation');
         return;
       }
       
-      console.log('Fetching Week A and Week B data...');
+      // Show loading message
+      toast.info('Copying templates...');
       
-      // Use fetch instead of axios to avoid CORS issues
-      const weekAResponse = await fetch(`${API}/roster/weekA?t=${Date.now()}`);
-      const weekBResponse = await fetch(`${API}/roster/weekB?t=${Date.now()}`);
+      // Get current roster data from backend using direct curl equivalent
+      const weekAResponse = await fetch(`${import.meta.env.REACT_APP_BACKEND_URL}/api/roster/weekA`);
+      const weekBResponse = await fetch(`${import.meta.env.REACT_APP_BACKEND_URL}/api/roster/weekB`);
       
-      if (!weekAResponse.ok) throw new Error('Failed to fetch Week A');
-      if (!weekBResponse.ok) throw new Error('Failed to fetch Week B');
+      if (!weekAResponse.ok || !weekBResponse.ok) {
+        throw new Error('Failed to fetch roster data');
+      }
       
       const weekAData = await weekAResponse.json();
       const weekBData = await weekBResponse.json();
       
-      console.log('Week A participants:', Object.keys(weekAData).length);
-      console.log('Week B participants:', Object.keys(weekBData).length);
-      
-      // Post data to Next A and Next B
-      console.log('Posting data to Next A and Next B...');
-      
-      const nextAResponse = await fetch(`${API}/roster/nextA`, {
+      // Post to next weeks
+      const nextAResponse = await fetch(`${import.meta.env.REACT_APP_BACKEND_URL}/api/roster/nextA`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(weekAData)
       });
       
-      const nextBResponse = await fetch(`${API}/roster/nextB`, {
-        method: 'POST', 
+      const nextBResponse = await fetch(`${import.meta.env.REACT_APP_BACKEND_URL}/api/roster/nextB`, {
+        method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(weekBData)
       });
       
-      if (!nextAResponse.ok) throw new Error('Failed to post to Next A');
-      if (!nextBResponse.ok) throw new Error('Failed to post to Next B');
+      if (!nextAResponse.ok || !nextBResponse.ok) {
+        throw new Error('Failed to copy data');
+      }
       
-      // Refresh the roster data
-      queryClient.invalidateQueries(['roster']);
+      toast.success('Copy completed successfully!');
       
-      toast.success(`Copy completed! Week A (${Object.keys(weekAData).length} participants) → Next A, Week B (${Object.keys(weekBData).length} participants) → Next B`);
-      console.log('Copy template completed successfully');
+      // Reload page to show updated data
+      setTimeout(() => {
+        window.location.reload();
+      }, 1000);
       
     } catch (error) {
-      console.error('Copy template error:', error);
-      toast.error('Copy template failed: ' + error.message);
+      console.error('Copy error:', error);
+      toast.error('Copy failed: ' + error.message);
     }
   };
 
