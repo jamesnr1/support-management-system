@@ -49,6 +49,29 @@ ROSTER_DATA = {
     'nextB': {}
 }
 
+# File-based persistence for roster data
+ROSTER_FILE = Path(__file__).parent / 'roster_data.json'
+
+def load_roster_data():
+    """Load roster data from file"""
+    global ROSTER_DATA
+    try:
+        if ROSTER_FILE.exists():
+            with open(ROSTER_FILE, 'r') as f:
+                ROSTER_DATA = json.load(f)
+                logger.info(f"Loaded roster data from {ROSTER_FILE}")
+    except Exception as e:
+        logger.error(f"Error loading roster data: {e}")
+        
+def save_roster_data():
+    """Save roster data to file"""
+    try:
+        with open(ROSTER_FILE, 'w') as f:
+            json.dump(ROSTER_DATA, f, indent=2)
+            logger.info(f"Saved roster data to {ROSTER_FILE}")
+    except Exception as e:
+        logger.error(f"Error saving roster data: {e}")
+
 # Initialize database on startup
 @app.on_event("startup")
 async def startup_event():
