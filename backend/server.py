@@ -48,43 +48,20 @@ ROSTER_DATA = {
     'nextB': {}
 }
 
-async def connect_to_mongo():
-    """Create database connection"""
-    global client, db
-    try:
-        client = AsyncIOMotorClient(os.environ.get('MONGO_URL', 'mongodb://localhost:27017'))
-        db = client.rostering_db
-        logger.info("Connected to MongoDB successfully")
-    except Exception as e:
-        logger.error(f"Failed to connect to MongoDB: {e}")
-        raise
-
-async def close_mongo_connection():
-    """Close database connection"""
-    global client
-    if client:
-        client.close()
-        logger.info("MongoDB connection closed")
-
 # Initialize database on startup
 @app.on_event("startup")
 async def startup_event():
-    """Initialize database and load initial data"""
+    """Initialize application"""
     try:
-        await connect_to_mongo()
-        await init_sample_data()
-        await load_participants()
-        await load_workers()
-        await load_locations()
-        logger.info("Application started successfully")
+        logger.info("Application started successfully - using Supabase database")
     except Exception as e:
         logger.error(f"Failed to start application: {e}")
         raise
 
-@app.on_event("shutdown")
+@app.on_event("shutdown") 
 async def shutdown_event():
-    """Clean up database connections"""
-    await close_mongo_connection()
+    """Clean up on shutdown"""
+    logger.info("Application shutdown")
 
 # Helper functions
 async def init_sample_data():
