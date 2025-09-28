@@ -337,7 +337,7 @@ const HoursTracker = (props) => {
                           <span className="remaining-hours">{hourData.remaining}h</span>
                           <span className="total-hours">/{hourData.available}h</span>
                         </div>
-                        <div className="ratio-multiplier">2:1 ratio (2x cost)</div>
+                        <div className="ratio-multiplier">2:1 ratio</div>
                       </div>
                     );
                   })}
