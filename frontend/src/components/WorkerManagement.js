@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { toast } from 'react-hot-toast';
 import axios from 'axios';
 import { X, Edit, Trash2, Plus, Calendar, MessageCircle } from 'lucide-react';
@@ -9,7 +9,6 @@ const API = `${BACKEND_URL}/api`;
 
 const WorkerManagement = ({ workers, locations, onWorkerUpdate }) => {
   const [showWorkerModal, setShowWorkerModal] = useState(false);
-  const [selectedWorker, setSelectedWorker] = useState(null);
   const [editingWorker, setEditingWorker] = useState(null);
   const [showUnavailability, setShowUnavailability] = useState({});
   const [unavailabilityData, setUnavailabilityData] = useState({
