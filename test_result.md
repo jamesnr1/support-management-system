@@ -224,6 +224,8 @@ test_plan:
     - "Add/Edit/Delete shifts workflow"
     - "Complete rostering system workflow"
     - "Data persistence and consistency"
+    - "Copy Template focused testing"
+    - "Review requirements verification"
 
 agent_communication:
   - agent: "main"
