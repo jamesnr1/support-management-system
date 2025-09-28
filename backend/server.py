@@ -315,14 +315,15 @@ async def get_participants():
 @api_router.get("/roster/{week_type}")
 async def get_roster(week_type: str):
     """Get roster for specific week type"""
-    if week_type not in ROSTER_STATE.rosters:
-        ROSTER_STATE.rosters[week_type] = {}
-    return ROSTER_STATE.rosters[week_type]
+    if week_type not in ROSTER_DATA:
+        ROSTER_DATA[week_type] = {}
+    return ROSTER_DATA[week_type]
 
 @api_router.post("/roster/{week_type}")
 async def update_roster(week_type: str, roster_data: Dict[str, Any]):
     """Update roster for specific week type"""
-    ROSTER_STATE.rosters[week_type] = roster_data
+    ROSTER_DATA[week_type] = roster_data
+    logger.info(f"Updated roster {week_type} with {len(roster_data)} participants")
     return {"message": f"Roster {week_type} updated successfully"}
 
 # Location Routes
