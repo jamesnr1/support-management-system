@@ -266,7 +266,7 @@ const RosteringSystem = () => {
               title="Copy Week A/B to Next A/B"
               style={{ padding: '0.5rem 1rem', fontSize: '0.9rem' }}
             >
-              📋 Copy to Template
+              📋 Copy Template
             </button>
             <button 
               className="btn btn-secondary"
