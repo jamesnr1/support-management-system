@@ -1,67 +1,151 @@
 {
   "weekA": {
-    "LIB001": {
-      "2025-09-30": [
-        {
-          "id": "shift1",
-          "date": "2025-09-30",
+    "shifts": {
+      "monday": {
+        "morning": {
+          "participants": [
+            "LIB001",
+            "ACE001"
+          ],
+          "workers": [
+            "GAU001",
+            "VER001"
+          ],
+          "location": "Glandore",
+          "hours": 6,
           "startTime": "09:00",
-          "endTime": "17:00",
-          "supportType": "Self-Care",
-          "ratio": "2:1",
-          "workers": [
-            "118",
-            "119"
-          ],
-          "location": "1",
-          "notes": "Test shift",
-          "shiftNumber": "30L001",
-          "duration": "8.0"
+          "endTime": "15:00"
         }
-      ],
-      "2025-09-22": [
-        {
-          "id": "1759056852329",
-          "date": "2025-09-22",
-          "startTime": "06:00",
-          "endTime": "14:00",
-          "supportType": "Self-Care",
-          "ratio": "2:1",
-          "workers": [
-            "123",
-            "125"
+      },
+      "tuesday": {
+        "afternoon": {
+          "participants": [
+            "JAM001"
           ],
-          "location": "1",
-          "notes": "",
-          "shiftNumber": "20250922L594",
-          "duration": "8.0"
+          "workers": [
+            "SAN001",
+            "KRU001"
+          ],
+          "location": "Plympton Park",
+          "hours": 4,
+          "startTime": "13:00",
+          "endTime": "17:00"
         }
-      ]
-    }
+      }
+    },
+    "updated_at": "2024-01-15T10:00:00Z"
   },
-  "weekB": {},
+  "weekB": {
+    "shifts": {
+      "wednesday": {
+        "morning": {
+          "participants": [
+            "MIL001",
+            "GRA001"
+          ],
+          "workers": [
+            "MIH001",
+            "CHA001"
+          ],
+          "location": "Glandore",
+          "hours": 5,
+          "startTime": "08:00",
+          "endTime": "13:00"
+        }
+      },
+      "thursday": {
+        "afternoon": {
+          "participants": [
+            "LIB001"
+          ],
+          "workers": [
+            "HAP001",
+            "MEE001"
+          ],
+          "location": "Plympton Park",
+          "hours": 6,
+          "startTime": "12:00",
+          "endTime": "18:00"
+        }
+      }
+    },
+    "updated_at": "2024-01-15T10:00:00Z"
+  },
   "nextA": {
-    "LIB001": {
-      "2025-09-30": [
-        {
-          "id": "shift1",
-          "date": "2025-09-30",
-          "startTime": "09:00",
-          "endTime": "17:00",
-          "supportType": "Self-Care",
-          "ratio": "2:1",
-          "workers": [
-            "118",
-            "119"
+    "shifts": {
+      "monday": {
+        "morning": {
+          "participants": [
+            "LIB001",
+            "ACE001"
           ],
-          "location": "1",
-          "notes": "Test shift",
-          "shiftNumber": "30L001",
-          "duration": "8.0"
+          "workers": [
+            "GAU001",
+            "VER001"
+          ],
+          "location": "Glandore",
+          "hours": 6,
+          "startTime": "09:00",
+          "endTime": "15:00"
         }
-      ]
-    }
+      },
+      "tuesday": {
+        "afternoon": {
+          "participants": [
+            "JAM001"
+          ],
+          "workers": [
+            "SAN001",
+            "KRU001"
+          ],
+          "location": "Plympton Park",
+          "hours": 4,
+          "startTime": "13:00",
+          "endTime": "17:00"
+        }
+      }
+    },
+    "updated_at": "2024-01-15T10:00:00Z",
+    "template_source": "weekA",
+    "copied_at": "2024-01-15T11:00:00Z"
   },
-  "nextB": {},
+  "nextB": {
+    "shifts": {
+      "wednesday": {
+        "morning": {
+          "participants": [
+            "MIL001",
+            "GRA001"
+          ],
+          "workers": [
+            "MIH001",
+            "CHA001"
+          ],
+          "location": "Glandore",
+          "hours": 5,
+          "startTime": "08:00",
+          "endTime": "13:00"
+        }
+      },
+      "thursday": {
+        "afternoon": {
+          "participants": [
+            "LIB001"
+          ],
+          "workers": [
+            "HAP001",
+            "MEE001"
+          ],
+          "location": "Plympton Park",
+          "hours": 6,
+          "startTime": "12:00",
+          "endTime": "18:00"
+        }
+      }
+    },
+    "updated_at": "2024-01-15T10:00:00Z",
+    "template_source": "weekB",
+    "copied_at": "2024-01-15T11:00:00Z"
+  },
   "admin": {}
 }
