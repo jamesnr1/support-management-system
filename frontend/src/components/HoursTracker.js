@@ -286,7 +286,7 @@ const HoursTracker = (props) => {
               }}
             />
             <div style={{ fontSize: '0.8rem', color: 'var(--text-muted)', marginTop: '0.25rem' }}>
-              Format: ParticipantCode,SelfCareHours,CommunityHours
+              Format: ParticipantCode,SCWD,SCWE,SCWN,SCSat,SCSun,SCPH,CPWD,CPWE,CPSat,CPSun,CPPH
             </div>
           </div>
           
