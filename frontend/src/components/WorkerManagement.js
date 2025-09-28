@@ -61,10 +61,13 @@ const WorkerManagement = ({ workers = [], locations = [], onWorkerUpdate }) => {
       return response.data;
     },
     onSuccess: () => {
-      console.log('Delete successful, reloading page');
+      console.log('Delete successful, invalidating cache');
       toast.success('Worker deleted successfully');
-      // Just reload the page immediately to ensure the worker is gone
-      window.location.reload();
+      // Invalidate all related queries
+      queryClient.invalidateQueries(['workers']);
+      queryClient.invalidateQueries(['participants']);
+      queryClient.invalidateQueries(['roster']);
+      queryClient.refetchQueries(['workers']);
     },
     onError: (error) => {
       toast.error(`Failed to deactivate worker: ${error.response?.data?.detail || error.message}`);
