@@ -226,7 +226,7 @@ const WorkerManagement = ({ workers = [], locations = [], onWorkerUpdate }) => {
       {/* Worker Modal */}
       {showWorkerModal && (
         <div className="modal-overlay" onClick={() => setShowWorkerModal(false)}>
-          <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+          <div className="modal-content" onClick={(e) => e.stopPropagation()} style={{ maxWidth: '700px', width: '95%' }}>
             <div className="modal-header">
               <h3>{editingWorker ? 'Edit Worker' : 'Add New Worker'}</h3>
               <button 
