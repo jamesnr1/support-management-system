@@ -186,8 +186,9 @@ async def get_roster(week_type: str):
 async def update_roster(week_type: str, roster_data: Dict[str, Any]):
     """Update roster for specific week type in database"""
     try:
-        # Use memory storage only for now
+        # Use memory storage and file persistence
         ROSTER_DATA[week_type] = roster_data
+        save_roster_data()  # Persist to file
         logger.info(f"Updated roster {week_type} with {len(roster_data)} participants")
         return {"message": f"Roster {week_type} updated successfully"}
     except Exception as e:
