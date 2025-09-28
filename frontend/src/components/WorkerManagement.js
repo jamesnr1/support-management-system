@@ -429,6 +429,81 @@ const WorkerManagement = ({ workers = [], locations = [], onWorkerUpdate }) => {
           </div>
         </div>
       )}
+
+      {/* Availability Modal */}
+      {showAvailabilityModal && selectedWorker && (
+        <div className="modal-overlay" onClick={() => setShowAvailabilityModal(false)}>
+          <div className="modal-content" onClick={(e) => e.stopPropagation()} style={{ width: '600px' }}>
+            <div className="modal-header">
+              <h3>Availability - {selectedWorker.full_name}</h3>
+              <button 
+                className="btn-cancel-x"
+                onClick={() => setShowAvailabilityModal(false)}
+              >
+                <X size={20} />
+              </button>
+            </div>
+            
+            <div style={{ padding: '1rem' }}>
+              {/* Weekly availability schedule */}
+              <div style={{ marginBottom: '1.5rem' }}>
+                <h4 style={{ marginBottom: '1rem', color: 'var(--accent-primary)' }}>Weekly Schedule</h4>
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', gap: '1rem' }}>
+                  {['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'].map(day => (
+                    <div key={day} style={{ textAlign: 'center', padding: '0.5rem', background: 'var(--bg-input)', borderRadius: '4px' }}>
+                      <div style={{ fontWeight: 'bold', marginBottom: '0.5rem', fontSize: '0.9rem' }}>{day}</div>
+                      <div style={{ marginBottom: '0.5rem' }}>
+                        <input type="checkbox" defaultChecked style={{ marginRight: '0.25rem' }} />
+                        <span style={{ fontSize: '0.8rem' }}>Available</span>
+                      </div>
+                      <div style={{ fontSize: '0.8rem' }}>
+                        <input 
+                          type="time" 
+                          defaultValue="09:00" 
+                          style={{ 
+                            width: '70px', 
+                            fontSize: '0.8rem', 
+                            padding: '0.2rem',
+                            marginBottom: '0.25rem',
+                            background: 'var(--bg-secondary)',
+                            border: '1px solid var(--border-color)',
+                            color: 'var(--text-primary)'
+                          }} 
+                        />
+                        <div style={{ margin: '0.25rem 0', fontSize: '0.7rem' }}>to</div>
+                        <input 
+                          type="time" 
+                          defaultValue="17:00" 
+                          style={{ 
+                            width: '70px', 
+                            fontSize: '0.8rem', 
+                            padding: '0.2rem',
+                            background: 'var(--bg-secondary)',
+                            border: '1px solid var(--border-color)',
+                            color: 'var(--text-primary)'
+                          }} 
+                        />
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+              
+              <div className="modal-actions">
+                <button className="btn btn-primary">
+                  Save Availability
+                </button>
+                <button 
+                  className="btn btn-secondary"
+                  onClick={() => setShowAvailabilityModal(false)}
+                >
+                  Cancel
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
