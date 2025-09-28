@@ -309,7 +309,7 @@ const RosteringSystem = () => {
             onClick={() => setActiveTab(tab.id)}
             style={{ 
               '--tab-color': tab.color,
-              borderBottom: activeTab === tab.id ? `3px solid ${tab.color}` : 'none'
+              borderBottom: activeTab === tab.id ? `3px solid var(--accent-primary)` : 'none'
             }}
           >
             {tab.label}
