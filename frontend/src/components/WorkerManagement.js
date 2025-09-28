@@ -345,8 +345,12 @@ const WorkerManagement = ({ workers = [], locations = [], onWorkerUpdate }) => {
                 />
               </div>
               
-              <div className="modal-actions">
-                <button type="submit" className="btn btn-primary">
+              <div className="modal-actions" style={{ gridColumn: 'span 2', display: 'flex', gap: '1rem', justifyContent: 'flex-end', marginTop: '2rem', paddingTop: '1rem', borderTop: '1px solid var(--border-color)' }}>
+                <button 
+                  type="submit" 
+                  className="btn btn-primary"
+                  style={{ padding: '0.75rem 2rem', fontSize: '1rem' }}
+                >
                   {editingWorker ? 'Update Worker' : 'Create Worker'}
                 </button>
                 <button 
@@ -356,6 +360,7 @@ const WorkerManagement = ({ workers = [], locations = [], onWorkerUpdate }) => {
                     setShowWorkerModal(false);
                     setEditingWorker(null);
                   }}
+                  style={{ padding: '0.75rem 2rem', fontSize: '1rem' }}
                 >
                   Cancel
                 </button>
