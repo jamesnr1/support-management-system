@@ -231,6 +231,7 @@ metadata:
 
 test_plan:
   current_focus:
+    - "Delete Worker functionality"
     - "Copy to Template functionality"
     - "Export functionality" 
     - "Hours tracking functionality"
@@ -243,6 +244,8 @@ test_plan:
     - "Data persistence and consistency"
     - "Copy Template focused testing"
     - "Review requirements verification"
+    - "User-reported broken functionality testing"
+    - "Delete worker functionality testing"
 
 agent_communication:
   - agent: "main"
