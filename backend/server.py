@@ -88,50 +88,18 @@ async def get_workers():
 
 @api_router.post("/workers", response_model=Worker)
 async def create_worker(worker: WorkerCreate):
-    """Create a new worker"""
-    try:
-        worker_data = worker.dict()
-        worker_data['_id'] = str(uuid.uuid4())
-        worker_data['status'] = 'Active'
-        
-        result = await db.workers.insert_one(worker_data)
-        created_worker = await db.workers.find_one({"_id": worker_data['_id']})
-        created_worker['id'] = created_worker['_id']
-        
-        await load_workers()
-        return Worker(**created_worker)
-    except Exception as e:
-        logger.error(f"Error creating worker: {e}")
-        raise HTTPException(status_code=400, detail=str(e))
+    """Create a new worker - TODO: Implement Supabase integration"""
+    raise HTTPException(status_code=501, detail="Create worker not implemented yet")
 
 @api_router.put("/workers/{worker_id}", response_model=Worker)
 async def update_worker(worker_id: str, worker: WorkerCreate):
-    """Update a worker"""
-    try:
-        worker_data = worker.dict()
-        await db.workers.update_one({"_id": worker_id}, {"$set": worker_data})
-        
-        updated_worker = await db.workers.find_one({"_id": worker_id})
-        if not updated_worker:
-            raise HTTPException(status_code=404, detail="Worker not found")
-        
-        updated_worker['id'] = updated_worker['_id']
-        await load_workers()
-        return Worker(**updated_worker)
-    except Exception as e:
-        logger.error(f"Error updating worker: {e}")
-        raise HTTPException(status_code=400, detail=str(e))
+    """Update a worker - TODO: Implement Supabase integration"""
+    raise HTTPException(status_code=501, detail="Update worker not implemented yet")
 
 @api_router.delete("/workers/{worker_id}")
 async def delete_worker(worker_id: str):
-    """Delete a worker (set to inactive)"""
-    try:
-        await db.workers.update_one({"_id": worker_id}, {"$set": {"status": "Inactive"}})
-        await load_workers()
-        return {"message": "Worker deactivated successfully"}
-    except Exception as e:
-        logger.error(f"Error deleting worker: {e}")
-        raise HTTPException(status_code=400, detail=str(e))
+    """Delete a worker - TODO: Implement Supabase integration"""
+    raise HTTPException(status_code=501, detail="Delete worker not implemented yet")
 
 # Participant Management Routes
 @api_router.get("/participants", response_model=List[Participant])
