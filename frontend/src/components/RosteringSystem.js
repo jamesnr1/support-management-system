@@ -312,11 +312,19 @@ const RosteringSystem = () => {
             </button>
             <button 
               className="btn btn-secondary"
-              onClick={exportRoster}
-              title="Export all roster data to CSV"
+              onClick={() => exportRoster('payroll')}
+              title="Export payroll data to CSV"
               style={{ padding: '0.5rem 1rem', fontSize: '0.9rem' }}
             >
-              💰 Export
+              📊 Export Payroll
+            </button>
+            <button 
+              className="btn btn-secondary"
+              onClick={() => exportRoster('shifts')}
+              title="Export shift report to CSV"
+              style={{ padding: '0.5rem 1rem', fontSize: '0.9rem' }}
+            >
+              📋 Export Shifts
             </button>
           </div>
         </div>
