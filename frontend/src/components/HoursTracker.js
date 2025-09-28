@@ -84,13 +84,15 @@ const HoursTracker = (props) => {
         selfCare: { used: 0, available: selfCareAvailable },
         community: { used: 0, available: communityAvailable }
       };
-      
-      try {
-        // Fetch data for all weeks
-        for (const weekType of ['weekA', 'weekB', 'nextA', 'nextB']) {
-          const response = await axios.get(`${API}/roster/${weekType}`);
-          const weekData = response.data;
-          
+    });
+
+    // Fetch data for all weeks for all participants
+    try {
+      for (const weekType of ['weekA', 'weekB', 'nextA', 'nextB']) {
+        const response = await axios.get(`${API}/roster/${weekType}`);
+        const weekData = response.data;
+        
+        participants.forEach(participant => {
           if (weekData[participant.code]) {
             Object.values(weekData[participant.code]).forEach(dayShifts => {
               if (Array.isArray(dayShifts)) {
@@ -107,12 +109,10 @@ const HoursTracker = (props) => {
               }
             });
           }
-        }
-      } catch (error) {
-        console.error('Error fetching hours for', participant.code, error);
+        });
       }
-      
-      console.log('Final hours for', participant.code, hours[participant.code]);
+    } catch (error) {
+      console.error('Error fetching hours data:', error);
     }
     
     console.log('All calculated hours:', hours);
