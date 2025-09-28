@@ -291,11 +291,11 @@ const WorkerManagement = ({ workers = [], locations = [], onWorkerUpdate }) => {
                 
                 <div className="form-group">
                   <label>Car</label>
-                  <input
-                    type="text"
-                    name="car"
-                    defaultValue={editingWorker?.car || ''}
-                  />
+                  <select name="car" defaultValue={editingWorker?.car || ''}>
+                    <option value="">Select...</option>
+                    <option value="Yes">Yes</option>
+                    <option value="No">No</option>
+                  </select>
                 </div>
                 
                 <div className="form-group">
