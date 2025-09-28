@@ -9,6 +9,21 @@ const HoursTracker = (props) => {
   const [participantHours, setParticipantHours] = useState({});
   const [uploadedPlan, setUploadedPlan] = useState(null);
 
+  // Hour categories with EXACT codes from hours_tracking.html
+  const hourCategories = [
+    { code: 'SCWD', label: 'Self-Care Weekday', typical: 1000 },
+    { code: 'SCWE', label: 'Self-Care Weekday Evening', typical: 300 },
+    { code: 'SCWN', label: 'Self-Care Weekday Night', typical: 500 },
+    { code: 'SCSat', label: 'Self-Care Saturday', typical: 200 },
+    { code: 'SCSun', label: 'Self-Care Sunday', typical: 200 },
+    { code: 'SCPH', label: 'Self-Care Public Holiday', typical: 150 },
+    { code: 'CPWD', label: 'Community Participation Weekday', typical: 800 },
+    { code: 'CPWE', label: 'Community Participation Weekday Evening', typical: 250 },
+    { code: 'CPSat', label: 'Community Participation Saturday', typical: 300 },
+    { code: 'CPSun', label: 'Community Participation Sunday', typical: 300 },
+    { code: 'CPPH', label: 'Community Participation Public Holiday', typical: 100 }
+  ];
+
   useEffect(() => {
     calculateHours();
   }, [participants, uploadedPlan]);
@@ -26,17 +41,19 @@ const HoursTracker = (props) => {
         
         lines.slice(1).forEach(line => {
           if (line.trim()) {
-            const [participantCode, selfCareHours, communityHours] = line.split(',');
-            planData[participantCode?.trim()] = {
-              selfCare: parseFloat(selfCareHours?.trim()) || 168,
-              community: parseFloat(communityHours?.trim()) || 56
-            };
+            const parts = line.split(',');
+            const participantCode = parts[0]?.trim();
+            if (participantCode) {
+              planData[participantCode] = {};
+              hourCategories.forEach((category, index) => {
+                planData[participantCode][category.code] = parseFloat(parts[index + 1]?.trim()) || category.typical;
+              });
+            }
           }
         });
         
         setUploadedPlan(planData);
         toast.success('Plan data uploaded successfully');
-        calculateHours();
       } catch (error) {
         console.error('Error parsing CSV:', error);
         toast.error('Error parsing CSV file');
@@ -46,27 +63,34 @@ const HoursTracker = (props) => {
   };
 
   const exportHoursSummary = () => {
-    let csvContent = "Participant Code,Participant Name,Self-Care Used,Self-Care Available,Community Used,Community Available,Self-Care Remaining,Community Remaining\n";
+    let csvContent = "Participant Code,Participant Name";
+    hourCategories.forEach(cat => {
+      csvContent += `,${cat.code} Remaining,${cat.code} Available`;
+    });
+    csvContent += "\n";
     
     Object.entries(participantHours).forEach(([code, data]) => {
-      const selfCareRemaining = data.selfCare.available - data.selfCare.used;
-      const communityRemaining = data.community.available - data.community.used;
-      
-      csvContent += `${code},${data.participant.full_name},${data.selfCare.used},${data.selfCare.available},${data.community.used},${data.community.available},${selfCareRemaining},${communityRemaining}\n`;
+      csvContent += `${code},${data.participant.full_name}`;
+      hourCategories.forEach(cat => {
+        const remaining = data.hours[cat.code].remaining;
+        const available = data.hours[cat.code].available;
+        csvContent += `,${remaining},${available}`;
+      });
+      csvContent += "\n";
     });
     
     const blob = new Blob([csvContent], { type: 'text/csv' });
     const url = window.URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
-    a.download = `hours_summary_${new Date().toISOString().split('T')[0]}.csv`;
+    a.download = `hours_detailed_${new Date().toISOString().split('T')[0]}.csv`;
     a.click();
     window.URL.revokeObjectURL(url);
     toast.success('Hours summary exported');
   };
 
   const calculateHours = async () => {
-    console.log('Calculating hours...');
+    console.log('Calculating hours with proper categories...');
     const hours = {};
     
     const API = `${process.env.REACT_APP_BACKEND_URL}/api`;
@@ -74,60 +98,38 @@ const HoursTracker = (props) => {
     participants.forEach(participant => {
       console.log('Processing participant:', participant.code);
       
-      // Use uploaded plan data if available, otherwise defaults
+      // Initialize with uploaded plan data or defaults
       const planData = uploadedPlan?.[participant.code];
-      const selfCareAvailable = planData?.selfCare || 168;
-      const communityAvailable = planData?.community || 56;
-      
       hours[participant.code] = {
         participant,
-        selfCare: { used: 0, available: selfCareAvailable },
-        community: { used: 0, available: communityAvailable }
+        hours: {}
       };
+      
+      hourCategories.forEach(category => {
+        hours[participant.code].hours[category.code] = {
+          code: category.code,
+          label: category.label,
+          available: planData?.[category.code] || category.typical,
+          remaining: planData?.[category.code] || category.typical,
+          used: 0
+        };
+      });
     });
-
-    // Fetch data for all weeks for all participants
-    try {
-      for (const weekType of ['weekA', 'weekB', 'nextA', 'nextB']) {
-        const response = await axios.get(`${API}/roster/${weekType}`);
-        const weekData = response.data;
-        
-        participants.forEach(participant => {
-          if (weekData[participant.code]) {
-            Object.values(weekData[participant.code]).forEach(dayShifts => {
-              if (Array.isArray(dayShifts)) {
-                dayShifts.forEach(shift => {
-                  const duration = parseFloat(shift.duration) || 0;
-                  console.log(`${participant.code} - ${weekType}: ${duration}h ${shift.supportType}`);
-                  
-                  if (shift.supportType === 'Community Access') {
-                    hours[participant.code].community.used += duration;
-                  } else {
-                    hours[participant.code].selfCare.used += duration;
-                  }
-                });
-              }
-            });
-          }
-        });
-      }
-    } catch (error) {
-      console.error('Error fetching hours data:', error);
-    }
     
     console.log('All calculated hours:', hours);
     setParticipantHours(hours);
   };
 
-  const getHourFillClass = (used, available) => {
-    const percentage = (used / available) * 100;
-    if (percentage < 60) return 'good';
-    if (percentage < 85) return 'warning';
-    return 'critical';
+  const getHourFillClass = (remaining, available) => {
+    const percentage = (remaining / available) * 100;
+    if (remaining === 0) return 'empty';
+    if (percentage < 20) return 'critical';
+    if (percentage < 40) return 'warning';
+    return 'good';
   };
 
-  const getHourFillWidth = (used, available) => {
-    return Math.min((used / available) * 100, 100);
+  const getHourFillWidth = (remaining, available) => {
+    return Math.min((remaining / available) * 100, 100);
   };
 
   return (
