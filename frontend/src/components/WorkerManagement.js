@@ -231,8 +231,8 @@ const WorkerManagement = ({ workers = [], locations = [], onWorkerUpdate }) => {
       {/* Worker Modal */}
       {showWorkerModal && (
         <div className="modal-overlay" onClick={() => setShowWorkerModal(false)}>
-          <div className="modal-content" onClick={(e) => e.stopPropagation()} style={{ maxWidth: '700px', width: '95%' }}>
-            <div className="modal-header">
+          <div className="modal-content" onClick={(e) => e.stopPropagation()} style={{ maxWidth: '800px', width: '90%', padding: '2rem' }}>
+            <div className="modal-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2rem' }}>
               <h3>{editingWorker ? 'Edit Worker' : 'Add New Worker'}</h3>
               <button 
                 className="btn-cancel-x"
@@ -245,7 +245,7 @@ const WorkerManagement = ({ workers = [], locations = [], onWorkerUpdate }) => {
               </button>
             </div>
             
-            <form onSubmit={handleWorkerSubmit}>
+            <form onSubmit={handleWorkerSubmit} style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '2rem', alignItems: 'start' }}>
               <div className="form-grid">
                 <div className="form-group">
                   <label>Worker Code</label>
