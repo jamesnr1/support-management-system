@@ -213,10 +213,22 @@ const RosteringSystem = () => {
       
       console.log('Fetching FRESH Week A and Week B data...');
       // Force fresh fetch of Week A and Week B data (bypassing cache)
-      const [weekAResponse, weekBResponse] = await Promise.all([
-        axios.get(`${API}/roster/weekA?t=${Date.now()}`),  // Add timestamp to bypass cache
-        axios.get(`${API}/roster/weekB?t=${Date.now()}`)   // Add timestamp to bypass cache
-      ]);
+      let weekAResponse, weekBResponse;
+      try {
+        weekAResponse = await axios.get(`${API}/roster/weekA?t=${Date.now()}`, { timeout: 10000 });
+        console.log('Week A fetch successful:', weekAResponse.status);
+      } catch (error) {
+        console.error('Week A fetch failed:', error.message);
+        throw new Error(`Failed to fetch Week A data: ${error.message}`);
+      }
+      
+      try {
+        weekBResponse = await axios.get(`${API}/roster/weekB?t=${Date.now()}`, { timeout: 10000 });
+        console.log('Week B fetch successful:', weekBResponse.status);
+      } catch (error) {
+        console.error('Week B fetch failed:', error.message);
+        throw new Error(`Failed to fetch Week B data: ${error.message}`);
+      }
       
       const weekAData = weekAResponse.data || {};
       const weekBData = weekBResponse.data || {};
