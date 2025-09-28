@@ -61,10 +61,16 @@ const WorkerManagement = ({ workers = [], locations = [], onWorkerUpdate }) => {
       return response.data;
     },
     onSuccess: () => {
+      console.log('Delete successful, calling onWorkerUpdate');
       toast.success('Worker deleted successfully');
       // Force refresh workers data
       queryClient.invalidateQueries(['workers']);
-      if (onWorkerUpdate) onWorkerUpdate();
+      if (onWorkerUpdate) {
+        console.log('Calling onWorkerUpdate');
+        onWorkerUpdate();
+      } else {
+        console.log('onWorkerUpdate is undefined');
+      }
     },
     onError: (error) => {
       toast.error(`Failed to deactivate worker: ${error.response?.data?.detail || error.message}`);
