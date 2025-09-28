@@ -42,8 +42,8 @@ class SupabaseDatabase:
                     'id': str(p['id']),
                     'code': p['code'],
                     'full_name': p['full_name'],
-                    'ndis_number': p.get('ndis_number'),
-                    'location_id': p.get('location_id'),
+                    'participant_number': p.get('ndis_number'),  # Map ndis_number to participant_number
+                    'location_id': str(p.get('location_id')) if p.get('location_id') else None,  # Convert to string
                     'default_ratio': p.get('default_ratio'),
                     'plan_start': p.get('plan_start'),
                     'plan_end': p.get('plan_end')
