@@ -439,6 +439,12 @@ select:focus, input:focus, textarea:focus {
   margin-bottom: 1rem;
 }
 
+.form-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+}
+
 .form-label {
   display: block;
   color: var(--text-secondary);
