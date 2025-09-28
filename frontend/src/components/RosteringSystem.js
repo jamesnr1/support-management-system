@@ -80,7 +80,7 @@ const RosteringSystem = () => {
     },
     onSuccess: () => {
       queryClient.invalidateQueries(['roster', activeTab]);
-      toast.success('Roster updated successfully');
+      // Removed redundant toast - shift creation shows its own toast
     },
     onError: (error) => {
       toast.error(`Failed to update roster: ${error.message}`);
