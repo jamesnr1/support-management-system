@@ -239,9 +239,16 @@ async def root():
 # Worker Management Routes
 @api_router.get("/workers", response_model=List[Worker])
 async def get_workers():
-    """Get all active workers"""
-    await load_workers()
-    return ROSTER_STATE.workers
+    """Get all workers from Supabase"""
+    try:
+        workers_data = db.get_support_workers()
+        workers = []
+        for worker_data in workers_data:
+            workers.append(Worker(**worker_data))
+        return workers
+    except Exception as e:
+        logger.error(f"Error fetching workers: {e}")
+        raise HTTPException(status_code=500, detail="Failed to fetch workers")
 
 @api_router.post("/workers", response_model=Worker)
 async def create_worker(worker: WorkerCreate):
