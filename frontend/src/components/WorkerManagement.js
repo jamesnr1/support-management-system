@@ -204,13 +204,37 @@ const WorkerManagement = ({ workers = [], locations = [], onWorkerUpdate }) => {
                   <div style={{ marginBottom: '1rem' }}>
                     <strong style={{ color: 'var(--text-primary)', fontSize: '0.9rem', display: 'block', marginBottom: '0.5rem' }}>Availability</strong>
                     
-                    {/* Set Unavailability Form */}
-                    {showUnavailability[worker.id] ? (
+                    <div style={{ display: 'flex', gap: '0.5rem', marginBottom: '0.5rem' }}>
+                      <button 
+                        className="btn btn-secondary btn-sm"
+                        onClick={() => toast.info(`Viewing availability for ${worker.full_name}`)}
+                      >
+                        <Calendar size={14} /> Availability
+                      </button>
+                      {worker.telegram && (
+                        <button 
+                          className="btn btn-secondary btn-sm"
+                          onClick={() => handleSendTelegramMessage(worker)}
+                        >
+                          <MessageCircle size={14} /> Message
+                        </button>
+                      )}
+                    </div>
+                    
+                    <button 
+                      className="btn btn-secondary btn-sm"
+                      onClick={() => setShowUnavailability(prev => ({ ...prev, [worker.id]: !prev[worker.id] }))}
+                    >
+                      {showUnavailability[worker.id] ? 'Cancel' : 'Set Unavailable'}
+                    </button>
+                    
+                    {/* Set Unavailability Form - appears under everything */}
+                    {showUnavailability[worker.id] && (
                       <div className="unavailability-form" style={{ 
                         background: 'var(--bg-input)', 
                         padding: '0.8rem', 
                         borderRadius: '4px',
-                        marginBottom: '0.5rem'
+                        marginTop: '0.5rem'
                       }}>
                         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 2fr', gap: '0.5rem', alignItems: 'end' }}>
                           <div>
@@ -275,39 +299,8 @@ const WorkerManagement = ({ workers = [], locations = [], onWorkerUpdate }) => {
                             </div>
                           </div>
                         </div>
-                        <button 
-                          className="btn btn-secondary btn-sm"
-                          onClick={() => setShowUnavailability(prev => ({ ...prev, [worker.id]: false }))}
-                          style={{ marginTop: '0.5rem', fontSize: '0.8rem' }}
-                        >
-                          Cancel
-                        </button>
                       </div>
-                    ) : null}
-                    
-                    {/* Availability buttons */}
-                    <div style={{ display: 'flex', gap: '0.5rem' }}>
-                      <button 
-                        className="btn btn-secondary btn-sm"
-                        onClick={() => toast.info(`Viewing availability for ${worker.full_name}`)}
-                      >
-                        <Calendar size={14} /> Availability
-                      </button>
-                      <button 
-                        className="btn btn-secondary btn-sm"
-                        onClick={() => setShowUnavailability(prev => ({ ...prev, [worker.id]: !prev[worker.id] }))}
-                      >
-                        Set Unavailable
-                      </button>
-                      {worker.telegram && (
-                        <button 
-                          className="btn btn-secondary btn-sm"
-                          onClick={() => handleSendTelegramMessage(worker)}
-                        >
-                          <MessageCircle size={14} /> Message
-                        </button>
-                      )}
-                    </div>
+                    )}
                   </div>
                 </div>
               </div>
