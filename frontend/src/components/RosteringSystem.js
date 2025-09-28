@@ -113,7 +113,12 @@ const RosteringSystem = () => {
   const exportRoster = async () => {
     try {
       // Ask user which format they want
-      const exportType = window.confirm('Choose export format:\nOK = Payroll Export\nCancel = Shift Report Export');
+      const choice = prompt('Choose export format:\n1 = Payroll Export\n2 = Shift Report Export\n\nEnter 1 or 2:');
+      if (!choice || (choice !== '1' && choice !== '2')) {
+        toast.info('Export cancelled');
+        return;
+      }
+      const exportType = choice === '1';
       
       let csvContent = '';
       let filename = '';
