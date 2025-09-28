@@ -111,7 +111,12 @@ const WorkerManagement = ({ workers = [], locations = [], onWorkerUpdate }) => {
   };
 
   const handleSendTelegramMessage = (worker) => {
-    const message = prompt(`Send message to ${worker.full_name}:`);
+    if (!worker.telegram) {
+      toast.error(`${worker.full_name} does not have a Telegram number set up`);
+      return;
+    }
+    
+    const message = prompt(`Send message to ${worker.full_name} (Telegram: ${worker.telegram}):`);
     if (message && message.trim()) {
       // Actually send the message via API
       fetch(`${API}/telegram/send`, {
@@ -119,19 +124,15 @@ const WorkerManagement = ({ workers = [], locations = [], onWorkerUpdate }) => {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           worker_id: worker.id,
-          message: message,
-          urgent: false
+          message: message.trim()
         })
       })
-      .then(response => {
-        if (response.ok) {
-          toast.success(`Message sent to ${worker.full_name}`);
-        } else {
-          throw new Error('Failed to send message');
-        }
+      .then(response => response.json())
+      .then(data => {
+        toast.success(`Message sent to ${worker.full_name}`);
       })
-      .catch(() => {
-        toast.error('Failed to send message');
+      .catch(error => {
+        toast.error(`Failed to send message: ${error.message}`);
       });
     }
   };
