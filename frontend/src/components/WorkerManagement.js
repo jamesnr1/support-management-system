@@ -66,25 +66,26 @@ const WorkerManagement = ({ workers, locations, onWorkerUpdate }) => {
       toast.error(`Failed to deactivate worker: ${error.response?.data?.detail || error.message}`);
     }
   });
-  const handleEditWorker = (worker) => {
-    setEditingWorker(worker);
-    setShowWorkerModal(true);
-  };
+  const handleWorkerSubmit = (e) => {
+    e.preventDefault();
+    const formData = new FormData(e.target);
+    
+    const workerData = {
+      code: formData.get('code'),
+      full_name: formData.get('full_name'),
+      email: formData.get('email'),
+      phone: formData.get('phone'),
+      max_hours: parseInt(formData.get('max_hours')) || null,
+      car: formData.get('car'),
+      skills: formData.get('skills'),
+      sex: formData.get('sex'),
+      telegram: parseInt(formData.get('telegram')) || null
+    };
 
-  const handleDeleteWorker = (worker) => {
-    if (window.confirm(`Are you sure you want to deactivate ${worker.full_name}?`)) {
-      deleteWorkerMutation.mutate(worker.id);
-    }
-  };
-
-  const handleManageAvailability = (worker) => {
-    toast.info(`Managing availability for ${worker.full_name}`);
-  };
-
-  const handleSendTelegramMessage = (worker) => {
-    const message = prompt(`Send message to ${worker.full_name}:`);
-    if (message) {
-      toast.success(`Message sent to ${worker.full_name}: ${message}`);
+    if (editingWorker) {
+      updateWorkerMutation.mutate({ workerId: editingWorker.id, workerData });
+    } else {
+      createWorkerMutation.mutate(workerData);
     }
   };
 
