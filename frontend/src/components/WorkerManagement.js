@@ -396,7 +396,7 @@ const WorkerManagement = ({ workers = [], locations = [], onWorkerUpdate }) => {
               {/* Unavailable periods section - INSIDE the availability modal */}
               <div style={{ marginBottom: '1.5rem', borderTop: '1px solid var(--border-color)', paddingTop: '1rem' }}>
                 <h4 style={{ marginBottom: '1rem', color: 'var(--accent-primary)' }}>Set Unavailable Period</h4>
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 2fr 1fr', gap: '1rem', alignItems: 'end' }}>
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 2fr', gap: '1rem', alignItems: 'end' }}>
                   <div>
                     <label style={{ fontSize: '0.9rem', color: 'var(--text-secondary)', display: 'block', marginBottom: '0.5rem' }}>From Date</label>
                     <input
@@ -449,28 +449,27 @@ const WorkerManagement = ({ workers = [], locations = [], onWorkerUpdate }) => {
                       }}
                     />
                   </div>
-                  <div>
-                    <button
-                      className="btn btn-success"
-                      onClick={() => {
-                        if (unavailabilityData.from && unavailabilityData.to && unavailabilityData.reason) {
-                          toast.success(`${selectedWorker.full_name} unavailable from ${unavailabilityData.from} to ${unavailabilityData.to}: ${unavailabilityData.reason}`);
-                          setUnavailabilityData({ from: '', to: '', reason: '' });
-                        } else {
-                          toast.error('Please fill all fields');
-                        }
-                      }}
-                      style={{ padding: '0.5rem 1rem' }}
-                    >
-                      Save Unavailable
-                    </button>
-                  </div>
                 </div>
               </div>
               
               <div className="modal-actions">
-                <button className="btn btn-primary">
-                  Save Availability
+                <button 
+                  className="btn btn-primary"
+                  onClick={() => {
+                    // Save both availability and unavailability data
+                    let hasUnavailabilityData = unavailabilityData.from && unavailabilityData.to && unavailabilityData.reason;
+                    
+                    if (hasUnavailabilityData) {
+                      toast.success(`${selectedWorker.full_name} availability and unavailability saved! Unavailable: ${unavailabilityData.from} to ${unavailabilityData.to} (${unavailabilityData.reason})`);
+                      setUnavailabilityData({ from: '', to: '', reason: '' });
+                    } else {
+                      toast.success(`${selectedWorker.full_name} availability saved successfully!`);
+                    }
+                    
+                    setShowAvailabilityModal(false);
+                  }}
+                >
+                  Save
                 </button>
                 <button 
                   className="btn btn-secondary"
