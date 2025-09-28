@@ -149,12 +149,9 @@ async def get_participants():
 async def get_roster(week_type: str):
     """Get roster for specific week type from database"""
     try:
-        roster_data = db.get_roster_data(week_type)
-        # Also maintain memory cache as fallback
+        # Use memory storage only for now (database table doesn't exist)
         if week_type not in ROSTER_DATA:
             ROSTER_DATA[week_type] = {}
-        if roster_data:
-            ROSTER_DATA[week_type] = roster_data
         return ROSTER_DATA[week_type]
     except Exception as e:
         logger.error(f"Error getting roster {week_type}: {e}")
