@@ -169,26 +169,17 @@ const WorkerManagement = ({ workers = [], locations = [], onWorkerUpdate }) => {
                 <div className="worker-header">
                   <div>
                     <div className="worker-name">{worker.full_name}</div>
-                    <div className="worker-details">
-                      Max Hours: {worker.max_hours || 'Not set'} | Status: {worker.status || 'Active'}
+                    <div className="worker-details" style={{ fontSize: '0.8rem', lineHeight: '1.2' }}>
+                      {worker.email && `📧 ${worker.email}`} {worker.phone && `| 📱 ${worker.phone}`}
                     </div>
-                    <div className="worker-details">
-                      {worker.email && `📧 ${worker.email}`}
-                    </div>
-                    <div className="worker-details">
-                      {worker.phone && `📱 ${worker.phone}`}
-                    </div>
-                    <div className="worker-details">
-                      🚗 {worker.car || 'Not specified'} | 🎯 {worker.skills || 'None listed'}
-                    </div>
-                    <div className="worker-details" style={{ color: 'var(--accent-primary)' }}>
-                      📱 Telegram: {worker.telegram || 'Not set'}
+                    <div className="worker-details" style={{ fontSize: '0.8rem', lineHeight: '1.2' }}>
+                      🚗 {worker.car || 'N/A'} | 🎯 {worker.skills || 'None'} | ⏰ {worker.max_hours || 'N/A'}h | 📱 T:{worker.telegram || 'N/A'}
                     </div>
                   </div>
                 </div>
                 
-                <div className="worker-actions">
-                  <div style={{ display: 'flex', gap: '0.5rem', marginBottom: '1rem' }}>
+                <div className="worker-actions" style={{ padding: '0.5rem' }}>
+                  <div style={{ display: 'flex', gap: '0.5rem', marginBottom: '0.5rem' }}>
                     <button 
                       className="btn btn-secondary btn-sm"
                       onClick={() => handleEditWorker(worker)}
