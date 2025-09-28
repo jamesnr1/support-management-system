@@ -304,7 +304,6 @@ const WorkerManagement = ({ workers = [], locations = [], onWorkerUpdate }) => {
                       </div>
                     </div>
                   )}
-                  </div>
                 </div>
               </div>
             ))}
