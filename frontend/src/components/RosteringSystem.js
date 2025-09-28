@@ -102,7 +102,7 @@ const RosteringSystem = () => {
 
   const toggleEditMode = () => {
     setEditMode(!editMode);
-    toast.success(`Edit mode ${!editMode ? 'enabled' : 'disabled'}`);
+    // Removed edit mode notifications per user request
   };
 
   const handleRosterUpdate = (data) => {
