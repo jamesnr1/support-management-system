@@ -150,11 +150,14 @@ class SupabaseDatabase:
             return False
     
     def get_roster_data(self, week_type: str) -> Dict:
-        """Get roster data for a specific week type"""
+        """Get roster data for a specific week type from Supabase"""
         try:
-            # This will be stored as JSON in a roster_data table or similar
-            # For now, return empty structure - we'll implement this based on your needs
-            return {}
+            response = self.client.table('roster_data').select('data').eq('week_type', week_type).execute()
+            
+            if response.data:
+                return response.data[0].get('data', {})
+            else:
+                return {}
         except Exception as e:
             logger.error(f"Error fetching roster data for {week_type}: {e}")
             return {}
