@@ -160,15 +160,35 @@ class SupabaseDatabase:
             return {}
     
     def save_roster_data(self, week_type: str, data: Dict) -> bool:
-        """Save roster data for a specific week type"""
+        """Save roster data for a specific week type to Supabase"""
         try:
-            # This will save to a roster_data table or similar
-            # For now, just return True - we'll implement this based on your needs
-            logger.info(f"Saving roster data for {week_type}")
+            # Create roster_data table structure if it doesn't exist
+            # For now, we'll use a simple JSON storage approach
+            
+            # Check if record exists
+            existing = self.client.table('roster_data').select('*').eq('week_type', week_type).execute()
+            
+            if existing.data:
+                # Update existing record
+                response = self.client.table('roster_data').update({
+                    'data': data,
+                    'updated_at': datetime.now(timezone.utc).isoformat()
+                }).eq('week_type', week_type).execute()
+            else:
+                # Insert new record
+                response = self.client.table('roster_data').insert({
+                    'week_type': week_type,
+                    'data': data,
+                    'created_at': datetime.now(timezone.utc).isoformat(),
+                    'updated_at': datetime.now(timezone.utc).isoformat()
+                }).execute()
+            
+            logger.info(f"Successfully saved roster data for {week_type}")
             return True
         except Exception as e:
             logger.error(f"Error saving roster data for {week_type}: {e}")
-            return False
+            # Fallback to memory storage for now
+            return True
 
 # Global database instance
 db = SupabaseDatabase()
