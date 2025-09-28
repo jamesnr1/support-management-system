@@ -168,9 +168,9 @@ const WorkerManagement = ({ workers = [], locations = [], onWorkerUpdate }) => {
         ) : (
           <div className="workers-grid">
             {workers.map(worker => (
-              <div key={worker.id} className="worker-card" style={{ padding: '0.75rem', minHeight: 'auto' }}>
+              <div key={worker.id} className="worker-card" style={{ padding: '1rem', minHeight: 'auto' }}>
                 <div className="worker-header" style={{ marginBottom: '0.5rem' }}>
-                  <div>
+                  <div style={{ paddingLeft: '0.5rem' }}>
                     <div className="worker-name" style={{ fontSize: '1rem', fontWeight: 'bold', marginBottom: '0.25rem' }}>
                       {worker.full_name}
                     </div>
