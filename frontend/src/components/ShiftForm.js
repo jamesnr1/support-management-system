@@ -137,15 +137,14 @@ const ShiftForm = ({
       borderLeft: '4px solid var(--accent-primary)',
       marginBottom: '0.5rem',
       borderRadius: '4px',
-      padding: '0.8rem',
+      padding: '0.6rem',
       display: 'flex',
       alignItems: 'center',
-      gap: '0.6rem',
       width: '100%',
-      maxWidth: '100%',
-      overflow: 'hidden'
+      maxWidth: '98%',
+      boxSizing: 'border-box'
     }}>
-      <form onSubmit={handleSubmit} style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', width: '100%', flex: 1 }}>
+      <form onSubmit={handleSubmit} style={{ display: 'flex', alignItems: 'center', gap: '0.3rem', width: '100%', maxWidth: '100%' }}>
         
         {/* Time - FIRST as requested */}
         <select 
