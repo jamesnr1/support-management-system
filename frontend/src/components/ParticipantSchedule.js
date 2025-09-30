@@ -242,7 +242,7 @@ const ParticipantSchedule = ({
                               </button>
                               <button 
                                 className="btn btn-danger"
-                                onClick={() => {
+                                onClick={async () => {
                                   if (window.confirm('Are you sure you want to delete this shift?')) {
                                     try {
                                       // Simple approach - filter out the shift we want to delete
