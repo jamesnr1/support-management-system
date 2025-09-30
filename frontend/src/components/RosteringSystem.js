@@ -196,39 +196,29 @@ const RosteringSystem = () => {
     }
   };
 
-  // Template copying function - Fixed without page reload
+  // Template copying function - Fixed to actually copy current data
   const copyToTemplate = async () => {
     try {
-      console.log('Copy Template started');
       if (!window.confirm('Copy Week A and Week B schedules to Next A and Next B?')) {
         return;
       }
       
-      // Removed toast.info as it doesn't exist
-      
-      // Use axios with the existing API constant  
-      const weekAResponse = await axios.get(`${API}/roster/weekA`);
-      const weekBResponse = await axios.get(`${API}/roster/weekB`);
+      // Force fresh API calls with timestamp to bypass cache
+      const timestamp = Date.now();
+      const weekAResponse = await axios.get(`${API}/roster/weekA?t=${timestamp}`);
+      const weekBResponse = await axios.get(`${API}/roster/weekB?t=${timestamp}`);
       
       const weekAData = weekAResponse.data;
       const weekBData = weekBResponse.data;
       
-      console.log('Fetched data:', { weekA: Object.keys(weekAData).length, weekB: Object.keys(weekBData).length });
-      
-      // Post to next weeks
+      // Post fresh data to next weeks
       await axios.post(`${API}/roster/nextA`, weekAData);
       await axios.post(`${API}/roster/nextB`, weekBData);
       
-      // Force complete refresh
-      queryClient.clear();
-      
-      toast.success(`Copy completed! Week A (${Object.keys(weekAData).length} participants) → Next A, Week B (${Object.keys(weekBData).length} participants) → Next B`);
-      console.log('Copy Template completed successfully');
+      toast.success('Copy completed! Week A → Next A, Week B → Next B');
       
       // Force page reload to show copied data
-      setTimeout(() => {
-        window.location.reload();
-      }, 1000);
+      window.location.reload();
       
     } catch (error) {
       console.error('Copy error:', error);
