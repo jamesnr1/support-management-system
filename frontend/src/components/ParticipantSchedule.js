@@ -265,36 +265,48 @@ const ParticipantSchedule = ({
                               <button 
                                 className="btn btn-danger"
                                 onClick={async () => {
+                                  console.log('=== BUILDING DELETE SHIFT FUNCTIONALITY ===');
+                                  console.log('Deleting shift at index:', index);
+                                  console.log('From date:', date);
+                                  console.log('For participant:', participant.code);
+                                  
                                   if (window.confirm('Are you sure you want to delete this shift?')) {
                                     try {
-                                      // Simple approach - filter out the shift we want to delete
                                       const currentShifts = dayShifts || [];
+                                      console.log('Current shifts before delete:', currentShifts);
+                                      
+                                      // Remove the shift at the specified index
                                       const newShifts = currentShifts.filter((_, i) => i !== index);
+                                      console.log('New shifts after delete:', newShifts);
                                       
                                       // Update the roster data
                                       const newRosterData = { ...rosterData };
                                       
-                                      // Ensure participant exists
                                       if (!newRosterData[participant.code]) {
                                         newRosterData[participant.code] = {};
                                       }
                                       
-                                      // Update or remove the date entry
                                       if (newShifts.length === 0) {
                                         // Remove the date entry if no shifts left
-                                        if (newRosterData[participant.code][date]) {
-                                          delete newRosterData[participant.code][date];
-                                        }
+                                        delete newRosterData[participant.code][date];
+                                        console.log('Removed date entry as no shifts remain');
                                       } else {
-                                        // Update with filtered shifts
+                                        // Update with remaining shifts
                                         newRosterData[participant.code][date] = newShifts;
+                                        console.log('Updated with remaining shifts');
                                       }
                                       
-                                      onRosterUpdate(newRosterData);
-                                      // Force page reload to ensure deletion is reflected
-                                      setTimeout(() => window.location.reload(), 100);
+                                      console.log('Final roster data after delete:', newRosterData);
+                                      
+                                      // Save to backend
+                                      const response = await onRosterUpdate(newRosterData);
+                                      console.log('Delete backend response:', response);
+                                      
+                                      alert('Shift deleted successfully!');
+                                      
                                     } catch (error) {
-                                      toast.error('Could not delete shift. Please try again.');
+                                      console.error('Error deleting shift:', error);
+                                      alert('Failed to delete shift: ' + error.message);
                                     }
                                   }
                                 }}
