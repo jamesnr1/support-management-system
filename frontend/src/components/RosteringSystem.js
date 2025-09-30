@@ -219,14 +219,16 @@ const RosteringSystem = () => {
       await axios.post(`${API}/roster/nextA`, weekAData);
       await axios.post(`${API}/roster/nextB`, weekBData);
       
-      // Invalidate all roster queries
-      queryClient.invalidateQueries(['roster']);
-      queryClient.invalidateQueries(['workers']);
-      queryClient.invalidateQueries(['participants']);
-      queryClient.invalidateQueries(['locations']);
+      // Force complete refresh
+      queryClient.clear();
       
       toast.success(`Copy completed! Week A (${Object.keys(weekAData).length} participants) → Next A, Week B (${Object.keys(weekBData).length} participants) → Next B`);
       console.log('Copy Template completed successfully');
+      
+      // Force page reload to show copied data
+      setTimeout(() => {
+        window.location.reload();
+      }, 1000);
       
     } catch (error) {
       console.error('Copy error:', error);
