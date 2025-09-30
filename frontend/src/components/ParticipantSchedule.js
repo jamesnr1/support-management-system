@@ -308,37 +308,7 @@ const ParticipantSchedule = ({
                               </button>
                               <button 
                                 className="btn btn-danger"
-                                onClick={() => {
-                                  if (window.confirm('Are you sure you want to delete this shift?')) {
-                                    console.log('DELETE SHIFT - Starting delete');
-                                    console.log('Deleting shift index:', index, 'on date:', date);
-                                    
-                                    // Create deep copy of roster data
-                                    const updatedRosterData = JSON.parse(JSON.stringify(rosterData || {}));
-                                    
-                                    if (updatedRosterData[participant.code] && updatedRosterData[participant.code][date]) {
-                                      // Remove shift at specific index
-                                      const shiftsForDate = updatedRosterData[participant.code][date];
-                                      shiftsForDate.splice(index, 1);
-                                      
-                                      // If no shifts left for this date, remove the date entry
-                                      if (shiftsForDate.length === 0) {
-                                        delete updatedRosterData[participant.code][date];
-                                      } else {
-                                        updatedRosterData[participant.code][date] = shiftsForDate;
-                                      }
-                                      
-                                      console.log('Updated roster after delete:', updatedRosterData);
-                                      
-                                      // Update roster and reload
-                                      onRosterUpdate(updatedRosterData);
-                                      
-                                      setTimeout(() => {
-                                        window.location.reload();
-                                      }, 100);
-                                    }
-                                  }
-                                }}
+                                onClick={() => handleDeleteShift(index, date)}
                                 style={{ 
                                   fontSize: '0.9rem', 
                                   padding: '0.5rem 1rem',
