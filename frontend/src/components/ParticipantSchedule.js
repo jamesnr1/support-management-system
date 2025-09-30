@@ -165,7 +165,8 @@ const ParticipantSchedule = ({
 
                 <div className="day-shifts">
                   {/* Existing shifts */}
-                  {dayShifts.map((shift, index) => (
+                  {dayShifts && dayShifts.length > 0 ? (
+                    dayShifts.map((shift, index) => (
                     <div key={index}>
                       {/* Show edit form inline if this shift is being edited */}
                       {showShiftForm && selectedDate === date && editingShift && editingShift.id === shift.id ? (
