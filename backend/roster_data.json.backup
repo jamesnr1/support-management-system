@@ -1,0 +1,307 @@
+{
+  "weekA": {
+    "shifts": {
+      "friday": {
+        "morning": {
+          "participants": [
+            "LIB001"
+          ],
+          "workers": [
+            "GAU001"
+          ],
+          "location": "Glandore",
+          "hours": 3
+        }
+      }
+    },
+    "consistency_test": true,
+    "updated_at": "2024-01-15T13:00:00Z",
+    "LIB001": {
+      "2025-09-22": [
+        {
+          "id": "1759063653128",
+          "date": "2025-09-22",
+          "startTime": "06:00",
+          "endTime": "14:00",
+          "supportType": "Self-Care",
+          "ratio": "2:1",
+          "workers": [
+            "123",
+            "124"
+          ],
+          "location": "1",
+          "notes": "",
+          "shiftNumber": "20250922L961",
+          "duration": "8.0"
+        }
+      ],
+      "2025-09-23": [
+        {
+          "id": "1759063668291",
+          "date": "2025-09-23",
+          "startTime": "06:00",
+          "endTime": "18:00",
+          "supportType": "Self-Care",
+          "ratio": "2:1",
+          "workers": [
+            "122",
+            "128"
+          ],
+          "location": "1",
+          "notes": "",
+          "shiftNumber": "20250923L881",
+          "duration": "12.0"
+        }
+      ],
+      "2025-09-29": [
+        {
+          "id": "1759206907234",
+          "date": "2025-09-29",
+          "startTime": "06:00",
+          "endTime": "14:00",
+          "supportType": "Self-Care",
+          "ratio": "2:1",
+          "workers": [
+            "120",
+            "123"
+          ],
+          "location": "1",
+          "notes": "",
+          "shiftNumber": "20250929L960",
+          "duration": "8.0"
+        },
+        {
+          "id": "1759208565210",
+          "date": "2025-09-29",
+          "startTime": "14:00",
+          "endTime": "20:00",
+          "supportType": "Self-Care",
+          "ratio": "2:1",
+          "workers": [
+            "125",
+            "129"
+          ],
+          "location": "1",
+          "notes": "",
+          "shiftNumber": "20250929L570",
+          "duration": "6.0"
+        }
+      ],
+      "2025-10-03": [
+        {
+          "id": "1759207555375",
+          "date": "2025-10-03",
+          "startTime": "06:00",
+          "endTime": "14:00",
+          "supportType": "Self-Care",
+          "ratio": "2:1",
+          "workers": [
+            "119",
+            "126"
+          ],
+          "location": "1",
+          "notes": "",
+          "shiftNumber": "20251003L927",
+          "duration": "8.0"
+        }
+      ],
+      "2025-10-01": [
+        {
+          "id": "1759207667667",
+          "date": "2025-10-01",
+          "startTime": "06:00",
+          "endTime": "14:00",
+          "supportType": "Self-Care",
+          "ratio": "2:1",
+          "workers": [
+            "126",
+            "129"
+          ],
+          "location": "1",
+          "notes": "",
+          "shiftNumber": "20251001L559",
+          "duration": "8.0"
+        }
+      ]
+    }
+  },
+  "weekB": {
+    "shifts": {
+      "wednesday": {
+        "morning": {
+          "participants": [
+            "MIL001"
+          ],
+          "workers": [
+            "MIH001",
+            "GAU001"
+          ],
+          "location": "Glandore",
+          "hours": 4
+        }
+      },
+      "thursday": {
+        "afternoon": {
+          "participants": [
+            "LIB001",
+            "JAM001"
+          ],
+          "workers": [
+            "VER001",
+            "HAP001",
+            "SAN001"
+          ],
+          "location": "Plympton Park",
+          "hours": 6
+        }
+      }
+    },
+    "template_source": "weekB",
+    "updated_at": "2024-01-15T10:00:00Z"
+  },
+  "nextA": {
+    "shifts": {
+      "friday": {
+        "morning": {
+          "participants": [
+            "LIB001"
+          ],
+          "workers": [
+            "GAU001"
+          ],
+          "location": "Glandore",
+          "hours": 3
+        }
+      }
+    },
+    "consistency_test": true,
+    "updated_at": "2024-01-15T13:00:00Z",
+    "LIB001": {
+      "2025-09-22": [
+        {
+          "id": "1759063653128",
+          "date": "2025-09-22",
+          "startTime": "06:00",
+          "endTime": "14:00",
+          "supportType": "Self-Care",
+          "ratio": "2:1",
+          "workers": [
+            "123",
+            "124"
+          ],
+          "location": "1",
+          "notes": "",
+          "shiftNumber": "20250922L961",
+          "duration": "8.0"
+        }
+      ],
+      "2025-09-23": [
+        {
+          "id": "1759063668291",
+          "date": "2025-09-23",
+          "startTime": "06:00",
+          "endTime": "18:00",
+          "supportType": "Self-Care",
+          "ratio": "2:1",
+          "workers": [
+            "122",
+            "128"
+          ],
+          "location": "1",
+          "notes": "",
+          "shiftNumber": "20250923L881",
+          "duration": "12.0"
+        }
+      ],
+      "2025-09-29": [
+        {
+          "id": "1759206907234",
+          "date": "2025-09-29",
+          "startTime": "06:00",
+          "endTime": "14:00",
+          "supportType": "Self-Care",
+          "ratio": "2:1",
+          "workers": [
+            "120",
+            "123"
+          ],
+          "location": "1",
+          "notes": "",
+          "shiftNumber": "20250929L960",
+          "duration": "8.0"
+        }
+      ],
+      "2025-10-03": [
+        {
+          "id": "1759207555375",
+          "date": "2025-10-03",
+          "startTime": "06:00",
+          "endTime": "14:00",
+          "supportType": "Self-Care",
+          "ratio": "2:1",
+          "workers": [
+            "119",
+            "126"
+          ],
+          "location": "1",
+          "notes": "",
+          "shiftNumber": "20251003L927",
+          "duration": "8.0"
+        }
+      ],
+      "2025-10-01": [
+        {
+          "id": "1759207667667",
+          "date": "2025-10-01",
+          "startTime": "06:00",
+          "endTime": "14:00",
+          "supportType": "Self-Care",
+          "ratio": "2:1",
+          "workers": [
+            "126",
+            "129"
+          ],
+          "location": "1",
+          "notes": "",
+          "shiftNumber": "20251001L559",
+          "duration": "8.0"
+        }
+      ]
+    }
+  },
+  "nextB": {
+    "shifts": {
+      "wednesday": {
+        "morning": {
+          "participants": [
+            "MIL001"
+          ],
+          "workers": [
+            "MIH001",
+            "GAU001"
+          ],
+          "location": "Glandore",
+          "hours": 4
+        }
+      },
+      "thursday": {
+        "afternoon": {
+          "participants": [
+            "LIB001",
+            "JAM001"
+          ],
+          "workers": [
+            "VER001",
+            "HAP001",
+            "SAN001"
+          ],
+          "location": "Plympton Park",
+          "hours": 6
+        }
+      }
+    },
+    "template_source": "weekB",
+    "updated_at": "2024-01-15T10:00:00Z"
+  },
+  "admin": {}
+}
