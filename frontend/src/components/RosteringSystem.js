@@ -196,46 +196,50 @@ const RosteringSystem = () => {
     }
   };
 
-  // COPY TEMPLATE - Copy Week A and Week B to Next A and Next B
+  // BUILT COPY TEMPLATE FUNCTION
   const copyToTemplate = async () => {
-    if (!window.confirm('Copy Week A and Week B schedules to Next A and Next B?')) {
+    if (!window.confirm('Copy all Week A and Week B shifts to Next A and Next B?')) {
       return;
     }
     
-    console.log('COPY TEMPLATE - Starting copy operation');
-    
     try {
-      // Get fresh data from Week A and Week B
-      console.log('Fetching Week A data...');
-      const weekAResponse = await axios.get(`${API}/roster/weekA`);
-      const weekAData = weekAResponse.data || {};
+      console.log('COPY TEMPLATE - Fetching Week A and Week B data');
       
-      console.log('Fetching Week B data...');  
-      const weekBResponse = await axios.get(`${API}/roster/weekB`);
-      const weekBData = weekBResponse.data || {};
+      // Fetch current data with timestamp to avoid cache
+      const timestamp = Date.now();
+      const [weekARes, weekBRes] = await Promise.all([
+        axios.get(`${API}/roster/weekA?t=${timestamp}`),
+        axios.get(`${API}/roster/weekB?t=${timestamp}`)
+      ]);
       
-      console.log('Week A has data for participants:', Object.keys(weekAData));
-      console.log('Week B has data for participants:', Object.keys(weekBData));
+      const weekAData = weekARes.data || {};
+      const weekBData = weekBRes.data || {};
       
-      // Copy Week A data to Next A
-      console.log('Copying Week A → Next A');
-      await axios.post(`${API}/roster/nextA`, weekAData);
+      console.log('Week A data:', weekAData);
+      console.log('Week B data:', weekBData);
       
-      // Copy Week B data to Next B
-      console.log('Copying Week B → Next B');
-      await axios.post(`${API}/roster/nextB`, weekBData);
+      // Post to Next A and Next B
+      console.log('COPY TEMPLATE - Posting to Next A and Next B');
+      await Promise.all([
+        axios.post(`${API}/roster/nextA`, weekAData),
+        axios.post(`${API}/roster/nextB`, weekBData)
+      ]);
       
-      console.log('Copy Template completed successfully');
+      console.log('COPY TEMPLATE - Copy completed successfully');
       
-      // Show success and reload
-      alert(`Copy Template Success!\n\nWeek A (${Object.keys(weekAData).length} participants) → Next A\nWeek B (${Object.keys(weekBData).length} participants) → Next B`);
+      // Clear cache and reload
+      queryClient.clear();
       
-      // Force page reload to show copied data
-      window.location.reload();
+      alert('Copy Template Success!\nWeek A → Next A\nWeek B → Next B');
+      
+      // Force reload to show changes
+      setTimeout(() => {
+        window.location.reload();
+      }, 500);
       
     } catch (error) {
-      console.error('Copy Template failed:', error);
-      alert('Copy Template failed: ' + error.message);
+      console.error('Copy Template error:', error);
+      alert('Copy Template failed: ' + (error.response?.data?.message || error.message));
     }
   };
 
