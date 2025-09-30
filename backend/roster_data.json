@@ -91,49 +91,59 @@
   },
   "nextA": {
     "shifts": {
-      "monday": {
+      "friday": {
         "morning": {
           "participants": [
-            "LIB001",
-            "ACE001"
+            "LIB001"
           ],
           "workers": [
-            "GAU001",
-            "VER001",
-            "HAP001"
+            "GAU001"
           ],
           "location": "Glandore",
-          "hours": 6
-        },
-        "afternoon": {
-          "participants": [
-            "JAM001"
-          ],
-          "workers": [
-            "SAN001",
-            "KRU001"
-          ],
-          "location": "Plympton Park",
-          "hours": 4
-        }
-      },
-      "tuesday": {
-        "morning": {
-          "participants": [
-            "GRA001"
-          ],
-          "workers": [
-            "CHA001",
-            "MEE001"
-          ],
-          "location": "Glandore",
-          "hours": 5
+          "hours": 3
         }
       }
     },
-    "template_source": "weekA",
-    "updated_at": "2024-01-15T10:00:00Z",
-    "copied_at": "2024-01-15T11:00:00Z"
+    "consistency_test": true,
+    "updated_at": "2024-01-15T13:00:00Z",
+    "LIB001": {
+      "2025-09-22": [
+        {
+          "id": "1759063653128",
+          "date": "2025-09-22",
+          "startTime": "06:00",
+          "endTime": "14:00",
+          "supportType": "Self-Care",
+          "ratio": "2:1",
+          "workers": [
+            "123",
+            "124"
+          ],
+          "location": "1",
+          "notes": "",
+          "shiftNumber": "20250922L961",
+          "duration": "8.0"
+        }
+      ],
+      "2025-09-23": [
+        {
+          "id": "1759063668291",
+          "date": "2025-09-23",
+          "startTime": "06:00",
+          "endTime": "18:00",
+          "supportType": "Self-Care",
+          "ratio": "2:1",
+          "workers": [
+            "122",
+            "128"
+          ],
+          "location": "1",
+          "notes": "",
+          "shiftNumber": "20250923L881",
+          "duration": "12.0"
+        }
+      ]
+    }
   },
   "nextB": {
     "shifts": {
@@ -167,8 +177,7 @@
       }
     },
     "template_source": "weekB",
-    "updated_at": "2024-01-15T10:00:00Z",
-    "copied_at": "2024-01-15T11:00:00Z"
+    "updated_at": "2024-01-15T10:00:00Z"
   },
   "admin": {}
 }
