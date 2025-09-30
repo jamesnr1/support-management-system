@@ -204,7 +204,7 @@ const RosteringSystem = () => {
         return;
       }
       
-      toast.info('Copying templates...');
+      // Removed toast.info as it doesn't exist
       
       // Use axios with the existing API constant  
       const weekAResponse = await axios.get(`${API}/roster/weekA`);
