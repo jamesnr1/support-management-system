@@ -69,6 +69,22 @@
           "notes": "",
           "shiftNumber": "20250929L522",
           "duration": "8.0"
+        },
+        {
+          "id": "1759209461598",
+          "date": "2025-09-29",
+          "startTime": "20:00",
+          "endTime": "24:00",
+          "supportType": "Self-Care",
+          "ratio": "2:1",
+          "workers": [
+            "121",
+            "131"
+          ],
+          "location": "1",
+          "notes": "",
+          "shiftNumber": "20250929L234",
+          "duration": "4.0"
         }
       ],
       "2025-10-03": [
@@ -124,6 +140,22 @@
           "notes": "",
           "shiftNumber": "20250929L181",
           "duration": "8.0"
+        },
+        {
+          "id": "1759209491373",
+          "date": "2025-09-29",
+          "startTime": "18:00",
+          "endTime": "21:00",
+          "supportType": "Self-Care",
+          "ratio": "2:1",
+          "workers": [
+            "124",
+            "127"
+          ],
+          "location": "1",
+          "notes": "",
+          "shiftNumber": "20250929L710",
+          "duration": "3.0"
         }
       ]
     }
