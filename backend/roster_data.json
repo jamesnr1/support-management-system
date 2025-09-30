@@ -41,8 +41,8 @@
         {
           "id": "1759208565210",
           "date": "2025-09-29",
-          "startTime": "14:00",
-          "endTime": "20:00",
+          "startTime": "06:00",
+          "endTime": "09:00",
           "supportType": "Self-Care",
           "ratio": "2:1",
           "workers": [
@@ -52,7 +52,7 @@
           "location": "1",
           "notes": "",
           "shiftNumber": "20250929L570",
-          "duration": "6.0"
+          "duration": "3.0"
         },
         {
           "id": "1759209083335",

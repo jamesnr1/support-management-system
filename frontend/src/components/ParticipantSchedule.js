@@ -62,57 +62,52 @@ const ParticipantSchedule = ({
   };
 
   const handleShiftSave = async (shiftData) => {
-    console.log('=== BUILDING ADD SHIFT FUNCTIONALITY ===');
-    console.log('Shift data received:', shiftData);
-    console.log('Participant:', participant.code);
-    console.log('Current roster data:', rosterData);
+    console.log('ADD SHIFT - Starting function');
+    console.log('Shift data:', shiftData);
     
-    try {
-      // Build new roster data structure
-      const newRosterData = { ...rosterData };
-      
-      // Ensure participant exists in roster
-      if (!newRosterData[participant.code]) {
-        newRosterData[participant.code] = {};
-        console.log('Created participant entry:', participant.code);
-      }
-      
-      // Ensure date exists for participant
-      if (!newRosterData[participant.code][shiftData.date]) {
-        newRosterData[participant.code][shiftData.date] = [];
-        console.log('Created date entry:', shiftData.date);
-      }
-
-      if (editingShift) {
-        // Update existing shift
-        const shiftIndex = newRosterData[participant.code][shiftData.date].findIndex(s => s.id === editingShift.id);
-        if (shiftIndex !== -1) {
-          newRosterData[participant.code][shiftData.date][shiftIndex] = shiftData;
-          console.log('Updated existing shift at index:', shiftIndex);
-        }
-      } else {
-        // Add new shift
-        newRosterData[participant.code][shiftData.date].push(shiftData);
-        console.log('Added new shift. Total shifts for this date:', newRosterData[participant.code][shiftData.date].length);
-      }
-
-      console.log('Final roster data:', newRosterData);
-      
-      // Save to backend
-      const response = await onRosterUpdate(newRosterData);
-      console.log('Backend response:', response);
-      
-      // Close form
-      setShowShiftForm(false);
-      setSelectedDate(null);
-      setEditingShift(null);
-      
-      alert('Shift saved successfully!');
-      
-    } catch (error) {
-      console.error('Error in handleShiftSave:', error);
-      alert('Failed to save shift: ' + error.message);
+    // Create completely new roster structure
+    const updatedRosterData = JSON.parse(JSON.stringify(rosterData || {}));
+    
+    // Initialize participant if doesn't exist
+    if (!updatedRosterData[participant.code]) {
+      updatedRosterData[participant.code] = {};
     }
+    
+    // Initialize date array if doesn't exist
+    if (!updatedRosterData[participant.code][shiftData.date]) {
+      updatedRosterData[participant.code][shiftData.date] = [];
+    }
+
+    if (editingShift) {
+      // Update existing shift
+      const shifts = updatedRosterData[participant.code][shiftData.date];
+      const shiftIndex = shifts.findIndex(s => s.id === editingShift.id);
+      if (shiftIndex >= 0) {
+        shifts[shiftIndex] = { ...shiftData };
+      }
+    } else {
+      // Add new shift with unique ID
+      const newShift = {
+        ...shiftData,
+        id: `shift_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`
+      };
+      updatedRosterData[participant.code][shiftData.date].push(newShift);
+    }
+
+    console.log('Calling onRosterUpdate with:', updatedRosterData);
+    
+    // Update roster
+    await onRosterUpdate(updatedRosterData);
+    
+    // Close form
+    setShowShiftForm(false);
+    setSelectedDate(null);
+    setEditingShift(null);
+    
+    // Force immediate refresh
+    setTimeout(() => {
+      window.location.reload();
+    }, 100);
   };
 
   const handleShiftCancel = () => {
