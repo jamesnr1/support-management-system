@@ -268,8 +268,9 @@ const ParticipantSchedule = ({
                                         newRosterData[participant.code][date] = newShifts;
                                       }
                                       
-                                      onRosterUpdate(newRosterData);
-                                      toast.success('Shift deleted!');
+                                      await onRosterUpdate(newRosterData);
+                                      // Force page reload to ensure deletion is reflected
+                                      window.location.reload();
                                     } catch (error) {
                                       toast.error('Could not delete shift. Please try again.');
                                     }
