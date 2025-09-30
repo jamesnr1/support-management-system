@@ -39,22 +39,6 @@
       ],
       "2025-09-29": [
         {
-          "id": "1759206907234",
-          "date": "2025-09-29",
-          "startTime": "06:00",
-          "endTime": "14:00",
-          "supportType": "Self-Care",
-          "ratio": "2:1",
-          "workers": [
-            "120",
-            "123"
-          ],
-          "location": "1",
-          "notes": "",
-          "shiftNumber": "20250929L960",
-          "duration": "8.0"
-        },
-        {
           "id": "1759208565210",
           "date": "2025-09-29",
           "startTime": "14:00",
@@ -69,6 +53,22 @@
           "notes": "",
           "shiftNumber": "20250929L570",
           "duration": "6.0"
+        },
+        {
+          "id": "1759209083335",
+          "date": "2025-09-29",
+          "startTime": "09:00",
+          "endTime": "17:00",
+          "supportType": "Self-Care",
+          "ratio": "2:1",
+          "workers": [
+            "90",
+            "90"
+          ],
+          "location": "1",
+          "notes": "",
+          "shiftNumber": "20250929L522",
+          "duration": "8.0"
         }
       ],
       "2025-10-03": [
@@ -109,8 +109,153 @@
       ]
     }
   },
-  "weekB": {},
-  "nextA": {},
-  "nextB": {},
+  "weekB": {
+    "LIB001": {
+      "2025-09-29": [
+        {
+          "id": "1759209098729",
+          "date": "2025-09-29",
+          "startTime": "10:00",
+          "endTime": "18:00",
+          "supportType": "Self-Care",
+          "ratio": "2:1",
+          "workers": [],
+          "location": "1",
+          "notes": "",
+          "shiftNumber": "20250929L181",
+          "duration": "8.0"
+        }
+      ]
+    }
+  },
+  "nextA": {
+    "LIB001": {
+      "2025-09-22": [
+        {
+          "id": "1759063653128",
+          "date": "2025-09-22",
+          "startTime": "06:00",
+          "endTime": "14:00",
+          "supportType": "Self-Care",
+          "ratio": "2:1",
+          "workers": [
+            "123",
+            "124"
+          ],
+          "location": "1",
+          "notes": "",
+          "shiftNumber": "20250922L961",
+          "duration": "8.0"
+        }
+      ],
+      "2025-09-23": [
+        {
+          "id": "1759063668291",
+          "date": "2025-09-23",
+          "startTime": "06:00",
+          "endTime": "18:00",
+          "supportType": "Self-Care",
+          "ratio": "2:1",
+          "workers": [
+            "122",
+            "128"
+          ],
+          "location": "1",
+          "notes": "",
+          "shiftNumber": "20250923L881",
+          "duration": "12.0"
+        }
+      ],
+      "2025-09-29": [
+        {
+          "id": "1759208565210",
+          "date": "2025-09-29",
+          "startTime": "14:00",
+          "endTime": "20:00",
+          "supportType": "Self-Care",
+          "ratio": "2:1",
+          "workers": [
+            "125",
+            "129"
+          ],
+          "location": "1",
+          "notes": "",
+          "shiftNumber": "20250929L570",
+          "duration": "6.0"
+        },
+        {
+          "id": "1759209083335",
+          "date": "2025-09-29",
+          "startTime": "09:00",
+          "endTime": "17:00",
+          "supportType": "Self-Care",
+          "ratio": "2:1",
+          "workers": [
+            "90",
+            "90"
+          ],
+          "location": "1",
+          "notes": "",
+          "shiftNumber": "20250929L522",
+          "duration": "8.0"
+        }
+      ],
+      "2025-10-03": [
+        {
+          "id": "1759207555375",
+          "date": "2025-10-03",
+          "startTime": "06:00",
+          "endTime": "14:00",
+          "supportType": "Self-Care",
+          "ratio": "2:1",
+          "workers": [
+            "119",
+            "126"
+          ],
+          "location": "1",
+          "notes": "",
+          "shiftNumber": "20251003L927",
+          "duration": "8.0"
+        }
+      ],
+      "2025-10-01": [
+        {
+          "id": "1759207667667",
+          "date": "2025-10-01",
+          "startTime": "06:00",
+          "endTime": "14:00",
+          "supportType": "Self-Care",
+          "ratio": "2:1",
+          "workers": [
+            "126",
+            "129"
+          ],
+          "location": "1",
+          "notes": "",
+          "shiftNumber": "20251001L559",
+          "duration": "8.0"
+        }
+      ]
+    }
+  },
+  "nextB": {
+    "LIB001": {
+      "2025-09-29": [
+        {
+          "id": "1759209098729",
+          "date": "2025-09-29",
+          "startTime": "10:00",
+          "endTime": "18:00",
+          "supportType": "Self-Care",
+          "ratio": "2:1",
+          "workers": [],
+          "location": "1",
+          "notes": "",
+          "shiftNumber": "20250929L181",
+          "duration": "8.0"
+        }
+      ]
+    }
+  },
   "admin": {}
 }
