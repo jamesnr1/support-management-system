@@ -112,8 +112,57 @@ const ParticipantSchedule = ({
 
   const handleShiftCancel = () => {
     setShowShiftForm(false);
-    setEditingShift(null);
     setSelectedDate(null);
+    setEditingShift(null);
+  };
+
+  // BUILT DELETE FUNCTION
+  const handleDeleteShift = async (shiftIndex, shiftDate) => {
+    console.log('DELETE FUNCTION - Starting delete for index:', shiftIndex, 'date:', shiftDate);
+    
+    if (!window.confirm('Delete this shift?')) {
+      return;
+    }
+    
+    try {
+      // Get current roster data
+      const currentRoster = JSON.parse(JSON.stringify(rosterData || {}));
+      
+      // Check if participant and date exist
+      if (!currentRoster[participant.code] || !currentRoster[participant.code][shiftDate]) {
+        console.log('No shifts found for deletion');
+        return;
+      }
+      
+      // Remove the shift at the specified index
+      const shifts = currentRoster[participant.code][shiftDate];
+      console.log('Before delete - shifts:', shifts);
+      
+      // Remove shift by index
+      shifts.splice(shiftIndex, 1);
+      console.log('After delete - shifts:', shifts);
+      
+      // If no shifts remain for this date, remove the date
+      if (shifts.length === 0) {
+        delete currentRoster[participant.code][shiftDate];
+        console.log('Removed empty date entry');
+      } else {
+        currentRoster[participant.code][shiftDate] = shifts;
+      }
+      
+      // Update the roster
+      console.log('Updating roster with:', currentRoster);
+      await onRosterUpdate(currentRoster);
+      
+      // Force reload to show changes
+      setTimeout(() => {
+        window.location.reload();
+      }, 200);
+      
+    } catch (error) {
+      console.error('Delete failed:', error);
+      alert('Delete failed: ' + error.message);
+    }
   };
 
   const getWorkerNames = (workerIds) => {
