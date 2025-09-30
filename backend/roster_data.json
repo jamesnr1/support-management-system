@@ -46,8 +46,8 @@
           "supportType": "Self-Care",
           "ratio": "2:1",
           "workers": [
-            "125",
-            "129"
+            "129",
+            "139"
           ],
           "location": "1",
           "notes": "",
@@ -156,6 +156,24 @@
           "notes": "",
           "shiftNumber": "20250929L710",
           "duration": "3.0"
+        }
+      ],
+      "2025-10-01": [
+        {
+          "id": "shift_1759246865602_dsp57ff13",
+          "date": "2025-10-01",
+          "startTime": "06:00",
+          "endTime": "13:00",
+          "supportType": "Self-Care",
+          "ratio": "2:1",
+          "workers": [
+            "121",
+            "122"
+          ],
+          "location": "1",
+          "notes": "",
+          "shiftNumber": "20251001L144",
+          "duration": "7.0"
         }
       ]
     }
