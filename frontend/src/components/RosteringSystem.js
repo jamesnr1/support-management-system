@@ -211,22 +211,14 @@ const RosteringSystem = () => {
       const weekAData = weekAResponse.data;
       const weekBData = weekBResponse.data;
       
-      console.log('Posting Week A data:', JSON.stringify(weekAData, null, 2));
-      console.log('Posting Week B data:', JSON.stringify(weekBData, null, 2));
-      
       // Post fresh data to next weeks
-      const nextAResult = await axios.post(`${API}/roster/nextA`, weekAData);
-      const nextBResult = await axios.post(`${API}/roster/nextB`, weekBData);
-      
-      console.log('Next A result:', nextAResult.data);
-      console.log('Next B result:', nextBResult.data);
+      await axios.post(`${API}/roster/nextA`, weekAData);
+      await axios.post(`${API}/roster/nextB`, weekBData);
       
       toast.success('Copy completed! Week A → Next A, Week B → Next B');
       
       // Force page reload to show copied data
-      setTimeout(() => {
-        window.location.reload();
-      }, 1000);
+      window.location.reload();
       
     } catch (error) {
       console.error('Copy error:', error);
