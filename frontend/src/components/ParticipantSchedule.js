@@ -259,49 +259,34 @@ const ParticipantSchedule = ({
                               </button>
                               <button 
                                 className="btn btn-danger"
-                                onClick={async () => {
-                                  console.log('=== BUILDING DELETE SHIFT FUNCTIONALITY ===');
-                                  console.log('Deleting shift at index:', index);
-                                  console.log('From date:', date);
-                                  console.log('For participant:', participant.code);
-                                  
+                                onClick={() => {
                                   if (window.confirm('Are you sure you want to delete this shift?')) {
-                                    try {
-                                      const currentShifts = dayShifts || [];
-                                      console.log('Current shifts before delete:', currentShifts);
+                                    console.log('DELETE SHIFT - Starting delete');
+                                    console.log('Deleting shift index:', index, 'on date:', date);
+                                    
+                                    // Create deep copy of roster data
+                                    const updatedRosterData = JSON.parse(JSON.stringify(rosterData || {}));
+                                    
+                                    if (updatedRosterData[participant.code] && updatedRosterData[participant.code][date]) {
+                                      // Remove shift at specific index
+                                      const shiftsForDate = updatedRosterData[participant.code][date];
+                                      shiftsForDate.splice(index, 1);
                                       
-                                      // Remove the shift at the specified index
-                                      const newShifts = currentShifts.filter((_, i) => i !== index);
-                                      console.log('New shifts after delete:', newShifts);
-                                      
-                                      // Update the roster data
-                                      const newRosterData = { ...rosterData };
-                                      
-                                      if (!newRosterData[participant.code]) {
-                                        newRosterData[participant.code] = {};
-                                      }
-                                      
-                                      if (newShifts.length === 0) {
-                                        // Remove the date entry if no shifts left
-                                        delete newRosterData[participant.code][date];
-                                        console.log('Removed date entry as no shifts remain');
+                                      // If no shifts left for this date, remove the date entry
+                                      if (shiftsForDate.length === 0) {
+                                        delete updatedRosterData[participant.code][date];
                                       } else {
-                                        // Update with remaining shifts
-                                        newRosterData[participant.code][date] = newShifts;
-                                        console.log('Updated with remaining shifts');
+                                        updatedRosterData[participant.code][date] = shiftsForDate;
                                       }
                                       
-                                      console.log('Final roster data after delete:', newRosterData);
+                                      console.log('Updated roster after delete:', updatedRosterData);
                                       
-                                      // Save to backend
-                                      const response = await onRosterUpdate(newRosterData);
-                                      console.log('Delete backend response:', response);
+                                      // Update roster and reload
+                                      onRosterUpdate(updatedRosterData);
                                       
-                                      alert('Shift deleted successfully!');
-                                      
-                                    } catch (error) {
-                                      console.error('Error deleting shift:', error);
-                                      alert('Failed to delete shift: ' + error.message);
+                                      setTimeout(() => {
+                                        window.location.reload();
+                                      }, 100);
                                     }
                                   }
                                 }}
