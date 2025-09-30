@@ -196,33 +196,49 @@ const RosteringSystem = () => {
     }
   };
 
-  // Template copying function - Fixed to actually copy current data
+  // BUILDING COPY TEMPLATE FUNCTIONALITY FROM SCRATCH
   const copyToTemplate = async () => {
+    console.log('=== BUILDING COPY TEMPLATE FUNCTIONALITY ===');
+    
+    if (!window.confirm('Copy Week A and Week B schedules to Next A and Next B?')) {
+      return;
+    }
+    
     try {
-      if (!window.confirm('Copy Week A and Week B schedules to Next A and Next B?')) {
-        return;
-      }
-      
-      // Force fresh API calls with timestamp to bypass cache
-      const timestamp = Date.now();
-      const weekAResponse = await axios.get(`${API}/roster/weekA?t=${timestamp}`);
-      const weekBResponse = await axios.get(`${API}/roster/weekB?t=${timestamp}`);
-      
+      console.log('Step 1: Fetching current Week A data...');
+      const weekAResponse = await axios.get(`${API}/roster/weekA`);
       const weekAData = weekAResponse.data;
+      console.log('Week A data retrieved:', weekAData);
+      
+      console.log('Step 2: Fetching current Week B data...');
+      const weekBResponse = await axios.get(`${API}/roster/weekB`);
       const weekBData = weekBResponse.data;
+      console.log('Week B data retrieved:', weekBData);
       
-      // Post fresh data to next weeks
-      await axios.post(`${API}/roster/nextA`, weekAData);
-      await axios.post(`${API}/roster/nextB`, weekBData);
+      console.log('Step 3: Posting Week A data to Next A...');
+      const nextAResponse = await axios.post(`${API}/roster/nextA`, weekAData);
+      console.log('Next A response:', nextAResponse.data);
       
-      toast.success('Copy completed! Week A → Next A, Week B → Next B');
+      console.log('Step 4: Posting Week B data to Next B...');
+      const nextBResponse = await axios.post(`${API}/roster/nextB`, weekBData);
+      console.log('Next B response:', nextBResponse.data);
       
-      // Force page reload to show copied data
-      window.location.reload();
+      console.log('Step 5: Verifying copy worked...');
+      const verifyNextA = await axios.get(`${API}/roster/nextA`);
+      const verifyNextB = await axios.get(`${API}/roster/nextB`);
+      console.log('Next A after copy:', verifyNextA.data);
+      console.log('Next B after copy:', verifyNextB.data);
+      
+      // Clear all cache
+      queryClient.clear();
+      
+      alert('Copy Template completed successfully!\nWeek A → Next A\nWeek B → Next B');
+      
+      console.log('Copy Template functionality completed successfully');
       
     } catch (error) {
-      console.error('Copy error:', error);
-      toast.error('Copy failed: ' + (error.response?.data?.message || error.message));
+      console.error('Copy Template error:', error);
+      alert('Copy Template failed: ' + error.message);
     }
   };
 
