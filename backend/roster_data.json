@@ -175,6 +175,24 @@
           "shiftNumber": "20251001L144",
           "duration": "7.0"
         }
+      ],
+      "2025-10-02": [
+        {
+          "id": "shift_1759247303146_ndmxr3m1y",
+          "date": "2025-10-02",
+          "startTime": "06:00",
+          "endTime": "14:00",
+          "supportType": "Self-Care",
+          "ratio": "2:1",
+          "workers": [
+            "120",
+            "122"
+          ],
+          "location": "1",
+          "notes": "",
+          "shiftNumber": "20251002L417",
+          "duration": "8.0"
+        }
       ]
     }
   },
