@@ -1,21 +1,5 @@
 {
   "weekA": {
-    "shifts": {
-      "friday": {
-        "morning": {
-          "participants": [
-            "LIB001"
-          ],
-          "workers": [
-            "GAU001"
-          ],
-          "location": "Glandore",
-          "hours": 3
-        }
-      }
-    },
-    "consistency_test": true,
-    "updated_at": "2024-01-15T13:00:00Z",
     "LIB001": {
       "2025-09-22": [
         {
