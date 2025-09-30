@@ -52,6 +52,24 @@
           "shiftNumber": "20250923L881",
           "duration": "12.0"
         }
+      ],
+      "2025-09-29": [
+        {
+          "id": "1759206907234",
+          "date": "2025-09-29",
+          "startTime": "06:00",
+          "endTime": "14:00",
+          "supportType": "Self-Care",
+          "ratio": "2:1",
+          "workers": [
+            "120",
+            "123"
+          ],
+          "location": "1",
+          "notes": "",
+          "shiftNumber": "20250929L960",
+          "duration": "8.0"
+        }
       ]
     }
   },
