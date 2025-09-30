@@ -290,8 +290,7 @@ const ParticipantSchedule = ({
                         </div>
                       )}
                     </div>
-                  ))
-                  ) : null}
+                  ))}
                   
                   {/* Show NEW shift form at bottom - only for adding new shifts */}
                   {showShiftForm && selectedDate === date && !editingShift && (
