@@ -109,40 +109,7 @@
       ]
     }
   },
-  "weekB": {
-    "shifts": {
-      "wednesday": {
-        "morning": {
-          "participants": [
-            "MIL001"
-          ],
-          "workers": [
-            "MIH001",
-            "GAU001"
-          ],
-          "location": "Glandore",
-          "hours": 4
-        }
-      },
-      "thursday": {
-        "afternoon": {
-          "participants": [
-            "LIB001",
-            "JAM001"
-          ],
-          "workers": [
-            "VER001",
-            "HAP001",
-            "SAN001"
-          ],
-          "location": "Plympton Park",
-          "hours": 6
-        }
-      }
-    },
-    "template_source": "weekB",
-    "updated_at": "2024-01-15T10:00:00Z"
-  },
+  "weekB": {},
   "nextA": {
     "shifts": {
       "friday": {
