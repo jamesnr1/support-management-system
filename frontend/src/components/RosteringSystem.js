@@ -38,15 +38,8 @@ const RosteringSystem = () => {
   );
   const queryClient = useQueryClient();
 
-  // Calculate week date ranges for planner dropdown
+  // Calculate week date ranges for planner dropdown (based on roster week)
   const plannerWeekRanges = useMemo(() => {
-    const getMonday = (date) => {
-      const d = new Date(date);
-      const day = d.getDay();
-      const diff = d.getDate() - day + (day === 0 ? -6 : 1); // Adjust when day is Sunday
-      return new Date(d.setDate(diff));
-    };
-
     const formatDateRange = (startDate) => {
       const start = new Date(startDate);
       const end = new Date(start);
@@ -61,21 +54,34 @@ const RosteringSystem = () => {
       return `${formatDate(start)} - ${formatDate(end)}`;
     };
 
-    const today = new Date();
-    const currentMonday = getMonday(today);
+    // Get the roster's start date, or default to current Monday
+    let rosterStartDate = rosterData?.roster?.start_date;
     
-    const nextMonday = new Date(currentMonday);
-    nextMonday.setDate(currentMonday.getDate() + 7);
+    if (!rosterStartDate) {
+      // Fallback: calculate current Monday
+      const today = new Date();
+      const day = today.getDay();
+      const diff = today.getDate() - day + (day === 0 ? -6 : 1);
+      const monday = new Date(today);
+      monday.setDate(diff);
+      rosterStartDate = monday.toISOString().split('T')[0];
+    }
+
+    // Base all calculations on roster's week
+    const rosterMonday = new Date(rosterStartDate);
     
-    const afterMonday = new Date(currentMonday);
-    afterMonday.setDate(currentMonday.getDate() + 14);
+    const nextMonday = new Date(rosterMonday);
+    nextMonday.setDate(rosterMonday.getDate() + 7);
+    
+    const afterMonday = new Date(rosterMonday);
+    afterMonday.setDate(rosterMonday.getDate() + 14);
 
     return {
-      current: formatDateRange(currentMonday),
+      current: formatDateRange(rosterMonday),
       next: formatDateRange(nextMonday),
       after: formatDateRange(afterMonday)
     };
-  }, []);
+  }, [rosterData?.roster?.start_date]);
 
   // Save activeTab to localStorage whenever it changes
   useEffect(() => {
