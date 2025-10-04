@@ -38,6 +38,45 @@ const RosteringSystem = () => {
   );
   const queryClient = useQueryClient();
 
+  // Calculate week date ranges for planner dropdown
+  const plannerWeekRanges = useMemo(() => {
+    const getMonday = (date) => {
+      const d = new Date(date);
+      const day = d.getDay();
+      const diff = d.getDate() - day + (day === 0 ? -6 : 1); // Adjust when day is Sunday
+      return new Date(d.setDate(diff));
+    };
+
+    const formatDateRange = (startDate) => {
+      const start = new Date(startDate);
+      const end = new Date(start);
+      end.setDate(start.getDate() + 6);
+      
+      const formatDate = (d) => {
+        const month = d.toLocaleDateString('en-US', { month: 'short' });
+        const day = d.getDate();
+        return `${month} ${day}`;
+      };
+      
+      return `${formatDate(start)} - ${formatDate(end)}`;
+    };
+
+    const today = new Date();
+    const currentMonday = getMonday(today);
+    
+    const nextMonday = new Date(currentMonday);
+    nextMonday.setDate(currentMonday.getDate() + 7);
+    
+    const afterMonday = new Date(currentMonday);
+    afterMonday.setDate(currentMonday.getDate() + 14);
+
+    return {
+      current: formatDateRange(currentMonday),
+      next: formatDateRange(nextMonday),
+      after: formatDateRange(afterMonday)
+    };
+  }, []);
+
   // Save activeTab to localStorage whenever it changes
   useEffect(() => {
     localStorage.setItem('activeTab', activeTab);
@@ -417,31 +456,48 @@ const RosteringSystem = () => {
     }
   };
 
-  // Copy Roster to Planner with week type flip
+  // Copy Roster to Planner (from Planner tab, loads roster as template)
   const copyToTemplate = async () => {
-    // Only allow copying from roster to planner
+    // Only allow copying when in planner tab
     if (copyTemplateRunning) return;
-    if (activeTab !== 'roster') {
-      toast.error('Copy is only available from Roster tab.');
+    if (activeTab !== 'planner') {
+      toast.error('Copy is only available from Planner tab.');
       return;
     }
 
     setCopyTemplateRunning(true);
-    const toastId = toast.loading(`Copying Roster to Planner...`);
+    const toastId = toast.loading(`Loading Roster as template...`);
 
     try {
-      // Call backend endpoint to copy roster to planner (with week_type flip)
-      const response = await axios.post(`${API}/roster/copy_to_planner`, {});
+      // Get current roster data
+      const roster = rosterData.roster;
+      if (!roster || !roster.data) {
+        toast.error('No roster data to copy', { id: toastId });
+        return;
+      }
+
+      // Determine which planner endpoint to save to
+      const plannerEndpoint = {
+        'current': 'planner',
+        'next': 'planner_next',
+        'after': 'planner_after'
+      }[selectedPlannerWeek] || 'planner';
+
+      // Deep copy roster data to selected planner week
+      const rosterCopy = JSON.parse(JSON.stringify(roster.data));
       
-      // Success - refetch data and switch to planner tab
-      toast.success('Copied Roster to Planner successfully!', { id: toastId });
+      // Save to selected planner week
+      await axios.post(`${API}/roster/${plannerEndpoint}`, {
+        week_type: roster.week_type,
+        start_date: roster.start_date,
+        end_date: roster.end_date,
+        data: rosterCopy
+      });
       
-      // Refetch roster data to get the updated planner
+      toast.success('Roster loaded as template!', { id: toastId });
+      
+      // Refetch roster data to show the copied data
       await queryClient.refetchQueries({ queryKey: ['rosterData'], type: 'active' });
-      
-      // Switch to planner tab
-      setActiveTab('planner');
-      localStorage.setItem('activeTab', 'planner');
 
     } catch (error) {
       toast.error(`Copy failed: ${error.message}`, { id: toastId });
@@ -589,7 +645,7 @@ const RosteringSystem = () => {
                       'next': 'Next Week',
                       'after': 'Week After'
                     }[e.target.value];
-                    toast.info(`Planning for: ${weekLabel}`);
+                    toast(`Planning for: ${weekLabel}`);
                   }}
                   style={{
                     padding: '0.4rem 0.75rem',
@@ -602,9 +658,9 @@ const RosteringSystem = () => {
                     fontWeight: '500'
                   }}
                 >
-                  <option value="current">Current Week (from Roster)</option>
-                  <option value="next">Next Week</option>
-                  <option value="after">Week After</option>
+                  <option value="current">Current Week ({plannerWeekRanges.current})</option>
+                  <option value="next">Next Week ({plannerWeekRanges.next})</option>
+                  <option value="after">Week After ({plannerWeekRanges.after})</option>
                 </select>
                 <span style={{ margin: '0 0.75rem', color: '#4A4641' }}>|</span>
               </>
@@ -671,7 +727,7 @@ const RosteringSystem = () => {
             >
               {editMode ? '✖️ Exit' : '✏️ Edit'}
             </button>
-            {activeTab === 'roster' && (
+            {activeTab === 'planner' && (
               <button
                 className="btn btn-success"
                 onClick={copyToTemplate}
@@ -684,7 +740,7 @@ const RosteringSystem = () => {
                   border: '2px solid #8B9A7B',
                   borderRadius: '6px'
                 }}
-                title="Copy current roster to planner"
+                title="Load current roster as template"
               >
                 📋 Copy
               </button>
