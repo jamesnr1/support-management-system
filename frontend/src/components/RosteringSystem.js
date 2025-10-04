@@ -509,24 +509,77 @@ const RosteringSystem = () => {
         </div>
       </header>
 
-      {/* Tab Navigation */}
-      <nav className="tab-nav">
-        {tabs.map(tab => (
-          <button
-            key={tab.id}
-            className={`tab-btn ${activeTab === tab.id ? 'active' : ''}`}
-            onClick={() => setActiveTab(tab.id)}
-            style={{ 
-              '--tab-color': tab.color,
-              borderBottom: activeTab === tab.id ? `3px solid var(--accent-primary)` : 'none'
-            }}
-          >
-            {tab.label}
-          </button>
-        ))}
+      {/* Tab Navigation + Action Buttons (Same Row) */}
+      <nav className="tab-nav" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+        <div style={{ display: 'flex' }}>
+          {tabs.map(tab => (
+            <button
+              key={tab.id}
+              className={`tab-btn ${activeTab === tab.id ? 'active' : ''}`}
+              onClick={() => setActiveTab(tab.id)}
+              style={{ 
+                '--tab-color': tab.color,
+                borderBottom: activeTab === tab.id ? `2px solid var(--accent-primary)` : 'none'
+              }}
+            >
+              {tab.label}
+            </button>
+          ))}
+        </div>
+        
+        {/* Action Buttons (Roster/Planner only) */}
+        {(activeTab === 'roster' || activeTab === 'planner') && (
+          <div style={{ display: 'flex', gap: '0.5rem', marginRight: '1rem' }}>
+            <button
+              className={`btn ${editMode ? 'btn-warning' : 'btn-secondary'}`}
+              onClick={toggleEditMode}
+              style={{ 
+                padding: '0.35rem 0.75rem',
+                fontSize: '0.8rem',
+                background: editMode ? '#C4915C' : '#3E3B37',
+                color: '#E8DDD4',
+                border: '2px solid ' + (editMode ? '#C4915C' : '#4A4641'),
+                borderRadius: '6px',
+                fontWeight: editMode ? '600' : '500'
+              }}
+            >
+              {editMode ? '❌ Exit' : '✏️ Edit'}
+            </button>
+            {activeTab === 'roster' && (
+              <button
+                className="btn btn-success"
+                onClick={copyToTemplate}
+                disabled={copyTemplateRunning}
+                style={{ 
+                  padding: '0.35rem 0.75rem',
+                  fontSize: '0.8rem',
+                  background: '#8B9A7B',
+                  color: '#E8DDD4',
+                  border: '2px solid #8B9A7B',
+                  borderRadius: '6px'
+                }}
+              >
+                📋 Copy to Planner
+              </button>
+            )}
+            <button
+              className="btn btn-primary"
+              onClick={() => exportRoster('payroll')}
+              style={{ 
+                padding: '0.35rem 0.75rem',
+                fontSize: '0.8rem',
+                background: '#D4A574',
+                color: '#2D2B28',
+                border: '2px solid #D4A574',
+                borderRadius: '6px',
+                fontWeight: '600'
+              }}
+            >
+              📤 Export
+            </button>
+          </div>
+        )}
       </nav>
-
-      {/* Week Pattern removed from Roster - shown in Planner selector instead */}
 
       {/* Fixed Calendar Section - Stays at top while content scrolls */}
       {activeTab !== 'admin' && activeTab !== 'hours' && (

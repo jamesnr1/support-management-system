@@ -267,51 +267,32 @@ const CalendarAppointments = ({
 
   return (
     <div ref={rootRef} style={{ background: 'var(--bg-primary)' }}>
-      {/* Header */}
+      {/* Compact Header - Just dates and count */}
       <div style={{ 
         display: 'flex', 
         justifyContent: 'space-between', 
         alignItems: 'center',
-        marginBottom: '0.75rem',
-        padding: '0.5rem 0'
+        marginBottom: '0.35rem',
+        padding: '0.25rem 0'
       }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-          <CalendarIcon size={18} color="#D4A574" />
-          <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
-            <span style={{ 
-              margin: 0, 
-              fontSize: '1rem', 
-              fontWeight: '500',
-              color: '#D4A574'
-            }}>
-              Calendar Appointments
-            </span>
-            <span style={{ 
-              margin: 0, 
-              fontSize: '0.85rem', 
-              color: '#8B9A7B'
-            }}>
-              {start.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })} - {end.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
-              {' • '}
-              {appointments.length} appointment{appointments.length !== 1 ? 's' : ''}
-              {lastSync && (
-                <>
-                  {' • '}
-                  <span style={{ fontSize: '0.75rem', opacity: 0.8 }}>
-                    Updated {lastSync.getHours().toString().padStart(2, '0')}.{lastSync.getMinutes().toString().padStart(2, '0')}
-                  </span>
-                </>
-              )}
-            </span>
-          </div>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+          <CalendarIcon size={14} color="#D4A574" />
+          <span style={{ 
+            margin: 0, 
+            fontSize: '0.75rem', 
+            color: '#8B9A7B'
+          }}>
+            {start.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })} - {end.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
+            {lastSync && ` • Updated ${lastSync.getHours().toString().padStart(2, '0')}.${lastSync.getMinutes().toString().padStart(2, '0')}`}
+          </span>
         </div>
         
-        <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
-          {/* Edit Mode & Export buttons */}
-          {onToggleEditMode && (
-            <button
-              className={`btn ${editMode ? 'btn-warning' : 'btn-secondary'}`}
-              onClick={onToggleEditMode}
+        <div style={{ display: 'flex', gap: '0.35rem', alignItems: 'center' }}>
+          {/* Buttons removed - now in main tab row */}
+          <button
+            className="btn btn-secondary"
+            onClick={fetchAppointments}
+            disabled={isLoading}
               style={{ 
                 padding: '0.4rem 0.75rem',
                 fontSize: '0.85rem',
