@@ -85,12 +85,20 @@ const WorkerCard = ({ worker, onEdit, onManageAvailability, availabilityData, is
   };
 
   return (
-    <div className="worker-card" style={{ minHeight: '360px', display: 'flex', flexDirection: 'column' }}>
+    <div 
+      className="worker-card" 
+      style={{ 
+        minHeight: '360px', 
+        display: 'flex', 
+        flexDirection: 'column',
+        borderLeftColor: currentUnavailability ? '#B87E7E' : undefined
+      }}
+    >
       {/* Worker Name with Icons */}
       <div className="worker-header">
         <div className="worker-name" style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', flexWrap: 'nowrap' }}>
           <span style={{ whiteSpace: 'nowrap' }}>{getDisplayName(worker.full_name)}</span>
-          <span style={{ display: 'flex', gap: '0.3rem', fontSize: '0.9em', whiteSpace: 'nowrap', color: 'var(--text-primary)' }}>
+          <span style={{ display: 'flex', gap: '0.5rem', fontSize: '0.9em', whiteSpace: 'nowrap', color: 'var(--text-primary)' }}>
             {getGenderIcon(worker.sex)}
             {getCarIcon(worker.car)}
             {getTelegramIcon(worker.telegram)}

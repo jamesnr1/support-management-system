@@ -477,10 +477,27 @@ const WorkerManagement = ({ workers = [], locations = [], onWorkersUpdate }) => 
                   padding: '0.85rem',
                   background: (!telegramMessage.trim() || (!sendToAll && selectedWorkers.size === 0)) ? '#6B6B6B' : '#D4A574',
                   color: '#2D2B28',
-                  border: '1px solid #D4A574',
-                  borderRadius: '4px',
-                  fontWeight: '500',
-                  cursor: (!telegramMessage.trim() || (!sendToAll && selectedWorkers.size === 0)) ? 'not-allowed' : 'pointer'
+                  border: '2px solid #D4A574',
+                  borderRadius: '6px',
+                  fontWeight: '600',
+                  cursor: (!telegramMessage.trim() || (!sendToAll && selectedWorkers.size === 0)) ? 'not-allowed' : 'pointer',
+                  transition: 'all 0.2s ease'
+                }}
+                onMouseEnter={(e) => {
+                  if (!e.currentTarget.disabled) {
+                    e.currentTarget.style.background = '#C4915C';
+                    e.currentTarget.style.borderColor = '#C4915C';
+                    e.currentTarget.style.transform = 'translateY(-1px)';
+                    e.currentTarget.style.boxShadow = '0 4px 12px rgba(212, 165, 116, 0.3)';
+                  }
+                }}
+                onMouseLeave={(e) => {
+                  if (!e.currentTarget.disabled) {
+                    e.currentTarget.style.background = '#D4A574';
+                    e.currentTarget.style.borderColor = '#D4A574';
+                    e.currentTarget.style.transform = 'translateY(0)';
+                    e.currentTarget.style.boxShadow = 'none';
+                  }
                 }}
               >
                 📤 Send Message
@@ -493,8 +510,18 @@ const WorkerManagement = ({ workers = [], locations = [], onWorkersUpdate }) => 
                   padding: '0.85rem',
                   background: '#3E3B37',
                   color: '#E8DDD4',
-                  border: '1px solid #4A4641',
-                  borderRadius: '4px'
+                  border: '2px solid #4A4641',
+                  borderRadius: '6px',
+                  transition: 'all 0.2s ease',
+                  cursor: 'pointer'
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.background = '#4A4641';
+                  e.currentTarget.style.borderColor = '#8B9A7B';
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.background = '#3E3B37';
+                  e.currentTarget.style.borderColor = '#4A4641';
                 }}
                 title="Clear message"
               >
