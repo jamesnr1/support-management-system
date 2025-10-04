@@ -11,7 +11,7 @@
 - ✅ PASS: 0
 - ⚠️ NEEDS TESTING: 0  
 - ❌ FAIL: 0
-- 🔧 FIXED: 1 (ShiftForm initialization)
+- 🔧 FIXED: 2 (ShiftForm initialization, Data loss bug)
 
 ---
 
@@ -227,6 +227,15 @@
 
 ### 🔧 FIXED
 1. **ShiftForm initialization error** - React Hooks violation causing crash when adding shifts
+   - Moved state declarations to top of component
+   - Removed duplicate state declarations
+   - Fixed in commit: 3dd263c
+
+2. **CRITICAL: Data loss when saving shifts** - Would delete all participants except the one being edited
+   - ParticipantSchedule was only sending ONE participant's data back to backend
+   - Backend would replace entire roster with that one participant
+   - Fixed by merging updated participant data with existing full roster before POST
+   - Fixed in commit: 9867ee5
 
 ### ❌ OPEN ISSUES
 (To be populated as audit progresses)

@@ -801,6 +801,7 @@ const RosteringSystem = () => {
                     participant={participant}
                     weekType={rosterData[activeTab]?.week_type || 'weekA'}
                     rosterData={rosterData[activeTab]?.data?.[participant.code] || {}}
+                    fullRosterData={rosterData[activeTab]?.data || {}}  // Full roster for ShiftForm hours calculation
                     workers={workers || []} // Ensure it's always an array
                     locations={locations || []} // Ensure it's always an array
                     editMode={editMode}

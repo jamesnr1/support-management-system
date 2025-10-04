@@ -47,7 +47,8 @@ const getWeekDates = (weekType) => {
 const ParticipantSchedule = ({ 
   participant, 
   weekType, 
-  rosterData, 
+  rosterData,  // This participant's shifts only
+  fullRosterData,  // ALL participants' shifts (for ShiftForm worker hours calculation)
   workers, 
   locations, 
   editMode, 
@@ -315,7 +316,7 @@ const ParticipantSchedule = ({
                           onCancel={handleShiftCancel}
                           existingShifts={dayShifts}
                           weekType={weekType}
-                          rosterData={rosterData}
+                          rosterData={fullRosterData || {}}
                         />
                       ) : (
                         /* Show normal shift display */
@@ -445,7 +446,7 @@ const ParticipantSchedule = ({
                       onCancel={handleShiftCancel}
                       existingShifts={dayShifts}
                           weekType={weekType}
-                          rosterData={rosterData}
+                          rosterData={fullRosterData || {}}
                     />
                   )}
 
