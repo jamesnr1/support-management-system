@@ -13,10 +13,10 @@ const getWeekDates = (weekType) => {
   // The backend defines weeks starting on Sunday.
   switch (weekType) {
     case 'weekA':
-      startDate = new Date('2025-09-22T00:00:00'); // Monday, Sep 22, 2025
+      startDate = new Date('2025-09-29T00:00:00'); // Monday, Sep 29, 2025 (CURRENT WEEK)
       break;
     case 'weekB':
-      startDate = new Date('2025-09-29T00:00:00');  // Monday, Sep 29, 2025
+      startDate = new Date('2025-10-06T00:00:00');  // Monday, Oct 6, 2025 (NEXT WEEK)
       break;
     case 'nextA':
       startDate = new Date('2025-10-06T00:00:00'); // Monday, Oct 06, 2025
@@ -35,8 +35,15 @@ const getWeekDates = (weekType) => {
   for (let i = 0; i < 7; i++) {
     const date = new Date(startDate);
     date.setDate(startDate.getDate() + i);
+    
+    // Use local date parts to avoid timezone issues
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+    const dateString = `${year}-${month}-${day}`;
+    
     dates.push({
-      date: date.toISOString().split('T')[0],
+      date: dateString,
       day: date.toLocaleDateString('en-US', { weekday: 'long' }),
       dayShort: date.toLocaleDateString('en-US', { weekday: 'short' })
     });
