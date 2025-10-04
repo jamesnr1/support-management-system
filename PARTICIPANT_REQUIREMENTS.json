@@ -1,0 +1,207 @@
+{
+  "participants": {
+    "JAM001": {
+      "name": "James",
+      "code": "JAM001",
+      "ratio": "2:1",
+      "total_hours_per_week": 168,
+      "worker_hours_per_week": 336,
+      "coverage": "24/7",
+      "gender_requirement": "any",
+      "weekday_schedule": {
+        "day": {
+          "time_window": "06:00-18:00",
+          "hours": 84,
+          "worker_hours": 168,
+          "ratio": "2:1"
+        },
+        "evening": {
+          "time_window": "18:00-22:00",
+          "hours": 20,
+          "worker_hours": 40,
+          "ratio": "2:1"
+        },
+        "night": {
+          "time_window": "22:00-06:00",
+          "hours": 40,
+          "worker_hours": 80,
+          "ratio": "2:1"
+        }
+      },
+      "weekend_schedule": {
+        "same_as_weekday": true
+      },
+      "notes": [
+        "Requires 24/7 coverage",
+        "Always 2:1 ratio",
+        "No gender restrictions"
+      ]
+    },
+    "GRA001": {
+      "name": "Grace",
+      "code": "GRA001",
+      "ratio": "1:1",
+      "gender_requirement": "female",
+      "total_hours_per_week": 107.33,
+      "weekday_schedule": {
+        "day": {
+          "time_window": "06:00-20:00",
+          "hours_per_day": 6.5,
+          "total_hours": 32.5,
+          "ratio": "1:1",
+          "notes": "6.5 hours somewhere in the 6am-8pm window"
+        },
+        "evening": {
+          "time_window": "20:00-22:00",
+          "hours_per_day": 2,
+          "total_hours": 10,
+          "ratio": "1:1",
+          "notes": "MUST include 2 hours in 8pm-10pm window each weekday"
+        },
+        "night_shared": {
+          "time_window": "22:00-06:00",
+          "hours": 37.33,
+          "ratio": "2:3",
+          "notes": "Shared supports 2:3 coverage with Ace/Libby - NOT in current roster"
+        }
+      },
+      "saturday_schedule": {
+        "day_and_evening": {
+          "time_window": "06:00-22:00",
+          "hours": 16,
+          "ratio": "1:1",
+          "notes": "16 hours on Saturday (6am-10pm)"
+        }
+      },
+      "sunday_schedule": {
+        "day_and_evening": {
+          "time_window": "06:00-22:00",
+          "hours": 16,
+          "ratio": "1:1",
+          "notes": "16 hours on Sunday (6am-10pm)"
+        }
+      },
+      "critical_notes": [
+        "⚠️ WEEKDAYS: 6.5h day + 2h evening (8pm-10pm) = 8.5h total per day",
+        "⚠️ WEEKEND: 16 hours per day (6am-10pm)",
+        "⚠️ MUST use female workers only",
+        "Total weekly: 32.5 (weekday day) + 10 (weekday evening) + 32 (weekend) = 74.5h + 37.33 (night shared if applicable)"
+      ]
+    },
+    "ACE001": {
+      "name": "Ace",
+      "code": "ACE001",
+      "status": "no_weekday_shifts_current_roster",
+      "ratio": "1:1",
+      "weekday_schedule": {
+        "evening": {
+          "time_window": "20:00-22:00",
+          "hours_per_day": 2,
+          "total_hours": 10
+        },
+        "night_shared": {
+          "time_window": "22:00-06:00",
+          "hours": 37.33,
+          "ratio": "2:3",
+          "notes": "Shared supports 2:3 with Libby/Grace"
+        }
+      },
+      "weekend_schedule": {
+        "hours_per_day": 16
+      },
+      "notes": [
+        "NO weekday shifts in current roster (Oct 7-13)"
+      ]
+    },
+    "LIB001": {
+      "name": "Libby",
+      "code": "LIB001",
+      "status": "not_in_current_roster",
+      "notes": [
+        "NO shifts in current roster (Oct 7-13)"
+      ]
+    },
+    "MIL001": {
+      "name": "Milan",
+      "code": "MIL001",
+      "status": "weekend_only_current_roster",
+      "ratio": "1:1",
+      "total_hours_per_week": 27,
+      "weekday_schedule": {
+        "hours": 15,
+        "notes": "NO weekday shifts in current roster (Oct 7-13)"
+      },
+      "weekend_schedule": {
+        "saturday": {
+          "self_care": {
+            "hours": 3,
+            "notes": "Must be separate shift"
+          },
+          "community": {
+            "hours": 3,
+            "notes": "Must be separate shift, can be same worker as self-care"
+          }
+        },
+        "sunday": {
+          "self_care": {
+            "hours": 3,
+            "notes": "Must be separate shift"
+          },
+          "community": {
+            "hours": 3,
+            "notes": "Must be separate shift, can be same worker as self-care"
+          }
+        }
+      },
+      "critical_notes": [
+        "⚠️ Weekend: 3h self-care + 3h community EACH DAY",
+        "⚠️ MUST be separate shifts (can't be one 6h shift)",
+        "⚠️ CAN use same worker for both shifts (continuity of care applies)",
+        "NO weekday shifts in Oct 7-13 roster"
+      ]
+    }
+  },
+  "validation_rules": {
+    "rest_periods": {
+      "adjacent_day_minimum": 600,
+      "adjacent_day_minimum_description": "10 hours between end of one shift and start of next shift on adjacent days",
+      "same_participant_continuity": 30,
+      "same_participant_continuity_description": "For same participant, back-to-back or up to 30 min break allowed for continuity of care",
+      "different_participant_minimum": 120,
+      "different_participant_minimum_description": "2 hours minimum break between different participants (travel time)",
+      "split_shift_minimum": 60,
+      "split_shift_minimum_description": "1 hour minimum break for split shifts (same day, same participant, gap < 5h)"
+    },
+    "time_bands": {
+      "day": "06:00-18:00",
+      "evening": "18:00-22:00",
+      "night": "22:00-06:00"
+    },
+    "ratios": {
+      "1:1": "One worker per participant",
+      "2:1": "Two workers per participant",
+      "2:3": "Two workers shared across three participants (night shared supports)"
+    }
+  },
+  "current_roster_constraints": {
+    "week": "October 7-13, 2025",
+    "excluded_participants": [
+      "No Ace weekday shifts",
+      "No Milan weekday shifts",
+      "No Libby shifts at all"
+    ],
+    "special_assignments": {
+      "sandy_135": "Early morning shifts 6-8am on available days",
+      "rosie_126": "Target ~40h, all availability",
+      "parvinder_139": "Weekday shifts in availability + one weekend shift",
+      "chaynne_120": "Tue 9am-1pm + Fri 12pm-4pm (8h max)",
+      "mihir_130": "EXACTLY 24 hours",
+      "hamza_132": "Increased hours (~32h)",
+      "sanjay_136": "Increased hours (~38h)",
+      "happy_125": "Reduced to ~40h",
+      "arti_118": "Reduced hours, Grace only (female)",
+      "krunal_127": "Reduced to ~32h"
+    }
+  }
+}
+
