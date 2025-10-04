@@ -537,7 +537,7 @@ const RosteringSystem = () => {
         
         {/* Action Buttons (Roster/Planner only) */}
         {(activeTab === 'roster' || activeTab === 'planner') && (
-          <div style={{ display: 'flex', gap: '0.75rem', marginRight: 'auto', alignItems: 'center', flex: 1 }}>
+          <div style={{ display: 'flex', gap: '0.75rem', marginLeft: '2rem', marginRight: 'auto', alignItems: 'center', flex: 1 }}>
             {/* Week Pattern Selector for Planner */}
             {activeTab === 'planner' && rosterData.planner?.week_type && (
               <>
