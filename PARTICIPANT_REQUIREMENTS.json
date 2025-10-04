@@ -40,8 +40,10 @@
     "GRA001": {
       "name": "Grace",
       "code": "GRA001",
+      "participant_gender": "female",
       "ratio": "1:1",
-      "gender_requirement": "female",
+      "gender_requirement": "prefer_female",
+      "gender_requirement_note": "PREFER female workers (not mandatory, but look for female first)",
       "total_hours_per_week": 107.33,
       "weekday_schedule": {
         "day": {
@@ -84,13 +86,16 @@
       "critical_notes": [
         "⚠️ WEEKDAYS: 6.5h day + 2h evening (8pm-10pm) = 8.5h total per day",
         "⚠️ WEEKEND: 16 hours per day (6am-10pm)",
-        "⚠️ MUST use female workers only",
+        "⚠️ PREFER female workers (not mandatory - look for female first, but male workers OK if needed)",
         "Total weekly: 32.5 (weekday day) + 10 (weekday evening) + 32 (weekend) = 74.5h + 37.33 (night shared if applicable)"
       ]
     },
     "ACE001": {
       "name": "Ace",
       "code": "ACE001",
+      "participant_gender": "male",
+      "gender_requirement": "any",
+      "gender_requirement_note": "Fine with both male and female workers",
       "status": "no_weekday_shifts_current_roster",
       "ratio": "1:1",
       "weekday_schedule": {
@@ -116,6 +121,9 @@
     "LIB001": {
       "name": "Libby",
       "code": "LIB001",
+      "participant_gender": "female",
+      "gender_requirement": "prefer_female",
+      "gender_requirement_note": "PREFER female workers (not mandatory, but look for female first)",
       "status": "not_in_current_roster",
       "notes": [
         "NO shifts in current roster (Oct 7-13)"
@@ -124,6 +132,9 @@
     "MIL001": {
       "name": "Milan",
       "code": "MIL001",
+      "participant_gender": "male",
+      "gender_requirement": "any",
+      "gender_requirement_note": "Fine with both male and female workers",
       "status": "weekend_only_current_roster",
       "ratio": "1:1",
       "total_hours_per_week": 27,
@@ -202,6 +213,74 @@
       "arti_118": "Reduced hours, Grace only (female)",
       "krunal_127": "Reduced to ~32h"
     }
+  },
+  "roster_management_principles": {
+    "locked_shifts": {
+      "description": "Some shifts are locked (fixed time and worker)",
+      "rules": [
+        "DO NOT change locked shift times",
+        "DO NOT change locked shift workers",
+        "MUST include locked shift hours in worker hour calculations",
+        "Locked shifts are marked with 'locked': true in roster data"
+      ]
+    },
+    "hour_balancing": {
+      "description": "Keep worker hours relatively balanced",
+      "rules": [
+        "Aim for workers to be within ~10h of their target hours",
+        "Don't over-assign to some workers while under-utilizing others",
+        "Consider worker availability when balancing",
+        "Account for locked shifts when calculating available hours"
+      ]
+    },
+    "ndis_plan_changes": {
+      "description": "NDIS can issue new/updated plans at any time",
+      "implications": [
+        "Participant hours may change with new plan",
+        "Support ratios may be adjusted",
+        "Funding categories may change",
+        "This file should be updated when NDIS plan changes",
+        "Always check if requirements are current before creating roster"
+      ]
+    },
+    "gender_preferences": {
+      "description": "Participant gender preferences and requirements",
+      "levels": {
+        "any": "No preference, any worker gender is fine",
+        "prefer_female": "Prefer female workers (look for female first, but male OK if needed)",
+        "prefer_male": "Prefer male workers (look for male first, but female OK if needed)",
+        "require_female": "MUST be female workers only (blocking requirement)",
+        "require_male": "MUST be male workers only (blocking requirement)"
+      },
+      "current_preferences": {
+        "James (JAM001)": "any",
+        "Grace (GRA001, female)": "prefer_female",
+        "Ace (ACE001, male)": "any",
+        "Libby (LIB001, female)": "prefer_female",
+        "Milan (MIL001, male)": "any"
+      }
+    }
+  },
+  "ai_helper_notes": {
+    "critical_reminders": [
+      "READ this file EVERY time before creating a roster",
+      "Grace weekdays = 6.5h day + 2h evening (8pm-10pm) - DON'T FORGET EVENING!",
+      "Grace weekends = 16h per day (6am-10pm)",
+      "Milan weekends = 3h + 3h SEPARATE shifts",
+      "James = 24/7 coverage at 2:1 ratio",
+      "Check locked shifts and include their hours in calculations",
+      "Balance hours across all workers",
+      "Prefer female workers for Grace and Libby (but not blocking)",
+      "10-hour rest between adjacent day shifts"
+    ],
+    "validation_checklist": [
+      "Run backend/validate_roster_requirements.py after creation",
+      "Check all errors and warnings",
+      "Verify worker hour totals",
+      "Confirm gender preferences honored",
+      "Verify locked shifts unchanged",
+      "Confirm hour balancing across workers"
+    ]
   }
 }
 

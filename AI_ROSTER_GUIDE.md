@@ -40,9 +40,10 @@ python3 validate_roster_requirements.py
 **WRONG:** Worker finishes night shift 6am, starts next shift 8am
 **RIGHT:** Must have 10 hours rest (can't work before 4pm next day)
 
-### ❌ Mistake #4: Not Checking Female Requirement
-**WRONG:** Assigning male workers to Grace
-**RIGHT:** Grace MUST have female workers only
+### ❌ Mistake #4: Not Checking Gender Preferences
+**WRONG:** Assigning only male workers to Grace/Libby
+**RIGHT:** Grace & Libby PREFER female (look for female first, but male OK if needed)
+**NOTE:** This is a preference, not a blocking requirement
 
 ### ❌ Mistake #5: Forgetting Special Assignments
 - Sandy: Early morning 6-8am shifts
@@ -66,7 +67,7 @@ Use this checklist EVERY TIME:
 - [ ] Mon-Fri: **2h EVENING (8pm-10pm)** ← CHECK THIS!
 - [ ] Saturday: 16h (6am-10pm)
 - [ ] Sunday: 16h (6am-10pm)
-- [ ] **FEMALE WORKERS ONLY**
+- [ ] **PREFER FEMALE WORKERS** (not mandatory, but prioritize female)
 - [ ] All shifts 1:1 ratio
 
 ### Milan (MIL001):
@@ -82,6 +83,10 @@ Use this checklist EVERY TIME:
 - [ ] 2-hour break between different participants (except split shifts)
 - [ ] All special worker assignments included
 - [ ] Worker hours match targets
+- [ ] Locked shifts NOT changed (time or worker)
+- [ ] Locked shift hours included in worker totals
+- [ ] Hours balanced across workers (~10h of targets)
+- [ ] Gender preferences honored (prefer female for Grace/Libby)
 
 ---
 
@@ -119,12 +124,63 @@ Use this checklist EVERY TIME:
 
 ---
 
+## 🔒 LOCKED SHIFTS
+
+Some shifts may be locked (fixed time and worker). When working with locked shifts:
+
+1. **DO NOT** change the time
+2. **DO NOT** change the worker
+3. **DO** include locked shift hours in worker calculations
+4. Look for `"locked": true` in roster data
+
+**Example:**
+```json
+{
+  "id": "jam_mon_night",
+  "startTime": "22:00",
+  "endTime": "06:00",
+  "duration": 8,
+  "workers": [138],
+  "locked": true  ← This shift is LOCKED
+}
+```
+
+---
+
+## ⚖️ HOUR BALANCING
+
+Keep worker hours relatively balanced:
+
+- Aim for workers within ~10h of their target hours
+- Don't over-assign to some while under-utilizing others
+- Account for locked shifts when calculating available hours
+- Consider worker availability when balancing
+
+**Example:**
+If target is 40h, acceptable range is 30-50h. Avoid giving one worker 48h and another 20h.
+
+---
+
+## 📋 NDIS PLAN CHANGES
+
+NDIS can issue new/updated plans at any time:
+
+- Participant hours may change
+- Support ratios may be adjusted
+- Funding categories may change
+- Always check if `PARTICIPANT_REQUIREMENTS.json` is current
+- Ask user if NDIS plan has been updated before creating roster
+
+---
+
 ## 💡 WHEN IN DOUBT
 
 - Check `PARTICIPANT_REQUIREMENTS.json` first
+- Verify if NDIS plans are current
 - Ask user to clarify before guessing
 - Run validation script before committing
 - Show calculations explicitly
+- Check for locked shifts
 
 ---
 
