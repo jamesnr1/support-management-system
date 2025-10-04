@@ -149,15 +149,41 @@ Some shifts may be locked (fixed time and worker). When working with locked shif
 
 ## ⚖️ HOUR BALANCING
 
-Keep worker hours relatively balanced:
+Keep worker hours relatively balanced, with **PRIORITY for low-hour workers**:
 
+### 🚨 CRITICAL: Low-Hour Workers FIRST
+**Workers with low max hours (8-24h) have restrictions and RELY on these hours!**
+
+- Student visas
+- Other job commitments
+- Personal restrictions
+- **They cannot get more hours elsewhere**
+
+**RULE: Give low-hour workers their FULL allocation BEFORE distributing to high-hour workers.**
+
+**Priority Order:**
+1. **Low-hour workers (8-24h):** Mihir (24h), Parvinder (24h), Sandy (20h), Chaynne (8h)
+   - These workers MUST get close to/at their max hours
+   
+2. **Mid-hour workers (25-39h):** 
+   - Fill to target before going to high-hour workers
+   
+3. **High-hour workers (40-48h):** 
+   - These workers have flexibility
+   - Can absorb hour variations
+   - Use them to balance remaining hours
+
+### General Balancing:
 - Aim for workers within ~10h of their target hours
 - Don't over-assign to some while under-utilizing others
 - Account for locked shifts when calculating available hours
 - Consider worker availability when balancing
 
 **Example:**
-If target is 40h, acceptable range is 30-50h. Avoid giving one worker 48h and another 20h.
+- ✅ CORRECT: Mihir (24h max) gets 24h, Happy (48h max) gets 35h
+- ❌ WRONG: Mihir (24h max) gets 16h, Happy (48h max) gets 48h
+
+**Remember: High-hour workers have flexibility. Low-hour workers don't. Protect low-hour allocations!**
 
 ---
 
@@ -170,6 +196,13 @@ NDIS can issue new/updated plans at any time:
 - Funding categories may change
 - Always check if `PARTICIPANT_REQUIREMENTS.json` is current
 - Ask user if NDIS plan has been updated before creating roster
+
+**📚 Full guide:** See `NDIS_PLAN_UPDATE_GUIDE.md` for complete checklist of what to update when plans change.
+
+**Quick check before roster creation:**
+- "Are all NDIS plans current?"
+- "Have any participant hours/ratios changed recently?"
+- "Is `PARTICIPANT_REQUIREMENTS.json` up to date?"
 
 ---
 

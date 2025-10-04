@@ -231,7 +231,19 @@
         "Don't over-assign to some workers while under-utilizing others",
         "Consider worker availability when balancing",
         "Account for locked shifts when calculating available hours"
-      ]
+      ],
+      "priority_for_low_hour_workers": {
+        "critical": "Workers with low max hours (8-24h) often have restrictions (student visa, other commitments)",
+        "impact": "These workers RELY on getting their allocated hours - they cannot get more elsewhere",
+        "rule": "PRIORITIZE giving low-hour workers their FULL allocation before distributing to high-hour workers",
+        "examples": {
+          "mihir_24h": "Has exactly 24h max - MUST get all 24h",
+          "chaynne_8h": "Has 8h max with specific times - MUST get those 8h",
+          "parvinder_24h": "Has 24h max - should get close to 24h",
+          "sandy_20h": "Has 20h max - should get close to 20h"
+        },
+        "rationale": "High-hour workers (40-48h) have flexibility. Low-hour workers don't. Protect low-hour allocations first."
+      }
     },
     "ndis_plan_changes": {
       "description": "NDIS can issue new/updated plans at any time",
