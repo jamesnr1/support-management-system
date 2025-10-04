@@ -19,9 +19,9 @@ const RosteringSystem = () => {
     () => localStorage.getItem('isAuthenticated') === 'true'
   );
 
-  // Persist activeTab in localStorage to prevent jumping back to weekA
+  // Persist activeTab in localStorage to prevent jumping back to roster
   const [activeTab, setActiveTab] = useState(() => {
-    return localStorage.getItem('activeTab') || 'weekA';
+    return localStorage.getItem('activeTab') || 'roster';
   });
   const [editMode, setEditMode] = useState(false);
   const [copyTemplateRunning, setCopyTemplateRunning] = useState(false);
@@ -198,21 +198,17 @@ const RosteringSystem = () => {
     staleTime: 1000 * 60 * 5
   });
 
-  // Fetch roster data for all weeks
+  // Fetch roster data (roster + planner)
   const { data: rosterData = {}, isLoading: rosterLoading } = useQuery({
     queryKey: ['rosterData'],
     queryFn: async () => {
-      const [weekA, weekB, nextA, nextB] = await Promise.all([
-        axios.get(`${API}/roster/weekA`),
-        axios.get(`${API}/roster/weekB`),
-        axios.get(`${API}/roster/nextA`),
-        axios.get(`${API}/roster/nextB`)
+      const [roster, planner] = await Promise.all([
+        axios.get(`${API}/roster/roster`),
+        axios.get(`${API}/roster/planner`)
       ]);
       return {
-        weekA: weekA.data,
-        weekB: weekB.data,
-        nextA: nextA.data,
-        nextB: nextB.data
+        roster: roster.data,
+        planner: planner.data
       };
     }
   });
@@ -240,10 +236,8 @@ const RosteringSystem = () => {
   };
 
   const tabs = [
-    { id: 'weekA', label: 'Week A', color: '#D4A574' },
-    { id: 'weekB', label: 'Week B', color: '#8B9A7B' },
-    { id: 'nextA', label: 'Next A', color: '#C4915C' },
-    { id: 'nextB', label: 'Next B', color: '#B87E7E' },
+    { id: 'roster', label: 'Roster', color: '#D4A574' },
+    { id: 'planner', label: 'Planner', color: '#8B9A7B' },
     { id: 'admin', label: 'Admin', color: '#9A8F85' },
     { id: 'hours', label: 'Hours', color: '#A89080' }
   ];
@@ -396,15 +390,12 @@ const RosteringSystem = () => {
     }
   };
 
-  // BULLETPROOF COPY TEMPLATE FUNCTION
+  // Copy Roster to Planner with week type flip
   const copyToTemplate = async () => {
-    // 1. Prevent multiple clicks and identify source/destination
+    // Only allow copying from roster to planner
     if (copyTemplateRunning) return;
-    const sourceWeek = activeTab;
-    const destWeek = { weekA: 'nextA', weekB: 'nextB' }[sourceWeek];
-
-    if (!destWeek) {
-      toast.error('Copy is only available from Week A or Week B.');
+    if (activeTab !== 'roster') {
+      toast.error('Copy is only available from Roster tab.');
       return;
     }
 
