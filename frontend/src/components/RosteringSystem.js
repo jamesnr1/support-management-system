@@ -219,6 +219,12 @@ const RosteringSystem = () => {
 
   // Calculate week date ranges for planner dropdown (based on roster week)
   const plannerWeekRanges = useMemo(() => {
+    // Parse date string as LOCAL date (avoid timezone shifts)
+    const parseLocalDate = (dateStr) => {
+      const [year, month, day] = dateStr.split('-').map(Number);
+      return new Date(year, month - 1, day); // month is 0-indexed
+    };
+
     const formatDateRange = (startDate) => {
       const start = new Date(startDate);
       const end = new Date(start);
@@ -243,11 +249,11 @@ const RosteringSystem = () => {
       const diff = today.getDate() - day + (day === 0 ? -6 : 1);
       const monday = new Date(today);
       monday.setDate(diff);
-      rosterStartDate = monday.toISOString().split('T')[0];
+      rosterStartDate = `${monday.getFullYear()}-${String(monday.getMonth() + 1).padStart(2, '0')}-${String(monday.getDate()).padStart(2, '0')}`;
     }
 
-    // Base all calculations on roster's week
-    const rosterMonday = new Date(rosterStartDate);
+    // Base all calculations on roster's week - parse as LOCAL date
+    const rosterMonday = parseLocalDate(rosterStartDate);
     
     const nextMonday = new Date(rosterMonday);
     nextMonday.setDate(rosterMonday.getDate() + 7);
