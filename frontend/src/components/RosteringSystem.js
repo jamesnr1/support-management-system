@@ -32,6 +32,7 @@ const RosteringSystem = () => {
   const [calendarVisible, setCalendarVisible] = useState(true);
   const [calendarRefreshTrigger, setCalendarRefreshTrigger] = useState(0);
   const [lastCalendarUpdate, setLastCalendarUpdate] = useState(null);
+  const [selectedPlannerWeek, setSelectedPlannerWeek] = useState('current'); // 'current', 'next', 'after'
   const [viewportHeight, setViewportHeight] = useState(() =>
     typeof window !== 'undefined' ? window.innerHeight : 900
   );
@@ -555,6 +556,42 @@ const RosteringSystem = () => {
         {/* Action Buttons (Roster/Planner only) */}
         {(activeTab === 'roster' || activeTab === 'planner') && (
           <div style={{ display: 'flex', gap: '0.75rem', marginLeft: '2rem', marginRight: 'auto', alignItems: 'center', flex: 1 }}>
+            {/* Planner Week Selector Dropdown */}
+            {activeTab === 'planner' && (
+              <>
+                <span style={{ color: '#8B9A7B', fontSize: '0.9rem', marginRight: '0.4rem' }}>
+                  Planning:
+                </span>
+                <select
+                  value={selectedPlannerWeek}
+                  onChange={(e) => {
+                    setSelectedPlannerWeek(e.target.value);
+                    const weekLabel = {
+                      'current': 'Current Week (template from Roster)',
+                      'next': 'Next Week',
+                      'after': 'Week After'
+                    }[e.target.value];
+                    toast.info(`Planning for: ${weekLabel}`);
+                  }}
+                  style={{
+                    padding: '0.4rem 0.75rem',
+                    fontSize: '0.85rem',
+                    background: '#3E3B37',
+                    color: '#E8DDD4',
+                    border: '1px solid #8B9A7B',
+                    borderRadius: '4px',
+                    cursor: 'pointer',
+                    fontWeight: '500'
+                  }}
+                >
+                  <option value="current">Current Week (from Roster)</option>
+                  <option value="next">Next Week</option>
+                  <option value="after">Week After</option>
+                </select>
+                <span style={{ margin: '0 0.75rem', color: '#4A4641' }}>|</span>
+              </>
+            )}
+            
             {/* Week Pattern Selector for Planner */}
             {activeTab === 'planner' && rosterData.planner?.week_type && (
               <>
