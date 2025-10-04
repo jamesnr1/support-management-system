@@ -100,7 +100,7 @@ const WorkerCard = ({ worker, onEdit, onManageAvailability, onDelete, availabili
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', width: '100%' }}>
           <div className="worker-name" style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', flexWrap: 'nowrap' }}>
             <span style={{ whiteSpace: 'nowrap' }}>{getDisplayName(worker.full_name)}</span>
-            <span style={{ display: 'flex', gap: '0.5rem', fontSize: '0.9em', whiteSpace: 'nowrap', color: 'var(--text-primary)' }}>
+            <span style={{ display: 'flex', gap: '0.75rem', fontSize: '0.9em', whiteSpace: 'nowrap', color: 'var(--text-primary)' }}>
               {getGenderIcon(worker.sex)}
               {getCarIcon(worker.car)}
               {getTelegramIcon(worker.telegram)}
@@ -150,9 +150,9 @@ const WorkerCard = ({ worker, onEdit, onManageAvailability, onDelete, availabili
           flexDirection: 'column'
         }}>
         {isLoading ? (
-          <div style={{ color: 'var(--text-secondary)', textAlign: 'center' }}>Loading...</div>
+          <div style={{ color: 'var(--text-secondary)', textAlign: 'center', flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>Loading...</div>
         ) : currentUnavailability ? (
-          <div style={{ textAlign: 'center' }}>
+          <div style={{ textAlign: 'center', flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
             <h5 style={{ fontSize: '0.9rem', color: 'var(--text-secondary)', marginBottom: '8px', fontWeight: 'bold' }}>Weekly Availability</h5>
             <div style={{ color: 'var(--text-secondary)', fontSize: '0.85rem', marginTop: '0.5rem' }}>
               <strong>Unavailable</strong>
@@ -162,7 +162,7 @@ const WorkerCard = ({ worker, onEdit, onManageAvailability, onDelete, availabili
             </div>
           </div>
         ) : (
-          <div>
+          <div style={{ flex: 1 }}>
             <h5 style={{ fontSize: '0.9rem', color: 'var(--text-secondary)', marginBottom: '8px', fontWeight: 'bold', textAlign: 'center' }}>Weekly Availability</h5>
             <div style={{ fontSize: '0.85rem', color: 'var(--text-secondary)' }}>
               {days.map(day => (
