@@ -3,12 +3,11 @@
 ## WORKER HOURS BREAKDOWN:
 
 ### Taufique (138) - Max 48h
-- Mon night: 8h
 - Tue night: 8h
 - Wed night: 8h
 - Thu night: 8h
 - Fri night: 8h
-**Total: 40h** ✅
+**Total: 32h** ✅ (REDUCED from 40h)
 
 ### Mayu (129) - Max 48h
 - Mon night: 8h
@@ -19,10 +18,11 @@
 **Total: 40h** ✅ (REDUCED from 48h)
 
 ### Hamza (132) - Max 48h
+- Mon night: 8h
 - Tue night: 8h
 - Thu morning: 8h (rested from Tue night)
 - Sun night: 8h
-**Total: 24h** ✅ (INCREASED from before)
+**Total: 32h** ✅ (INCREASED from 24h)
 
 ### Sanjay (136) - Max 48h
 - Wed night: 8h
@@ -119,7 +119,8 @@
 
 ✅ **Special Requirements:**
 - Mihir: EXACTLY 24 hours ✅
-- Hamza: Increased to 24h ✅
+- Hamza: INCREASED to 32h ✅
+- Taufique: Reduced to 32h ✅
 - Sanjay: Increased to 38h ✅
 - Happy: Reduced to 40h ✅
 - Arti: Reduced to 30h ✅
