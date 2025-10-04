@@ -18,6 +18,11 @@ const ShiftForm = ({
   weekType,
   rosterData = {}
 }) => {
+  // ===== ALL HOOKS MUST BE AT THE TOP - React Rules =====
+  const [workers, setWorkers] = useState(allWorkers || []);
+  const [isFormReady, setIsFormReady] = useState(false);
+  const [unavailableWorkers, setUnavailableWorkers] = React.useState(new Set());
+
   // Helper functions for name formatting
   const getDisplayName = (fullName) => {
     if (!fullName) return '';
@@ -126,9 +131,6 @@ const ShiftForm = ({
     const sequenceNum = Math.floor(Math.random() * 100).toString().padStart(2, '0'); // 2-digit sequence
     return `${participantInitial}${dateStr}${sequenceNum}`; // Format: L2025092201
   }
-
-  // State to track unavailable workers
-  const [unavailableWorkers, setUnavailableWorkers] = React.useState(new Set());
   
   // Fetch unavailability status for all workers
   React.useEffect(() => {
@@ -637,9 +639,6 @@ const ShiftForm = ({
     shiftNumber: 'TEMP',
     isSplitShift: false
   });
-
-  const [isFormReady, setIsFormReady] = useState(false);
-  const [workers, setWorkers] = useState(allWorkers || []);
 
   // Get available workers - use useMemo to avoid initialization issues
   const availableWorkers = useMemo(() => {
