@@ -151,10 +151,8 @@ const ParticipantSchedule = ({
       setSelectedDate(null);
       setEditingShift(null);
       
-      // Force immediate refresh
-      setTimeout(() => {
-        window.location.reload();
-      }, 100);
+      // Invalidate queries to trigger re-fetch (no page reload needed)
+      queryClient.invalidateQueries(['rosterData']);
     } catch (error) {
       console.error('Error in handleShiftSave:', error);
       alert(`Error saving shift: ${error.message || 'Unknown error'}. Please check the console for details.`);
@@ -246,10 +244,8 @@ const ParticipantSchedule = ({
       console.log('Updating roster with:', updatedParticipantData);
       await onRosterUpdate(updatedParticipantData);
       
-      // Force reload to show changes
-      setTimeout(() => {
-        window.location.reload();
-      }, 200);
+      // Invalidate queries to trigger re-fetch (no page reload needed)
+      queryClient.invalidateQueries(['rosterData']);
       
     } catch (error) {
       console.error('Delete failed:', error);
