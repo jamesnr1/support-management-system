@@ -82,3 +82,9 @@ urllib3==2.5.0
 uvicorn==0.25.0
 watchfiles==1.1.0
 websockets==15.0.1
+google-auth==2.41.1
+google-auth-oauthlib==1.2.2
+google-auth-httplib2==0.2.0
+google-api-python-client==2.183.0
+python-telegram-bot==21.0
+openai==1.12.0

@@ -1,26 +1,165 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { toast } from 'react-hot-toast';
 import axios from 'axios';
+import Login from './Login';
 import WorkerManagement from './WorkerManagement';
 import ParticipantSchedule from './ParticipantSchedule';
 import HoursTracker from './HoursTracker';
+import CalendarAppointments from './CalendarAppointments';
+import AIChat from './AIChat';
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 const API = `${BACKEND_URL}/api`;
 
 const RosteringSystem = () => {
-  const [activeTab, setActiveTab] = useState('weekA');
+  // ===== ALL HOOKS MUST BE AT THE TOP - UNCONDITIONAL =====
+  // Authentication state
+  const [isAuthenticated, setIsAuthenticated] = useState(
+    () => localStorage.getItem('isAuthenticated') === 'true'
+  );
+
+  // Persist activeTab in localStorage to prevent jumping back to weekA
+  const [activeTab, setActiveTab] = useState(() => {
+    return localStorage.getItem('activeTab') || 'weekA';
+  });
   const [editMode, setEditMode] = useState(false);
+  const [copyTemplateRunning, setCopyTemplateRunning] = useState(false);
+  const [calendarHeight, setCalendarHeight] = useState(300); // Dynamic calendar height
+  const [calendarTop, setCalendarTop] = useState(130); // Dynamic top below tabs
+  const [viewportHeight, setViewportHeight] = useState(() =>
+    typeof window !== 'undefined' ? window.innerHeight : 900
+  );
   const queryClient = useQueryClient();
+
+  // Save activeTab to localStorage whenever it changes
+  useEffect(() => {
+    localStorage.setItem('activeTab', activeTab);
+  }, [activeTab]);
+
+  useEffect(() => {
+    if (typeof window === 'undefined') {
+      return undefined;
+    }
+
+    const handleResize = () => {
+      setViewportHeight(window.innerHeight);
+    };
+
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
+  // Compute header + tabs actual height for pixel-perfect positioning
+  const fixedTopOffset = 130; // default fallback
+  const calendarMaxHeight = useMemo(() => {
+    // Use measured viewport minus calendarTop minus small breathing room
+    const available = viewportHeight - calendarTop - 12;
+    return Math.max(available, 220);
+  }, [viewportHeight, calendarTop]);
+
+  const effectiveCalendarHeight = useMemo(() => {
+    if (activeTab === 'admin' || activeTab === 'hours') {
+      return 0;
+    }
+    return Math.min(Math.max(calendarHeight, 220), calendarMaxHeight);
+  }, [activeTab, calendarHeight, calendarMaxHeight]);
+
+  // Measure the bottom of the tabs to position the calendar flush under them
+  useEffect(() => {
+    const computeCalendarTop = () => {
+      if (typeof window === 'undefined') return;
+      const nav = document.querySelector('.tab-nav');
+      const header = document.querySelector('.header');
+      let topPx = 130;
+      if (nav && nav.getBoundingClientRect) {
+        const rect = nav.getBoundingClientRect();
+        topPx = Math.max(0, Math.round(rect.bottom));
+      } else if (header && header.getBoundingClientRect) {
+        const rect = header.getBoundingClientRect();
+        topPx = Math.max(0, Math.round(rect.bottom));
+      }
+      setCalendarTop(topPx);
+    };
+    computeCalendarTop();
+    window.addEventListener('resize', computeCalendarTop);
+    const id = setInterval(computeCalendarTop, 500); // account for font/layout shifts
+    return () => {
+      window.removeEventListener('resize', computeCalendarTop);
+      clearInterval(id);
+    };
+  }, []);
+
+  // Week transition logic - every fortnight at 3am
+  const checkWeekTransition = () => {
+    const now = new Date();
+    const currentHour = now.getHours();
+    const currentMinute = now.getMinutes();
+    const currentDay = now.getDay(); // 0=Sunday, 1=Monday, etc.
+    
+    // Check if it's 3am on Monday (day 1)
+    if (currentDay === 1 && currentHour === 3 && currentMinute === 0) {
+      // Check if it's been 2 weeks since last transition
+      const lastTransition = localStorage.getItem('lastWeekTransition');
+      const twoWeeksAgo = new Date(now.getTime() - (14 * 24 * 60 * 60 * 1000));
+      
+      if (!lastTransition || new Date(lastTransition) < twoWeeksAgo) {
+        performWeekTransition();
+      }
+    }
+  };
+
+  const performWeekTransition = async () => {
+    try {
+      console.log('Performing week transition at 3am Monday');
+      
+      // Next A becomes Week A, Next B becomes Week B
+      const [nextARes, nextBRes] = await Promise.all([
+        axios.get(`${API}/roster/nextA`),
+        axios.get(`${API}/roster/nextB`)
+      ]);
+      
+      const nextAData = nextARes.data || {};
+      const nextBData = nextBRes.data || {};
+      
+      // Move Next A/B to Week A/B and clear Next A/B
+      await Promise.all([
+        axios.post(`${API}/roster/weekA`, nextAData),
+        axios.post(`${API}/roster/weekB`, nextBData),
+        axios.post(`${API}/roster/nextA`, {}),
+        axios.post(`${API}/roster/nextB`, {})
+      ]);
+      
+      // Update last transition timestamp
+      localStorage.setItem('lastWeekTransition', new Date().toISOString());
+      
+      // Refresh data
+      queryClient.invalidateQueries(['rosterData']);
+      
+      console.log('Week transition completed: Next A→Week A, Next B→Week B, Next A/B cleared');
+    } catch (error) {
+      console.error('Error during week transition:', error);
+    }
+  };
+
+  // Check for week transition on component mount and every minute
+  useEffect(() => {
+    checkWeekTransition();
+    const interval = setInterval(checkWeekTransition, 60000); // Check every minute
+    return () => clearInterval(interval);
+  }, []);
+
+  // Helper function for CSV names
+  const getCSVName = (fullName) => {
+    if (!fullName) return '';
+    return fullName.replace(/\s*\([^)]+\)\s*/g, ' ').trim(); // Remove parentheses and content
+  };
 
   // Fetch participants
   const { data: participants = [], isLoading: participantsLoading, error: participantsError } = useQuery({
     queryKey: ['participants'],
     queryFn: async () => {
-      console.log('Fetching participants...');
       const response = await axios.get(`${API}/participants`);
-      console.log('Participants response:', response.data);
       return response.data;
     },
     retry: 2,
@@ -31,10 +170,8 @@ const RosteringSystem = () => {
   const { data: workers = [], isLoading: workersLoading, error: workersError } = useQuery({
     queryKey: ['workers'],
     queryFn: async () => {
-      console.log('Fetching workers from:', `${API}/workers`);
       try {
-        const response = await axios.get(`${API}/workers`, { timeout: 10000 });
-        console.log('Workers response success:', response.data.length, 'workers');
+        const response = await axios.get(`${API}/workers`, { timeout: 30000 });
         return response.data;
       } catch (error) {
         console.error('Workers fetch error:', error);
@@ -49,10 +186,8 @@ const RosteringSystem = () => {
   const { data: locations = [], isLoading: locationsLoading, error: locationsError } = useQuery({
     queryKey: ['locations'],
     queryFn: async () => {
-      console.log('Fetching locations from:', `${API}/locations`);
       try {
-        const response = await axios.get(`${API}/locations`, { timeout: 10000 });
-        console.log('Locations response success:', response.data.length, 'locations');
+        const response = await axios.get(`${API}/locations`, { timeout: 30000 });
         return response.data;
       } catch (error) {
         console.error('Locations fetch error:', error);
@@ -63,12 +198,22 @@ const RosteringSystem = () => {
     staleTime: 1000 * 60 * 5
   });
 
-  // Fetch roster data
+  // Fetch roster data for all weeks
   const { data: rosterData = {}, isLoading: rosterLoading } = useQuery({
-    queryKey: ['roster', activeTab],
+    queryKey: ['rosterData'],
     queryFn: async () => {
-      const response = await axios.get(`${API}/roster/${activeTab}`);
-      return response.data;
+      const [weekA, weekB, nextA, nextB] = await Promise.all([
+        axios.get(`${API}/roster/weekA`),
+        axios.get(`${API}/roster/weekB`),
+        axios.get(`${API}/roster/nextA`),
+        axios.get(`${API}/roster/nextB`)
+      ]);
+      return {
+        weekA: weekA.data,
+        weekB: weekB.data,
+        nextA: nextA.data,
+        nextB: nextB.data
+      };
     }
   });
 
@@ -79,13 +224,20 @@ const RosteringSystem = () => {
       return response.data;
     },
     onSuccess: () => {
-      queryClient.invalidateQueries(['roster', activeTab]);
+      queryClient.invalidateQueries(['rosterData']);
       // Removed redundant toast - shift creation shows its own toast
     },
     onError: (error) => {
       toast.error(`Failed to update roster: ${error.message}`);
     }
   });
+
+  // This is the new function that will be passed down to WorkerManagement
+  // It provides a way for the child component to tell this parent component
+  // to refetch the workers data.
+  const handleForceRefetchWorkers = () => {
+    queryClient.invalidateQueries(['workers']);
+  };
 
   const tabs = [
     { id: 'weekA', label: 'Week A', color: '#D4A574' },
@@ -102,79 +254,127 @@ const RosteringSystem = () => {
 
   const toggleEditMode = () => {
     setEditMode(!editMode);
-    // Removed edit mode notifications per user request
   };
 
   const handleRosterUpdate = (data) => {
     updateRosterMutation.mutate({ weekType: activeTab, data });
   };
 
-  // Export functionality - Two formats: Payroll and Shift Report
+  // Export functionality - Two different formats
   const exportRoster = async (type) => {
     try {
-      const exportType = type === 'payroll';
-      
       let csvContent = '';
       let filename = '';
       
-      if (exportType) {
-        // PAYROLL EXPORT FORMAT
-        csvContent = "Worker Name,Participant Name,Shift Date,Start Time,End Time,Total Hours,Location,Support Type,Support Ratio,Funding Code\n";
-        filename = `payroll_export_${new Date().toISOString().split('T')[0]}.csv`;
-      } else {
-        // SHIFT REPORT EXPORT FORMAT  
-        csvContent = "Shift ID,Shift Number,Shift Date,Start Time,End Time,Total Hours,Location,Support Workers,Participants,Support Type,Support Ratio,Shift Category,Status\n";
-        filename = `shift_report_${new Date().toISOString().split('T')[0]}.csv`;
-      }
+      // Fetch roster data for active tab only
+      const response = await axios.get(`${API}/roster/${activeTab}`);
+      const tabData = response.data;
       
-      // Fetch all roster data
-      for (const tab of ['weekA', 'weekB', 'nextA', 'nextB']) {
-        const response = await axios.get(`${API}/roster/${tab}`);
-        const tabData = response.data;
+      // Participant order (James → Libby → Ace → Grace → Milan)
+      const participantOrder = ['JAM001', 'LIB001', 'ACE001', 'GRA001', 'MIL001'];
+      
+      if (type === 'payroll') {
+        // PAYROLL EXPORT - Organized by worker for payroll processing
+        csvContent = "Worker Name,Participant,Date,Start Time,End Time,Hours,Location,Support Type,Funding Code,Shift Number\n";
+        filename = `payroll_${activeTab}_${new Date().toISOString().split('T')[0]}.csv`;
         
-        Object.entries(tabData).forEach(([participantCode, participantData]) => {
+        // Collect all worker-shift combinations
+        const workerShifts = [];
+        
+        participantOrder.forEach(participantCode => {
+          if (!tabData[participantCode]) return;
+          
           const participant = participants.find(p => p.code === participantCode);
           const participantName = participant ? participant.full_name : participantCode;
+          const participantData = tabData[participantCode];
           
-          Object.entries(participantData).forEach(([date, shifts]) => {
-            shifts.forEach((shift, index) => {
-              const workerNames = shift.workers ? 
-                shift.workers.map(id => workers.find(w => w.id === id)?.full_name || `Worker-${id}`).join('; ') : '';
+          Object.keys(participantData).sort().forEach(date => {
+            const shifts = participantData[date];
+            shifts.forEach(shift => {
               const locationName = shift.location ? 
-                locations.find(l => l.id === shift.location)?.name || `Location-${shift.location}` : '';
+                locations.find(l => l.id === shift.location)?.name || '' : '';
               
-              // Calculate funding code based on time and day
-              const shiftDate = new Date(date);
-              const startTime = parseInt(shift.startTime?.split(':')[0] || '9');
-              const dayOfWeek = shiftDate.getDay();
+              const workerIds = shift.workers || [];
+              workerIds.forEach(workerId => {
+                const worker = workers.find(w => w.id === workerId);
+                const workerName = worker ? worker.full_name : `Worker-${workerId}`;
+                
+                // Calculate funding code
+                const shiftDate = new Date(date);
+                const startHour = parseInt(shift.startTime?.split(':')[0] || '9');
+                const dayOfWeek = shiftDate.getDay();
+                let fundingCode = '';
+                
+                if (dayOfWeek === 6) {
+                  fundingCode = shift.supportType === 'Community Participation' ? 'CPSat' : 'SCSat';
+                } else if (dayOfWeek === 0) {
+                  fundingCode = shift.supportType === 'Community Participation' ? 'CPSun' : 'SCSun';
+                } else if (startHour >= 20 || startHour < 6) {
+                  fundingCode = shift.supportType === 'Community Participation' ? 'CPWN' : 'SCWN';
+                } else if (startHour >= 18) {
+                  fundingCode = shift.supportType === 'Community Participation' ? 'CPWE' : 'SCWE';
+                } else {
+                  fundingCode = shift.supportType === 'Community Participation' ? 'CPWD' : 'SCWD';
+                }
+                
+                workerShifts.push({
+                  workerName,
+                  participantName,
+                  date,
+                  startTime: shift.startTime,
+                  endTime: shift.endTime,
+                  hours: shift.duration || '0',
+                  location: locationName,
+                  supportType: shift.supportType || 'Self-Care',
+                  fundingCode,
+                  shiftNumber: shift.shiftNumber || ''
+                });
+              });
+            });
+          });
+        });
+        
+        // Sort by worker name, then date
+        workerShifts.sort((a, b) => {
+          if (a.workerName !== b.workerName) return a.workerName.localeCompare(b.workerName);
+          return a.date.localeCompare(b.date);
+        });
+        
+        // Write CSV rows
+        workerShifts.forEach(row => {
+          csvContent += `"${row.workerName}","${row.participantName}","${row.date}","${row.startTime}","${row.endTime}","${row.hours}","${row.location}","${row.supportType}","${row.fundingCode}","${row.shiftNumber}"\n`;
+        });
+        
+      } else {
+        // SHIFT REPORT EXPORT - Organized by participant (matches import format)
+        csvContent = "Participant,Date,Start Time,End Time,Support Worker,Location,Support Type,Ratio,Shift Number,Hours\n";
+        filename = `shift_report_${activeTab}_${new Date().toISOString().split('T')[0]}.csv`;
+        
+        participantOrder.forEach(participantCode => {
+          if (!tabData[participantCode]) return;
+          
+          const participant = participants.find(p => p.code === participantCode);
+          const participantName = participant ? participant.full_name : participantCode;
+          const participantData = tabData[participantCode];
+          
+          Object.keys(participantData).sort().forEach(date => {
+            const shifts = participantData[date];
+            
+            shifts.sort((a, b) => (a.startTime || '').localeCompare(b.startTime || '')).forEach(shift => {
+              const locationName = shift.location ? 
+                locations.find(l => l.id === shift.location)?.name || '' : '';
               
-              let fundingCode = '';
-              let shiftCategory = '';
+              const workerIds = shift.workers || [];
+              const workerList = workerIds.map(id => 
+                workers.find(w => w.id === id)?.full_name || `Worker-${id}`
+              );
               
-              if (dayOfWeek === 6) { // Saturday
-                fundingCode = shift.supportType === 'Community Participation' ? 'CPSat' : 'SCSat';
-                shiftCategory = 'Saturday';
-              } else if (dayOfWeek === 0) { // Sunday
-                fundingCode = shift.supportType === 'Community Participation' ? 'CPSun' : 'SCSun';
-                shiftCategory = 'Sunday';
-              } else if (startTime >= 20 || startTime < 6) { // Night
-                fundingCode = shift.supportType === 'Community Participation' ? 'CPWN' : 'SCWN';
-                shiftCategory = 'Night';
-              } else if (startTime >= 18) { // Evening
-                fundingCode = shift.supportType === 'Community Participation' ? 'CPWE' : 'SCWE';
-                shiftCategory = 'Evening';
-              } else { // Weekday
-                fundingCode = shift.supportType === 'Community Participation' ? 'CPWD' : 'SCWD';
-                shiftCategory = 'Weekday';
-              }
-              
-              if (exportType) {
-                // PAYROLL FORMAT
-                csvContent += `"${workerNames}","${participantName}","${date}","${shift.startTime}","${shift.endTime}","${shift.duration || '0'}","${locationName}","${shift.supportType || 'Self-Care'}","${shift.ratio || '1:1'}","${fundingCode}"\n`;
+              if (workerList.length > 0) {
+                workerList.forEach(workerName => {
+                  csvContent += `"${participantName}","${date}","${shift.startTime}","${shift.endTime}","${workerName}","${locationName}","${shift.supportType || 'Self-Care'}","${shift.ratio || '1:1'}","${shift.shiftNumber || ''}","${shift.duration || '0'}"\n`;
+                });
               } else {
-                // SHIFT REPORT FORMAT
-                const shiftId = `${participantCode}-${date}-${index}`;
-                csvContent += `"${shiftId}","${shift.shiftNumber || ''}","${date}","${shift.startTime}","${shift.endTime}","${shift.duration || '0'}","${locationName}","${workerNames}","${participantName}","${shift.supportType || 'Self-Care'}","${shift.ratio || '1:1'}","${shiftCategory}","Scheduled"\n`;
+                csvContent += `"${participantName}","${date}","${shift.startTime}","${shift.endTime}","UNASSIGNED","${locationName}","${shift.supportType || 'Self-Care'}","${shift.ratio || '1:1'}","${shift.shiftNumber || ''}","${shift.duration || '0'}"\n`;
               }
             });
           });
@@ -190,56 +390,135 @@ const RosteringSystem = () => {
       linkElement.click();
       window.URL.revokeObjectURL(url);
       
-      toast.success(`${exportType ? 'Payroll' : 'Shift Report'} exported successfully`);
+      toast.success(`${type === 'payroll' ? 'Payroll' : 'Shift Report'} exported successfully`);
     } catch (error) {
       toast.error('Failed to export roster: ' + error.message);
     }
   };
 
-  // BUILT COPY TEMPLATE FUNCTION
+  // BULLETPROOF COPY TEMPLATE FUNCTION
   const copyToTemplate = async () => {
-    if (!window.confirm('Copy all Week A and Week B shifts to Next A and Next B?')) {
+    // 1. Prevent multiple clicks and identify source/destination
+    if (copyTemplateRunning) return;
+    const sourceWeek = activeTab;
+    const destWeek = { weekA: 'nextA', weekB: 'nextB' }[sourceWeek];
+
+    if (!destWeek) {
+      toast.error('Copy is only available from Week A or Week B.');
       return;
     }
-    
+
+    setCopyTemplateRunning(true);
+    const toastId = toast.loading(`Copying ${sourceWeek} to ${destWeek}...`);
+
     try {
-      console.log('COPY TEMPLATE - Fetching Week A and Week B data');
+      // 2. Fetch source data from the API
+      const response = await fetch(`${API}/roster/${sourceWeek}`);
+      if (!response.ok) {
+        const errorText = await response.text();
+        throw new Error(`Server error: ${response.status} - ${errorText}`);
+      }
+      const sourceData = await response.json();
+
+      if (!sourceData || Object.keys(sourceData).length === 0) {
+        throw new Error(`No data found in ${sourceWeek} to copy.`);
+      }
+
+      // 3. Remap dates to destination week + regenerate shift numbers (timezone-safe)
+      // Map static starts aligned with ParticipantSchedule.js (as YYYY-MM-DD strings)
+      const weekStartMap = {
+        weekA: '2025-09-22',
+        weekB: '2025-09-29',
+        nextA: '2025-10-06',
+        nextB: '2025-10-13'
+      };
       
-      // Fetch current data with timestamp to avoid cache
-      const timestamp = Date.now();
-      const [weekARes, weekBRes] = await Promise.all([
-        axios.get(`${API}/roster/weekA?t=${timestamp}`),
-        axios.get(`${API}/roster/weekB?t=${timestamp}`)
-      ]);
-      
-      const weekAData = weekARes.data || {};
-      const weekBData = weekBRes.data || {};
-      
-      console.log('Week A data:', weekAData);
-      console.log('Week B data:', weekBData);
-      
-      // Post to Next A and Next B
-      console.log('COPY TEMPLATE - Posting to Next A and Next B');
-      await Promise.all([
-        axios.post(`${API}/roster/nextA`, weekAData),
-        axios.post(`${API}/roster/nextB`, weekBData)
-      ]);
-      
-      console.log('COPY TEMPLATE - Copy completed successfully');
-      
-      // Clear cache and reload
-      queryClient.clear();
-      
-      alert('Copy Template Success!\nWeek A → Next A\nWeek B → Next B');
-      
-      // Force reload to show changes
-      setTimeout(() => {
-        window.location.reload();
-      }, 500);
-      
+      // Participant code to initial mapping
+      const participantInitials = {
+        'JAM001': 'J',
+        'LIB001': 'L',
+        'ACE001': 'A',
+        'GRA001': 'G',
+        'MIL001': 'M'
+      };
+
+      // Calculate day offset between weeks
+      const sourceStart = new Date(weekStartMap[sourceWeek] + 'T00:00:00Z');
+      const destStart = new Date(weekStartMap[destWeek] + 'T00:00:00Z');
+      const offsetDays = Math.round((destStart - sourceStart) / (24 * 60 * 60 * 1000));
+
+      const remappedData = {};
+      Object.entries(sourceData).forEach(([participantCode, datesObj]) => {
+        const newDatesObj = {};
+        Object.entries(datesObj || {}).forEach(([dateKey, shifts]) => {
+          // Parse date in UTC to avoid timezone shifts
+          const [year, month, day] = dateKey.split('-').map(Number);
+          const sourceDate = new Date(Date.UTC(year, month - 1, day));
+          const destDate = new Date(sourceDate.getTime() + offsetDays * 24 * 60 * 60 * 1000);
+          
+          // Format as YYYY-MM-DD in UTC
+          const newDateKey = destDate.toISOString().split('T')[0];
+          
+          // Sort shifts by start time before assigning serial numbers
+          const sortedShifts = [...(shifts || [])].sort((a, b) => {
+            const timeA = a.startTime || '00:00';
+            const timeB = b.startTime || '00:00';
+            return timeA.localeCompare(timeB);
+          });
+          
+          // Regenerate shift numbers based on new date
+          const participantInitial = participantInitials[participantCode] || participantCode[0];
+          const dateStr = newDateKey.replace(/-/g, ''); // YYYYMMDD
+          
+          newDatesObj[newDateKey] = sortedShifts.map((shift, index) => {
+            const serialNum = String(index + 1).padStart(2, '0');
+            const newShiftNumber = `${participantInitial}${dateStr}${serialNum}`;
+            
+            return {
+              ...shift,
+              date: newDateKey,
+              id: newShiftNumber,
+              shiftNumber: newShiftNumber,
+              // Preserve locked status
+              locked: shift.locked || false
+            };
+          });
+        });
+        remappedData[participantCode] = newDatesObj;
+      });
+
+      // 4. Post the remapped data to the destination
+      const postResponse = await fetch(`${API}/roster/${destWeek}`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(remappedData)
+      });
+
+      if (!postResponse.ok) {
+        const errorText = await postResponse.text();
+        throw new Error(`Failed to save copied data: ${postResponse.status} - ${errorText}`);
+      }
+
+      // 4. Success - update cache immediately and then ensure refetch completes before switching
+      toast.success(`Copied ${sourceWeek} to ${destWeek} successfully!`, { id: toastId });
+
+      // Optimistically set destination week in cache so UI has data instantly
+      queryClient.setQueryData(['rosterData'], (prev) => {
+        const prevData = prev || {};
+        return { ...prevData, [destWeek]: remappedData };
+      });
+
+      // Ensure the fresh data is fetched from backend and written to cache
+      await queryClient.refetchQueries({ queryKey: ['rosterData'], type: 'active' });
+
+      // Now switch to the destination tab - data is guaranteed present
+      setActiveTab(destWeek);
+      localStorage.setItem('activeTab', destWeek);
+
     } catch (error) {
-      console.error('Copy Template error:', error);
-      alert('Copy Template failed: ' + (error.response?.data?.message || error.message));
+      toast.error(`Copy failed: ${error.message}`, { id: toastId });
+    } finally {
+      setCopyTemplateRunning(false);
     }
   };
 
@@ -262,6 +541,21 @@ const RosteringSystem = () => {
     );
   }
 
+  // ===== AUTHENTICATION HANDLERS =====
+  const handleLogin = () => {
+    setIsAuthenticated(true);
+  };
+
+  const handleLogout = () => {
+    localStorage.removeItem('isAuthenticated');
+    setIsAuthenticated(false);
+  };
+
+  // Show login screen if not authenticated
+  if (!isAuthenticated) {
+    return <Login onLogin={handleLogin} />;
+  }
+
   return (
     <div className="app-container">
       {/* Header */}
@@ -277,37 +571,23 @@ const RosteringSystem = () => {
             )}
           </div>
           <div className="header-controls">
-            {activeTab !== 'admin' && (
-              <button 
-                className={`btn ${editMode ? 'btn-warning' : 'btn-secondary'}`}
-                onClick={toggleEditMode}
-              >
-                {editMode ? '❌ Exit Edit' : '✏️ Edit Mode'}
-              </button>
-            )}
-            <button 
-              className="btn btn-secondary"
-              onClick={copyToTemplate}
-              title="Copy Week A/B to Next A/B"
-              style={{ padding: '0.5rem 1rem', fontSize: '0.9rem' }}
+            <button
+              onClick={handleLogout}
+              style={{
+                padding: '0.5rem 1rem',
+                background: '#B87E7E',
+                color: '#E8DDD4',
+                border: 'none',
+                borderRadius: '4px',
+                cursor: 'pointer',
+                fontSize: '0.9rem',
+                fontWeight: '500',
+                transition: 'background 0.2s'
+              }}
+              onMouseEnter={(e) => e.currentTarget.style.background = '#A86E6E'}
+              onMouseLeave={(e) => e.currentTarget.style.background = '#B87E7E'}
             >
-              📋 Copy Template
-            </button>
-            <button 
-              className="btn btn-secondary"
-              onClick={() => exportRoster('payroll')}
-              title="Export payroll data to CSV"
-              style={{ padding: '0.5rem 1rem', fontSize: '0.9rem' }}
-            >
-              📊 Export Payroll
-            </button>
-            <button 
-              className="btn btn-secondary"
-              onClick={() => exportRoster('shifts')}
-              title="Export shift report to CSV"
-              style={{ padding: '0.5rem 1rem', fontSize: '0.9rem' }}
-            >
-              📋 Export Shifts
+              Logout
             </button>
           </div>
         </div>
@@ -330,13 +610,47 @@ const RosteringSystem = () => {
         ))}
       </nav>
 
+      {/* Fixed Calendar Section - Stays at top while content scrolls */}
+      {activeTab !== 'admin' && activeTab !== 'hours' && (
+        <div style={{
+          position: 'fixed',
+          top: `${calendarTop}px`,
+          left: '0',
+          right: '0',
+          zIndex: 1002,
+          background: 'var(--bg-primary)',
+          height: `${effectiveCalendarHeight}px`,
+          overflowY: calendarHeight > calendarMaxHeight ? 'auto' : 'visible',
+          boxShadow: '0 4px 12px rgba(0,0,0,0.2)',
+          borderBottom: '1px solid var(--border-primary)'
+        }}>
+          <div style={{
+            position: 'absolute',
+            inset: 0,
+            background: 'var(--bg-primary)'
+          }} />
+          <div style={{
+            position: 'relative',
+            height: '100%',
+            padding: '0.75rem 1.5rem'
+          }}>
+            <CalendarAppointments 
+              weekType={activeTab} 
+              onHeightChange={(height) => setCalendarHeight(height)}
+            />
+          </div>
+        </div>
+      )}
+
       {/* Content Area */}
-      <div className="tab-content">
+      <div className="tab-content" style={{ 
+        marginTop: activeTab !== 'admin' && activeTab !== 'hours' ? `${calendarTop + effectiveCalendarHeight}px` : `${calendarTop}px` 
+      }}>
         {activeTab === 'admin' ? (
-          <WorkerManagement 
+          <WorkerManagement
             workers={workers}
             locations={locations}
-            onWorkerUpdate={() => queryClient.invalidateQueries(['workers'])}
+            onWorkersUpdate={handleForceRefetchWorkers}
           />
         ) : activeTab === 'hours' ? (
           <HoursTracker 
@@ -346,28 +660,91 @@ const RosteringSystem = () => {
           />
         ) : (
           <>
+            {/* Export buttons and action buttons for roster tabs - right aligned */}
+            <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '0.5rem', marginBottom: '1rem', paddingRight: '1rem' }}>
+              {activeTab !== 'admin' && activeTab !== 'hours' && (
+                <button
+                  className={`btn ${editMode ? 'btn-warning' : 'btn-secondary'}`}
+                  onClick={toggleEditMode}
+                  style={{ padding: '0.5rem 1rem', fontSize: '0.9rem' }}
+                >
+                  {editMode ? '❌ Exit Edit' : '✏️ Edit Mode'}
+                </button>
+              )}
+              {(activeTab === 'weekA' || activeTab === 'weekB') && (
+                <button
+                  className="btn btn-secondary"
+                  onClick={copyToTemplate}
+                  disabled={copyTemplateRunning}
+                  title={`Copy to ${activeTab === 'weekA' ? 'Next A' : 'Next B'}`}
+                  style={{ 
+                    padding: '0.5rem 1rem', 
+                    fontSize: '0.9rem',
+                    opacity: copyTemplateRunning ? 0.7 : 1,
+                    backgroundColor: copyTemplateRunning ? '#666' : '#4A4641'
+                  }}
+                >
+                  {copyTemplateRunning ? '⏳ Copying...' : `📋 Copy to ${activeTab === 'weekA' ? 'Next A' : 'Next B'}`}
+                </button>
+              )}
+              <button
+                className="btn btn-secondary"
+                onClick={() => exportRoster('payroll')}
+                title="Export payroll data"
+                style={{ padding: '0.5rem 1rem', fontSize: '0.9rem' }}
+              >
+                📊 Export Payroll
+              </button>
+              <button
+                className="btn btn-secondary"
+                onClick={() => exportRoster('shifts')}
+                title="Export shift report"
+                style={{ padding: '0.5rem 1rem', fontSize: '0.9rem' }}
+              >
+                📋 Export Shifts
+              </button>
+            </div>
+            
             {rosterLoading ? (
               <div className="loading">
                 <div className="spinner"></div>
                 Loading roster data...
               </div>
             ) : (
-              participants.map(participant => (
-                <ParticipantSchedule
-                  key={participant.id}
-                  participant={participant}
-                  weekType={activeTab}
-                  rosterData={rosterData}
-                  workers={workers || []} // Ensure it's always an array
-                  locations={locations || []} // Ensure it's always an array
-                  editMode={editMode}
-                  onRosterUpdate={handleRosterUpdate}
-                />
-              ))
+              <>
+                {/* Participant Schedules */}
+                {(() => {
+                  // Custom participant order: James, Libby, Ace, Grace, Milan
+                  const participantOrder = ['JAM001', 'LIB001', 'ACE001', 'GRA001', 'MIL001'];
+                  const sortedParticipants = [...participants].sort((a, b) => {
+                    const aIndex = participantOrder.indexOf(a.code);
+                    const bIndex = participantOrder.indexOf(b.code);
+                    // If not in custom order, put at end
+                    if (aIndex === -1) return 1;
+                    if (bIndex === -1) return -1;
+                    return aIndex - bIndex;
+                  });
+                  return sortedParticipants;
+                })().map(participant => (
+                  <ParticipantSchedule
+                    key={participant.id}
+                    participant={participant}
+                    weekType={activeTab}
+                    rosterData={rosterData[activeTab]?.[participant.code] || {}}
+                    workers={workers || []} // Ensure it's always an array
+                    locations={locations || []} // Ensure it's always an array
+                    editMode={editMode}
+                    onRosterUpdate={handleRosterUpdate}
+                  />
+                ))}
+              </>
             )}
           </>
         )}
       </div>
+
+      {/* AI Chat - Always visible floating button */}
+      <AIChat />
     </div>
   );
 };

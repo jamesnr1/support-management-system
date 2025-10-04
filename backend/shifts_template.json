@@ -1,0 +1,108 @@
+{
+  "weekA": {
+    "LIB001": {
+      "2025-09-22": [
+        {
+          "startTime": "06:00",
+          "endTime": "14:00",
+          "supportType": "Self-Care",
+          "ratio": "2:1",
+          "workers": ["123", "124"],
+          "location": "1",
+          "notes": "",
+          "duration": "8.0"
+        },
+        {
+          "startTime": "14:00",
+          "endTime": "20:00",
+          "supportType": "Self-Care",
+          "ratio": "2:1",
+          "workers": ["125", "126"],
+          "location": "1",
+          "notes": "Evening shift",
+          "duration": "6.0"
+        }
+      ],
+      "2025-09-23": [
+        {
+          "startTime": "06:00",
+          "endTime": "18:00",
+          "supportType": "Self-Care",
+          "ratio": "2:1",
+          "workers": ["122", "128"],
+          "location": "1",
+          "notes": "",
+          "duration": "12.0"
+        }
+      ]
+    },
+    "JAM001": {
+      "2025-09-22": [
+        {
+          "startTime": "08:00",
+          "endTime": "16:00",
+          "supportType": "Self-Care",
+          "ratio": "2:1",
+          "workers": ["117", "119"],
+          "location": "2",
+          "notes": "",
+          "duration": "8.0"
+        }
+      ]
+    },
+    "ACE001": {
+      "2025-09-22": [
+        {
+          "startTime": "09:00",
+          "endTime": "15:00",
+          "supportType": "Self-Care",
+          "ratio": "1:1",
+          "workers": ["120"],
+          "location": "1",
+          "notes": "",
+          "duration": "6.0"
+        }
+      ]
+    }
+  },
+  "weekB": {
+    "LIB001": {
+      "2025-09-29": [
+        {
+          "startTime": "06:00",
+          "endTime": "14:00",
+          "supportType": "Self-Care",
+          "ratio": "2:1",
+          "workers": ["118", "121"],
+          "location": "1",
+          "notes": "",
+          "duration": "8.0"
+        }
+      ]
+    },
+    "JAM001": {
+      "2025-09-29": [
+        {
+          "startTime": "08:00",
+          "endTime": "16:00",
+          "supportType": "Community Participation",
+          "ratio": "2:1",
+          "workers": ["117", "122"],
+          "location": "2",
+          "notes": "Community outing",
+          "duration": "8.0"
+        }
+      ]
+    }
+  }
+}
+
+
+
+
+
+
+
+
+
+

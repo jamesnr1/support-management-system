@@ -1,12 +1,48 @@
-import React, { useState } from 'react';
-import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { toast } from 'react-hot-toast';
-import axios from 'axios';
-import { Plus, Edit, Trash2, Users } from 'lucide-react';
+import React, { useState, useMemo } from 'react';
+import { useQueryClient } from '@tanstack/react-query';
+import { Users, Edit, Trash2, Plus, Lock, Unlock } from 'lucide-react';
 import ShiftForm from './ShiftForm';
 
-const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
-const API = `${BACKEND_URL}/api`;
+// This function is now outside the component, so it won't be recreated on every render.
+const getWeekDates = (weekType) => {
+  const dates = [];
+  let startDate;
+
+  // Define static start dates for each week type to align with the backend.
+  // NOTE: JavaScript's Date constructor month is 0-indexed (0=Jan, 8=Sep, 9=Oct)
+  // The backend defines weeks starting on Sunday.
+  switch (weekType) {
+    case 'weekA':
+      startDate = new Date('2025-09-22T00:00:00'); // Monday, Sep 22, 2025
+      break;
+    case 'weekB':
+      startDate = new Date('2025-09-29T00:00:00');  // Monday, Sep 29, 2025
+      break;
+    case 'nextA':
+      startDate = new Date('2025-10-06T00:00:00'); // Monday, Oct 06, 2025
+      break;
+    case 'nextB':
+      startDate = new Date('2025-10-13T00:00:00'); // Monday, Oct 13, 2025
+      break;
+    default:
+      // Fallback for safety, though it should not be reached.
+      const today = new Date();
+      const currentDay = today.getDay(); // 0 is Sunday
+      startDate = new Date(today);
+      startDate.setDate(today.getDate() - currentDay);
+  }
+  
+  for (let i = 0; i < 7; i++) {
+    const date = new Date(startDate);
+    date.setDate(startDate.getDate() + i);
+    dates.push({
+      date: date.toISOString().split('T')[0],
+      day: date.toLocaleDateString('en-US', { weekday: 'long' }),
+      dayShort: date.toLocaleDateString('en-US', { weekday: 'short' })
+    });
+  }
+  return dates;
+};
 
 const ParticipantSchedule = ({ 
   participant, 
@@ -17,37 +53,18 @@ const ParticipantSchedule = ({
   editMode, 
   onRosterUpdate 
 }) => {
+
   const [showShiftForm, setShowShiftForm] = useState(false);
   const [editingShift, setEditingShift] = useState(null);
   const [selectedDate, setSelectedDate] = useState(null);
   const queryClient = useQueryClient();
 
   // Get participant's shifts for this week
-  const participantShifts = rosterData[participant.code] || {};
+  // rosterData is now the correctly sliced data for this specific participant
+  const participantShifts = rosterData || {};
 
-  // Generate week dates starting from Monday
-  const getWeekDates = () => {
-    const dates = [];
-    const today = new Date();
-    const currentDay = today.getDay(); // 0=Sunday, 1=Monday, etc.
-    const daysFromMonday = currentDay === 0 ? 6 : currentDay - 1; // Convert to Monday=0
-    
-    const monday = new Date(today);
-    monday.setDate(today.getDate() - daysFromMonday);
-    
-    for (let i = 0; i < 7; i++) {
-      const date = new Date(monday);
-      date.setDate(monday.getDate() + i);
-      dates.push({
-        date: date.toISOString().split('T')[0],
-        day: date.toLocaleDateString('en-US', { weekday: 'long' }),
-        dayShort: date.toLocaleDateString('en-US', { weekday: 'short' })
-      });
-    }
-    return dates;
-  };
-
-  const weekDates = getWeekDates();
+  // useMemo prevents this expensive calculation from running on every single re-render.
+  const weekDates = useMemo(() => getWeekDates(weekType), [weekType]);
 
   const handleAddShift = (date) => {
     setSelectedDate(date);
@@ -56,58 +73,91 @@ const ParticipantSchedule = ({
   };
 
   const handleEditShift = (shift, date) => {
+    // Check if shift is locked
+    if (shift.locked) {
+      alert('⚠️ This shift is locked. Please unlock it before editing.');
+      return;
+    }
+    
+    console.log('handleEditShift called with:', { shift, date });
+    console.log('Shift object details:', { id: shift.id, startTime: shift.startTime, endTime: shift.endTime });
+    
     setSelectedDate(date);
     setEditingShift(shift);
     setShowShiftForm(true);
+    
+    console.log('Edit mode state set:', { selectedDate: date, editingShift: shift, showShiftForm: true });
+    
+    // Force a re-render to see the state change
+    setTimeout(() => {
+      console.log('State after timeout:', { showShiftForm, selectedDate, editingShift });
+    }, 100);
   };
 
   const handleShiftSave = async (shiftData) => {
-    console.log('ADD SHIFT - Starting function');
-    console.log('Shift data:', shiftData);
-    
-    // Create completely new roster structure
-    const updatedRosterData = JSON.parse(JSON.stringify(rosterData || {}));
-    
-    // Initialize participant if doesn't exist
-    if (!updatedRosterData[participant.code]) {
-      updatedRosterData[participant.code] = {};
-    }
-    
-    // Initialize date array if doesn't exist
-    if (!updatedRosterData[participant.code][shiftData.date]) {
-      updatedRosterData[participant.code][shiftData.date] = [];
-    }
-
-    if (editingShift) {
-      // Update existing shift
-      const shifts = updatedRosterData[participant.code][shiftData.date];
-      const shiftIndex = shifts.findIndex(s => s.id === editingShift.id);
-      if (shiftIndex >= 0) {
-        shifts[shiftIndex] = { ...shiftData };
+    try {
+      console.log('ADD SHIFT - Starting function');
+      console.log('Shift data:', shiftData);
+      
+      // Validate shift data
+      if (!shiftData || !shiftData.date) {
+        throw new Error('Invalid shift data: missing date');
       }
-    } else {
-      // Add new shift with unique ID
-      const newShift = {
-        ...shiftData,
-        id: `shift_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`
-      };
-      updatedRosterData[participant.code][shiftData.date].push(newShift);
-    }
+      
+      if (!participant || !participant.code) {
+        throw new Error('Invalid participant data');
+      }
+      
+      // Create completely new roster structure
+      const updatedRosterData = JSON.parse(JSON.stringify(rosterData || {}));
+      
+      // Initialize participant if doesn't exist
+      if (!updatedRosterData[participant.code]) {
+        updatedRosterData[participant.code] = {};
+      }
+      
+      // Initialize date array if doesn't exist (week-specific data already passed in)
+      if (!updatedRosterData[participant.code][shiftData.date]) {
+        updatedRosterData[participant.code][shiftData.date] = [];
+      }
 
-    console.log('Calling onRosterUpdate with:', updatedRosterData);
-    
-    // Update roster
-    await onRosterUpdate(updatedRosterData);
-    
-    // Close form
-    setShowShiftForm(false);
-    setSelectedDate(null);
-    setEditingShift(null);
-    
-    // Force immediate refresh
-    setTimeout(() => {
-      window.location.reload();
-    }, 100);
+      if (editingShift) {
+        // Update existing shift
+        const shifts = updatedRosterData[participant.code][shiftData.date];
+        const shiftIndex = shifts.findIndex(s => s.id === editingShift.id);
+        if (shiftIndex >= 0) {
+          // Preserve id and locked flag on edit
+          shifts[shiftIndex] = { ...shiftData, id: editingShift.id, locked: editingShift.locked ?? false };
+        } else {
+          throw new Error('Shift not found for editing');
+        }
+      } else {
+        // Add new shift with unique ID
+        const newShift = {
+          ...shiftData,
+          id: `shift_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`
+        };
+        updatedRosterData[participant.code][shiftData.date].push(newShift);
+      }
+
+      console.log('Calling onRosterUpdate with:', updatedRosterData);
+      
+      // Update roster
+      await onRosterUpdate(updatedRosterData);
+      
+      // Close form
+      setShowShiftForm(false);
+      setSelectedDate(null);
+      setEditingShift(null);
+      
+      // Force immediate refresh
+      setTimeout(() => {
+        window.location.reload();
+      }, 100);
+    } catch (error) {
+      console.error('Error in handleShiftSave:', error);
+      alert(`Error saving shift: ${error.message || 'Unknown error'}. Please check the console for details.`);
+    }
   };
 
   const handleShiftCancel = () => {
@@ -116,9 +166,32 @@ const ParticipantSchedule = ({
     setEditingShift(null);
   };
 
+  // Toggle shift lock status
+  const handleToggleLock = async (shiftIndex, shiftDate) => {
+    try {
+      const currentRoster = JSON.parse(JSON.stringify(rosterData || {}));
+      const shift = currentRoster[participant.code][shiftDate][shiftIndex];
+      
+      // Toggle the locked state
+      shift.locked = !shift.locked;
+      
+      console.log(`Shift ${shift.locked ? 'locked 🔒' : 'unlocked 🔓'}:`, shift.shiftNumber);
+      await onRosterUpdate(currentRoster);
+    } catch (error) {
+      console.error('Error toggling lock:', error);
+    }
+  };
+
   // BUILT DELETE FUNCTION
   const handleDeleteShift = async (shiftIndex, shiftDate) => {
     console.log('DELETE FUNCTION - Starting delete for index:', shiftIndex, 'date:', shiftDate);
+    
+    // Check if shift is locked
+    const shift = rosterData[participant.code]?.[shiftDate]?.[shiftIndex];
+    if (shift?.locked) {
+      alert('⚠️ This shift is locked. Please unlock it before deleting.');
+      return;
+    }
     
     if (!window.confirm('Delete this shift?')) {
       return;
@@ -166,9 +239,10 @@ const ParticipantSchedule = ({
   };
 
   const getWorkerNames = (workerIds) => {
-    return workerIds.map(id => 
-      workers.find(w => w.id === id)?.full_name || `Worker ${id}`
-    ).join(', ');
+    return (workerIds || []).map(id => {
+      const match = (workers || []).find(w => String(w.id) === String(id));
+      return match?.full_name || `Worker ${id}`;
+    }).join(', ');
   };
 
   const getLocationName = (locationId) => {
@@ -221,7 +295,7 @@ const ParticipantSchedule = ({
             const dayShifts = participantShifts[date] || [];
             
             return (
-              <div key={date} className="day-row">
+              <div key={`${participant.id}-${date}`} className="day-row">
                 <div className="day-label">
                   <div>{day}</div>
                   <div style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>
@@ -232,23 +306,26 @@ const ParticipantSchedule = ({
                 <div className="day-shifts">
                   {/* Existing shifts */}
                   {dayShifts.map((shift, index) => (
-                    <div key={index}>
+                    <div key={`${participant.id}-${date}-${shift.id || index}`}>
                       {/* Show edit form inline if this shift is being edited */}
-                      {showShiftForm && selectedDate === date && editingShift && editingShift.id === shift.id ? (
+                      {/* 
+                        This has been simplified to remove the IIFE and the console.log spam that was 
+                        crashing the browser. The logic is now a clean, single-line check.
+                      */}
+                      {(showShiftForm && selectedDate === date && editingShift?.id === shift.id) ? (
                         <ShiftForm
                           participant={participant}
                           date={date}
                           editingShift={editingShift}
                           workers={workers}
                           locations={locations}
-                          onSave={(shiftData) => {
-                            handleShiftSave({...shiftData, date});
-                            setShowShiftForm(false);
-                            setSelectedDate(null);
-                            setEditingShift(null);
+                          onSave={async (shiftData) => {
+                            await handleShiftSave({...shiftData, date});
                           }}
                           onCancel={handleShiftCancel}
                           existingShifts={dayShifts}
+                          weekType={weekType}
+                          rosterData={rosterData}
                         />
                       ) : (
                         /* Show normal shift display */
@@ -265,9 +342,22 @@ const ParticipantSchedule = ({
                               <span className="shift-type" style={{ background: 'var(--accent-success)', marginLeft: '0.5rem' }}>
                                 {shift.ratio || '1:1'}
                               </span>
+                              {(() => {
+                                // Check if worker count matches ratio
+                                const requiredWorkers = parseInt((shift.ratio || '1:1').split(':')[0]);
+                                const actualWorkers = (shift.workers || []).filter(w => w).length;
+                                if (actualWorkers < requiredWorkers) {
+                                  return (
+                                    <span className="shift-type" style={{ background: '#d97706', color: 'white', marginLeft: '0.5rem', fontWeight: 'bold' }}>
+                                      ⚠️ {actualWorkers}/{requiredWorkers} WORKERS
+                                    </span>
+                                  );
+                                }
+                                return null;
+                              })()}
                               {shift.shiftNumber && (
                                 <span className="shift-type" style={{ background: 'var(--bg-tertiary)', color: 'var(--text-secondary)', marginLeft: '0.5rem' }}>
-                                  #{shift.shiftNumber}
+                                  {shift.shiftNumber}
                                 </span>
                               )}
                             </div>
@@ -291,18 +381,40 @@ const ParticipantSchedule = ({
                           {editMode && (
                             <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
                               <button 
+                                className={shift.locked ? "btn btn-secondary" : "btn btn-secondary"}
+                                onClick={() => handleToggleLock(index, date)}
+                                style={{ 
+                                  fontSize: '0.9rem', 
+                                  padding: '0.5rem 1rem',
+                                  display: 'inline-flex',
+                                  alignItems: 'center',
+                                  gap: '0.25rem',
+                                  background: shift.locked ? '#d97706' : 'var(--bg-secondary)',
+                                  color: shift.locked ? '#fff' : 'inherit'
+                                }}
+                                title={shift.locked ? 'Unlock shift' : 'Lock shift'}
+                              >
+                                {shift.locked ? <Lock size={16} /> : <Unlock size={16} />}
+                                {shift.locked ? ' Locked' : ' Lock'}
+                              </button>
+                              <button 
                                 className="btn btn-secondary"
                                 onClick={() => {
-                                  console.log('Edit shift clicked:', shift, date);
+                                  console.log('Edit shift clicked:', { shift, date, shiftId: shift.id });
+                                  console.log('Current state before edit:', { showShiftForm, selectedDate, editingShift });
                                   handleEditShift(shift, date);
+                                  console.log('State after handleEditShift call');
                                 }}
                                 style={{ 
                                   fontSize: '0.9rem', 
                                   padding: '0.5rem 1rem',
                                   display: 'inline-flex',
                                   alignItems: 'center',
-                                  gap: '0.25rem'
+                                  gap: '0.25rem',
+                                  opacity: shift.locked ? 0.5 : 1,
+                                  cursor: shift.locked ? 'not-allowed' : 'pointer'
                                 }}
+                                disabled={shift.locked}
                               >
                                 <Edit size={16} /> Edit
                               </button>
@@ -314,8 +426,11 @@ const ParticipantSchedule = ({
                                   padding: '0.5rem 1rem',
                                   display: 'inline-flex',
                                   alignItems: 'center',
-                                  gap: '0.25rem'
+                                  gap: '0.25rem',
+                                  opacity: shift.locked ? 0.5 : 1,
+                                  cursor: shift.locked ? 'not-allowed' : 'pointer'
                                 }}
+                                disabled={shift.locked}
                               >
                                 <Trash2 size={16} /> Delete
                               </button>
@@ -334,14 +449,13 @@ const ParticipantSchedule = ({
                       editingShift={null}
                       workers={workers}
                       locations={locations}
-                      onSave={(shiftData) => {
-                        handleShiftSave({...shiftData, date});
-                        setShowShiftForm(false);
-                        setSelectedDate(null);
-                        setEditingShift(null);
+                      onSave={async (shiftData) => {
+                        await handleShiftSave({...shiftData, date});
                       }}
                       onCancel={handleShiftCancel}
                       existingShifts={dayShifts}
+                          weekType={weekType}
+                          rosterData={rosterData}
                     />
                   )}
 

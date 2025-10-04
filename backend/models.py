@@ -14,11 +14,11 @@ class Worker(BaseModel):
     car: Optional[str] = None
     skills: Optional[str] = None
     sex: Optional[str] = None
-    telegram: Optional[int] = None
+    telegram: Optional[str] = None
     digital_signature: Optional[str] = None
 
 class WorkerCreate(BaseModel):
-    code: str
+    code: Optional[str] = None
     full_name: str
     email: Optional[str] = None
     phone: Optional[str] = None
@@ -26,7 +26,7 @@ class WorkerCreate(BaseModel):
     car: Optional[str] = None
     skills: Optional[str] = None
     sex: Optional[str] = None
-    telegram: Optional[int] = None
+    telegram: Optional[str] = None
 
 class AvailabilityRule(BaseModel):
     id: Optional[int] = None
@@ -39,11 +39,13 @@ class AvailabilityRule(BaseModel):
 
 class UnavailabilityPeriod(BaseModel):
     id: Optional[int] = None
-    worker_id: int
+    worker_id: Optional[int] = None
     from_date: date
     to_date: date
-    reason: str
-    created_at: Optional[datetime] = None
+    reason: Optional[str] = "Other"
+    
+    class Config:
+        from_attributes = True
 
 class Participant(BaseModel):
     id: Optional[str] = None

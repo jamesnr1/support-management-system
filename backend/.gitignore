@@ -1,0 +1,21 @@
+# Ignore Google Calendar credentials
+calendar_credentials.json
+client_secrets.json
+
+# Python cache
+__pycache__/
+*.pyc
+*.pyo
+
+# Environment variables
+.env
+
+# Virtual environment
+venv/
+
+# Logs
+*.log
+
+# Database files
+*.db
+*.sqlite

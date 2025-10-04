@@ -95,6 +95,24 @@ const HoursTracker = (props) => {
     
     const API = `${process.env.REACT_APP_BACKEND_URL}/api`;
     
+    // Fetch roster data for all weeks
+    const rosterData = {};
+    try {
+      const [weekA, weekB, nextA, nextB] = await Promise.all([
+        axios.get(`${API}/roster/weekA`),
+        axios.get(`${API}/roster/weekB`),
+        axios.get(`${API}/roster/nextA`),
+        axios.get(`${API}/roster/nextB`)
+      ]);
+      
+      rosterData.weekA = weekA.data;
+      rosterData.weekB = weekB.data;
+      rosterData.nextA = nextA.data;
+      rosterData.nextB = nextB.data;
+    } catch (error) {
+      console.error('Error fetching roster data:', error);
+    }
+    
     participants.forEach(participant => {
       console.log('Processing participant:', participant.code);
       
@@ -105,19 +123,74 @@ const HoursTracker = (props) => {
         hours: {}
       };
       
+      // Calculate used hours from roster data
+      const usedHours = calculateUsedHours(participant.code, rosterData);
+      
       hourCategories.forEach(category => {
+        const available = planData?.[category.code] || category.typical;
+        const used = usedHours[category.code] || 0;
+        const remaining = Math.max(0, available - used); // Ensure no negative hours
+        
         hours[participant.code].hours[category.code] = {
           code: category.code,
           label: category.label,
-          available: planData?.[category.code] || category.typical,
-          remaining: planData?.[category.code] || category.typical,
-          used: 0
+          available: available,
+          remaining: remaining,
+          used: used
         };
       });
     });
     
     console.log('All calculated hours:', hours);
     setParticipantHours(hours);
+  };
+
+  const calculateUsedHours = (participantCode, rosterData) => {
+    const usedHours = {};
+    
+    // Initialize all categories to 0
+    hourCategories.forEach(category => {
+      usedHours[category.code] = 0;
+    });
+    
+    // Process all weeks
+    Object.values(rosterData).forEach(weekData => {
+      const participantData = weekData[participantCode];
+      if (!participantData) return;
+      
+      Object.values(participantData).forEach(dayShifts => {
+        if (!Array.isArray(dayShifts)) return;
+        
+        dayShifts.forEach(shift => {
+          const shiftDate = new Date(shift.date);
+          const dayOfWeek = shiftDate.getDay();
+          const startTime = parseInt(shift.startTime?.split(':')[0] || '9');
+          const duration = parseFloat(shift.duration || 0);
+          
+          // Determine funding code based on time and day
+          let fundingCode = '';
+          
+          if (dayOfWeek === 6) { // Saturday
+            fundingCode = shift.supportType === 'Community Participation' ? 'CPSat' : 'SCSat';
+          } else if (dayOfWeek === 0) { // Sunday
+            fundingCode = shift.supportType === 'Community Participation' ? 'CPSun' : 'SCSun';
+          } else if (startTime >= 22 || startTime < 6) { // Night (10PM-6AM)
+            fundingCode = shift.supportType === 'Community Participation' ? 'CPWE' : 'SCWN';
+          } else if (startTime >= 18) { // Evening (6PM-10PM)
+            fundingCode = shift.supportType === 'Community Participation' ? 'CPWE' : 'SCWE';
+          } else { // Weekday Day (6AM-6PM)
+            fundingCode = shift.supportType === 'Community Participation' ? 'CPWD' : 'SCWD';
+          }
+          
+          // Add hours to the appropriate category
+          if (usedHours[fundingCode] !== undefined) {
+            usedHours[fundingCode] += duration;
+          }
+        });
+      });
+    });
+    
+    return usedHours;
   };
 
   const getHourFillClass = (remaining, available) => {

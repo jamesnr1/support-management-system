@@ -1,13 +1,31 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { toast } from 'react-hot-toast';
 import axios from 'axios';
-import { X, Edit, Trash2, Plus, Calendar, MessageCircle } from 'lucide-react';
+import { X, Edit, Trash2, Plus, Calendar } from 'lucide-react';
+import WorkerCard from './WorkerCard';
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 const API = `${BACKEND_URL}/api`;
 
-const WorkerManagement = ({ workers = [], locations = [], onWorkerUpdate }) => {
+const WorkerManagement = ({ workers = [], locations = [], onWorkersUpdate }) => {
+  // Batch availability data - fetch once for all workers to avoid 48 sequential API calls
+  const [allAvailabilityData, setAllAvailabilityData] = useState({});
+  const [availabilityLoading, setAvailabilityLoading] = useState(true);
+  
+  // When availability is saved in the modal, we bump this key so WorkerCard re-fetches
+  const [cardsRefreshKey, setCardsRefreshKey] = useState(0);
+  // Filter state (search removed per request)
+  const [availabilityFilter, setAvailabilityFilter] = useState('all'); // 'all', 'available', 'unavailable'
+
+  // Sort workers alphabetically by full name
+  const sortedWorkers = [...workers].sort((a, b) => 
+    (a.full_name || '').localeCompare(b.full_name || '')
+  );
+
+  // Apply filters (no name search)
+  const filteredWorkers = sortedWorkers;
+
   const [showWorkerModal, setShowWorkerModal] = useState(false);
   const [showAvailabilityModal, setShowAvailabilityModal] = useState(false);
   const [selectedWorker, setSelectedWorker] = useState(null);
@@ -18,7 +36,82 @@ const WorkerManagement = ({ workers = [], locations = [], onWorkerUpdate }) => {
     to: '',
     reason: ''
   });
+  const [existingUnavailability, setExistingUnavailability] = useState([]);
+  const [isSaving, setIsSaving] = useState(false);
+  
+  // Telegram messaging state
+  const [telegramMessage, setTelegramMessage] = useState('');
+  const [selectedWorkers, setSelectedWorkers] = useState(new Set());
+  const [sendToAll, setSendToAll] = useState(false);
+  const [telegramStatus, setTelegramStatus] = useState(null);
+  
+  // Weekly availability state (0=Sunday, 1=Monday, ..., 6=Saturday)
+  const [weeklyAvailability, setWeeklyAvailability] = useState({
+    0: { available: true, from_time: '09:00', to_time: '17:00' }, // Sunday
+    1: { available: true, from_time: '09:00', to_time: '17:00' }, // Monday
+    2: { available: true, from_time: '09:00', to_time: '17:00' }, // Tuesday
+    3: { available: true, from_time: '09:00', to_time: '17:00' }, // Wednesday
+    4: { available: true, from_time: '09:00', to_time: '17:00' }, // Thursday
+    5: { available: true, from_time: '09:00', to_time: '17:00' }, // Friday
+    6: { available: true, from_time: '09:00', to_time: '17:00' }  // Saturday
+  });
+  
   const queryClient = useQueryClient();
+
+  // Batch fetch availability data for all workers on mount and when workers change
+  useEffect(() => {
+    const fetchAllAvailability = async () => {
+      if (!workers || workers.length === 0) {
+        setAvailabilityLoading(false);
+        return;
+      }
+
+      setAvailabilityLoading(true);
+
+      try {
+        // Fetch all availability and unavailability data in parallel (not sequential)
+        const allPromises = workers.map(async (worker) => {
+          try {
+            const [availRes, unavailRes] = await Promise.all([
+              axios.get(`${API}/workers/${worker.id}/availability`),
+              axios.get(`${API}/workers/${worker.id}/unavailability`)
+            ]);
+            return {
+              workerId: worker.id,
+              availability: availRes.data || [],
+              unavailability: unavailRes.data || []
+            };
+          } catch (error) {
+            console.error(`Failed to fetch availability for worker ${worker.id}:`, error);
+            return {
+              workerId: worker.id,
+              availability: [],
+              unavailability: []
+            };
+          }
+        });
+
+        const results = await Promise.all(allPromises);
+        
+        // Convert array to object keyed by workerId for fast lookup
+        const availabilityMap = {};
+        results.forEach(result => {
+          availabilityMap[result.workerId] = {
+            availability: result.availability,
+            unavailability: result.unavailability
+          };
+        });
+
+        setAllAvailabilityData(availabilityMap);
+      } catch (error) {
+        console.error('Failed to batch fetch availability:', error);
+      } finally {
+        setAvailabilityLoading(false);
+      }
+    };
+
+    fetchAllAvailability();
+  }, [workers, cardsRefreshKey]); // Re-fetch when workers change or refresh key bumps
 
   // Create worker mutation
   const createWorkerMutation = useMutation({
@@ -30,7 +123,12 @@ const WorkerManagement = ({ workers = [], locations = [], onWorkerUpdate }) => {
       toast.success('Worker created successfully');
       setShowWorkerModal(false);
       setEditingWorker(null);
-      if (onWorkerUpdate) onWorkerUpdate();
+      // Invalidate all related queries
+      queryClient.invalidateQueries(['workers']);
+      queryClient.invalidateQueries(['participants']);
+      // Don't invalidate roster queries as worker changes don't affect existing roster data
+      queryClient.refetchQueries(['workers']);
+      if (onWorkersUpdate) onWorkersUpdate();
     },
     onError: (error) => {
       toast.error(`Failed to create worker: ${error.response?.data?.detail || error.message}`);
@@ -47,7 +145,12 @@ const WorkerManagement = ({ workers = [], locations = [], onWorkerUpdate }) => {
       toast.success('Worker updated successfully');
       setShowWorkerModal(false);
       setEditingWorker(null);
-      if (onWorkerUpdate) onWorkerUpdate();
+      // Invalidate all related queries
+      queryClient.invalidateQueries(['workers']);
+      queryClient.invalidateQueries(['participants']);
+      // Don't invalidate roster queries as worker changes don't affect existing roster data
+      queryClient.refetchQueries(['workers']);
+      if (onWorkersUpdate) onWorkersUpdate();
     },
     onError: (error) => {
       toast.error(`Failed to update worker: ${error.response?.data?.detail || error.message}`);
@@ -61,12 +164,11 @@ const WorkerManagement = ({ workers = [], locations = [], onWorkerUpdate }) => {
       return response.data;
     },
     onSuccess: () => {
-      console.log('Delete successful, invalidating cache');
       toast.success('Worker deleted successfully');
       // Invalidate all related queries
       queryClient.invalidateQueries(['workers']);
       queryClient.invalidateQueries(['participants']);
-      queryClient.invalidateQueries(['roster']);
+      // Don't invalidate roster queries as worker changes don't affect existing roster data
       queryClient.refetchQueries(['workers']);
     },
     onError: (error) => {
@@ -79,7 +181,6 @@ const WorkerManagement = ({ workers = [], locations = [], onWorkerUpdate }) => {
     const formData = new FormData(e.target);
     
     const workerData = {
-      code: formData.get('code'),
       full_name: formData.get('full_name'),
       email: formData.get('email'),
       phone: formData.get('phone'),
@@ -87,8 +188,13 @@ const WorkerManagement = ({ workers = [], locations = [], onWorkerUpdate }) => {
       car: formData.get('car'),
       skills: formData.get('skills'),
       sex: formData.get('sex'),
-      telegram: parseInt(formData.get('telegram')) || null
+      telegram: formData.get('telegram') || null
     };
+
+    // Only include code when editing
+    if (editingWorker) {
+      workerData.code = formData.get('code');
+    }
 
     if (editingWorker) {
       updateWorkerMutation.mutate({ workerId: editingWorker.id, workerData });
@@ -108,48 +214,118 @@ const WorkerManagement = ({ workers = [], locations = [], onWorkerUpdate }) => {
     }
   };
 
+  const handleCloseAvailabilityModal = async () => {
+    setShowAvailabilityModal(false);
+    const editedWorkerId = selectedWorker?.id;
+    setSelectedWorker(null);
+    
+    // PERFORMANCE FIX: Only refresh the edited worker's data, not all 24 workers!
+    // Re-fetch just this worker's availability and unavailability
+    if (editedWorkerId) {
+      try {
+        const [availRes, unavailRes] = await Promise.all([
+          axios.get(`${API}/workers/${editedWorkerId}/availability`),
+          axios.get(`${API}/workers/${editedWorkerId}/unavailability`)
+        ]);
+        
+        // Update only this worker's data in the batch cache
+        setAllAvailabilityData(prev => ({
+          ...prev,
+          [editedWorkerId]: {
+            availability: availRes.data || [],
+            unavailability: unavailRes.data || []
+          }
+        }));
+      } catch (error) {
+        console.error(`Failed to refresh availability for worker ${editedWorkerId}:`, error);
+      }
+    }
+    
+    // Notify parent if needed (for roster updates)
+    if (onWorkersUpdate) {
+      onWorkersUpdate();
+    }
+    
+    // NO LONGER bump cardsRefreshKey - this was causing ALL cards to refresh!
+    // The targeted update above only refreshes the edited worker's card.
+  };
+
   const handleManageAvailability = (worker) => {
+    // Modal opens instantly - data already loaded from batch fetch
     setSelectedWorker(worker);
     setShowAvailabilityModal(true);
   };
 
-  const handleSendTelegramMessage = (worker) => {
-    if (!worker.telegram) {
-      toast.error(`${worker.full_name} does not have a Telegram number set up`);
-      return;
-    }
-    
-    const message = prompt(`Send message to ${worker.full_name} (Telegram: ${worker.telegram}):`);
-    if (message && message.trim()) {
-      // Actually send the message via API
-      fetch(`${API}/telegram/send`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          worker_id: worker.id,
-          message: message.trim()
-        })
-      })
-      .then(response => response.json())
-      .then(data => {
-        toast.success(`Message sent to ${worker.full_name}`);
-      })
-      .catch(error => {
-        toast.error(`Failed to send message: ${error.message}`);
-      });
+  // Telegram functions
+  const fetchTelegramStatus = async () => {
+    try {
+      const response = await axios.get(`${API}/telegram/status`);
+      setTelegramStatus(response.data);
+    } catch (error) {
+      console.error('Error fetching Telegram status:', error);
+      setTelegramStatus({ configured: false, coordinator_count: 0, bot_token_set: false });
     }
   };
 
-  const handleUnavailabilitySubmit = (workerId) => {
-    if (unavailabilityData.from && unavailabilityData.to && unavailabilityData.reason) {
-      const worker = workers.find(w => w.id === workerId);
-      toast.success(`${worker?.full_name} marked unavailable from ${unavailabilityData.from} to ${unavailabilityData.to}: ${unavailabilityData.reason}`);
-      setUnavailabilityData({ from: '', to: '', reason: '' });
-      setShowUnavailability(prev => ({ ...prev, [workerId]: false }));
-    } else {
-      toast.error('Please fill all fields');
+  const handleSendTelegramMessage = async () => {
+    if (!telegramMessage.trim()) {
+      toast.error('Please enter a message');
+      return;
+    }
+
+    try {
+      if (sendToAll) {
+        // Broadcast to all workers
+        const response = await axios.post(`${API}/telegram/broadcast`, {
+          message: telegramMessage
+        });
+        toast.success(response.data.message);
+      } else {
+        // Send to selected workers
+        if (selectedWorkers.size === 0) {
+          toast.error('Please select at least one worker');
+          return;
+        }
+        
+        const workerIds = Array.from(selectedWorkers);
+        const response = await axios.post(`${API}/telegram/send-message`, {
+          worker_ids: workerIds,
+          message: telegramMessage
+        });
+        toast.success(response.data.message);
+      }
+      
+      // Clear message after sending
+      setTelegramMessage('');
+      
+    } catch (error) {
+      console.error('Error sending Telegram message:', error);
+      toast.error(`Failed to send message: ${error.response?.data?.detail || error.message}`);
     }
   };
+
+  const handleClearTelegramMessage = () => {
+    setTelegramMessage('');
+    setSelectedWorkers(new Set());
+    setSendToAll(false);
+  };
+
+  const handleWorkerSelection = (workerId, checked) => {
+    const newSelection = new Set(selectedWorkers);
+    if (checked) {
+      newSelection.add(workerId);
+    } else {
+      newSelection.delete(workerId);
+    }
+    setSelectedWorkers(newSelection);
+  };
+
+  // Load Telegram status on component mount
+  React.useEffect(() => {
+    fetchTelegramStatus();
+  }, []);
+
+  // Removed handleUnavailabilitySubmit - unavailability is now handled in the availability modal
 
   return (
     <div>
@@ -166,63 +342,173 @@ const WorkerManagement = ({ workers = [], locations = [], onWorkerUpdate }) => {
             <Plus size={16} /> Add Worker
           </button>
         </div>
-        
-        {!workers || workers.length === 0 ? (
-          <div style={{ textAlign: 'center', color: 'var(--text-muted)', padding: '2rem' }}>
-            {!workers ? 'Loading workers...' : 'No workers found. Click "Add Worker" to create the first worker.'}
-          </div>
-        ) : (
-          <div className="workers-grid">
-            {workers.map(worker => (
-              <div key={worker.id} className="worker-card" style={{ padding: '1rem', minHeight: 'auto' }}>
-                <div className="worker-header" style={{ marginBottom: '0.5rem' }}>
-                  <div style={{ paddingLeft: '0.5rem' }}>
-                    <div className="worker-name" style={{ fontSize: '1rem', fontWeight: 'bold', marginBottom: '0.25rem' }}>
-                      {worker.full_name}
-                    </div>
-                    <div className="worker-details" style={{ fontSize: '0.75rem', lineHeight: '1.1', color: 'var(--text-secondary)' }}>
-                      📱 {worker.phone || 'N/A'} | Maximum hours: {worker.max_hours || 'N/A'}h | {worker.sex || 'Gender N/A'}
-                    </div>
-                    <div className="worker-details" style={{ fontSize: '0.75rem', lineHeight: '1.1', color: 'var(--text-secondary)' }}>
-                      💬 {worker.telegram || 'N/A'} {worker.car === 'Yes' && '🚗'}
-                    </div>
-                  </div>
-                </div>
-                
-                <div className="worker-actions" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.25rem' }}>
-                  <button 
-                    className="btn btn-secondary"
-                    onClick={() => handleEditWorker(worker)}
-                    style={{ fontSize: '0.75rem', padding: '0.25rem 0.5rem' }}
-                  >
-                    <Edit size={12} /> Edit
-                  </button>
-                  <button 
-                    className="btn btn-secondary"
-                    onClick={() => handleDeleteWorker(worker)}
-                    style={{ fontSize: '0.75rem', padding: '0.25rem 0.5rem' }}
-                  >
-                    <Trash2 size={12} /> Delete
-                  </button>
-                  <button 
-                    className="btn btn-secondary"
-                    onClick={() => handleManageAvailability(worker)}
-                    style={{ fontSize: '0.75rem', padding: '0.25rem 0.5rem' }}
-                  >
-                    <Calendar size={12} /> Availability
-                  </button>
-                  <button 
-                    className="btn btn-secondary"
-                    onClick={() => handleSendTelegramMessage(worker)}
-                    style={{ fontSize: '0.75rem', padding: '0.25rem 0.5rem' }}
-                  >
-                    <MessageCircle size={12} /> Message
-                  </button>
-                </div>
+
+        {/* Main layout: Worker cards on left, Telegram panel on right */}
+        <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr', gap: '2rem', alignItems: 'start' }}>
+          
+          {/* Left side: Worker cards */}
+          <div className="workers-section">
+            {!filteredWorkers || filteredWorkers.length === 0 ? (
+              <div style={{ textAlign: 'center', color: 'var(--text-muted)', padding: '2rem' }}>
+                {!workers ? 'Loading workers...' : 'No workers found. Click "Add Worker" to create the first worker.'}
               </div>
-            ))}
+            ) : (
+              <div className="workers-grid">
+                {filteredWorkers.map(worker => (
+                  <WorkerCard
+                    key={worker.id}
+                    worker={worker}
+                    refreshKey={cardsRefreshKey}
+                    onEdit={handleEditWorker}
+                    onManageAvailability={handleManageAvailability}
+                    availabilityData={allAvailabilityData[worker.id]}
+                    isLoading={availabilityLoading}
+                  />
+                ))}
+              </div>
+            )}
           </div>
-        )}
+
+          {/* Right side: Telegram messaging panel */}
+          <div className="telegram-panel" style={{ 
+            background: 'linear-gradient(135deg, #3E3B37, #3E3B37)',
+            border: '2px solid #D4A574',
+            borderRadius: '12px',
+            boxShadow: '0 6px 20px rgba(0, 0, 0, 0.2)',
+            padding: '0',
+            position: 'sticky',
+            top: '1rem',
+            overflow: 'hidden'
+          }}>
+            {/* Header */}
+            <div style={{
+              background: '#4A4641',
+              padding: '1rem 1.5rem',
+              borderBottom: '1px solid #2D2B28'
+            }}>
+              <h4 style={{ 
+                margin: 0, 
+                color: '#D4A574', 
+                fontSize: '1.2rem',
+                fontWeight: '600',
+                textShadow: '1px 1px 2px rgba(0,0,0,0.2)',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '0.5rem'
+              }}>
+              💬 Telegram Messaging
+            </h4>
+            </div>
+
+            {/* Content */}
+            <div style={{ padding: '1.5rem' }}>
+            
+            {/* Message composition area */}
+            <div style={{ marginBottom: '1rem' }}>
+              <label style={{ display: 'block', marginBottom: '0.5rem', fontSize: '1.1rem', fontWeight: '500', color: '#E8DDD4' }}>
+                Message
+              </label>
+              <textarea
+                value={telegramMessage}
+                onChange={(e) => setTelegramMessage(e.target.value)}
+                placeholder="Type your message here..."
+                style={{
+                  width: '100%',
+                  height: '80px',
+                  padding: '0.75rem',
+                  borderRadius: '4px',
+                  border: '1px solid #4A4641',
+                  background: '#2D2B28',
+                  color: '#E8DDD4',
+                  fontSize: '1rem',
+                  resize: 'vertical'
+                }}
+              />
+            </div>
+
+            {/* Worker selection */}
+            <div style={{ marginBottom: '1rem' }}>
+              <label style={{ display: 'block', marginBottom: '0.5rem', fontSize: '1.1rem', fontWeight: '500', color: '#E8DDD4' }}>
+                Send to
+              </label>
+              <div style={{ 
+                maxHeight: '200px', 
+                overflowY: 'auto', 
+                border: '1px solid #4A4641', 
+                borderRadius: '4px',
+                background: '#2D2B28'
+              }}>
+                <div style={{ padding: '0.75rem', borderBottom: '1px solid #4A4641' }}>
+                  <label style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', fontSize: '1rem', fontWeight: '500', color: '#E8DDD4' }}>
+                    <input 
+                      type="checkbox" 
+                      checked={sendToAll}
+                      onChange={(e) => setSendToAll(e.target.checked)}
+                      style={{ transform: 'scale(1.2)' }} 
+                    />
+                    📢 All Workers ({filteredWorkers?.filter(w => w.telegram).length || 0} with Telegram)
+                  </label>
+                </div>
+                {!sendToAll && filteredWorkers?.filter(w => w.telegram).map(worker => (
+                  <div key={worker.id} style={{ padding: '0.75rem', borderBottom: '1px solid #4A4641' }}>
+                    <label style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', fontSize: '1rem', color: '#E8DDD4' }}>
+                      <input 
+                        type="checkbox" 
+                        checked={selectedWorkers.has(worker.id)}
+                        onChange={(e) => handleWorkerSelection(worker.id, e.target.checked)}
+                        style={{ transform: 'scale(1.2)' }} 
+                      />
+                      {worker.full_name}
+                    </label>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Action buttons */}
+            <div style={{ display: 'flex', gap: '0.5rem' }}>
+              <button 
+                onClick={handleSendTelegramMessage}
+                disabled={!telegramMessage.trim() || (!sendToAll && selectedWorkers.size === 0)}
+                className="btn btn-primary"
+                style={{ 
+                  flex: '1', 
+                  fontSize: '1rem', 
+                  padding: '0.85rem',
+                  background: (!telegramMessage.trim() || (!sendToAll && selectedWorkers.size === 0)) ? '#6B6B6B' : '#D4A574',
+                  color: '#2D2B28',
+                  border: '1px solid #D4A574',
+                  borderRadius: '4px',
+                  fontWeight: '500',
+                  cursor: (!telegramMessage.trim() || (!sendToAll && selectedWorkers.size === 0)) ? 'not-allowed' : 'pointer'
+                }}
+              >
+                📤 Send Message
+              </button>
+              <button 
+                onClick={handleClearTelegramMessage}
+                className="btn btn-secondary"
+                style={{ 
+                  fontSize: '1.1rem', 
+                  padding: '0.85rem',
+                  background: '#3E3B37',
+                  color: '#E8DDD4',
+                  border: '1px solid #4A4641',
+                  borderRadius: '4px'
+                }}
+                title="Clear message"
+              >
+                🗑️
+              </button>
+            </div>
+            </div>
+          </div>
+
+        </div>
+
+        {/* Filter Bar removed per request */}
+
+        {/* Workers Details Table removed per request */}
       </div>
 
       {/* Worker Modal */}
@@ -249,9 +535,11 @@ const WorkerManagement = ({ workers = [], locations = [], onWorkerUpdate }) => {
                   type="text"
                   name="code"
                   defaultValue={editingWorker?.code || ''}
-                  required
-                  style={{ width: '100%', padding: '0.75rem', borderRadius: '4px', border: '1px solid var(--border-color)', background: 'var(--bg-input)', color: 'var(--text-primary)' }}
+                  placeholder={editingWorker ? 'Edit code' : 'Auto-generated'}
+                  disabled={!editingWorker}
+                  style={{ width: '100%', padding: '0.75rem', borderRadius: '4px', border: '1px solid var(--border-color)', background: editingWorker ? 'var(--bg-input)' : 'var(--bg-tertiary)', color: 'var(--text-primary)' }}
                 />
+                {!editingWorker && <small style={{ color: 'var(--text-secondary)', fontSize: '0.8rem' }}>Code will be auto-generated (e.g., SW001, SW002)</small>}
               </div>
               
               <div className="form-group">
@@ -290,9 +578,12 @@ const WorkerManagement = ({ workers = [], locations = [], onWorkerUpdate }) => {
                 <input
                   type="number"
                   name="max_hours"
+                  min="0"
+                  max="60"
                   defaultValue={editingWorker?.max_hours || ''}
                   style={{ width: '100%', padding: '0.75rem', borderRadius: '4px', border: '1px solid var(--border-color)', background: 'var(--bg-input)', color: 'var(--text-primary)' }}
                 />
+                <small style={{ color: 'var(--text-secondary)', fontSize: '0.8rem' }}>Maximum 60 hours per week</small>
               </div>
               
               <div className="form-group">
@@ -333,13 +624,15 @@ const WorkerManagement = ({ workers = [], locations = [], onWorkerUpdate }) => {
               </div>
               
               <div className="form-group" style={{ gridColumn: 'span 2' }}>
-                <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: '500' }}>Telegram Number</label>
+                <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: '500' }}>Telegram Username</label>
                 <input
-                  type="number"
+                  type="text"
                   name="telegram"
+                  placeholder="@username or user ID"
                   defaultValue={editingWorker?.telegram || ''}
                   style={{ width: '100%', padding: '0.75rem', borderRadius: '4px', border: '1px solid var(--border-color)', background: 'var(--bg-input)', color: 'var(--text-primary)' }}
                 />
+                <small style={{ color: 'var(--text-secondary)', fontSize: '0.8rem' }}>Enter @username or Telegram user ID</small>
               </div>
               
               <div className="modal-actions" style={{ gridColumn: 'span 2', display: 'flex', gap: '1rem', justifyContent: 'flex-end', marginTop: '2rem', paddingTop: '1rem', borderTop: '1px solid var(--border-color)' }}>
@@ -369,152 +662,317 @@ const WorkerManagement = ({ workers = [], locations = [], onWorkerUpdate }) => {
 
       {/* Availability Modal */}
       {showAvailabilityModal && selectedWorker && (
-        <div className="modal-overlay" onClick={() => setShowAvailabilityModal(false)}>
+        <AvailabilityModal
+          worker={selectedWorker}
+          onClose={handleCloseAvailabilityModal}
+          initialAvailabilityData={allAvailabilityData[selectedWorker.id]}
+        />
+      )}
+    </div>
+  );
+};
+
+// =================================================================================
+// Availability Modal Component - Now uses pre-loaded data for instant opening!
+// =================================================================================
+const AvailabilityModal = ({ worker, onClose, initialAvailabilityData }) => {
+  const [isSaving, setIsSaving] = useState(false);
+  const [weeklyAvailability, setWeeklyAvailability] = useState(null);
+  const [existingUnavailability, setExistingUnavailability] = useState([]);
+  const [unavailabilityData, setUnavailabilityData] = useState({ from: '', to: '' });
+  const queryClient = useQueryClient();
+
+  // Use pre-loaded data instead of fetching - MASSIVE performance gain!
+  useEffect(() => {
+    if (!initialAvailabilityData) {
+      // Fallback: data not loaded yet (shouldn't happen)
+      console.warn(`⚠️ No pre-loaded data for ${worker.full_name}, using defaults`);
+      const defaultSchedule = {};
+      for (let i = 0; i < 7; i++) {
+        defaultSchedule[i] = { available: false, from_time: '09:00', to_time: '17:00' };
+      }
+      setWeeklyAvailability(defaultSchedule);
+      setExistingUnavailability([]);
+      return;
+    }
+
+    // Process availability data into a map for the UI controls
+    const availabilityMap = {};
+    const availData = initialAvailabilityData.availability || [];
+    
+    availData.forEach(rule => {
+      availabilityMap[rule.weekday] = {
+        available: true,
+        from_time: rule.from_time || '09:00',
+        to_time: rule.to_time || '17:00',
+        is_full_day: rule.is_full_day || false
+      };
+    });
+
+    // Ensure all 7 days are present in the state
+    const fullSchedule = {};
+    for (let i = 0; i < 7; i++) {
+      fullSchedule[i] = availabilityMap[i] || { available: false, from_time: '09:00', to_time: '17:00' };
+    }
+    setWeeklyAvailability(fullSchedule);
+    setExistingUnavailability(initialAvailabilityData.unavailability || []);
+  }, [worker.id, initialAvailabilityData]);
+  
+  const handleSave = async () => {
+    setIsSaving(true);
+    try {
+      // 1. Save weekly availability
+      const availabilityRules = Object.keys(weeklyAvailability)
+        .filter(day => weeklyAvailability[day].available)
+        .map(day => {
+          const dayData = weeklyAvailability[day];
+          const isFullDay = dayData.from_time === '00:00' && (dayData.to_time === '23:59' || dayData.to_time === '24:00');
+          return {
+            weekday: parseInt(day),
+            from_time: isFullDay ? null : dayData.from_time,
+            to_time: isFullDay ? null : dayData.to_time,
+            is_full_day: isFullDay,
+          };
+        });
+
+      await axios.post(`${API}/workers/${worker.id}/availability`, { rules: availabilityRules });
+      
+      // 2. Save new unavailability period if entered
+      if (unavailabilityData.from && unavailabilityData.to) {
+        await axios.post(`${API}/workers/${worker.id}/unavailability`, {
+          from_date: unavailabilityData.from,
+          to_date: unavailabilityData.to,
+        });
+      }
+      
+      toast.success('Availability saved successfully!');
+      
+      // 3. THE FIX: Invalidate only the data for this specific worker.
+      // This is extremely fast and will cause only the relevant WorkerCard to re-render.
+      await queryClient.invalidateQueries({ queryKey: ['availability', worker.id] });
+      await queryClient.invalidateQueries({ queryKey: ['unavailability', worker.id] });
+      
+      onClose(); // Close the modal
+
+    } catch (error) {
+      console.error('Error saving availability:', error);
+      toast.error(`Failed to save: ${error.response?.data?.detail || error.message}`);
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
+  const handleDeleteUnavailability = async (periodId) => {
+    if (window.confirm('Are you sure you want to delete this unavailability period?')) {
+      try {
+        await axios.delete(`${API}/unavailability/${periodId}`);
+        toast.success('Unavailability period deleted.');
+        setExistingUnavailability(prev => prev.filter(p => p.id !== periodId)); // Update UI instantly
+
+        // Invalidate this worker's unavailability query to ensure consistency
+        await queryClient.invalidateQueries({ queryKey: ['unavailability', worker.id] });
+
+      } catch (error) {
+        console.error('Error deleting unavailability:', error);
+        toast.error(`Failed to delete: ${error.response?.data?.detail || error.message}`);
+      }
+    }
+  };
+
+
+  return (
+    <div className="modal-overlay" onClick={onClose}>
           <div className="modal-content" onClick={(e) => e.stopPropagation()} style={{ width: '800px', maxWidth: '90vw' }}>
             <div className="modal-header">
-              <h3>Availability - {selectedWorker.full_name}</h3>
-              <button 
-                className="btn-cancel-x"
-                onClick={() => setShowAvailabilityModal(false)}
-              >
-                <X size={20} />
-              </button>
+          <h3>Availability - {worker.full_name}</h3>
+          <button className="btn-cancel-x" onClick={onClose}><X size={20} /></button>
             </div>
             
+        {!weeklyAvailability ? (
+          <div style={{ padding: '3rem', textAlign: 'center' }}>Loading...</div>
+        ) : (
             <div style={{ padding: '1rem' }}>
               {/* Weekly availability schedule */}
               <div style={{ marginBottom: '1.5rem' }}>
-                <h4 style={{ marginBottom: '1rem', color: 'var(--accent-primary)' }}>Weekly Schedule</h4>
+                <h4 style={{ marginBottom: '0.5rem', color: 'var(--accent-primary)' }}>Weekly Schedule</h4>
+                <p style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', marginBottom: '1rem', fontStyle: 'italic' }}>
+                  ⏰ Enter times in 24-hour format (e.g., 09:00, 17:00, 22:30)
+                </p>
                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', gap: '1rem' }}>
-                  {['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'].map(day => (
-                    <div key={day} style={{ textAlign: 'center', padding: '0.5rem', background: 'var(--bg-input)', borderRadius: '4px' }}>
-                      <div style={{ fontWeight: 'bold', marginBottom: '0.5rem', fontSize: '0.9rem' }}>{day}</div>
-                      <div style={{ marginBottom: '0.5rem' }}>
-                        <input type="checkbox" defaultChecked style={{ marginRight: '0.25rem' }} />
-                        <span style={{ fontSize: '0.8rem' }}>Available</span>
+                {['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'].map((day, displayIndex) => {
+                  // Map display order (Mon=0, Tue=1, ..., Sun=6) to backend weekday (Mon=1, Tue=2, ..., Sun=0)
+                  const weekdayNumber = displayIndex === 6 ? 0 : displayIndex + 1;
+                  const dayData = weeklyAvailability[weekdayNumber];
+                    return (
+                      <div key={day} style={{ textAlign: 'center', padding: '0.5rem', background: 'var(--bg-input)', borderRadius: '4px' }}>
+                        <div style={{ fontWeight: 'bold', marginBottom: '0.5rem', fontSize: '0.9rem' }}>{day}</div>
+                        <div style={{ marginBottom: '0.5rem' }}>
+                          <input 
+                            type="checkbox" 
+                            checked={dayData.available}
+                          onChange={(e) => setWeeklyAvailability(prev => ({ ...prev, [weekdayNumber]: { ...prev[weekdayNumber], available: e.target.checked } }))}
+                            style={{ marginRight: '0.25rem' }} 
+                          />
+                          <span style={{ fontSize: '0.8rem' }}>Available</span>
+                        </div>
+                        <div style={{ fontSize: '0.8rem' }}>
+                          <input 
+                            type="time" 
+                            value={dayData.from_time}
+                            onChange={(e) => setWeeklyAvailability(prev => ({ ...prev, [weekdayNumber]: { ...prev[weekdayNumber], from_time: e.target.value } }))}
+                            disabled={!dayData.available}
+                            step="900"
+                            style={{ 
+                              width: '85px', 
+                              fontSize: '0.85rem', 
+                              padding: '0.3rem', 
+                              marginBottom: '0.25rem', 
+                              background: dayData.available ? 'var(--bg-secondary)' : 'var(--bg-tertiary)', 
+                              border: '1px solid var(--border-color)', 
+                              color: 'var(--text-primary)', 
+                              opacity: dayData.available ? 1 : 0.5,
+                              textAlign: 'center'
+                            }} 
+                          />
+                          <div style={{ margin: '0.25rem 0', fontSize: '0.7rem' }}>to</div>
+                          <input 
+                            type="time" 
+                            value={dayData.to_time}
+                            onChange={(e) => setWeeklyAvailability(prev => ({ ...prev, [weekdayNumber]: { ...prev[weekdayNumber], to_time: e.target.value } }))}
+                            disabled={!dayData.available}
+                            step="900"
+                            style={{ 
+                              width: '85px', 
+                              fontSize: '0.85rem', 
+                              padding: '0.3rem', 
+                              background: dayData.available ? 'var(--bg-secondary)' : 'var(--bg-tertiary)', 
+                              border: '1px solid var(--border-color)', 
+                              color: 'var(--text-primary)', 
+                              opacity: dayData.available ? 1 : 0.5,
+                              textAlign: 'center'
+                            }} 
+                          />
+                        </div>
                       </div>
-                      <div style={{ fontSize: '0.8rem' }}>
-                        <input 
-                          type="time" 
-                          defaultValue="09:00" 
-                          style={{ 
-                            width: '70px', 
-                            fontSize: '0.8rem', 
-                            padding: '0.2rem',
-                            marginBottom: '0.25rem',
-                            background: 'var(--bg-secondary)',
-                            border: '1px solid var(--border-color)',
-                            color: 'var(--text-primary)'
-                          }} 
-                        />
-                        <div style={{ margin: '0.25rem 0', fontSize: '0.7rem' }}>to</div>
-                        <input 
-                          type="time" 
-                          defaultValue="17:00" 
-                          style={{ 
-                            width: '70px', 
-                            fontSize: '0.8rem', 
-                            padding: '0.2rem',
-                            background: 'var(--bg-secondary)',
-                            border: '1px solid var(--border-color)',
-                            color: 'var(--text-primary)'
-                          }} 
-                        />
-                      </div>
-                    </div>
-                  ))}
+                    );
+                  })}
                 </div>
               </div>
               
-              {/* Unavailable periods section - INSIDE the availability modal */}
+            {/* Unavailable periods */}
               <div style={{ marginBottom: '1.5rem', borderTop: '1px solid var(--border-color)', paddingTop: '1rem' }}>
-                <h4 style={{ marginBottom: '1rem', color: 'var(--accent-primary)' }}>Set Unavailable Period</h4>
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 2fr', gap: '1rem', alignItems: 'end' }}>
+                <h4 style={{ marginBottom: '1rem', color: 'var(--accent-primary)' }}>Unavailable Periods</h4>
+                
+                {existingUnavailability.length > 0 && (
+                  <div style={{ marginBottom: '1rem' }}>
+                  <h5 style={{ fontSize: '0.9rem', color: 'var(--text-secondary)', marginBottom: '0.5rem' }}>Current Periods:</h5>
+                    <div style={{ background: 'var(--bg-tertiary)', padding: '0.75rem', borderRadius: '4px' }}>
+                    {existingUnavailability.map((period) => (
+                      <div key={period.id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '0.5rem 0' }}>
+                          <span style={{ fontSize: '0.85rem' }}>
+                          📅 {period.from_date} to {period.to_date}
+                          </span>
+                        <button onClick={() => handleDeleteUnavailability(period.id)} style={{ background: '#dc3545', color: 'white', border: 'none', borderRadius: '3px', padding: '0.2rem 0.4rem', fontSize: '0.7rem', cursor: 'pointer' }}>
+                            ✕
+                          </button>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+                
+              <h5 style={{ fontSize: '0.9rem', color: 'var(--text-secondary)', marginBottom: '0.5rem' }}>Add New Period:</h5>
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem', alignItems: 'end' }}>
                   <div>
                     <label style={{ fontSize: '0.9rem', color: 'var(--text-secondary)', display: 'block', marginBottom: '0.5rem' }}>From Date</label>
+                    <div style={{ position: 'relative' }}>
                     <input
                       type="date"
                       value={unavailabilityData.from}
                       onChange={(e) => setUnavailabilityData(prev => ({ ...prev, from: e.target.value }))}
+                        onClick={(e) => e.target.showPicker && e.target.showPicker()}
                       style={{
-                        padding: '0.5rem',
-                        borderRadius: '4px',
-                        border: '1px solid var(--border-color)',
+                          width: '100%', 
+                          padding: '0.75rem 3rem 0.75rem 0.75rem',
+                          borderRadius: '6px', 
+                          border: '2px solid var(--border-color)', 
                         background: 'var(--bg-input)',
                         color: 'var(--text-primary)',
-                        fontSize: '0.9rem',
-                        width: '100%'
-                      }}
-                    />
+                          fontSize: '1rem',
+                          cursor: 'pointer',
+                          transition: 'border-color 0.2s',
+                          outline: 'none'
+                        }}
+                        onMouseEnter={(e) => e.target.style.borderColor = '#D4A574'}
+                        onMouseLeave={(e) => e.target.style.borderColor = 'var(--border-color)'}
+                        onFocus={(e) => e.target.style.borderColor = '#D4A574'}
+                        onBlur={(e) => e.target.style.borderColor = 'var(--border-color)'}
+                      />
+                      <Calendar 
+                        size={20} 
+                        style={{ 
+                          position: 'absolute', 
+                          right: '0.75rem', 
+                          top: '50%', 
+                          transform: 'translateY(-50%)',
+                          color: '#D4A574',
+                          pointerEvents: 'none'
+                        }} 
+                      />
+                    </div>
                   </div>
                   <div>
                     <label style={{ fontSize: '0.9rem', color: 'var(--text-secondary)', display: 'block', marginBottom: '0.5rem' }}>To Date</label>
+                    <div style={{ position: 'relative' }}>
                     <input
                       type="date"
                       value={unavailabilityData.to}
                       onChange={(e) => setUnavailabilityData(prev => ({ ...prev, to: e.target.value }))}
+                        onClick={(e) => e.target.showPicker && e.target.showPicker()}
                       style={{
-                        padding: '0.5rem',
-                        borderRadius: '4px',
-                        border: '1px solid var(--border-color)',
+                          width: '100%', 
+                          padding: '0.75rem 3rem 0.75rem 0.75rem',
+                          borderRadius: '6px', 
+                          border: '2px solid var(--border-color)', 
                         background: 'var(--bg-input)',
                         color: 'var(--text-primary)',
-                        fontSize: '0.9rem',
-                        width: '100%'
-                      }}
-                    />
-                  </div>
-                  <div>
-                    <label style={{ fontSize: '0.9rem', color: 'var(--text-secondary)', display: 'block', marginBottom: '0.5rem' }}>Reason</label>
-                    <input
-                      type="text"
-                      placeholder="Enter reason..."
-                      value={unavailabilityData.reason}
-                      onChange={(e) => setUnavailabilityData(prev => ({ ...prev, reason: e.target.value }))}
+                          fontSize: '1rem',
+                          cursor: 'pointer',
+                          transition: 'border-color 0.2s',
+                          outline: 'none'
+                        }}
+                        onMouseEnter={(e) => e.target.style.borderColor = '#D4A574'}
+                        onMouseLeave={(e) => e.target.style.borderColor = 'var(--border-color)'}
+                        onFocus={(e) => e.target.style.borderColor = '#D4A574'}
+                        onBlur={(e) => e.target.style.borderColor = 'var(--border-color)'}
+                      />
+                      <Calendar 
+                        size={20} 
                       style={{
-                        padding: '0.5rem',
-                        borderRadius: '4px',
-                        border: '1px solid var(--border-color)',
-                        background: 'var(--bg-input)',
-                        color: 'var(--text-primary)',
-                        fontSize: '0.9rem',
-                        width: '100%'
-                      }}
-                    />
+                          position: 'absolute', 
+                          right: '0.75rem', 
+                          top: '50%', 
+                          transform: 'translateY(-50%)',
+                          color: '#D4A574',
+                          pointerEvents: 'none'
+                        }} 
+                      />
+                    </div>
                   </div>
                 </div>
               </div>
               
               <div className="modal-actions">
-                <button 
-                  className="btn btn-primary"
-                  onClick={() => {
-                    // Save both availability and unavailability data
-                    let hasUnavailabilityData = unavailabilityData.from && unavailabilityData.to && unavailabilityData.reason;
-                    
-                    if (hasUnavailabilityData) {
-                      toast.success(`${selectedWorker.full_name} availability and unavailability saved! Unavailable: ${unavailabilityData.from} to ${unavailabilityData.to} (${unavailabilityData.reason})`);
-                      setUnavailabilityData({ from: '', to: '', reason: '' });
-                    } else {
-                      toast.success(`${selectedWorker.full_name} availability saved successfully!`);
-                    }
-                    
-                    setShowAvailabilityModal(false);
-                  }}
-                >
-                  Save
+              <button className="btn btn-primary" disabled={isSaving} onClick={handleSave}>
+                {isSaving ? '💾 Saving...' : 'Save Changes'}
                 </button>
-                <button 
-                  className="btn btn-secondary"
-                  onClick={() => setShowAvailabilityModal(false)}
-                >
+              <button className="btn btn-secondary" onClick={onClose}>
                   Cancel
                 </button>
-              </div>
-            </div>
           </div>
         </div>
       )}
+      </div>
     </div>
   );
 };

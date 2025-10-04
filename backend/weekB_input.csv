@@ -1,0 +1,97 @@
+Support Worker,Day,Shift Time,Hours,Participant,Location,Support Type
+Anika,Tuesday,10AM-4PM,6,Grace Narula,Plympton Park,Self Care
+Anika,Thursday,10AM-4PM,6,Grace Narula,Plympton Park,Self Care
+Anika,,,TOTAL HOURS,,12,
+Arti Patel,Monday,6AM-2PM,8,James Narula,Plympton Park,Self Care
+Arti Patel,Wednesday,6AM-2PM,8,James Narula,Plympton Park,Self Care
+Arti Patel,Thursday,2PM-10PM,8,James Narula,Plympton Park,Self Care
+Arti Patel,Saturday,6AM-2PM,8,Grace Narula,Plympton Park,Self Care
+Arti Patel,Sunday,4PM-7PM,3,Milan Narula,Plympton Park,Community Access
+Arti Patel,,,TOTAL HOURS,,35,
+Avani Patel,Tuesday,6AM-2PM,8,James Narula,Plympton Park,Self Care
+Avani Patel,Tuesday,8PM-10PM,2,Grace Narula,Plympton Park,Self Care
+Avani Patel,Thursday,8PM-10PM,2,Grace Narula,Plympton Park,Self Care
+Avani Patel,Saturday,2PM-8PM,6,Ace Narula,Plympton Park,Self Care
+Avani Patel,Sunday,6AM-2PM,8,Grace Narula,Plympton Park,Self Care
+Avani Patel,,,TOTAL HOURS,,26,
+Chaynne Humphrys,Monday,6AM-1PM,7,Grace Narula,Plympton Park,Self Care
+Chaynne Humphrys,Tuesday,6AM-1PM,7,James Narula,Plympton Park,Self Care
+Chaynne Humphrys,Wednesday,6AM-1PM,7,Grace Narula,Plympton Park,Self Care
+Chaynne Humphrys,Friday,6AM-1PM,7,Grace Narula,Plympton Park,Self Care
+Chaynne Humphrys,,,TOTAL HOURS,,28,
+Harshkumar (Happy) Modi,Tuesday,2PM-10PM,8,James Narula,Plympton Park,Self Care
+Harshkumar (Happy) Modi,Wednesday,12PM-10PM,10,Elizabeth (Libby) Narula,Plympton Park,Self Care
+Harshkumar (Happy) Modi,Thursday,12PM-10PM,10,Elizabeth (Libby) Narula,Glandore,Self Care
+Harshkumar (Happy) Modi,Friday,2PM-10PM,8,James Narula,Plympton Park,Self Care
+Harshkumar (Happy) Modi,Sunday,2PM-10PM,8,James Narula,Plympton Park,Self Care
+Harshkumar (Happy) Modi,,,TOTAL HOURS,,44,
+Japneet (Rosie) Kaur,Monday,2PM-10PM,8,James Narula,Plympton Park,Self Care
+Japneet (Rosie) Kaur,Wednesday,12PM-10PM,10,Elizabeth (Libby) Narula,Plympton Park,Self Care
+Japneet (Rosie) Kaur,Thursday,12PM-10PM,10,Elizabeth (Libby) Narula,Glandore,Self Care
+Japneet (Rosie) Kaur,Saturday,6AM-2PM,8,James Narula,Plympton Park,Self Care
+Japneet (Rosie) Kaur,Sunday,6AM-2PM,8,James Narula,Plympton Park,Self Care
+Japneet (Rosie) Kaur,,,TOTAL HOURS,,44,
+Krunalkumar (Krunal) Patel,Monday,6AM-2PM,8,James Narula,Plympton Park,Self Care
+Krunalkumar (Krunal) Patel,Wednesday,2PM-10PM,8,James Narula,Plympton Park,Self Care
+Krunalkumar (Krunal) Patel,Thursday,6AM-2PM,8,James Narula,Plympton Park,Self Care
+Krunalkumar (Krunal) Patel,Friday,6AM-2PM,8,James Narula,Plympton Park,Self Care
+Krunalkumar (Krunal) Patel,Saturday,6AM-2PM,8,James Narula,Plympton Park,Self Care
+Krunalkumar (Krunal) Patel,Sunday,6AM-2PM,8,James Narula,Plympton Park,Self Care
+Krunalkumar (Krunal) Patel,,,TOTAL HOURS,,48,
+Margerite (Rita) Gjergji,Monday,10PM-6AM,8,James Narula,Plympton Park,Self Care
+Margerite (Rita) Gjergji,,,TOTAL HOURS,,8,
+Mayurkumar (Mayu) Patel,Sunday,2PM-10PM,8,James Narula,Plympton Park,Self Care
+Mayurkumar (Mayu) Patel,,,TOTAL HOURS,,8,
+Mihir Patel,Tuesday,2PM-10PM,8,James Narula,Plympton Park,Self Care
+Mihir Patel,Thursday,2PM-10PM,8,James Narula,Plympton Park,Self Care
+Mihir Patel,Sunday,8PM-6AM,10,Ace Narula,Plympton Park,Self Care
+Mihir Patel,,,TOTAL HOURS,,26,
+Mrunalkumar (MP) Patel,Friday,6AM-2PM,8,Elizabeth (Libby) Narula,Plympton Park,Self Care
+Mrunalkumar (MP) Patel,Saturday,2PM-10PM,8,James Narula,Plympton Park,Self Care
+Mrunalkumar (MP) Patel,Saturday,8PM-6AM,10,Ace Narula,Plympton Park,Self Care
+Mrunalkumar (MP) Patel,Sunday,6AM-2PM,8,James Narula,Plympton Park,Self Care
+Mrunalkumar (MP) Patel,,,TOTAL HOURS,,34,
+Muhammad (Hamza) Hamza,Monday,6AM-2PM,8,James Narula,Plympton Park,Self Care
+Muhammad (Hamza) Hamza,Wednesday,6AM-2PM,8,James Narula,Plympton Park,Self Care
+Muhammad (Hamza) Hamza,Friday,6AM-2PM,8,James Narula,Plympton Park,Self Care
+Muhammad (Hamza) Hamza,Friday,10PM-6AM,8,James Narula,Plympton Park,Self Care
+Muhammad (Hamza) Hamza,Saturday,2PM-10PM,8,James Narula,Plympton Park,Self Care
+Muhammad (Hamza) Hamza,Sunday,10PM-6AM,8,James Narula,Plympton Park,Self Care
+Muhammad (Hamza) Hamza,,,TOTAL HOURS,,48,
+Parvinder Kaur,Monday,8PM-10PM,2,Grace Narula,Plympton Park,Self Care
+Parvinder Kaur,Wednesday,8PM-10PM,2,Grace Narula,Plympton Park,Self Care
+Parvinder Kaur,Friday,8PM-10PM,2,Grace Narula,Plympton Park,Self Care
+Parvinder Kaur,Saturday,6AM-2PM,8,Grace Narula,Plympton Park,Self Care
+Parvinder Kaur,Sunday,6AM-2PM,8,Grace Narula,Plympton Park,Self Care
+Parvinder Kaur,,,TOTAL HOURS,,22,
+Sanjaykumar (Sanjay) Patel,Monday,2PM-10PM,8,James Narula,Plympton Park,Self Care
+Sanjaykumar (Sanjay) Patel,Monday,10PM-6AM,8,James Narula,Plympton Park,Self Care
+Sanjaykumar (Sanjay) Patel,Wednesday,2PM-10PM,8,James Narula,Plympton Park,Self Care
+Sanjaykumar (Sanjay) Patel,Saturday,10PM-6AM,8,James Narula,Plympton Park,Self Care
+Sanjaykumar (Sanjay) Patel,Sunday,10PM-6AM,8,James Narula,Plympton Park,Self Care
+Sanjaykumar (Sanjay) Patel,,,TOTAL HOURS,,40,
+Sandy Tran,Monday,6AM-8AM,2,Grace Narula,Plympton Park,Self Care
+Sandy Tran,Tuesday,6AM-8AM,2,Grace Narula,Plympton Park,Self Care
+Sandy Tran,Friday,6AM-8AM,2,Grace Narula,Plympton Park,Self Care
+Sandy Tran,,,TOTAL HOURS,,6,
+Sapanaben (Sapana) Krunalkumar Patel,Thursday,6AM-2PM,8,James Narula,Plympton Park,Self Care
+Sapanaben (Sapana) Krunalkumar Patel,Friday,6AM-2PM,8,Elizabeth (Libby) Narula,Plympton Park,Self Care
+Sapanaben (Sapana) Krunalkumar Patel,Saturday,6AM-2PM,8,James Narula,Plympton Park,Self Care
+Sapanaben (Sapana) Krunalkumar Patel,Sunday,1PM-4PM,3,Milan Narula,Plympton Park,Self Care
+Sapanaben (Sapana) Krunalkumar Patel,,,TOTAL HOURS,,27,
+Taufique Raza,Tuesday,6AM-2PM,8,James Narula,Plympton Park,Self Care
+Taufique Raza,Friday,2PM-10PM,8,James Narula,Plympton Park,Self Care
+Taufique Raza,Saturday,1PM-4PM,3,Milan Narula,Plympton Park,Community Access
+Taufique Raza,Sunday,1PM-4PM,3,Milan Narula,Plympton Park,Self Care
+Taufique Raza,,,TOTAL HOURS,,22,
+
+
+
+
+
+
+
+
+
+
+

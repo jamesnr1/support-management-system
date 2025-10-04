@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Google Calendar Test</title>
+    <style>
+        body { font-family: Arial, sans-serif; max-width: 800px; margin: 50px auto; padding: 20px; }
+        .status { padding: 20px; border-radius: 8px; margin: 20px 0; }
+        .connected { background: #d4edda; border: 1px solid #c3e6cb; color: #155724; }
+        .disconnected { background: #f8d7da; border: 1px solid #f5c6cb; color: #721c24; }
+        button { padding: 12px 24px; font-size: 16px; cursor: pointer; background: #007bff; color: white; border: none; border-radius: 4px; }
+        button:hover { background: #0056b3; }
+        .info { background: #d1ecf1; border: 1px solid #bee5eb; color: #0c5460; padding: 15px; border-radius: 4px; margin: 20px 0; }
+    </style>
+</head>
+<body>
+    <h1>🗓️ Google Calendar Connection Test</h1>
+    
+    <div id="status" class="status disconnected">
+        <strong>Status:</strong> Checking...
+    </div>
+
+    <div class="info">
+        <strong>Instructions:</strong>
+        <ol>
+            <li>Click "Connect Google Calendar" below</li>
+            <li>A popup will open asking you to sign in to Google</li>
+            <li>Authorize the app to view your calendar (read-only)</li>
+            <li>The popup will close and show success</li>
+        </ol>
+    </div>
+
+    <button id="connectBtn" onclick="connectCalendar()">Connect Google Calendar</button>
+    <button onclick="checkStatus()" style="margin-left: 10px; background: #6c757d;">Refresh Status</button>
+
+    <script>
+        const API_BASE = 'http://localhost:8001/api';
+
+        async function checkStatus() {
+            try {
+                const response = await fetch(`${API_BASE}/calendar/status`);
+                const data = await response.json();
+                const statusDiv = document.getElementById('status');
+                const connectBtn = document.getElementById('connectBtn');
+                
+                if (data.connected) {
+                    statusDiv.className = 'status connected';
+                    statusDiv.innerHTML = '<strong>✅ Connected!</strong> Google Calendar is connected and ready.';
+                    connectBtn.disabled = true;
+                    connectBtn.textContent = 'Already Connected ✓';
+                } else {
+                    statusDiv.className = 'status disconnected';
+                    statusDiv.innerHTML = '<strong>❌ Not Connected</strong> ' + data.message;
+                    connectBtn.disabled = false;
+                    connectBtn.textContent = 'Connect Google Calendar';
+                }
+            } catch (error) {
+                document.getElementById('status').innerHTML = '<strong>Error:</strong> ' + error.message;
+            }
+        }
+
+        async function connectCalendar() {
+            try {
+                const redirectUri = `${API_BASE}/calendar/oauth/callback`;
+                const response = await fetch(`${API_BASE}/calendar/auth-url?redirect_uri=${encodeURIComponent(redirectUri)}`);
+                const data = await response.json();
+                
+                if (data.auth_url) {
+                    const popup = window.open(data.auth_url, 'oauth', 'width=600,height=700');
+                    
+                    const messageListener = (event) => {
+                        if (event.data.type === 'oauth_success') {
+                            alert('✅ Google Calendar connected successfully!');
+                            popup.close();
+                            window.removeEventListener('message', messageListener);
+                            checkStatus();
+                        } else if (event.data.type === 'oauth_error') {
+                            alert('❌ Authorization failed: ' + event.data.error);
+                            popup.close();
+                            window.removeEventListener('message', messageListener);
+                        }
+                    };
+                    
+                    window.addEventListener('message', messageListener);
+                    
+                    const checkClosed = setInterval(() => {
+                        if (popup.closed) {
+                            clearInterval(checkClosed);
+                            window.removeEventListener('message', messageListener);
+                            checkStatus();
+                        }
+                    }, 1000);
+                } else {
+                    alert('Error getting authorization URL: ' + JSON.stringify(data));
+                }
+            } catch (error) {
+                alert('Error: ' + error.message);
+            }
+        }
+
+        // Check status on load
+        checkStatus();
+    </script>
+</body>
+</html>

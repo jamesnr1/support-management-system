@@ -9,7 +9,7 @@ import json
 import sys
 
 # Configuration
-BASE_URL = "https://shift-master-27.preview.emergentagent.com/api"
+BASE_URL = "http://localhost:8001/api"
 HEADERS = {"Content-Type": "application/json"}
 
 def test_review_requirements():

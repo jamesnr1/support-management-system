@@ -1,0 +1,18 @@
+# Database Configuration
+SUPABASE_URL=your_supabase_url_here
+SUPABASE_KEY=your_supabase_anon_key_here
+
+# Google Calendar Integration (Optional)
+GOOGLE_CLIENT_SECRETS_FILE=client_secrets.json
+
+# Telegram Bot Configuration
+# Get bot token from @BotFather on Telegram
+TELEGRAM_BOT_TOKEN=your_telegram_bot_token_here
+
+# Coordinator Telegram Chat IDs (comma-separated for multiple coordinators)
+# To get your chat ID: message your bot, then visit https://api.telegram.org/bot<YourBOTToken>/getUpdates
+TELEGRAM_COORDINATOR_IDS=123456789,987654321
+
+# Example:
+# TELEGRAM_BOT_TOKEN=6123456789:AAEhBOweik9ad3hd23Eh2dhd23dh23dh2dh
+# TELEGRAM_COORDINATOR_IDS=123456789,987654321
