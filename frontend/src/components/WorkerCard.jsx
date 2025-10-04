@@ -1,7 +1,7 @@
 import React from 'react';
-import { Edit, Calendar } from 'lucide-react';
+import { Edit, Calendar, Trash2 } from 'lucide-react';
 
-const WorkerCard = ({ worker, onEdit, onManageAvailability, availabilityData, isLoading }) => {
+const WorkerCard = ({ worker, onEdit, onManageAvailability, onDelete, availabilityData, isLoading }) => {
   // Use prop data instead of fetching - eliminates 48 API calls!
   const availability = availabilityData?.availability || [];
   const unavailability = availabilityData?.unavailability || [];
@@ -97,16 +97,42 @@ const WorkerCard = ({ worker, onEdit, onManageAvailability, availabilityData, is
     >
       {/* Worker Name with Icons */}
       <div className="worker-header">
-        <div className="worker-name" style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', flexWrap: 'nowrap' }}>
-          <span style={{ whiteSpace: 'nowrap' }}>{getDisplayName(worker.full_name)}</span>
-          <span style={{ display: 'flex', gap: '0.5rem', fontSize: '0.9em', whiteSpace: 'nowrap', color: 'var(--text-primary)' }}>
-            {getGenderIcon(worker.sex)}
-            {getCarIcon(worker.car)}
-            {getTelegramIcon(worker.telegram)}
-          </span>
-          <span style={{ fontSize: '0.8em', color: 'var(--accent-primary)', whiteSpace: 'nowrap' }}>
-            {worker.max_hours}h
-          </span>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', width: '100%' }}>
+          <div className="worker-name" style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', flexWrap: 'nowrap' }}>
+            <span style={{ whiteSpace: 'nowrap' }}>{getDisplayName(worker.full_name)}</span>
+            <span style={{ display: 'flex', gap: '0.6rem', fontSize: '0.9em', whiteSpace: 'nowrap', color: 'var(--text-primary)' }}>
+              {getGenderIcon(worker.sex)}
+              {getCarIcon(worker.car)}
+              {getTelegramIcon(worker.telegram)}
+            </span>
+            <span style={{ fontSize: '0.8em', color: 'var(--accent-primary)', whiteSpace: 'nowrap' }}>
+              {worker.max_hours}h
+            </span>
+          </div>
+          {onDelete && (
+            <button
+              onClick={() => {
+                if (window.confirm(`Are you sure you want to delete ${worker.full_name}? This action cannot be undone.`)) {
+                  onDelete(worker);
+                }
+              }}
+              style={{
+                background: 'transparent',
+                border: 'none',
+                color: 'var(--text-error, #B87E7E)',
+                cursor: 'pointer',
+                padding: '0.25rem',
+                display: 'flex',
+                alignItems: 'center',
+                transition: 'all 0.2s ease'
+              }}
+              onMouseOver={(e) => { e.currentTarget.style.color = '#E88888'; e.currentTarget.style.transform = 'scale(1.1)'; }}
+              onMouseOut={(e) => { e.currentTarget.style.color = 'var(--text-error, #B87E7E)'; e.currentTarget.style.transform = 'scale(1)'; }}
+              title={`Delete ${worker.full_name}`}
+            >
+              <Trash2 size={16} />
+            </button>
+          )}
         </div>
       </div>
 

@@ -9,6 +9,7 @@ import ParticipantSchedule from './ParticipantSchedule';
 import HoursTracker from './HoursTracker';
 import CalendarAppointments from './CalendarAppointments';
 import AIChat from './AIChat';
+import ShiftsTab from './ShiftsTab';
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 const API = `${BACKEND_URL}/api`;
@@ -776,10 +777,10 @@ const RosteringSystem = () => {
             rosterData={rosterData}
           />
         ) : activeTab === 'shifts' ? (
-          <div style={{ padding: '2rem', textAlign: 'center', color: 'var(--text-secondary)' }}>
-            <p>🚧 Shifts tab coming soon...</p>
-            <p style={{ fontSize: '0.9rem', marginTop: '1rem' }}>Worker view of roster + Telegram panel</p>
-          </div>
+          <ShiftsTab 
+            workers={workers}
+            rosterData={rosterData}
+          />
         ) : (
           <>
             {rosterLoading ? (

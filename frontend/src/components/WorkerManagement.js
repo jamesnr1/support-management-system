@@ -343,194 +343,28 @@ const WorkerManagement = ({ workers = [], locations = [], onWorkersUpdate }) => 
           </button>
         </div>
 
-        {/* Main layout: Worker cards on left, Telegram panel on right */}
-        <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr', gap: '2rem', alignItems: 'start' }}>
-          
-          {/* Left side: Worker cards */}
-          <div className="workers-section">
-            {!filteredWorkers || filteredWorkers.length === 0 ? (
-              <div style={{ textAlign: 'center', color: 'var(--text-muted)', padding: '2rem' }}>
-                {!workers ? 'Loading workers...' : 'No workers found. Click "Add Worker" to create the first worker.'}
-              </div>
-            ) : (
-              <div className="workers-grid">
-                {filteredWorkers.map(worker => (
-                  <WorkerCard
-                    key={worker.id}
-                    worker={worker}
-                    refreshKey={cardsRefreshKey}
-                    onEdit={handleEditWorker}
-                    onManageAvailability={handleManageAvailability}
-                    availabilityData={allAvailabilityData[worker.id]}
-                    isLoading={availabilityLoading}
-                  />
-                ))}
-              </div>
-            )}
-          </div>
-
-          {/* Right side: Telegram messaging panel */}
-          <div className="telegram-panel" style={{ 
-            background: 'linear-gradient(135deg, #3E3B37, #3E3B37)',
-            border: '2px solid #D4A574',
-            borderRadius: '12px',
-            boxShadow: '0 6px 20px rgba(0, 0, 0, 0.2)',
-            padding: '0',
-            position: 'sticky',
-            top: '1rem',
-            overflow: 'hidden'
-          }}>
-            {/* Header */}
-            <div style={{
-              background: '#4A4641',
-              padding: '1rem 1.5rem',
-              borderBottom: '1px solid #2D2B28'
-            }}>
-              <h4 style={{ 
-                margin: 0, 
-                color: '#D4A574', 
-                fontSize: '1.2rem',
-                fontWeight: '600',
-                textShadow: '1px 1px 2px rgba(0,0,0,0.2)',
-                display: 'flex',
-                alignItems: 'center',
-                gap: '0.5rem'
-              }}>
-              💬 Telegram Messaging
-            </h4>
+        {/* Worker cards - narrower layout without telegram panel */}
+        <div className="workers-section" style={{ maxWidth: '1400px', margin: '0 auto' }}>
+          {!filteredWorkers || filteredWorkers.length === 0 ? (
+            <div style={{ textAlign: 'center', color: 'var(--text-muted)', padding: '2rem' }}>
+              {!workers ? 'Loading workers...' : 'No workers found. Click "Add Worker" to create the first worker.'}
             </div>
-
-            {/* Content */}
-            <div style={{ padding: '1.5rem' }}>
-            
-            {/* Message composition area */}
-            <div style={{ marginBottom: '1rem' }}>
-              <label style={{ display: 'block', marginBottom: '0.5rem', fontSize: '1.1rem', fontWeight: '500', color: '#E8DDD4' }}>
-                Message
-              </label>
-              <textarea
-                value={telegramMessage}
-                onChange={(e) => setTelegramMessage(e.target.value)}
-                placeholder="Type your message here..."
-                style={{
-                  width: '100%',
-                  height: '80px',
-                  padding: '0.75rem',
-                  borderRadius: '4px',
-                  border: '1px solid #4A4641',
-                  background: '#2D2B28',
-                  color: '#E8DDD4',
-                  fontSize: '1rem',
-                  resize: 'vertical'
-                }}
-              />
+          ) : (
+            <div className="workers-grid">
+              {filteredWorkers.map(worker => (
+                <WorkerCard
+                  key={worker.id}
+                  worker={worker}
+                  refreshKey={cardsRefreshKey}
+                  onEdit={handleEditWorker}
+                  onManageAvailability={handleManageAvailability}
+                  onDelete={handleDeleteWorker}
+                  availabilityData={allAvailabilityData[worker.id]}
+                  isLoading={availabilityLoading}
+                />
+              ))}
             </div>
-
-            {/* Worker selection */}
-            <div style={{ marginBottom: '1rem' }}>
-              <label style={{ display: 'block', marginBottom: '0.5rem', fontSize: '1.1rem', fontWeight: '500', color: '#E8DDD4' }}>
-                Send to
-              </label>
-              <div style={{ 
-                maxHeight: '200px', 
-                overflowY: 'auto', 
-                border: '1px solid #4A4641', 
-                borderRadius: '4px',
-                background: '#2D2B28'
-              }}>
-                <div style={{ padding: '0.75rem', borderBottom: '1px solid #4A4641' }}>
-                  <label style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', fontSize: '1rem', fontWeight: '500', color: '#E8DDD4' }}>
-                    <input 
-                      type="checkbox" 
-                      checked={sendToAll}
-                      onChange={(e) => setSendToAll(e.target.checked)}
-                      style={{ transform: 'scale(1.2)' }} 
-                    />
-                    📢 All Workers ({filteredWorkers?.filter(w => w.telegram).length || 0} with Telegram)
-                  </label>
-                </div>
-                {!sendToAll && filteredWorkers?.filter(w => w.telegram).map(worker => (
-                  <div key={worker.id} style={{ padding: '0.75rem', borderBottom: '1px solid #4A4641' }}>
-                    <label style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', fontSize: '1rem', color: '#E8DDD4' }}>
-                      <input 
-                        type="checkbox" 
-                        checked={selectedWorkers.has(worker.id)}
-                        onChange={(e) => handleWorkerSelection(worker.id, e.target.checked)}
-                        style={{ transform: 'scale(1.2)' }} 
-                      />
-                      {worker.full_name}
-                    </label>
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            {/* Action buttons */}
-            <div style={{ display: 'flex', gap: '0.5rem' }}>
-              <button 
-                onClick={handleSendTelegramMessage}
-                disabled={!telegramMessage.trim() || (!sendToAll && selectedWorkers.size === 0)}
-                className="btn btn-primary"
-                style={{ 
-                  flex: '1', 
-                  fontSize: '1rem', 
-                  padding: '0.85rem',
-                  background: (!telegramMessage.trim() || (!sendToAll && selectedWorkers.size === 0)) ? '#6B6B6B' : '#D4A574',
-                  color: '#2D2B28',
-                  border: '2px solid #D4A574',
-                  borderRadius: '6px',
-                  fontWeight: '600',
-                  cursor: (!telegramMessage.trim() || (!sendToAll && selectedWorkers.size === 0)) ? 'not-allowed' : 'pointer',
-                  transition: 'all 0.2s ease'
-                }}
-                onMouseEnter={(e) => {
-                  if (!e.currentTarget.disabled) {
-                    e.currentTarget.style.background = '#C4915C';
-                    e.currentTarget.style.borderColor = '#C4915C';
-                    e.currentTarget.style.transform = 'translateY(-1px)';
-                    e.currentTarget.style.boxShadow = '0 4px 12px rgba(212, 165, 116, 0.3)';
-                  }
-                }}
-                onMouseLeave={(e) => {
-                  if (!e.currentTarget.disabled) {
-                    e.currentTarget.style.background = '#D4A574';
-                    e.currentTarget.style.borderColor = '#D4A574';
-                    e.currentTarget.style.transform = 'translateY(0)';
-                    e.currentTarget.style.boxShadow = 'none';
-                  }
-                }}
-              >
-                📤 Send Message
-              </button>
-              <button 
-                onClick={handleClearTelegramMessage}
-                className="btn btn-secondary"
-                style={{ 
-                  fontSize: '1.1rem', 
-                  padding: '0.85rem',
-                  background: '#3E3B37',
-                  color: '#E8DDD4',
-                  border: '2px solid #4A4641',
-                  borderRadius: '6px',
-                  transition: 'all 0.2s ease',
-                  cursor: 'pointer'
-                }}
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.background = '#4A4641';
-                  e.currentTarget.style.borderColor = '#8B9A7B';
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.background = '#3E3B37';
-                  e.currentTarget.style.borderColor = '#4A4641';
-                }}
-                title="Clear message"
-              >
-                🗑️
-              </button>
-            </div>
-            </div>
-          </div>
-
+          )}
         </div>
 
         {/* Filter Bar removed per request */}

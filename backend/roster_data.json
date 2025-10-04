@@ -295,27 +295,7 @@
           }
         ]
       },
-      "JAM001": {
-        "2025-09-21": [
-          {
-            "id": "shift_1759591654030_wjvmehcuc",
-            "date": "2025-09-21",
-            "startTime": "06:00",
-            "endTime": "11:00",
-            "supportType": "Self-Care",
-            "ratio": "2:1",
-            "workers": [
-              "118",
-              "120"
-            ],
-            "location": "2",
-            "notes": "",
-            "shiftNumber": "J2025092196",
-            "duration": 5,
-            "isSplitShift": false
-          }
-        ]
-      },
+      "JAM001": {},
       "MIL001": {
         "2025-10-04": [
           {
