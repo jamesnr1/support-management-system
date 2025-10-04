@@ -117,8 +117,8 @@ body {
   background: var(--bg-primary);
   color: #D4A574;
   font-weight: 600;
-  border-bottom: 3px solid #D4A574;
-  box-shadow: inset 0 -3px 0 0 #D4A574;
+  border-bottom: 1px solid #8B9A7B;
+  box-shadow: inset 0 -1px 0 0 #8B9A7B;
 }
 
 /* Content Area */

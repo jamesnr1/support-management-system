@@ -519,7 +519,7 @@ const RosteringSystem = () => {
               onClick={() => setActiveTab(tab.id)}
               style={{ 
                 '--tab-color': tab.color,
-                borderBottom: activeTab === tab.id ? `2px solid var(--accent-primary)` : 'none'
+                borderBottom: activeTab === tab.id ? `1px solid #8B9A7B` : 'none'
               }}
             >
               {tab.label}
@@ -529,7 +529,47 @@ const RosteringSystem = () => {
         
         {/* Action Buttons (Roster/Planner only) */}
         {(activeTab === 'roster' || activeTab === 'planner') && (
-          <div style={{ display: 'flex', gap: '0.5rem', marginRight: '1rem' }}>
+          <div style={{ display: 'flex', gap: '0.5rem', marginRight: '1rem', alignItems: 'center' }}>
+            {/* Week Pattern Selector for Planner */}
+            {activeTab === 'planner' && rosterData.planner?.week_type && (
+              <>
+                <span style={{ color: '#8B9A7B', fontSize: '0.75rem', marginRight: '0.3rem' }}>
+                  Week:
+                </span>
+                <button
+                  onClick={() => toggleWeekPattern('weekA')}
+                  style={{
+                    padding: '0.35rem 0.6rem',
+                    fontSize: '0.75rem',
+                    background: rosterData.planner.week_type === 'weekA' ? '#8B9A7B' : '#3E3B37',
+                    color: '#E8DDD4',
+                    border: '1px solid ' + (rosterData.planner.week_type === 'weekA' ? '#8B9A7B' : '#4A4641'),
+                    borderRadius: '4px',
+                    fontWeight: rosterData.planner.week_type === 'weekA' ? '600' : '500',
+                    cursor: 'pointer'
+                  }}
+                >
+                  A
+                </button>
+                <button
+                  onClick={() => toggleWeekPattern('weekB')}
+                  style={{
+                    padding: '0.35rem 0.6rem',
+                    fontSize: '0.75rem',
+                    background: rosterData.planner.week_type === 'weekB' ? '#8B9A7B' : '#3E3B37',
+                    color: '#E8DDD4',
+                    border: '1px solid ' + (rosterData.planner.week_type === 'weekB' ? '#8B9A7B' : '#4A4641'),
+                    borderRadius: '4px',
+                    fontWeight: rosterData.planner.week_type === 'weekB' ? '600' : '500',
+                    cursor: 'pointer',
+                    marginRight: '0.5rem'
+                  }}
+                >
+                  B
+                </button>
+              </>
+            )}
+            
             <button
               className={`btn ${editMode ? 'btn-warning' : 'btn-secondary'}`}
               onClick={toggleEditMode}
@@ -605,60 +645,7 @@ const RosteringSystem = () => {
             height: '100%',
             padding: '0.75rem 1.5rem'
           }}>
-            {/* Week Pattern Toggle for Planner */}
-            {activeTab === 'planner' && rosterData.planner?.week_type && (
-              <div style={{
-                marginBottom: '0.75rem',
-                padding: '0.75rem',
-                background: 'rgba(74, 70, 65, 0.3)',
-                borderRadius: '8px',
-                border: '1px solid #4A4641',
-                display: 'flex',
-                alignItems: 'center',
-                gap: '1rem'
-              }}>
-                <span style={{ color: '#E8DDD4', fontSize: '0.9rem', fontWeight: '500' }}>
-                  Week Pattern:
-                </span>
-                <div style={{ display: 'flex', gap: '0.5rem' }}>
-                  <button
-                    className={`btn ${rosterData.planner.week_type === 'weekA' ? 'btn-success' : 'btn-secondary'}`}
-                    onClick={() => toggleWeekPattern('weekA')}
-                    style={{
-                      padding: '0.4rem 1rem',
-                      fontSize: '0.85rem',
-                      background: rosterData.planner.week_type === 'weekA' ? '#8B9A7B' : '#3E3B37',
-                      color: '#E8DDD4',
-                      border: '2px solid ' + (rosterData.planner.week_type === 'weekA' ? '#8B9A7B' : '#4A4641'),
-                      borderRadius: '6px',
-                      fontWeight: rosterData.planner.week_type === 'weekA' ? '600' : '500'
-                    }}
-                  >
-                    Week A
-                  </button>
-                  <button
-                    className={`btn ${rosterData.planner.week_type === 'weekB' ? 'btn-success' : 'btn-secondary'}`}
-                    onClick={() => toggleWeekPattern('weekB')}
-                    style={{
-                      padding: '0.4rem 1rem',
-                      fontSize: '0.85rem',
-                      background: rosterData.planner.week_type === 'weekB' ? '#8B9A7B' : '#3E3B37',
-                      color: '#E8DDD4',
-                      border: '2px solid ' + (rosterData.planner.week_type === 'weekB' ? '#8B9A7B' : '#4A4641'),
-                      borderRadius: '6px',
-                      fontWeight: rosterData.planner.week_type === 'weekB' ? '600' : '500'
-                    }}
-                  >
-                    Week B
-                  </button>
-                </div>
-                <span style={{ color: '#8B9A7B', fontSize: '0.8rem', marginLeft: 'auto' }}>
-                  {rosterData.planner.week_type === 'weekA' 
-                    ? 'Libby gets shared night support with Ace & Grace' 
-                    : 'James gets shared night support with Ace & Grace'}
-                </span>
-              </div>
-            )}
+            {/* Week Pattern moved to tab row */}
 
             <CalendarAppointments 
               weekType={activeTab} 
