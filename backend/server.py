@@ -188,6 +188,17 @@ async def get_participants():
 async def get_roster(week_type: str):
     """Get roster for specific week type from database"""
     try:
+        # Handle new roster/planner structure
+        if week_type in ['roster', 'planner']:
+            roster_section = ROSTER_DATA.get(week_type, {})
+            return {
+                "week_type": roster_section.get("week_type", "weekA"),
+                "start_date": roster_section.get("start_date", ""),
+                "end_date": roster_section.get("end_date", ""),
+                "data": roster_section.get("data", {})
+            }
+        
+        # Backward compatibility for old structure
         week_data = {}
         
         # For nextA and nextB, return the stored data directly (no date filtering)
@@ -233,7 +244,31 @@ async def get_roster(week_type: str):
 async def update_roster(week_type: str, roster_data: Dict[str, Any]):
     """Robust roster update with comprehensive validation"""
     try:
-        # Validate input
+        # Handle new roster/planner structure
+        if week_type in ['roster', 'planner']:
+            if not roster_data:
+                raise HTTPException(status_code=400, detail="No roster data provided")
+            
+            # Validate structure for new format
+            if "data" in roster_data:
+                # Full structure update with metadata
+                ROSTER_DATA[week_type] = {
+                    "week_type": roster_data.get("week_type", "weekA"),
+                    "start_date": roster_data.get("start_date", ""),
+                    "end_date": roster_data.get("end_date", ""),
+                    "data": roster_data.get("data", {})
+                }
+            else:
+                # Legacy: just updating data, keep existing metadata
+                if week_type not in ROSTER_DATA:
+                    ROSTER_DATA[week_type] = {"week_type": "weekA", "start_date": "", "end_date": "", "data": {}}
+                ROSTER_DATA[week_type]["data"] = roster_data
+            
+            save_roster_data()
+            logger.info(f"Updated {week_type}: {len(ROSTER_DATA[week_type].get('data', {}))} participants")
+            return {"message": f"{week_type.capitalize()} updated successfully"}
+        
+        # Backward compatibility for old structure
         if not roster_data:
             logger.warning(f"Attempted to update {week_type} with empty data")
             raise HTTPException(status_code=400, detail="No roster data provided")
