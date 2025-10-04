@@ -90,7 +90,7 @@ const WorkerCard = ({ worker, onEdit, onManageAvailability, onDelete, availabili
     <div 
       className="worker-card" 
       style={{ 
-        height: '400px', 
+        height: '440px', 
         display: 'flex', 
         flexDirection: 'column'
       }}
@@ -100,7 +100,7 @@ const WorkerCard = ({ worker, onEdit, onManageAvailability, onDelete, availabili
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', width: '100%' }}>
           <div className="worker-name" style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', flexWrap: 'nowrap' }}>
             <span style={{ whiteSpace: 'nowrap' }}>{getDisplayName(worker.full_name)}</span>
-            <span style={{ display: 'flex', gap: '1rem', fontSize: '0.9em', whiteSpace: 'nowrap', color: 'var(--text-primary)' }}>
+            <span style={{ display: 'flex', gap: '0.4rem', fontSize: '0.9em', whiteSpace: 'nowrap', color: 'var(--text-primary)' }}>
               {getGenderIcon(worker.sex) && <span>{getGenderIcon(worker.sex)}</span>}
               {getCarIcon(worker.car) && <span>{getCarIcon(worker.car)}</span>}
               {getTelegramIcon(worker.telegram) && <span>{getTelegramIcon(worker.telegram)}</span>}
@@ -119,15 +119,15 @@ const WorkerCard = ({ worker, onEdit, onManageAvailability, onDelete, availabili
               style={{
                 background: 'transparent',
                 border: 'none',
-                color: 'var(--text-secondary)',
+                color: '#B87E7E',
                 cursor: 'pointer',
                 padding: '0.25rem',
                 display: 'flex',
                 alignItems: 'center',
                 transition: 'all 0.2s ease'
               }}
-              onMouseOver={(e) => { e.currentTarget.style.color = 'var(--text-primary)'; e.currentTarget.style.transform = 'scale(1.1)'; }}
-              onMouseOut={(e) => { e.currentTarget.style.color = 'var(--text-secondary)'; e.currentTarget.style.transform = 'scale(1)'; }}
+              onMouseOver={(e) => { e.currentTarget.style.color = '#A86E6E'; e.currentTarget.style.transform = 'scale(1.1)'; }}
+              onMouseOut={(e) => { e.currentTarget.style.color = '#B87E7E'; e.currentTarget.style.transform = 'scale(1)'; }}
               title={`Delete ${worker.full_name}`}
             >
               <Trash2 size={16} />
@@ -145,7 +145,7 @@ const WorkerCard = ({ worker, onEdit, onManageAvailability, onDelete, availabili
           padding: '0.75rem',
           margin: '0.75rem 0',
           fontSize: '0.85rem',
-          height: '280px',
+          height: '310px',
           display: 'flex',
           flexDirection: 'column',
           overflow: 'auto'
