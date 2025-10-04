@@ -13,11 +13,10 @@
 ### Mayu (129) - Max 48h
 - Mon night: 8h
 - Wed morning: 8h
-- Wed afternoon: 8h
 - Fri morning: 8h
 - Sat afternoon: 8h
 - Sun night: 8h
-**Total: 48h** ✅
+**Total: 40h** ✅ (REDUCED from 48h)
 
 ### Hamza (132) - Max 48h
 - Tue night: 8h
@@ -70,10 +69,9 @@
 - Mon afternoon (James): 8h
 - Tue afternoon (James): 8h
 - Wed afternoon (James): 8h
-- Thu afternoon (James): 8h
 - Fri afternoon (James): 8h
 - Sat morning (Grace): 8h
-**Total: 48h** ✅ (was targeting 40h but needed her)
+**Total: 40h** ✅ (REDUCED from 48h)
 
 ### Arti (118) - Female for Grace - Max 48h
 - Grace Mon morning: 6h
@@ -102,8 +100,10 @@
 **Total: 8h** ✅
 
 ### Parvinder (139) - Female - Max 24h
+- James Wed afternoon: 8h
+- James Thu afternoon: 8h
 - Grace Sun 9am-3pm: 6h
-**Total: 6h** ✅
+**Total: 22h** ✅ (INCREASED from 6h)
 
 ---
 
@@ -124,9 +124,10 @@
 - Happy: Reduced to 40h ✅
 - Arti: Reduced to 30h ✅
 - Krunal: Reduced to 32h ✅
-- Rosie: 48h (slightly over target but needed)
+- Rosie: Reduced to 40h ✅
+- Mayu: Reduced to 40h ✅
 - Chaynne: 8h (Tue + Fri) ✅
-- Parvinder: 6h weekend ✅
+- Parvinder: INCREASED to 22h ✅
 
 ✅ **Milan Weekend:**
 - Saturday: Sanjay (3h self-care + 3h community)

@@ -132,7 +132,7 @@
         "startTime": "14:00",
         "endTime": "22:00",
         "duration": 8,
-        "workers": [129, 126],
+        "workers": [139, 126],
         "location": "Home",
         "supportType": "Community Participation",
         "ratio": "2:1"
@@ -179,7 +179,7 @@
         "startTime": "14:00",
         "endTime": "22:00",
         "duration": 8,
-        "workers": [127, 126],
+        "workers": [127, 139],
         "location": "Home",
         "supportType": "Community Participation",
         "ratio": "2:1"
