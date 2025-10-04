@@ -475,7 +475,8 @@ const ShiftForm = ({
   // Check minimum break time between shifts
   const checkBreakTimeValidation = (shiftData) => {
     const issues = [];
-    const SAME_DAY_MIN_BREAK = 120; // 2 hours minimum for same-day shifts
+    const CONTINUITY_OF_CARE_MAX_BREAK = 30; // Up to 30 min break OK for same participant (continuity of care)
+    const DIFFERENT_PARTICIPANT_MIN_BREAK = 120; // 2 hours minimum when switching participants (travel time)
     const ADJACENT_DAY_MIN_BREAK = 600; // 10 hours minimum between adjacent days
     const SPLIT_SHIFT_MIN_BREAK = 60; // 60 minutes for split shifts (relaxed rule)
     
@@ -485,6 +486,7 @@ const ShiftForm = ({
     }
     
     const workerName = (workerId) => getDisplayName((workers || []).find(w => w.id === workerId)?.full_name);
+    const currentParticipantCode = participant?.code; // The participant for the NEW shift being created
     
     shiftData.workers.forEach(workerId => {
       // Check for shifts on the same day or adjacent days
@@ -504,18 +506,39 @@ const ShiftForm = ({
                 
                 // SAME DAY: Check for sufficient break time
                 if (dayDiff === 0) {
-                  const isSplitShift = isSplitShiftScenario(existingShift, shiftData, shiftDate);
-                  const requiredBreak = isSplitShift ? SPLIT_SHIFT_MIN_BREAK : SAME_DAY_MIN_BREAK;
+                  // Check if this is the SAME participant (continuity of care)
+                  const isSameParticipant = participantCode === currentParticipantCode;
+                  
+                  let requiredBreak;
+                  let breakReason;
+                  
+                  if (isSameParticipant) {
+                    // Same participant = continuity of care
+                    // Allow back-to-back or short breaks (up to 30 min is OK)
+                    requiredBreak = 0; // Allow back-to-back
+                    breakReason = 'continuity of care';
+                  } else {
+                    // Different participant = need travel time
+                    const isSplitShift = isSplitShiftScenario(existingShift, shiftData, shiftDate);
+                    requiredBreak = isSplitShift ? SPLIT_SHIFT_MIN_BREAK : DIFFERENT_PARTICIPANT_MIN_BREAK;
+                    breakReason = 'travel time between participants';
+                  }
                   
                   // Check gap after existing shift
                   const gapAfter = calculateBreakMinutes(existingShift.endTime, shiftData.startTime);
                   // Check gap before existing shift
                   const gapBefore = calculateBreakMinutes(shiftData.endTime, existingShift.startTime);
                   
+                  // Only warn if breaks are insufficient
                   if (gapAfter > 0 && gapAfter < requiredBreak) {
-                    issues.push(`⚠️ ${workerName(workerId)}: Only ${Math.floor(gapAfter)} minutes break (need ${requiredBreak} min) - Shift ends ${existingShift.endTime}, next starts ${shiftData.startTime}`);
+                    issues.push(`⚠️ ${workerName(workerId)}: Only ${Math.floor(gapAfter)} min break (need ${requiredBreak} min for ${breakReason}) - ${participantCode}: ${existingShift.endTime} → ${currentParticipantCode}: ${shiftData.startTime}`);
                   } else if (gapBefore > 0 && gapBefore < requiredBreak) {
-                    issues.push(`⚠️ ${workerName(workerId)}: Only ${Math.floor(gapBefore)} minutes break (need ${requiredBreak} min) - Shift ends ${shiftData.endTime}, next starts ${existingShift.startTime}`);
+                    issues.push(`⚠️ ${workerName(workerId)}: Only ${Math.floor(gapBefore)} min break (need ${requiredBreak} min for ${breakReason}) - ${currentParticipantCode}: ${shiftData.endTime} → ${participantCode}: ${existingShift.startTime}`);
+                  }
+                  
+                  // Additional warning if same participant has >30 min gap (unusual)
+                  if (isSameParticipant && gapAfter > CONTINUITY_OF_CARE_MAX_BREAK && gapAfter < 120) {
+                    issues.push(`ℹ️ ${workerName(workerId)}: ${Math.floor(gapAfter)} min gap for same participant (${participantCode}) - Consider if this is intentional`);
                   }
                 }
                 
@@ -523,15 +546,20 @@ const ShiftForm = ({
                 else if (dayDiff === 1) {
                   let gapMinutes;
                   let earlierEnd, laterStart;
+                  let earlierParticipant, laterParticipant;
                   
                   if (newDate > existingDate) {
                     // New shift is the next day
                     earlierEnd = existingShift.endTime;
                     laterStart = shiftData.startTime;
+                    earlierParticipant = participantCode;
+                    laterParticipant = currentParticipantCode;
                   } else {
                     // Existing shift is the next day
                     earlierEnd = shiftData.endTime;
                     laterStart = existingShift.startTime;
+                    earlierParticipant = currentParticipantCode;
+                    laterParticipant = participantCode;
                   }
                   
                   // Calculate cross-day gap
@@ -539,7 +567,7 @@ const ShiftForm = ({
                   
                   if (gapMinutes < ADJACENT_DAY_MIN_BREAK) {
                     const gapHours = (gapMinutes / 60).toFixed(1);
-                    issues.push(`❌ ${workerName(workerId)}: Only ${gapHours} hours rest between days (need 10 hours) - Ends ${earlierEnd}, next starts ${laterStart}`);
+                    issues.push(`❌ ${workerName(workerId)}: Only ${gapHours}h rest between days (need 10h) - ${earlierParticipant} ends ${earlierEnd} → ${laterParticipant} starts ${laterStart}`);
                   }
                 }
               }
