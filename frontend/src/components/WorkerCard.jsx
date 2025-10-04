@@ -90,7 +90,7 @@ const WorkerCard = ({ worker, onEdit, onManageAvailability, onDelete, availabili
     <div 
       className="worker-card" 
       style={{ 
-        minHeight: '360px', 
+        height: '400px', 
         display: 'flex', 
         flexDirection: 'column'
       }}
@@ -145,9 +145,10 @@ const WorkerCard = ({ worker, onEdit, onManageAvailability, onDelete, availabili
           padding: '0.75rem',
           margin: '0.75rem 0',
           fontSize: '0.85rem',
-          minHeight: '260px',
+          height: '280px',
           display: 'flex',
-          flexDirection: 'column'
+          flexDirection: 'column',
+          overflow: 'auto'
         }}>
         {isLoading ? (
           <div style={{ color: 'var(--text-secondary)', textAlign: 'center', flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>Loading...</div>
