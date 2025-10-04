@@ -526,8 +526,8 @@ const RosteringSystem = () => {
         ))}
       </nav>
 
-      {/* Week Pattern Indicator */}
-      {(activeTab === 'roster' || activeTab === 'planner') && rosterData[activeTab]?.week_type && (
+      {/* Week Pattern Indicator - ONLY on Roster tab */}
+      {activeTab === 'roster' && rosterData.roster?.week_type && (
         <div style={{
           position: 'fixed',
           top: '68px',
@@ -545,7 +545,7 @@ const RosteringSystem = () => {
           gap: '0.5rem'
         }}>
           <span style={{ fontSize: '1rem' }}>📅</span>
-          Week {rosterData[activeTab].week_type === 'weekA' ? 'A' : 'B'} Pattern
+          Week {rosterData.roster.week_type === 'weekA' ? 'A' : 'B'} Pattern
         </div>
       )}
 

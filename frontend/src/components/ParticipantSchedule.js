@@ -277,12 +277,7 @@ const ParticipantSchedule = ({
               </div>
             </div>
             <div style={{ textAlign: 'right' }}>
-              <div style={{ color: 'var(--accent-primary)', fontWeight: 'bold' }}>
-                {weekType === 'weekA' && 'Week A'}
-                {weekType === 'weekB' && 'Week B'}
-                {weekType === 'nextA' && 'Next A'}
-                {weekType === 'nextB' && 'Next B'}
-              </div>
+              {/* Week type labels removed - shown at page level instead */}
               <div style={{ color: 'var(--text-secondary)', fontSize: '0.9rem' }}>
                 {Object.keys(participantShifts).length} days scheduled
               </div>
