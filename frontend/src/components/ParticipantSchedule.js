@@ -261,25 +261,20 @@ const ParticipantSchedule = ({
   return (
     <div>
       <div className="participant-card">
-        <div className="participant-header">
+        <div className="participant-header" style={{ padding: '0.75rem 1rem' }}>
           <div className="participant-info">
-            <div>
-              <div className="participant-name">{participant.full_name}</div>
-              <div className="participant-details">
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', flexWrap: 'wrap' }}>
+              <div className="participant-name" style={{ marginBottom: 0 }}>{participant.full_name}</div>
+              <div className="participant-details" style={{ fontSize: '0.85rem' }}>
                 {/* Location and ratio based on participant and week logic */}
-                {participant.code === 'LIB001' && 'Glandore (Ratio:2:1)'}
-                {participant.code === 'JAM001' && 'Plympton Park (Ratio:2:1)'}
-                {(participant.code === 'ACE001' || participant.code === 'GRA001' || participant.code === 'MIL001') && (
-                  weekType === 'weekA' || weekType === 'nextA' 
-                    ? 'Glandore (Ratio:1:1)' 
-                    : 'Plympton Park (Ratio:1:1)'
-                )}
+                {participant.code === 'LIB001' && '— Glandore • 2:1'}
+                {participant.code === 'JAM001' && '— Plympton Park • 2:1'}
+                {participant.code === 'ACE001' && (weekType === 'weekA' ? '— Glandore • 1:1' : '— Plympton Park • 1:1')}
+                {participant.code === 'GRA001' && (weekType === 'weekA' ? '— Glandore • 1:1' : '— Plympton Park • 1:1')}
+                {participant.code === 'MIL001' && (weekType === 'weekA' ? '— Plympton Park • 1:1' : '— Glandore • 1:1')}
               </div>
-            </div>
-            <div style={{ textAlign: 'right' }}>
-              {/* Week type labels removed - shown at page level instead */}
-              <div style={{ color: 'var(--text-secondary)', fontSize: '0.9rem' }}>
-                {Object.keys(participantShifts).length} days scheduled
+              <div style={{ marginLeft: 'auto', color: 'var(--text-secondary)', fontSize: '0.85rem' }}>
+                {Object.keys(participantShifts).length} days
               </div>
             </div>
           </div>

@@ -693,7 +693,7 @@ const RosteringSystem = () => {
               }}
               title={calendarVisible ? 'Hide calendar' : 'Show calendar'}
             >
-              {calendarVisible ? '👁️ Hide' : '👁️ Show'}
+              {calendarVisible ? '📅 Calendar' : '📅 Calendar'}
             </button>
           </div>
         )}
