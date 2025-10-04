@@ -821,18 +821,15 @@ const AvailabilityModal = ({ worker, onClose, initialAvailabilityData }) => {
             <div style={{ padding: '1rem' }}>
               {/* Weekly availability schedule */}
               <div style={{ marginBottom: '1.5rem' }}>
-                <h4 style={{ marginBottom: '0.5rem', color: 'var(--accent-primary)' }}>Weekly Schedule</h4>
-                <p style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', marginBottom: '1rem', fontStyle: 'italic' }}>
-                  ⏰ Enter times in 24-hour format (e.g., 09:00, 17:00, 22:30)
-                </p>
-                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', gap: '1rem' }}>
+                <h4 style={{ marginBottom: '1rem', color: 'var(--accent-primary)' }}>Weekly Schedule</h4>
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(110px, 1fr))', gap: '0.75rem', maxWidth: '100%' }}>
                 {['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'].map((day, displayIndex) => {
                   // Map display order (Mon=0, Tue=1, ..., Sun=6) to backend weekday (Mon=1, Tue=2, ..., Sun=0)
                   const weekdayNumber = displayIndex === 6 ? 0 : displayIndex + 1;
                   const dayData = weeklyAvailability[weekdayNumber];
                     return (
-                      <div key={day} style={{ textAlign: 'center', padding: '0.5rem', background: 'var(--bg-input)', borderRadius: '4px' }}>
-                        <div style={{ fontWeight: 'bold', marginBottom: '0.5rem', fontSize: '0.9rem' }}>{day}</div>
+                      <div key={day} style={{ textAlign: 'center', padding: '0.5rem', background: 'var(--bg-input)', borderRadius: '4px', minWidth: '110px' }}>
+                        <div style={{ fontWeight: 'bold', marginBottom: '0.5rem', fontSize: '0.9rem', whiteSpace: 'nowrap' }}>{day}</div>
                         <div style={{ marginBottom: '0.5rem' }}>
                           <input 
                             type="checkbox" 
@@ -840,9 +837,9 @@ const AvailabilityModal = ({ worker, onClose, initialAvailabilityData }) => {
                           onChange={(e) => setWeeklyAvailability(prev => ({ ...prev, [weekdayNumber]: { ...prev[weekdayNumber], available: e.target.checked } }))}
                             style={{ marginRight: '0.25rem' }} 
                           />
-                          <span style={{ fontSize: '0.8rem' }}>Available</span>
+                          <span style={{ fontSize: '0.8rem', whiteSpace: 'nowrap' }}>Available</span>
                         </div>
-                        <div style={{ fontSize: '0.8rem' }}>
+                        <div style={{ fontSize: '0.8rem', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
                           <input 
                             type="time" 
                             value={dayData.from_time}
@@ -850,7 +847,8 @@ const AvailabilityModal = ({ worker, onClose, initialAvailabilityData }) => {
                             disabled={!dayData.available}
                             step="900"
                             style={{ 
-                              width: '85px', 
+                              width: '100%', 
+                              maxWidth: '95px',
                               fontSize: '0.85rem', 
                               padding: '0.3rem', 
                               marginBottom: '0.25rem', 
@@ -858,7 +856,8 @@ const AvailabilityModal = ({ worker, onClose, initialAvailabilityData }) => {
                               border: '1px solid var(--border-color)', 
                               color: 'var(--text-primary)', 
                               opacity: dayData.available ? 1 : 0.5,
-                              textAlign: 'center'
+                              textAlign: 'center',
+                              cursor: dayData.available ? 'pointer' : 'not-allowed'
                             }} 
                           />
                           <div style={{ margin: '0.25rem 0', fontSize: '0.7rem' }}>to</div>
@@ -869,14 +868,16 @@ const AvailabilityModal = ({ worker, onClose, initialAvailabilityData }) => {
                             disabled={!dayData.available}
                             step="900"
                             style={{ 
-                              width: '85px', 
+                              width: '100%', 
+                              maxWidth: '95px',
                               fontSize: '0.85rem', 
                               padding: '0.3rem', 
                               background: dayData.available ? 'var(--bg-secondary)' : 'var(--bg-tertiary)', 
                               border: '1px solid var(--border-color)', 
                               color: 'var(--text-primary)', 
                               opacity: dayData.available ? 1 : 0.5,
-                              textAlign: 'center'
+                              textAlign: 'center',
+                              cursor: dayData.available ? 'pointer' : 'not-allowed'
                             }} 
                           />
                         </div>
