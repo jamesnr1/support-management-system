@@ -9,9 +9,9 @@
 
 ## Test Results Summary
 - ✅ PASS: 0
-- ⚠️ NEEDS TESTING: 0  
+- ⚠️ NEEDS TESTING: Manual testing required (see section 8)
 - ❌ FAIL: 0
-- 🔧 FIXED: 3 (ShiftForm init, Data loss, Worker hours calculation)
+- 🔧 FIXED: 4 CRITICAL BUGS (all would cause data loss or system failure!)
 
 ---
 
@@ -244,13 +244,111 @@
    - Fixed by passing fullRosterData prop through ParticipantSchedule to ShiftForm
    - Fixed in commit: a5613f9
 
+4. **CRITICAL: Data loss in delete and lock shift functions** - Would delete all participants when deleting/locking ANY shift
+   - handleDeleteShift and handleToggleLock were accessing rosterData[participant.code]
+   - But rosterData is already participant-specific (no wrapper)
+   - Result: Only sent partial data structure to onRosterUpdate
+   - Would delete ALL other participants' shifts!
+   - Fixed by correctly wrapping data structure before calling onRosterUpdate
+   - Fixed in commit: e1f3930
+
 ### ❌ OPEN ISSUES
-(To be populated as audit progresses)
+(None found during code audit - manual testing required)
 
 ---
 
 ## Audit Progress
 - **Started:** October 4, 2025
-- **Current Section:** Starting Section 1.1
-- **Estimated Completion:** TBD
+- **Code Review:** COMPLETE
+- **Critical Bugs Found:** 4 (all fixed)
+- **Manual Testing:** REQUIRED before roster creation
+
+---
+
+## 8. WHAT TO TEST NOW
+
+### 🎯 Critical Path Testing (15 minutes)
+
+Test these workflows to verify the fixes work:
+
+**1. Add a shift in Roster tab:**
+- Go to Roster tab
+- Turn on Edit Mode
+- Click "+" to add a shift to James
+- Select workers, times, location
+- Save
+- ✅ CHECK: All other participants still have their shifts (not deleted)
+- ✅ CHECK: Worker hours in dropdown are accurate (e.g., 30h not 5h)
+
+**2. Edit an existing shift:**
+- Click "Edit" on any shift
+- Change time or worker
+- Save
+- ✅ CHECK: Only that shift changed, others unchanged
+
+**3. Delete a shift:**
+- Click "Delete" on a shift
+- Confirm deletion
+- ✅ CHECK: Only that shift deleted, all others remain
+
+**4. Lock/Unlock a shift:**
+- Click "Lock" on a shift
+- ✅ CHECK: Shift is locked (can't edit/delete)
+- Click "Unlock"
+- ✅ CHECK: Can now edit/delete again
+- ✅ CHECK: All other participants' shifts still exist
+
+**5. Copy to Planner:**
+- In Roster tab, click "Copy to Planner"
+- Switch to Planner tab
+- ✅ CHECK: Data copied correctly
+- ✅ CHECK: Week type flipped (A→B or B→A)
+
+**6. Add shift in Planner:**
+- In Planner tab, add a shift
+- ✅ CHECK: Shift saves correctly
+- ✅ CHECK: Roster tab data unchanged
+
+**7. Hours Tab:**
+- Go to Hours tab
+- ✅ CHECK: Hours display correctly
+- Go back to Roster, add a shift
+- Go to Hours tab
+- ✅ CHECK: Hours updated with new shift
+
+**8. Worker Availability:**
+- Go to Admin tab
+- Set a worker unavailable for a date
+- Go to Roster, try to add shift on that date
+- ✅ CHECK: Unavailable worker not shown or marked
+
+### ⚠️ What Could Still Break
+
+Based on the audit, these areas were NOT fully tested:
+- Export Payroll/Shifts functions (should work, but verify CSV output)
+- Calendar integration (separate system, unlikely to affect roster)
+- Telegram messaging (separate system)
+- AI Chat (separate system)
+- Week pattern toggle in Planner (logic looks correct but not tested)
+
+---
+
+## CONCLUSION
+
+**Status: READY FOR MANUAL TESTING**
+
+✅ **4 Critical Bugs Fixed:**
+1. ShiftForm crash (React Hooks)
+2. Data loss on shift save
+3. Incorrect worker hours  
+4. Data loss on delete/lock
+
+**Next Steps:**
+1. Run the critical path testing above (15 min)
+2. If all tests pass → Safe to create roster
+3. If anything fails → Report issue for immediate fix
+
+**Risk Assessment:**
+- **Before Fixes:** 🔴 CRITICAL - Would lose all data on any shift operation
+- **After Fixes:** 🟢 LOW - Core data operations should work correctly
 
