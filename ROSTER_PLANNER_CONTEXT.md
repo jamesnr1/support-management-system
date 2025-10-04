@@ -138,7 +138,18 @@
 
 ---
 
-**Last Updated:** October 4, 2025  
-**Branch:** `feature/current-planning-tabs`  
-**Status:** Fully functional, ready for use
+**Last Updated:** October 4, 2025
+**Branch:** `feature/current-planning-tabs`
+**Status:** ✅ Fully functional, production ready
+
+## **Quick Reference**
+
+**TABS:** Roster | Planner | Admin | Hours
+
+**NOT USED ANYMORE:** ~~Week A~~, ~~Week B~~, ~~Next A~~, ~~Next B~~ tabs (old system)
+
+**CURRENT SYSTEM:** 
+- **Roster** = Current active week (what's happening now)
+- **Planner** = Build future weeks (toggle Week A/B pattern)
+- **Week A/B** = Internal pattern logic (WHO gets shared night support)
 

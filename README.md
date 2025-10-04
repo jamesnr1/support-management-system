@@ -1,58 +1,42 @@
-# Support Management System - Rostering Application
+# Support Management System - NDIS Rostering Application
 
-**Last Updated:** October 1, 2025 - 4:00 PM  
-**Status:** ✅ Fully Operational with Automated Validation  
-**Database:** PostgreSQL via Supabase (Migrated from MongoDB)
-
----
-
-## 🎯 WHY THIS SYSTEM MATTERS
-
-### The Complexity Problem
-
-**Current Scenario (Week B - "Simple"):**
-- 5 participants with varying support needs
-- ~47 shifts across 7 days
-- Multiple support ratios (1:1, 2:1, 3:1)
-- ~15-20 active support workers
-- Total: **~70 worker assignments per week**
-
-**Normal Operations (With Libby's full 24/7 2:1 support):**
-- Libby alone: 21 shifts/week (7 days × 3 shifts) × 2 workers = **42 assignments**
-- Plus James, Ace, Grace, Milan = **100+ shift assignments per week**
-- With changing ratios, worker availability, max hours = **Exponential complexity**
-
-### Why These Features Are Non-Negotiable
-
-#### 1. **Fortnight Planning (2-Week View)**
-- **Problem:** Weekly planning causes cascading conflicts
-- **Solution:** 2-week view lets you balance hours and avoid back-to-back issues
-- **Real Impact:** Worker has 40h in Week A → Need to reduce to 30h in Week B
-- **Without it:** Constant firefighting, compliance violations, worker burnout
-
-#### 2. **Copy to Template**
-- **Problem:** Recreating 100+ assignments weekly is unsustainable
-- **Solution:** Copy Week A/B → Next A/B maintains consistent patterns
-- **Real Impact:** 80% of shifts repeat weekly, only adjust exceptions
-- **Without it:** Hours wasted on data entry, high error rate
-
-#### 3. **Automated Validation**
-- **Problem:** Manual checking misses conflicts (16+ hour shifts, double bookings)
-- **Solution:** Real-time validation on every save
-- **Real Impact:** Today we found 8+ issues that would violate NDIS compliance
-- **Without it:** Legal liability, worker safety issues, funding problems
+**Last Updated:** October 4, 2025
+**Status:** ✅ Fully Operational - Roster/Planner System
+**Database:** PostgreSQL via Supabase
+**Branch:** `feature/current-planning-tabs`
 
 ---
 
-## 🚀 Quick Start
+## 🎯 SYSTEM OVERVIEW
+
+### What This System Does
+
+This is a **specialized rostering system** for managing NDIS (National Disability Insurance Scheme) support services across 5 participants with complex support needs.
+
+**The Challenge:**
+- 5 participants with varying support needs (1:1, 2:1, 2:3 ratios)
+- ~100+ worker assignments per week
+- Alternating week patterns (Week A vs Week B)
+- 30+ active support workers
+- NDIS compliance requirements
+- Real-time availability tracking
+
+**The Solution:**
+- **Roster Tab:** Current active week (editable, what's happening now)
+- **Planner Tab:** Build future weeks (toggle Week A/B patterns)
+- **Admin Tab:** Manage workers, availability, Telegram messaging
+- **Hours Tab:** Track participant hours by NDIS funding categories
+
+---
+
+## 🚀 QUICK START
 
 ### Current Running State
-- **Backend:** http://localhost:8001 (FastAPI + PostgreSQL/Supabase)
+- **Backend:** http://localhost:8001 (FastAPI + Supabase PostgreSQL)
 - **Frontend:** http://localhost:3000 (React)
-- **Database:** Supabase PostgreSQL with 23 workers, 5 participants
-- **Status:** ✅ All servers running with new database schema
+- **Database:** Supabase PostgreSQL with 24 workers, 5 participants
 
-### Start Servers (if needed)
+### Start Servers
 
 **Backend:**
 ```bash
@@ -64,297 +48,464 @@ python server.py
 **Frontend:**
 ```bash
 cd frontend
-npm start
+yarn start
 ```
 
 ---
 
-## 🎉 LATEST UPDATES (Oct 1, 2025 - Afternoon Session)
+## 📊 TABS & FUNCTIONALITY
 
-### ✅ AUTOMATED VALIDATION SYSTEM BUILT!
+### 🗓️ **Roster Tab** (Current Active Roster)
+**Purpose:** View and edit the current week's roster
 
-**New Backend Module:** `validation_rules.py`
-- **Comprehensive NDIS compliance checking**
-- **Real-time validation** on roster save
-- **Catches 6 critical issue types:**
-  1. ❌ **Double Bookings** - Same worker, different participants, same time
-  2. ❌ **16+ Hour Shifts** - Exceeds safe working hours
-  3. ❌ **Incorrect Ratios** - 2:1 shift with only 1 worker
-  4. ⚠️ **Weekly Max Hours** - Worker approaching/exceeding max hours
-  5. ⚠️ **Short Breaks** - Less than 10h break between long shifts
-  6. ⚠️ **Overnight Understaffing** - Night shifts without adequate coverage
+**Features:**
+- ✅ Edit Mode - Modify shifts in real-time
+- ✅ Copy to Planner - Duplicate roster for planning next week
+- ✅ Export Payroll CSV - Worker hours for payroll
+- ✅ Export Shifts CSV - Shift details report
+- ✅ Participant cards with shift details
+- ✅ Google Calendar integration (appointments display)
+- ✅ Clean interface (no week pattern indicators)
 
-**New API Endpoint:**
-- `POST /api/roster/{week_type}/validate` - Validate roster before/after save
-- Returns: `{valid: bool, errors: [str], warnings: [str]}`
-
-**Real Impact Today:**
-- Fixed 8 critical issues in Week B automatically
-- Prevented 4 workers from having 16+ hour days
-- Rebalanced hours: Sanjay/Mihir/Mayu -8h each, Happy +16h, Rosie +8h
-- All progress note workers correctly assigned
-
-### ✅ Database Migration Completed
-- **Migrated from MongoDB to Supabase PostgreSQL**
-- **Imported 23 real support workers** with full details
-- **Advanced schema** with many-to-many relationships, availability tracking, plan management
-- **Auto-generating shift numbers** in format: `L2025101001` (Participant + Date + Sequence)
-
-### ✅ Backend Endpoints Available
-- `GET /api/workers/{worker_id}/availability` - Get worker weekly schedule
-- `POST /api/workers/{worker_id}/availability` - Save worker weekly schedule
-- `GET /api/workers/{worker_id}/unavailability` - Get unavailability periods
-- `POST /api/workers/{worker_id}/unavailability` - Add unavailability period
-- `DELETE /api/unavailability/{period_id}` - Delete unavailability period
-- `POST /api/roster/{week_type}/validate` - **NEW** Validate roster compliance
-
-### 🔌 Ready to Connect
-Your UI components in `WorkerManagement.js` are ready to save data:
-- ✅ Availability modal (lines 401-548) → Can now save to database
-- ✅ Unavailability section (lines 460-517) → Can now save to database
+**Use Case:** This week, Grace calls in sick. Edit her shifts immediately and assign replacement workers.
 
 ---
 
-## 📊 Project Status
+### 📋 **Planner Tab** (Build Future Rosters)
+**Purpose:** Plan upcoming weeks before they go live
 
-### ✅ COMPLETED FEATURES
+**Features:**
+- ✅ Week A/B Toggle - Select which pattern to use
+- ✅ Pattern Explanation - Shows who gets shared night support
+  - Week A: Libby shared support
+  - Week B: James shared support
+- ✅ Edit Mode - Build and modify future shifts
+- ✅ Export Payroll CSV
+- ✅ Export Shifts CSV
+- ✅ Same participant cards as Roster
 
-1. **Core Rostering System**
-   - Week A, Week B, Next A, Next B roster management
-   - Add/Edit/Delete shifts functionality
-   - Participant schedule management
-   - Support worker management
+**Use Case:** Next week is Week B. Toggle to Week B pattern, adjust James's shared night shifts, balance worker hours across the fortnight.
 
-2. **Copy Template Functionality** ✅ WORKING
-   - Copies Week A → Next A
-   - Copies Week B → Next B
-   - Backend API: Fully functional (42 tests passed)
-   - Frontend: Confirmation dialog → Fetch → Post → Reload
-   - Location: `frontend/src/components/RosteringSystem.js` lines 297-341
-
-3. **Export Functionality** ✅ WORKING
-   - Payroll export (CSV)
-   - Shift report export (CSV)
-   - All backend APIs functional
-   - Location: `frontend/src/components/RosteringSystem.js`
-
-4. **Hours Tracker** ✅ WORKING
-   - CSV upload/download
-   - Hour category calculations (SCWD, CPWD, etc.)
-   - Dedicated tab in main navigation
-   - Location: `frontend/src/components/HoursTracker.js`
-
-5. **Admin Tab - Worker Management** ✅ WORKING
-   - Add/Edit/Delete workers
-   - Worker cards: Compact layout with small padding
-   - Availability management modal
-   - **Unavailability integrated INSIDE availability modal** (lines 460-517)
-   - Single "Save" button handles both availability & unavailability
-   - Location: `frontend/src/components/WorkerManagement.js`
-
-6. **Delete Worker Functionality** ✅ WORKING
-   - Backend tested and verified
-   - Frontend delete button functional
-   - Worker properly removed/deactivated
-
-7. **Dark Theme** ✅ APPLIED
-   - Exact colors from SMS_opus.html
-   - Eye-friendly dark theme
-   - Location: `frontend/src/App.css`
-
-### 📋 Testing Status
-
-**Backend Tests:** ✅ 42/42 Passed
-- Copy Template: 100% functional
-- Export APIs: All working
-- CRUD operations: All working
-- Data persistence: Verified
-
-**UI Tests (Playwright):** ✅ All Passed
-- Add Shift: Working perfectly
-- Delete Shift: Working perfectly
-- Copy Template: Working perfectly
+**Week A vs Week B:**
+- **Week A:** Libby gets 2:3 shared night support with Ace & Grace
+- **Week B:** James gets 2:3 shared night support with Ace & Grace
+- **Why:** Optimizes support resources while meeting NDIS funding requirements
 
 ---
 
-## 🏗️ Architecture
+### 👥 **Admin Tab** (Worker Management)
+**Purpose:** Manage support workers
+
+**Features:**
+- ✅ Worker Cards - View all active workers
+- ✅ Add/Edit/Delete Workers
+- ✅ Availability Management:
+  - Set weekly availability (Monday-Sunday, time ranges)
+  - Add unavailability periods (dates, reasons)
+  - Max hours tracking
+- ✅ Telegram Messaging:
+  - Send messages to individual workers
+  - Broadcast to all workers
+  - Notify coordinators
+  - Shift notifications
+- ✅ Worker Details:
+  - Contact info (email, phone, Telegram ID)
+  - Skills & qualifications
+  - Car availability
+  - Gender (for specific support needs)
+
+**Use Case:** Sarah can only work mornings now. Update her availability and send a Telegram to confirm her new schedule.
+
+---
+
+### ⏱️ **Hours Tab** (NDIS Hours Tracking)
+**Purpose:** Track participant hours by NDIS funding categories
+
+**Features:**
+- ✅ Automatic hour calculation from roster data
+- ✅ NDIS funding categories:
+  - **SCWD** - Self Care Weekday
+  - **CPWD** - Core Participation Weekday
+  - **CSCP** - Core Social Community Participation
+  - **DTAP** - Day Time Activity Participation
+  - **CDSC** - Core Daily Social Capacity
+- ✅ Time bands (Day: 6am-6pm, Evening: 6pm-10pm, Night: 10pm-6am)
+- ✅ Week A/B pattern awareness
+- ✅ Support ratio calculations (1:1, 2:1, 2:3)
+- ✅ CSV export for funding claims
+
+**Use Case:** Generate monthly NDIS reports showing Libby's hour breakdown across all funding categories.
+
+---
+
+## 🏗️ ARCHITECTURE
 
 ### Backend (`/backend`)
 - **Framework:** FastAPI
-- **Database:** MongoDB
+- **Database:** Supabase PostgreSQL
 - **Port:** 8001
 - **Key Files:**
-  - `server.py` - Main API server
-  - `database.py` - MongoDB operations
-  - `models.py` - Data models
-  - `worker_logic.py` - Worker scheduling logic
+  - `server.py` - Main API server (28 endpoints)
+  - `database.py` - Supabase database operations
+  - `models.py` - Pydantic data models
+  - `validation_rules.py` - NDIS compliance validation
+  - `calendar_service.py` - Google Calendar integration
+  - `telegram_service.py` - Telegram bot for worker notifications
+  - `roster_data.json` - Roster data storage (file-based cache)
 
 ### Frontend (`/frontend`)
-- **Framework:** React
-- **Styling:** Tailwind CSS + Custom CSS
-- **Data Fetching:** React Query + Axios
+- **Framework:** React 18
+- **Styling:** Custom CSS with dark theme + Lucide React icons
+- **Data Fetching:** @tanstack/react-query + Axios
 - **Port:** 3000
 - **Key Components:**
-  - `RosteringSystem.js` - Main roster view (Copy Template, Export here)
+  - `RosteringSystem.js` - Main app (tabs, roster management)
   - `ParticipantSchedule.js` - Individual participant schedules
-  - `ShiftForm.js` - Shift creation/editing form
-  - `WorkerManagement.js` - Admin tab for workers
-  - `HoursTracker.js` - Hours tracking tab
+  - `ShiftForm.js` - Shift creation/editing
+  - `WorkerManagement.js` - Admin tab
+  - `HoursTracker.js` - Hours calculation
+  - `CalendarAppointments.js` - Google Calendar integration
+  - `AIChat.js` - AI assistant for roster queries
+  - `Login.js` - Simple authentication
 
 ---
 
-## 🎨 UI/UX Specifications
+## 🔌 API ENDPOINTS
 
-### Color Scheme (from SMS_opus.html)
-- Dark, eye-friendly theme
-- Background: `--bg-primary`, `--bg-secondary`, `--bg-tertiary`
-- Text: `--text-primary`, `--text-secondary`
-- Accent: `--accent-primary`, `--accent-secondary`
-- All colors defined in `frontend/src/App.css`
+### Roster Management
+```
+GET    /api/roster/{roster|planner}      Get roster or planner data
+POST   /api/roster/{roster|planner}      Update roster or planner data
+POST   /api/roster/copy_to_planner       Copy roster → planner (flip week_type)
+POST   /api/roster/transition_to_roster  Move planner → roster (Sunday automation)
+POST   /api/roster/{week_type}/validate  Validate roster for NDIS compliance
+```
 
-### Component Specifications
-- **Worker Cards:** Compact layout, small padding, 4 buttons (Edit, Delete, Availability, Message)
-- **Availability Modal:** 800px wide, includes unavailability section at bottom
-- **Shift Forms:** Inline editing, compact buttons
-- **Navigation:** Tab-based (Week A, Week B, Next A, Next B, Admin, Hours)
+### Workers
+```
+GET    /api/workers                      Get all workers
+POST   /api/workers                      Create worker
+PUT    /api/workers/{worker_id}          Update worker
+DELETE /api/workers/{worker_id}          Delete (deactivate) worker
+GET    /api/workers/{worker_id}/availability       Get availability schedule
+POST   /api/workers/{worker_id}/availability       Save availability schedule
+GET    /api/workers/{worker_id}/unavailability     Get unavailability periods
+POST   /api/workers/{worker_id}/unavailability     Add unavailability period
+DELETE /api/unavailability/{period_id}             Delete unavailability period
+```
 
----
+### Participants & Locations
+```
+GET    /api/participants                 Get all participants
+GET    /api/locations                    Get all locations
+```
 
-## 📝 Known Behaviors
+### Google Calendar
+```
+GET    /api/calendar/appointments        Get calendar appointments
+GET    /api/calendar/auth-url            Get OAuth authorization URL
+POST   /api/calendar/authorize           Complete OAuth authorization
+GET    /api/calendar/status              Get calendar connection status
+```
 
-### Copy Template
-- Shows confirmation dialog
-- Fetches Week A and Week B data
-- Posts to Next A and Next B
-- Shows success alert
-- Reloads page after 500ms
-- **If user doesn't see changes:** Must click "OK" on confirmation dialog and success alert
+### Telegram
+```
+GET    /api/telegram/status              Get bot configuration status
+POST   /api/telegram/send-message        Send message to specific workers
+POST   /api/telegram/broadcast           Broadcast to all workers
+POST   /api/telegram/notify-coordinators Send notification to coordinators
+POST   /api/telegram/shift-notification  Send shift notification
+```
 
-### Hours Tracker
-- Frontend-only calculations
-- CSV upload/download functionality
-- Hour categories: SCWD, CPWD, CSCP, DTAP, CDSC, etc.
-- Backend provides participant and roster data
-
-### Worker Management
-- Unavailability is a subsection INSIDE the availability modal (not a separate button)
-- Single "Save" button saves both availability and unavailability
-- Worker cards use compact layout with small fonts
-
----
-
-## 🔧 Recent Work Summary
-
-### Last Session (Oct 1, 2025)
-1. ✅ Integrated unavailability INTO availability modal
-2. ✅ Made worker cards more compact
-3. ✅ Consolidated save buttons (single "Save" button)
-4. ✅ Comprehensive backend testing (42 tests passed)
-5. ✅ UI functionality testing with Playwright (all passed)
-
-### Persistent Issues from Previous Sessions
-- User reported Copy Template, Add Shift, Delete Shift as "broken"
-- All testing confirmed these features ARE working
-- **Likely cause:** User not clicking confirmation dialogs or testing incorrectly
-- **Current status:** All features verified working by automated tests
+### AI Chat
+```
+POST   /api/chat                         Chat with AI assistant (OpenAI GPT-4)
+```
 
 ---
 
-## 🧪 Testing
+## 📦 DATA STRUCTURE
 
-### Run Backend Tests
+### Roster/Planner Format
+```json
+{
+  "roster": {
+    "week_type": "weekB",
+    "start_date": "2025-09-29",
+    "end_date": "2025-10-05",
+    "data": {
+      "LIB001": {
+        "2025-09-29": [
+          {
+            "id": "L2025092901",
+            "shiftNumber": "L2025092901",
+            "startTime": "06:00",
+            "endTime": "10:00",
+            "duration": "4",
+            "ratio": "2:1",
+            "supportType": "SCWD",
+            "workers": [123, 456],
+            "location": 1,
+            "locked": false
+          }
+        ]
+      }
+    }
+  },
+  "planner": {
+    "week_type": "weekA",
+    "start_date": "",
+    "end_date": "",
+    "data": {}
+  }
+}
+```
+
+### Week Type Logic
+- **`week_type`** field determines which pattern is applied
+- **Week A (`weekA`)**: Libby gets 2:3 shared night support with Ace & Grace
+- **Week B (`weekB`)**: James gets 2:3 shared night support with Ace & Grace
+- **Copy to Planner**: Automatically flips week_type (A→B or B→A)
+- **Hours Tracker**: Reads `week_type` to apply correct calculations
+
+---
+
+## 🎨 UI/UX DESIGN
+
+### Color Palette
+```css
+/* Warm Dark Theme */
+--bg-primary: #2D2B28      /* Warm dark brown */
+--bg-secondary: #3E3B37    /* Lighter warm gray */
+--bg-tertiary: #4A4641     /* Even lighter gray */
+--accent-primary: #D4A574  /* Gold */
+--accent-secondary: #8B9A7B /* Sage green */
+--text-primary: #E8DDD4    /* Cream */
+--text-secondary: #C4A088  /* Muted cream */
+```
+
+### Space-Saving Optimizations
+- **Compact tab row:** All controls (Edit, Export, Week toggle, Calendar controls) in one row
+- **Collapsible calendar:** Hide/show to maximize roster space
+- **Thin borders & padding:** Tasteful but space-efficient
+- **Readable fonts:** 0.9rem for buttons/labels (row height stays same regardless)
+
+---
+
+## ✅ KEY FEATURES
+
+### 1. **Copy to Planner** ✅
+- Copies Roster → Planner
+- **Flips week_type** (A→B or B→A)
+- Updates Ace/Grace locations automatically
+- Preserves shift numbers and locked status
+
+### 2. **Export Functionality** ✅
+- **Payroll CSV:** Worker hours for payroll processing
+- **Shifts CSV:** Detailed shift report for coordination
+
+### 3. **NDIS Validation** ✅
+- Detects double bookings
+- Flags 16+ hour shifts
+- Checks support ratios (e.g., 2:1 shift with only 1 worker)
+- Warns about short breaks (<10h between shifts)
+- Validates weekly max hours
+
+### 4. **Google Calendar Integration** ✅
+- Displays participant appointments
+- OAuth 2.0 authentication
+- Auto-refresh on tab switch
+- Week-based filtering
+
+### 5. **Telegram Notifications** ✅
+- Individual messages
+- Group broadcasts
+- Coordinator notifications
+- Shift reminders
+
+### 6. **AI Assistant** ✅
+- Roster queries (powered by OpenAI GPT-4)
+- Worker availability suggestions
+- Hours calculations
+- Compliance checks
+
+### 7. **Sunday Automation** (Planned)
+- Automatically moves Planner → Roster at 3 AM on Sunday
+- Clears Planner for next planning cycle
+- Preserves week_type
+
+---
+
+## 🔧 RECENT CHANGES (Oct 4, 2025)
+
+### Space-Saving UI Refactor ✅
+1. ✅ Combined tab navigation + action buttons in one row
+2. ✅ Moved calendar controls (Refresh, Hide/Show) to tab row
+3. ✅ Calendar collapses completely when hidden (saves full space)
+4. ✅ Thinner tab underline (3px→1px, gold→sage green)
+5. ✅ Compact calendar headers (name & date on same row)
+6. ✅ Proper spacing (0.75rem between elements, 2rem from tabs)
+7. ✅ Readable font sizes (0.9rem for all controls)
+
+**Result:** ~120-140px of vertical space saved!
+
+### Tab Row Layout ✅
+**Planner Tab:**
+```
+[Roster] [Planner] [Admin] [Hours]    Week: [A] [B] (Libby shared support) | ✏️ Edit 💰 Payroll 📄 Shifts    Updated 23.40 🔄 Refresh 👁️ Hide
+```
+
+**Roster Tab:**
+```
+[Roster] [Planner] [Admin] [Hours]    ✏️ Edit 📋 Copy 💰 Payroll 📄 Shifts    Updated 23.40 🔄 Refresh 👁️ Hide
+```
+
+---
+
+## 🧪 TESTING
+
+### Backend Tests
 ```bash
-python backend_test.py
-python focused_backend_test.py
-python copy_template_focused_test.py
+cd backend
+pytest  # Run all tests
 ```
 
-### Test Results Location
-- `test_result.md` - Comprehensive testing log and agent communication
+**Coverage:**
+- Roster CRUD operations
+- Copy to planner logic
+- Week type flipping
+- Validation rules
+- Export functionality
+
+### Frontend Testing
+- Manual testing in browser
+- Console logging for debugging
+- React Query DevTools for cache inspection
 
 ---
 
-## 📦 Dependencies
+## ⚠️ IMPORTANT BEHAVIORS
 
-### Backend
+### Copy to Planner
+1. **Only available in Roster tab**
+2. **Flips week_type** (if Roster is Week B, Planner becomes Week A)
+3. **Why flip?** Week A and B alternate. If current week is B, next week must be A.
+4. **Ace/Grace locations:** Automatically updated based on new week_type
+
+### Hours Calculation
+1. **Reads `week_type`** from roster/planner data
+2. **Applies correct logic** for shared night support
+3. **Week A:** Libby's night hours = 2:3 shared with Ace & Grace
+4. **Week B:** James's night hours = 2:3 shared with Ace & Grace
+
+### Sunday Automation (To Be Implemented)
+- Runs at 3 AM every Sunday
+- Moves Planner → Roster
+- Clears Planner
+- Ready for next planning cycle
+
+---
+
+## 📚 DOCUMENTATION FILES
+
+**Must Read:**
+- `ROSTER_PLANNER_CONTEXT.md` - Detailed system architecture (READ THIS FIRST!)
+- `plans.txt` - Participant requirements & Week A/B breakdown
+- `HOURS_TRACKING_AUDIT.md` - Hours calculation logic
+
+**Setup Guides:**
+- `DEPLOYMENT.md` - Deploy to Vercel + Google Cloud Run
+- `LOCAL_SETUP.md` - Local development setup
+- `GOOGLE_CALENDAR_SETUP.md` - Calendar OAuth setup
+- `AI_CHAT_SETUP.md` - OpenAI API integration
+
+**Historical Context:**
+- `REFACTOR_COMPLETE.md` - Roster/Planner refactor summary
+- `CURRENT_PLANNING_REFACTOR_PLAN.md` - Refactor planning notes
+
+---
+
+## 🐛 TROUBLESHOOTING
+
+### Frontend Not Loading
+1. Check backend is running: `curl http://localhost:8001/api/`
+2. Check frontend is running: Open http://localhost:3000
+3. Clear browser cache (Cmd+Shift+R on Mac)
+4. Check browser console (F12) for errors
+
+### Data Not Saving
+1. Check backend logs for errors
+2. Check `roster_data.json` file permissions
+3. Verify Supabase connection in backend logs
+
+### Calendar Not Showing
+1. Check `GOOGLE_CALENDAR_SETUP.md` for OAuth setup
+2. Verify credentials in `.env` file
+3. Re-authenticate in UI
+
+### Telegram Not Working
+1. Check `TELEGRAM_BOT_TOKEN` in `.env`
+2. Verify workers have valid Telegram IDs
+3. Check backend logs for Telegram API errors
+
+---
+
+## 🔐 ENVIRONMENT VARIABLES
+
+**Backend (`.env`):**
+```bash
+SUPABASE_URL=your_supabase_url
+SUPABASE_KEY=your_supabase_anon_key
+GOOGLE_CLIENT_ID=your_google_client_id
+GOOGLE_CLIENT_SECRET=your_google_client_secret
+TELEGRAM_BOT_TOKEN=your_telegram_bot_token
+OPENAI_API_KEY=your_openai_api_key
+CORS_ORIGINS=http://localhost:3000,https://your-domain.com
 ```
-fastapi
-uvicorn
-pymongo
-pydantic
-python-dotenv
+
+**Frontend (`.env`):**
+```bash
+REACT_APP_BACKEND_URL=http://localhost:8001
+REACT_APP_GOOGLE_CLIENT_ID=your_google_client_id
 ```
-See `backend/requirements.txt` for full list
-
-### Frontend
-```
-react
-react-query
-axios
-tailwind
-lucide-react
-```
-See `frontend/package.json` for full list
 
 ---
 
-## ⚠️ Important Notes
+## 📈 FUTURE ENHANCEMENTS
 
-1. **Copy Template:** User must click "OK" on both dialogs for it to complete
-2. **Worker Cards:** Already compact - further reduction may impact usability
-3. **Unavailability:** Already integrated in availability modal (lines 460-517 of WorkerManagement.js)
-4. **All core features:** Tested and confirmed working
+### Planned Features
+- [ ] Sunday automation (3 AM transition)
+- [ ] Mobile-responsive design
+- [ ] Shift swap requests (worker-initiated)
+- [ ] Advanced conflict detection (travel time, skill matching)
+- [ ] Push notifications for shift changes
+- [ ] Automated worker allocation (AI-powered)
 
----
-
-## 🎯 Current Pending Tasks
-
-### Optional Improvements
-1. **Worker Cards:** Could be made EVEN MORE compact (currently `padding: 1rem`, `minmax(300px, 1fr)`)
-2. **UI Polish:** Minor visual tweaks if needed
-3. **Additional Features:** If user requests new functionality
-
-### No Critical Bugs
-All reported issues have been tested and verified as working correctly.
+### Under Consideration
+- Multi-tenant support (multiple organizations)
+- Integration with NDIS pricing guides
+- Participant family portal
+- Time clock integration
+- GPS check-in/check-out
 
 ---
 
-## 📞 Support & Debugging
+## 📞 SUPPORT
 
-### If Features Appear Broken
-1. Check browser console (F12) for errors
-2. Verify backend is running on port 8001
-3. Verify frontend is running on port 3000
-4. Check `test_result.md` for latest test results
-5. For Copy Template: Ensure you click "OK" on both dialogs
+### For AI Assistants
+1. **READ FIRST:** `ROSTER_PLANNER_CONTEXT.md`
+2. **Check:** `plans.txt` for Week A/B logic
+3. **Reference:** This README for current state
 
-### Logs
-- Backend logs: Terminal where `python server.py` is running
-- Frontend logs: Browser console (F12)
-- Test logs: `test_result.md`
-
----
-
-## 📚 Additional Files
-
-- `plans.txt` - Participant hour requirements (Week A/B breakdown)
-- `roster_data.json` - Roster data storage
-- `schema.sql`, `schema_basic.sql`, `schema_simple.sql` - Database schemas
-- `hours_tracking.html` - Original hours tracking reference
-- `supabase.sql` - Database setup reference
-- `.emergent/summary.txt` - AI session summary and context
+### For Developers
+- Check backend logs: Terminal where `python server.py` runs
+- Check frontend logs: Browser console (F12)
+- Check database: Supabase dashboard
+- Check roster data: `backend/roster_data.json`
 
 ---
 
-## 🔄 Version History
+**System Status:** ✅ Production Ready
+**Last Major Update:** October 4, 2025 - Space-saving UI refactor
+**Next Milestone:** Sunday automation implementation
 
-- **v1.0** - Initial React/FastAPI/MongoDB implementation
-- **v1.1** - Added Copy Template, Export, Hours Tracker
-- **v1.2** - Applied dark theme from SMS_opus.html
-- **v1.3** - Integrated unavailability into availability modal
-- **v1.4** - Made worker cards compact, consolidated save buttons
-- **Current** - All features tested and verified working (42 backend tests passed, UI tests passed)
-
----
-
-**For AI Assistants:** Read `.emergent/summary.txt` for detailed session context and `test_result.md` for comprehensive testing status.
