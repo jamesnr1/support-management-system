@@ -526,28 +526,7 @@ const RosteringSystem = () => {
         ))}
       </nav>
 
-      {/* Week Pattern Indicator - ONLY on Roster tab */}
-      {activeTab === 'roster' && rosterData.roster?.week_type && (
-        <div style={{
-          position: 'fixed',
-          top: '68px',
-          right: '1.5rem',
-          padding: '0.4rem 0.8rem',
-          background: 'rgba(139, 154, 123, 0.15)',
-          border: '1px solid #8B9A7B',
-          borderRadius: '6px',
-          color: '#8B9A7B',
-          fontSize: '0.85rem',
-          fontWeight: '500',
-          zIndex: 1003,
-          display: 'flex',
-          alignItems: 'center',
-          gap: '0.5rem'
-        }}>
-          <span style={{ fontSize: '1rem' }}>📅</span>
-          Week {rosterData.roster.week_type === 'weekA' ? 'A' : 'B'} Pattern
-        </div>
-      )}
+      {/* Week Pattern removed from Roster - shown in Planner selector instead */}
 
       {/* Fixed Calendar Section - Stays at top while content scrolls */}
       {activeTab !== 'admin' && activeTab !== 'hours' && (
