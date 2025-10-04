@@ -203,7 +203,23 @@ const CalendarAppointments = ({
       Milan: []
     };
 
-    appointments.forEach((apt) => {
+    // Filter appointments based on tab
+    let filteredAppointments = appointments;
+    
+    // For Roster tab, only show appointments from today onwards
+    if (weekType === 'roster') {
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+      
+      filteredAppointments = appointments.filter(apt => {
+        const aptDate = new Date(apt.start || apt.date);
+        aptDate.setHours(0, 0, 0, 0);
+        return aptDate >= today;
+      });
+    }
+    // For Planner and other tabs, show all appointments
+
+    filteredAppointments.forEach((apt) => {
       const target = Object.keys(groups).find((name) => apt.summary?.includes(name));
       if (target) {
         groups[target].push(apt);
@@ -217,7 +233,7 @@ const CalendarAppointments = ({
       { name: 'Grace', appointments: groups.Grace },
       { name: 'Milan', appointments: groups.Milan }
     ];
-  }, [appointments]);
+  }, [appointments, weekType]);
 
   // Calculate dynamic height based on max appointments per person
   const calculateCalendarHeight = useMemo(() => {
@@ -364,29 +380,34 @@ const CalendarAppointments = ({
               {/* Appointments List */}
               <div style={{ padding: '0.5rem', display: 'flex', flexDirection: 'column', gap: '0.3rem' }}>
                 {person.appointments.length > 0 ? (
-                  person.appointments.map((apt, aptIndex) => (
-                    <div key={apt.id || aptIndex} style={{
-                      padding: '0.4rem 0.5rem',
-                      background: '#4A4641',
-                      borderRadius: '4px',
-                      fontSize: '0.8rem',
-                      color: '#E8DDD4',
-                      lineHeight: '1.3',
-                      border: '1px solid #2D2B28' // Use darker border for visibility
-                    }}>
-                      <div style={{ fontSize: '0.8rem' }}>
-                        <span style={{ fontWeight: '600' }}>
-                          {apt.summary?.replace(`${person.name} - `, '').replace(`${person.name}`, '') || 'Untitled'}
-                        </span>
-                        {apt.start && (
-                          <span style={{ fontWeight: 'normal', color: '#D4A574', fontSize: '0.75rem' }}>
-                            {' ('}{new Date(apt.start).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}{') '}
-                            {formatTime(apt.start)}{apt.end ? ` to ${formatTime(apt.end)}` : ''}
+                  person.appointments.map((apt, aptIndex) => {
+                    // Format: "Date, Time - Appointment"
+                    const appointmentTitle = apt.summary?.replace(`${person.name} - `, '').replace(`${person.name}`, '') || 'Untitled';
+                    const dateStr = apt.start ? new Date(apt.start).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) : '';
+                    const timeStr = apt.start ? formatTime(apt.start) : '';
+                    
+                    return (
+                      <div key={apt.id || aptIndex} style={{
+                        padding: '0.4rem 0.5rem',
+                        background: '#4A4641',
+                        borderRadius: '4px',
+                        fontSize: '0.8rem',
+                        color: '#E8DDD4',
+                        lineHeight: '1.3',
+                        border: '1px solid #2D2B28'
+                      }}>
+                        <div style={{ fontSize: '0.8rem' }}>
+                          <span style={{ color: '#D4A574', fontWeight: '500' }}>
+                            {dateStr}, {timeStr}
                           </span>
-                        )}
+                          <span style={{ color: '#E8DDD4', fontWeight: '400' }}>
+                            {' - '}{appointmentTitle}
+                          </span>
+                        </div>
                       </div>
-                    </div>
-                  ))
+                    );
+                  })
+                )
                 ) : (
                   <div style={{ textAlign: 'center', color: '#9AAA89', fontSize: '0.9rem', fontStyle: 'italic', padding: '1rem 0' }}>
                     No appointments
