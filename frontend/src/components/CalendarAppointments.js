@@ -288,85 +288,7 @@ const CalendarAppointments = ({
         </div>
         
         <div style={{ display: 'flex', gap: '0.35rem', alignItems: 'center' }}>
-          {/* Buttons removed - now in main tab row */}
-          <button
-            className="btn btn-secondary"
-            onClick={fetchAppointments}
-            disabled={isLoading}
-              style={{ 
-                padding: '0.4rem 0.75rem',
-                fontSize: '0.85rem',
-                background: editMode ? '#C4915C' : '#3E3B37',
-                color: '#E8DDD4',
-                border: '2px solid ' + (editMode ? '#C4915C' : '#4A4641'),
-                borderRadius: '6px',
-                fontWeight: editMode ? '600' : '500'
-              }}
-            >
-              {editMode ? '❌ Exit Edit' : '✏️ Edit Mode'}
-            </button>
-          )}
-          
-          {(weekType === 'weekA' || weekType === 'weekB') && onCopyToTemplate && (
-            <button
-              className="btn btn-secondary"
-              onClick={onCopyToTemplate}
-              disabled={copyTemplateRunning}
-              title={`Copy to ${weekType === 'weekA' ? 'Next A' : 'Next B'}`}
-              style={{ 
-                padding: '0.4rem 0.75rem',
-                fontSize: '0.85rem',
-                background: copyTemplateRunning ? '#666' : '#3E3B37',
-                color: '#E8DDD4',
-                border: '2px solid #4A4641',
-                borderRadius: '6px',
-                opacity: copyTemplateRunning ? 0.7 : 1
-              }}
-            >
-              {copyTemplateRunning ? '⏳ Copying...' : `📋 Copy to ${weekType === 'weekA' ? 'Next A' : 'Next B'}`}
-            </button>
-          )}
-          
-          {onExportRoster && (
-            <>
-              <button
-                className="btn btn-success"
-                onClick={() => onExportRoster('payroll')}
-                title="Export payroll data"
-                style={{ 
-                  padding: '0.4rem 0.75rem',
-                  fontSize: '0.85rem',
-                  background: '#8B9A7B',
-                  color: 'white',
-                  border: '2px solid #8B9A7B',
-                  borderRadius: '6px',
-                  fontWeight: '500'
-                }}
-              >
-                📊 Export Payroll
-              </button>
-              <button
-                className="btn btn-success"
-                onClick={() => onExportRoster('shifts')}
-                title="Export shift report"
-                style={{ 
-                  padding: '0.4rem 0.75rem',
-                  fontSize: '0.85rem',
-                  background: '#8B9A7B',
-                  color: 'white',
-                  border: '2px solid #8B9A7B',
-                  borderRadius: '6px',
-                  fontWeight: '500'
-                }}
-              >
-                📋 Export Shifts
-              </button>
-            </>
-          )}
-          
-          {/* Divider */}
-          <div style={{ width: '1px', height: '24px', background: '#4A4641', margin: '0 0.25rem' }}></div>
-          
+          {/* Only Refresh and Hide/Show buttons */}
           <button
             className="btn btn-secondary"
             onClick={fetchAppointments}
@@ -374,16 +296,16 @@ const CalendarAppointments = ({
             style={{ 
               display: 'inline-flex', 
               alignItems: 'center', 
-              gap: '0.5rem',
-              padding: '0.4rem 0.75rem',
-              fontSize: '0.85rem',
+              gap: '0.35rem',
+              padding: '0.25rem 0.5rem',
+              fontSize: '0.7rem',
               background: '#3E3B37',
               color: '#E8DDD4',
-              border: '2px solid #4A4641',
-              borderRadius: '6px'
+              border: '1px solid #4A4641',
+              borderRadius: '4px'
             }}
           >
-            <RefreshCw size={14} className={isLoading ? 'spinning' : ''} />
+            <RefreshCw size={12} className={isLoading ? 'spinning' : ''} />
             Refresh
           </button>
           
@@ -391,12 +313,12 @@ const CalendarAppointments = ({
             className="btn btn-secondary"
             onClick={() => setShowAppointments(!showAppointments)}
             style={{ 
-              padding: '0.4rem 0.75rem',
-              fontSize: '0.85rem',
+              padding: '0.25rem 0.5rem',
+              fontSize: '0.7rem',
               background: '#3E3B37',
               color: '#E8DDD4',
-              border: '2px solid #4A4641',
-              borderRadius: '6px'
+              border: '1px solid #4A4641',
+              borderRadius: '4px'
             }}
           >
             {showAppointments ? 'Hide' : 'Show'}
@@ -455,39 +377,39 @@ const CalendarAppointments = ({
               {/* Person Header - Correctly styled to match participant cards */}
               <div style={{
                 background: '#4A4641',
-                padding: '1rem 1.5rem',
+                padding: '0.6rem 1rem',
                 borderBottom: '1px solid #4A4641',
                 color: '#E8DDD4'
               }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                  <span style={{ color: '#D4A574', fontWeight: '600', textShadow: '1px 1px 2px rgba(0,0,0,0.2)' }}>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '0.2rem' }}>
+                  <span style={{ color: '#D4A574', fontWeight: '600', fontSize: '0.9rem', textShadow: '1px 1px 2px rgba(0,0,0,0.2)' }}>
                     {person.name}
                   </span>
-                  <span style={{ fontSize: '0.9rem' }}>
-                    {person.appointments.length} appointments
+                  <span style={{ fontSize: '0.7rem', color: '#8B9A7B' }}>
+                    {start.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })} - {end.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
                   </span>
                 </div>
               </div>
 
               {/* Appointments List */}
-              <div style={{ padding: '1rem', display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+              <div style={{ padding: '0.5rem', display: 'flex', flexDirection: 'column', gap: '0.3rem' }}>
                 {person.appointments.length > 0 ? (
                   person.appointments.map((apt, aptIndex) => (
                     <div key={apt.id || aptIndex} style={{
-                      padding: '0.8rem',
+                      padding: '0.4rem 0.5rem',
                       background: '#4A4641',
                       borderRadius: '4px',
-                      fontSize: '0.95rem',
+                      fontSize: '0.8rem',
                       color: '#E8DDD4',
-                      lineHeight: '1.4',
+                      lineHeight: '1.3',
                       border: '1px solid #2D2B28' // Use darker border for visibility
                     }}>
-                      <div style={{ fontSize: '1rem' }}>
+                      <div style={{ fontSize: '0.8rem' }}>
                         <span style={{ fontWeight: '600' }}>
                           {apt.summary?.replace(`${person.name} - `, '').replace(`${person.name}`, '') || 'Untitled'}
                         </span>
                         {apt.start && (
-                          <span style={{ fontWeight: 'normal', color: '#D4A574' }}>
+                          <span style={{ fontWeight: 'normal', color: '#D4A574', fontSize: '0.75rem' }}>
                             {' ('}{new Date(apt.start).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}{') '}
                             {formatTime(apt.start)}{apt.end ? ` to ${formatTime(apt.end)}` : ''}
                           </span>
