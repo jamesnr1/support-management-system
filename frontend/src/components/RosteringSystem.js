@@ -38,51 +38,6 @@ const RosteringSystem = () => {
   );
   const queryClient = useQueryClient();
 
-  // Calculate week date ranges for planner dropdown (based on roster week)
-  const plannerWeekRanges = useMemo(() => {
-    const formatDateRange = (startDate) => {
-      const start = new Date(startDate);
-      const end = new Date(start);
-      end.setDate(start.getDate() + 6);
-      
-      const formatDate = (d) => {
-        const month = d.toLocaleDateString('en-US', { month: 'short' });
-        const day = d.getDate();
-        return `${month} ${day}`;
-      };
-      
-      return `${formatDate(start)} - ${formatDate(end)}`;
-    };
-
-    // Get the roster's start date, or default to current Monday
-    let rosterStartDate = rosterData?.roster?.start_date;
-    
-    if (!rosterStartDate) {
-      // Fallback: calculate current Monday
-      const today = new Date();
-      const day = today.getDay();
-      const diff = today.getDate() - day + (day === 0 ? -6 : 1);
-      const monday = new Date(today);
-      monday.setDate(diff);
-      rosterStartDate = monday.toISOString().split('T')[0];
-    }
-
-    // Base all calculations on roster's week
-    const rosterMonday = new Date(rosterStartDate);
-    
-    const nextMonday = new Date(rosterMonday);
-    nextMonday.setDate(rosterMonday.getDate() + 7);
-    
-    const afterMonday = new Date(rosterMonday);
-    afterMonday.setDate(rosterMonday.getDate() + 14);
-
-    return {
-      current: formatDateRange(rosterMonday),
-      next: formatDateRange(nextMonday),
-      after: formatDateRange(afterMonday)
-    };
-  }, [rosterData?.roster?.start_date]);
-
   // Save activeTab to localStorage whenever it changes
   useEffect(() => {
     localStorage.setItem('activeTab', activeTab);
@@ -261,6 +216,51 @@ const RosteringSystem = () => {
       };
     }
   });
+
+  // Calculate week date ranges for planner dropdown (based on roster week)
+  const plannerWeekRanges = useMemo(() => {
+    const formatDateRange = (startDate) => {
+      const start = new Date(startDate);
+      const end = new Date(start);
+      end.setDate(start.getDate() + 6);
+      
+      const formatDate = (d) => {
+        const month = d.toLocaleDateString('en-US', { month: 'short' });
+        const day = d.getDate();
+        return `${month} ${day}`;
+      };
+      
+      return `${formatDate(start)} - ${formatDate(end)}`;
+    };
+
+    // Get the roster's start date, or default to current Monday
+    let rosterStartDate = rosterData?.roster?.start_date;
+    
+    if (!rosterStartDate) {
+      // Fallback: calculate current Monday
+      const today = new Date();
+      const day = today.getDay();
+      const diff = today.getDate() - day + (day === 0 ? -6 : 1);
+      const monday = new Date(today);
+      monday.setDate(diff);
+      rosterStartDate = monday.toISOString().split('T')[0];
+    }
+
+    // Base all calculations on roster's week
+    const rosterMonday = new Date(rosterStartDate);
+    
+    const nextMonday = new Date(rosterMonday);
+    nextMonday.setDate(rosterMonday.getDate() + 7);
+    
+    const afterMonday = new Date(rosterMonday);
+    afterMonday.setDate(rosterMonday.getDate() + 14);
+
+    return {
+      current: formatDateRange(rosterMonday),
+      next: formatDateRange(nextMonday),
+      after: formatDateRange(afterMonday)
+    };
+  }, [rosterData?.roster?.start_date]);
 
   // Update roster mutation
   const updateRosterMutation = useMutation({
