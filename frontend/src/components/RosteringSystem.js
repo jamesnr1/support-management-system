@@ -409,6 +409,35 @@ const RosteringSystem = () => {
     }
   };
 
+  // Toggle Week Pattern in Planner
+  const toggleWeekPattern = async (newWeekType) => {
+    if (activeTab !== 'planner') return;
+    
+    try {
+      const currentPlanner = rosterData.planner;
+      if (!currentPlanner) {
+        toast.error('No planner data to update');
+        return;
+      }
+
+      // Update the week_type
+      const updatedPlanner = {
+        ...currentPlanner,
+        week_type: newWeekType
+      };
+
+      // Save to backend
+      await axios.post(`${API}/roster/planner`, updatedPlanner);
+      
+      // Refetch data
+      await queryClient.refetchQueries({ queryKey: ['rosterData'], type: 'active' });
+      
+      toast.success(`Switched to Week ${newWeekType === 'weekA' ? 'A' : 'B'} Pattern`);
+    } catch (error) {
+      toast.error(`Failed to change week pattern: ${error.message}`);
+    }
+  };
+
   // Show loading only if participants aren't ready - we can proceed with just participants
   if (participantsLoading) {
     return (
@@ -544,6 +573,61 @@ const RosteringSystem = () => {
             height: '100%',
             padding: '0.75rem 1.5rem'
           }}>
+            {/* Week Pattern Toggle for Planner */}
+            {activeTab === 'planner' && rosterData.planner?.week_type && (
+              <div style={{
+                marginBottom: '0.75rem',
+                padding: '0.75rem',
+                background: 'rgba(74, 70, 65, 0.3)',
+                borderRadius: '8px',
+                border: '1px solid #4A4641',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '1rem'
+              }}>
+                <span style={{ color: '#E8DDD4', fontSize: '0.9rem', fontWeight: '500' }}>
+                  Week Pattern:
+                </span>
+                <div style={{ display: 'flex', gap: '0.5rem' }}>
+                  <button
+                    className={`btn ${rosterData.planner.week_type === 'weekA' ? 'btn-success' : 'btn-secondary'}`}
+                    onClick={() => toggleWeekPattern('weekA')}
+                    style={{
+                      padding: '0.4rem 1rem',
+                      fontSize: '0.85rem',
+                      background: rosterData.planner.week_type === 'weekA' ? '#8B9A7B' : '#3E3B37',
+                      color: '#E8DDD4',
+                      border: '2px solid ' + (rosterData.planner.week_type === 'weekA' ? '#8B9A7B' : '#4A4641'),
+                      borderRadius: '6px',
+                      fontWeight: rosterData.planner.week_type === 'weekA' ? '600' : '500'
+                    }}
+                  >
+                    Week A
+                  </button>
+                  <button
+                    className={`btn ${rosterData.planner.week_type === 'weekB' ? 'btn-success' : 'btn-secondary'}`}
+                    onClick={() => toggleWeekPattern('weekB')}
+                    style={{
+                      padding: '0.4rem 1rem',
+                      fontSize: '0.85rem',
+                      background: rosterData.planner.week_type === 'weekB' ? '#8B9A7B' : '#3E3B37',
+                      color: '#E8DDD4',
+                      border: '2px solid ' + (rosterData.planner.week_type === 'weekB' ? '#8B9A7B' : '#4A4641'),
+                      borderRadius: '6px',
+                      fontWeight: rosterData.planner.week_type === 'weekB' ? '600' : '500'
+                    }}
+                  >
+                    Week B
+                  </button>
+                </div>
+                <span style={{ color: '#8B9A7B', fontSize: '0.8rem', marginLeft: 'auto' }}>
+                  {rosterData.planner.week_type === 'weekA' 
+                    ? 'James gets shared night support with Ace & Grace' 
+                    : 'Libby gets shared night support with Ace & Grace'}
+                </span>
+              </div>
+            )}
+
             <CalendarAppointments 
               weekType={activeTab} 
               onHeightChange={(height) => setCalendarHeight(height)}
