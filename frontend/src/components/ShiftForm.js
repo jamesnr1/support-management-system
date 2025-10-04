@@ -643,7 +643,7 @@ const ShiftForm = ({
   // Get available workers - use useMemo to avoid initialization issues
   const availableWorkers = useMemo(() => {
     return getAvailableWorkers(formData, workers);
-  }, [formData, workers]);
+  }, [formData, workers, unavailableWorkers, date]); // CRITICAL: Must include unavailableWorkers!
 
   // Fetch workers for the specific shift date
   useEffect(() => {
