@@ -4,32 +4,37 @@ import { Users, Edit, Trash2, Plus, Lock, Unlock } from 'lucide-react';
 import ShiftForm from './ShiftForm';
 
 // This function is now outside the component, so it won't be recreated on every render.
-const getWeekDates = (weekType) => {
+const getWeekDates = (weekType, customStartDate = null) => {
   const dates = [];
   let startDate;
 
-  // Define static start dates for each week type to align with the backend.
-  // NOTE: JavaScript's Date constructor month is 0-indexed (0=Jan, 8=Sep, 9=Oct)
-  // The backend defines weeks starting on Sunday.
-  switch (weekType) {
-    case 'weekA':
-      startDate = new Date('2025-09-29T00:00:00'); // Monday, Sep 29, 2025 (CURRENT WEEK)
-      break;
-    case 'weekB':
-      startDate = new Date('2025-10-06T00:00:00');  // Monday, Oct 6, 2025 (NEXT WEEK)
-      break;
-    case 'nextA':
-      startDate = new Date('2025-10-06T00:00:00'); // Monday, Oct 06, 2025
-      break;
-    case 'nextB':
-      startDate = new Date('2025-10-13T00:00:00'); // Monday, Oct 13, 2025
-      break;
-    default:
-      // Fallback for safety, though it should not be reached.
-      const today = new Date();
-      const currentDay = today.getDay(); // 0 is Sunday
-      startDate = new Date(today);
-      startDate.setDate(today.getDate() - currentDay);
+  // If a custom start date is provided (from planner dropdown), use that
+  if (customStartDate) {
+    startDate = new Date(customStartDate);
+  } else {
+    // Define static start dates for each week type to align with the backend.
+    // NOTE: JavaScript's Date constructor month is 0-indexed (0=Jan, 8=Sep, 9=Oct)
+    // The backend defines weeks starting on Sunday.
+    switch (weekType) {
+      case 'weekA':
+        startDate = new Date('2025-09-29T00:00:00'); // Monday, Sep 29, 2025 (CURRENT WEEK)
+        break;
+      case 'weekB':
+        startDate = new Date('2025-10-06T00:00:00');  // Monday, Oct 6, 2025 (NEXT WEEK)
+        break;
+      case 'nextA':
+        startDate = new Date('2025-10-06T00:00:00'); // Monday, Oct 06, 2025
+        break;
+      case 'nextB':
+        startDate = new Date('2025-10-13T00:00:00'); // Monday, Oct 13, 2025
+        break;
+      default:
+        // Fallback for safety, though it should not be reached.
+        const today = new Date();
+        const currentDay = today.getDay(); // 0 is Sunday
+        startDate = new Date(today);
+        startDate.setDate(today.getDate() - currentDay);
+    }
   }
   
   for (let i = 0; i < 7; i++) {
@@ -53,7 +58,8 @@ const getWeekDates = (weekType) => {
 
 const ParticipantSchedule = ({ 
   participant, 
-  weekType, 
+  weekType,
+  weekStartDate,  // Optional: Custom start date for planner weeks
   rosterData,  // This participant's shifts only
   fullRosterData,  // ALL participants' shifts (for ShiftForm worker hours calculation)
   workers, 
@@ -72,7 +78,7 @@ const ParticipantSchedule = ({
   const participantShifts = rosterData || {};
 
   // useMemo prevents this expensive calculation from running on every single re-render.
-  const weekDates = useMemo(() => getWeekDates(weekType), [weekType]);
+  const weekDates = useMemo(() => getWeekDates(weekType, weekStartDate), [weekType, weekStartDate]);
 
   const handleAddShift = (date) => {
     setSelectedDate(date);

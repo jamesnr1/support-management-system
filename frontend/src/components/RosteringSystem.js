@@ -217,17 +217,11 @@ const RosteringSystem = () => {
     }
   });
 
-  // Calculate week date ranges for planner dropdown (based on roster week)
+  // Calculate week date ranges for planner dropdown (based on TODAY)
   const plannerWeekRanges = useMemo(() => {
-    // Parse date string as LOCAL date (avoid timezone shifts)
-    const parseLocalDate = (dateStr) => {
-      const [year, month, day] = dateStr.split('-').map(Number);
-      return new Date(year, month - 1, day); // month is 0-indexed
-    };
-
-    const formatDateRange = (startDate) => {
-      const start = new Date(startDate);
-      const end = new Date(start);
+    const formatDateRange = (monday) => {
+      const start = new Date(monday);
+      const end = new Date(monday);
       end.setDate(start.getDate() + 6);
       
       const formatDate = (d) => {
@@ -239,34 +233,38 @@ const RosteringSystem = () => {
       return `${formatDate(start)} - ${formatDate(end)}`;
     };
 
-    // Get the roster's start date, or default to current Monday
-    let rosterStartDate = rosterData?.roster?.start_date;
+    // Get Monday of current week using milliseconds (more reliable)
+    const today = new Date();
+    const dayOfWeek = today.getDay(); // 0=Sunday, 1=Monday, ..., 6=Saturday
+    const daysFromMonday = dayOfWeek === 0 ? 6 : dayOfWeek - 1; // Days to subtract to get to Monday
     
-    if (!rosterStartDate) {
-      // Fallback: calculate current Monday
-      const today = new Date();
-      const day = today.getDay();
-      const diff = today.getDate() - day + (day === 0 ? -6 : 1);
-      const monday = new Date(today);
-      monday.setDate(diff);
-      rosterStartDate = `${monday.getFullYear()}-${String(monday.getMonth() + 1).padStart(2, '0')}-${String(monday.getDate()).padStart(2, '0')}`;
-    }
-
-    // Base all calculations on roster's week - parse as LOCAL date
-    const rosterMonday = parseLocalDate(rosterStartDate);
+    const currentMonday = new Date(today);
+    currentMonday.setDate(today.getDate() - daysFromMonday);
+    currentMonday.setHours(0, 0, 0, 0);
     
-    const nextMonday = new Date(rosterMonday);
-    nextMonday.setDate(rosterMonday.getDate() + 7);
+    const nextMonday = new Date(currentMonday);
+    nextMonday.setDate(currentMonday.getDate() + 7);
     
-    const afterMonday = new Date(rosterMonday);
-    afterMonday.setDate(rosterMonday.getDate() + 14);
+    const afterMonday = new Date(currentMonday);
+    afterMonday.setDate(currentMonday.getDate() + 14);
 
     return {
-      current: formatDateRange(rosterMonday),
-      next: formatDateRange(nextMonday),
-      after: formatDateRange(afterMonday)
+      current: { label: formatDateRange(currentMonday), startDate: currentMonday },
+      next: { label: formatDateRange(nextMonday), startDate: nextMonday },
+      after: { label: formatDateRange(afterMonday), startDate: afterMonday }
     };
-  }, [rosterData?.roster?.start_date]);
+  }, []); // Empty deps - recalculates on component mount
+  
+  // Get the actual start date for the selected planner week
+  const plannerWeekStartDate = useMemo(() => {
+    const weekData = {
+      'current': plannerWeekRanges.current?.startDate,
+      'next': plannerWeekRanges.next?.startDate,
+      'after': plannerWeekRanges.after?.startDate
+    }[selectedPlannerWeek];
+    
+    return weekData || new Date();
+  }, [selectedPlannerWeek, plannerWeekRanges]);
 
   // Update roster mutation
   const updateRosterMutation = useMutation({
@@ -670,9 +668,9 @@ const RosteringSystem = () => {
                     fontWeight: '500'
                   }}
                 >
-                  <option value="current">Current Week ({plannerWeekRanges.current})</option>
-                  <option value="next">Next Week ({plannerWeekRanges.next})</option>
-                  <option value="after">Week After ({plannerWeekRanges.after})</option>
+                  <option value="current">Current Week ({plannerWeekRanges.current?.label})</option>
+                  <option value="next">Next Week ({plannerWeekRanges.next?.label})</option>
+                  <option value="after">Week After ({plannerWeekRanges.after?.label})</option>
                 </select>
                 <span style={{ margin: '0 0.75rem', color: '#4A4641' }}>|</span>
               </>
@@ -931,6 +929,7 @@ const RosteringSystem = () => {
                     key={participant.id}
                     participant={participant}
                     weekType={rosterData[activeTab]?.week_type || 'weekA'}
+                    weekStartDate={activeTab === 'planner' ? plannerWeekStartDate : null}  // Pass calculated start date for planner
                     rosterData={rosterData[activeTab]?.data?.[participant.code] || {}}
                     fullRosterData={rosterData[activeTab]?.data || {}}  // Full roster for ShiftForm hours calculation
                     workers={workers || []} // Ensure it's always an array
