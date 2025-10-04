@@ -43,7 +43,7 @@ const ShiftForm = ({
       
       // Iterate through all dates for this participant
       Object.keys(participantData).forEach(date => {
-        const shifts = participantData[date] || [];
+        const shifts = Array.isArray(participantData[date]) ? participantData[date] : [];
         
         // Check each shift for this worker
         shifts.forEach(shift => {
@@ -451,7 +451,7 @@ const ShiftForm = ({
         Object.keys(participantData).forEach(shiftDate => {
           const shiftDateObj = new Date(shiftDate);
           if (shiftDateObj >= startOfWeek && shiftDateObj < endOfWeek) {
-            const shifts = participantData[shiftDate];
+            const shifts = Array.isArray(participantData[shiftDate]) ? participantData[shiftDate] : [];
             shifts.forEach(shift => {
               const hasWorker = Array.isArray(shift.workers) && shift.workers.some(w => String(w) === String(workerId));
               if (hasWorker) {
@@ -483,7 +483,7 @@ const ShiftForm = ({
         const participantData = rosterData[participantCode];
         if (participantData) {
           Object.keys(participantData).forEach(shiftDate => {
-            const shifts = participantData[shiftDate];
+            const shifts = Array.isArray(participantData[shiftDate]) ? participantData[shiftDate] : [];
             shifts.forEach(existingShift => {
               const hasWorker = Array.isArray(existingShift.workers) && existingShift.workers.some(w => String(w) === String(workerId));
               if (hasWorker) {
