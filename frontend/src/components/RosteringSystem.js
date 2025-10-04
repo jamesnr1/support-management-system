@@ -541,14 +541,14 @@ const RosteringSystem = () => {
             {/* Week Pattern Selector for Planner */}
             {activeTab === 'planner' && rosterData.planner?.week_type && (
               <>
-                <span style={{ color: '#8B9A7B', fontSize: '0.85rem', marginRight: '0.3rem' }}>
+                <span style={{ color: '#8B9A7B', fontSize: '0.9rem', marginRight: '0.4rem' }}>
                   Week:
                 </span>
                 <button
                   onClick={() => toggleWeekPattern('weekA')}
                   style={{
-                    padding: '0.35rem 0.7rem',
-                    fontSize: '0.8rem',
+                    padding: '0.35rem 0.75rem',
+                    fontSize: '0.9rem',
                     background: rosterData.planner.week_type === 'weekA' ? '#8B9A7B' : '#3E3B37',
                     color: '#E8DDD4',
                     border: '1px solid ' + (rosterData.planner.week_type === 'weekA' ? '#8B9A7B' : '#4A4641'),
@@ -562,8 +562,8 @@ const RosteringSystem = () => {
                 <button
                   onClick={() => toggleWeekPattern('weekB')}
                   style={{
-                    padding: '0.35rem 0.7rem',
-                    fontSize: '0.8rem',
+                    padding: '0.35rem 0.75rem',
+                    fontSize: '0.9rem',
                     background: rosterData.planner.week_type === 'weekB' ? '#8B9A7B' : '#3E3B37',
                     color: '#E8DDD4',
                     border: '1px solid ' + (rosterData.planner.week_type === 'weekB' ? '#8B9A7B' : '#4A4641'),
@@ -574,7 +574,7 @@ const RosteringSystem = () => {
                 >
                   B
                 </button>
-                <span style={{ color: '#8B9A7B', fontSize: '0.85rem', marginLeft: '0.5rem' }}>
+                <span style={{ color: '#8B9A7B', fontSize: '0.9rem', marginLeft: '0.5rem' }}>
                   {rosterData.planner.week_type === 'weekA' 
                     ? '(Libby shared support)' 
                     : '(James shared support)'}
@@ -655,7 +655,7 @@ const RosteringSystem = () => {
         {/* Calendar Controls (Roster/Planner only) */}
         {(activeTab === 'roster' || activeTab === 'planner') && (
           <div style={{ display: 'flex', gap: '0.6rem', alignItems: 'center', marginLeft: 'auto' }}>
-            <span style={{ fontSize: '0.75rem', color: '#8B9A7B', marginRight: '0.3rem' }}>
+            <span style={{ fontSize: '0.85rem', color: '#8B9A7B', marginRight: '0.3rem' }}>
               {lastCalendarUpdate && `Updated ${lastCalendarUpdate}`}
             </span>
             <button
@@ -663,9 +663,9 @@ const RosteringSystem = () => {
               style={{
                 display: 'inline-flex',
                 alignItems: 'center',
-                gap: '0.3rem',
-                padding: '0.35rem 0.7rem',
-                fontSize: '0.8rem',
+                gap: '0.35rem',
+                padding: '0.35rem 0.75rem',
+                fontSize: '0.9rem',
                 background: '#3E3B37',
                 color: '#E8DDD4',
                 border: '1px solid #4A4641',
@@ -674,7 +674,7 @@ const RosteringSystem = () => {
               }}
               title="Refresh calendar"
             >
-              <RefreshCw size={12} />
+              <RefreshCw size={14} />
               Refresh
             </button>
             <button
@@ -682,9 +682,9 @@ const RosteringSystem = () => {
               style={{
                 display: 'inline-flex',
                 alignItems: 'center',
-                gap: '0.3rem',
-                padding: '0.35rem 0.7rem',
-                fontSize: '0.8rem',
+                gap: '0.35rem',
+                padding: '0.35rem 0.75rem',
+                fontSize: '0.9rem',
                 background: '#3E3B37',
                 color: '#E8DDD4',
                 border: '1px solid #4A4641',
