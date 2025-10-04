@@ -135,7 +135,12 @@ const ShiftForm = ({
   // Fetch unavailability status for all workers
   React.useEffect(() => {
     const fetchUnavailability = async () => {
-      if (!workers || workers.length === 0 || !date) return;
+      if (!workers || workers.length === 0 || !date) {
+        console.log('⏭️ Skipping unavailability fetch:', { workersCount: workers?.length, date });
+        return;
+      }
+      
+      console.log('🔄 Starting unavailability fetch for', workers.length, 'workers on', date);
       
       try {
         const shiftDate = new Date(date);
@@ -160,13 +165,14 @@ const ShiftForm = ({
             
             if (isUnavailable) {
               unavailableIds.add(worker.id);
-              console.log(`🔴 Worker ${worker.full_name} is unavailable on ${date}`);
+              console.log(`🔴 Worker ${worker.full_name} (ID: ${worker.id}) is unavailable on ${date}`);
             }
           } catch (error) {
             console.error(`Error checking unavailability for ${worker.full_name}:`, error);
           }
         }));
         
+        console.log('✅ Unavailability fetch complete. Unavailable workers:', Array.from(unavailableIds));
         setUnavailableWorkers(unavailableIds);
       } catch (error) {
         console.error('Error fetching unavailability:', error);
@@ -642,7 +648,16 @@ const ShiftForm = ({
 
   // Get available workers - use useMemo to avoid initialization issues
   const availableWorkers = useMemo(() => {
-    return getAvailableWorkers(formData, workers);
+    console.log('🔍 availableWorkers useMemo recalculating:', {
+      workersCount: workers?.length,
+      unavailableCount: unavailableWorkers.size,
+      unavailableIds: Array.from(unavailableWorkers),
+      date,
+      formDataTime: `${formData?.startTime}-${formData?.endTime}`
+    });
+    const result = getAvailableWorkers(formData, workers);
+    console.log('✅ availableWorkers result:', result.length, 'workers available');
+    return result;
   }, [formData, workers, unavailableWorkers, date]); // CRITICAL: Must include unavailableWorkers!
 
   // Fetch workers for the specific shift date
