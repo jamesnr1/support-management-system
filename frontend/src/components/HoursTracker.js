@@ -98,17 +98,14 @@ const HoursTracker = (props) => {
     // Fetch roster data for all weeks
     const rosterData = {};
     try {
-      const [weekA, weekB, nextA, nextB] = await Promise.all([
-        axios.get(`${API}/roster/weekA`),
-        axios.get(`${API}/roster/weekB`),
-        axios.get(`${API}/roster/nextA`),
-        axios.get(`${API}/roster/nextB`)
+      const [roster, planner] = await Promise.all([
+        axios.get(`${API}/roster/roster`),
+        axios.get(`${API}/roster/planner`)
       ]);
       
-      rosterData.weekA = weekA.data;
-      rosterData.weekB = weekB.data;
-      rosterData.nextA = nextA.data;
-      rosterData.nextB = nextB.data;
+      // Map to old structure for compatibility (weekA/weekB are based on week_type)
+      rosterData.weekA = roster.data.week_type === 'weekA' ? roster.data.data : planner.data.data;
+      rosterData.weekB = roster.data.week_type === 'weekB' ? roster.data.data : planner.data.data;
     } catch (error) {
       console.error('Error fetching roster data:', error);
     }

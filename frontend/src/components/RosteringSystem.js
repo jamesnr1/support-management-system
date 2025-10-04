@@ -113,22 +113,8 @@ const RosteringSystem = () => {
     try {
       console.log('Performing week transition at 3am Monday');
       
-      // Next A becomes Week A, Next B becomes Week B
-      const [nextARes, nextBRes] = await Promise.all([
-        axios.get(`${API}/roster/nextA`),
-        axios.get(`${API}/roster/nextB`)
-      ]);
-      
-      const nextAData = nextARes.data || {};
-      const nextBData = nextBRes.data || {};
-      
-      // Move Next A/B to Week A/B and clear Next A/B
-      await Promise.all([
-        axios.post(`${API}/roster/weekA`, nextAData),
-        axios.post(`${API}/roster/weekB`, nextBData),
-        axios.post(`${API}/roster/nextA`, {}),
-        axios.post(`${API}/roster/nextB`, {})
-      ]);
+      // Call backend to transition planner to roster
+      await axios.post(`${API}/roster/transition_to_roster`);
       
       // Update last transition timestamp
       localStorage.setItem('lastWeekTransition', new Date().toISOString());
@@ -136,7 +122,7 @@ const RosteringSystem = () => {
       // Refresh data
       queryClient.invalidateQueries(['rosterData']);
       
-      console.log('Week transition completed: Next A→Week A, Next B→Week B, Next A/B cleared');
+      console.log('Week transition completed: Planner → Roster');
     } catch (error) {
       console.error('Error during week transition:', error);
     }
@@ -400,111 +386,21 @@ const RosteringSystem = () => {
     }
 
     setCopyTemplateRunning(true);
-    const toastId = toast.loading(`Copying ${sourceWeek} to ${destWeek}...`);
+    const toastId = toast.loading(`Copying Roster to Planner...`);
 
     try {
-      // 2. Fetch source data from the API
-      const response = await fetch(`${API}/roster/${sourceWeek}`);
-      if (!response.ok) {
-        const errorText = await response.text();
-        throw new Error(`Server error: ${response.status} - ${errorText}`);
-      }
-      const sourceData = await response.json();
-
-      if (!sourceData || Object.keys(sourceData).length === 0) {
-        throw new Error(`No data found in ${sourceWeek} to copy.`);
-      }
-
-      // 3. Remap dates to destination week + regenerate shift numbers (timezone-safe)
-      // Map static starts aligned with ParticipantSchedule.js (as YYYY-MM-DD strings)
-      const weekStartMap = {
-        weekA: '2025-09-22',
-        weekB: '2025-09-29',
-        nextA: '2025-10-06',
-        nextB: '2025-10-13'
-      };
+      // Call backend endpoint to copy roster to planner (with week_type flip)
+      const response = await axios.post(`${API}/roster/copy_to_planner`, {});
       
-      // Participant code to initial mapping
-      const participantInitials = {
-        'JAM001': 'J',
-        'LIB001': 'L',
-        'ACE001': 'A',
-        'GRA001': 'G',
-        'MIL001': 'M'
-      };
-
-      // Calculate day offset between weeks
-      const sourceStart = new Date(weekStartMap[sourceWeek] + 'T00:00:00Z');
-      const destStart = new Date(weekStartMap[destWeek] + 'T00:00:00Z');
-      const offsetDays = Math.round((destStart - sourceStart) / (24 * 60 * 60 * 1000));
-
-      const remappedData = {};
-      Object.entries(sourceData).forEach(([participantCode, datesObj]) => {
-        const newDatesObj = {};
-        Object.entries(datesObj || {}).forEach(([dateKey, shifts]) => {
-          // Parse date in UTC to avoid timezone shifts
-          const [year, month, day] = dateKey.split('-').map(Number);
-          const sourceDate = new Date(Date.UTC(year, month - 1, day));
-          const destDate = new Date(sourceDate.getTime() + offsetDays * 24 * 60 * 60 * 1000);
-          
-          // Format as YYYY-MM-DD in UTC
-          const newDateKey = destDate.toISOString().split('T')[0];
-          
-          // Sort shifts by start time before assigning serial numbers
-          const sortedShifts = [...(shifts || [])].sort((a, b) => {
-            const timeA = a.startTime || '00:00';
-            const timeB = b.startTime || '00:00';
-            return timeA.localeCompare(timeB);
-          });
-          
-          // Regenerate shift numbers based on new date
-          const participantInitial = participantInitials[participantCode] || participantCode[0];
-          const dateStr = newDateKey.replace(/-/g, ''); // YYYYMMDD
-          
-          newDatesObj[newDateKey] = sortedShifts.map((shift, index) => {
-            const serialNum = String(index + 1).padStart(2, '0');
-            const newShiftNumber = `${participantInitial}${dateStr}${serialNum}`;
-            
-            return {
-              ...shift,
-              date: newDateKey,
-              id: newShiftNumber,
-              shiftNumber: newShiftNumber,
-              // Preserve locked status
-              locked: shift.locked || false
-            };
-          });
-        });
-        remappedData[participantCode] = newDatesObj;
-      });
-
-      // 4. Post the remapped data to the destination
-      const postResponse = await fetch(`${API}/roster/${destWeek}`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(remappedData)
-      });
-
-      if (!postResponse.ok) {
-        const errorText = await postResponse.text();
-        throw new Error(`Failed to save copied data: ${postResponse.status} - ${errorText}`);
-      }
-
-      // 4. Success - update cache immediately and then ensure refetch completes before switching
-      toast.success(`Copied ${sourceWeek} to ${destWeek} successfully!`, { id: toastId });
-
-      // Optimistically set destination week in cache so UI has data instantly
-      queryClient.setQueryData(['rosterData'], (prev) => {
-        const prevData = prev || {};
-        return { ...prevData, [destWeek]: remappedData };
-      });
-
-      // Ensure the fresh data is fetched from backend and written to cache
+      // Success - refetch data and switch to planner tab
+      toast.success('Copied Roster to Planner successfully!', { id: toastId });
+      
+      // Refetch roster data to get the updated planner
       await queryClient.refetchQueries({ queryKey: ['rosterData'], type: 'active' });
-
-      // Now switch to the destination tab - data is guaranteed present
-      setActiveTab(destWeek);
-      localStorage.setItem('activeTab', destWeek);
+      
+      // Switch to planner tab
+      setActiveTab('planner');
+      localStorage.setItem('activeTab', 'planner');
 
     } catch (error) {
       toast.error(`Copy failed: ${error.message}`, { id: toastId });
@@ -681,7 +577,7 @@ const RosteringSystem = () => {
                     key={participant.id}
                     participant={participant}
                     weekType={activeTab}
-                    rosterData={rosterData[activeTab]?.[participant.code] || {}}
+                    rosterData={rosterData[activeTab]?.data?.[participant.code] || {}}
                     workers={workers || []} // Ensure it's always an array
                     locations={locations || []} // Ensure it's always an array
                     editMode={editMode}

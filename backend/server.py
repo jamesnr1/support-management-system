@@ -308,6 +308,72 @@ async def update_roster(week_type: str, roster_data: Dict[str, Any]):
         logger.error(f"Error updating {week_type} roster: {e}")
         raise HTTPException(status_code=500, detail=f"Failed to update roster: {str(e)}")
 
+@api_router.post("/roster/copy_to_planner")
+async def copy_to_planner():
+    """Copy roster to planner with week_type flip"""
+    try:
+        roster = ROSTER_DATA.get("roster", {})
+        if not roster or not roster.get("data"):
+            raise HTTPException(status_code=400, detail="No roster data to copy")
+        
+        # Get current week_type and flip it
+        current_week_type = roster.get("week_type", "weekA")
+        new_week_type = "weekB" if current_week_type == "weekA" else "weekA"
+        
+        # Deep copy the data
+        import copy
+        planner_data = copy.deepcopy(roster.get("data", {}))
+        
+        # Create planner with flipped week_type
+        ROSTER_DATA["planner"] = {
+            "week_type": new_week_type,
+            "start_date": "",  # Will be set when user selects dates
+            "end_date": "",
+            "data": planner_data
+        }
+        
+        save_roster_data()
+        logger.info(f"Copied roster ({current_week_type}) to planner ({new_week_type})")
+        return {"message": "Copied to planner successfully", "flipped_to": new_week_type}
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error copying to planner: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+@api_router.post("/roster/transition_to_roster")
+async def transition_to_roster():
+    """Move planner to roster (Sunday automation)"""
+    try:
+        planner = ROSTER_DATA.get("planner", {})
+        if not planner or not planner.get("data"):
+            raise HTTPException(status_code=400, detail="No planner data to transition")
+        
+        # Move planner to roster (keeping the week_type)
+        ROSTER_DATA["roster"] = {
+            "week_type": planner.get("week_type", "weekA"),
+            "start_date": planner.get("start_date", ""),
+            "end_date": planner.get("end_date", ""),
+            "data": planner.get("data", {})
+        }
+        
+        # Clear planner
+        ROSTER_DATA["planner"] = {
+            "week_type": "weekA",  # Default for empty planner
+            "start_date": "",
+            "end_date": "",
+            "data": {}
+        }
+        
+        save_roster_data()
+        logger.info(f"Transitioned planner to roster")
+        return {"message": "Planner transitioned to roster successfully"}
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error transitioning planner: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
 @api_router.post("/roster/{week_type}/validate")
 async def validate_roster(week_type: str, roster_data: Optional[Dict[str, Any]] = None):
     """
