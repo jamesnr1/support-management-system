@@ -66,8 +66,12 @@ const RosteringSystem = () => {
     if (activeTab === 'admin' || activeTab === 'hours') {
       return 0;
     }
+    // If calendar is hidden, return 0 to collapse it completely
+    if (!calendarVisible) {
+      return 0;
+    }
     return Math.min(Math.max(calendarHeight, 220), calendarMaxHeight);
-  }, [activeTab, calendarHeight, calendarMaxHeight]);
+  }, [activeTab, calendarHeight, calendarMaxHeight, calendarVisible]);
 
   // Measure the bottom of the tabs to position the calendar flush under them
   useEffect(() => {
@@ -533,18 +537,18 @@ const RosteringSystem = () => {
         
         {/* Action Buttons (Roster/Planner only) */}
         {(activeTab === 'roster' || activeTab === 'planner') && (
-          <div style={{ display: 'flex', gap: '0.5rem', marginRight: 'auto', alignItems: 'center', flex: 1 }}>
+          <div style={{ display: 'flex', gap: '0.75rem', marginRight: 'auto', alignItems: 'center', flex: 1 }}>
             {/* Week Pattern Selector for Planner */}
             {activeTab === 'planner' && rosterData.planner?.week_type && (
               <>
-                <span style={{ color: '#8B9A7B', fontSize: '0.75rem', marginRight: '0.2rem' }}>
+                <span style={{ color: '#8B9A7B', fontSize: '0.85rem', marginRight: '0.3rem' }}>
                   Week:
                 </span>
                 <button
                   onClick={() => toggleWeekPattern('weekA')}
                   style={{
-                    padding: '0.35rem 0.6rem',
-                    fontSize: '0.75rem',
+                    padding: '0.35rem 0.7rem',
+                    fontSize: '0.8rem',
                     background: rosterData.planner.week_type === 'weekA' ? '#8B9A7B' : '#3E3B37',
                     color: '#E8DDD4',
                     border: '1px solid ' + (rosterData.planner.week_type === 'weekA' ? '#8B9A7B' : '#4A4641'),
@@ -558,8 +562,8 @@ const RosteringSystem = () => {
                 <button
                   onClick={() => toggleWeekPattern('weekB')}
                   style={{
-                    padding: '0.35rem 0.6rem',
-                    fontSize: '0.75rem',
+                    padding: '0.35rem 0.7rem',
+                    fontSize: '0.8rem',
                     background: rosterData.planner.week_type === 'weekB' ? '#8B9A7B' : '#3E3B37',
                     color: '#E8DDD4',
                     border: '1px solid ' + (rosterData.planner.week_type === 'weekB' ? '#8B9A7B' : '#4A4641'),
@@ -570,12 +574,12 @@ const RosteringSystem = () => {
                 >
                   B
                 </button>
-                <span style={{ color: '#8B9A7B', fontSize: '0.7rem', marginLeft: '0.5rem', fontStyle: 'italic' }}>
+                <span style={{ color: '#8B9A7B', fontSize: '0.85rem', marginLeft: '0.5rem' }}>
                   {rosterData.planner.week_type === 'weekA' 
                     ? '(Libby shared support)' 
                     : '(James shared support)'}
                 </span>
-                <span style={{ margin: '0 0.5rem', color: '#4A4641' }}>|</span>
+                <span style={{ margin: '0 0.75rem', color: '#4A4641' }}>|</span>
               </>
             )}
             
@@ -650,8 +654,8 @@ const RosteringSystem = () => {
         
         {/* Calendar Controls (Roster/Planner only) */}
         {(activeTab === 'roster' || activeTab === 'planner') && (
-          <div style={{ display: 'flex', gap: '0.4rem', alignItems: 'center', marginLeft: 'auto' }}>
-            <span style={{ fontSize: '0.65rem', color: '#8B9A7B', marginRight: '0.3rem' }}>
+          <div style={{ display: 'flex', gap: '0.6rem', alignItems: 'center', marginLeft: 'auto' }}>
+            <span style={{ fontSize: '0.75rem', color: '#8B9A7B', marginRight: '0.3rem' }}>
               {lastCalendarUpdate && `Updated ${lastCalendarUpdate}`}
             </span>
             <button
@@ -659,9 +663,9 @@ const RosteringSystem = () => {
               style={{
                 display: 'inline-flex',
                 alignItems: 'center',
-                gap: '0.25rem',
-                padding: '0.35rem 0.6rem',
-                fontSize: '0.75rem',
+                gap: '0.3rem',
+                padding: '0.35rem 0.7rem',
+                fontSize: '0.8rem',
                 background: '#3E3B37',
                 color: '#E8DDD4',
                 border: '1px solid #4A4641',
@@ -670,7 +674,7 @@ const RosteringSystem = () => {
               }}
               title="Refresh calendar"
             >
-              <RefreshCw size={11} />
+              <RefreshCw size={12} />
               Refresh
             </button>
             <button
@@ -678,9 +682,9 @@ const RosteringSystem = () => {
               style={{
                 display: 'inline-flex',
                 alignItems: 'center',
-                gap: '0.25rem',
-                padding: '0.35rem 0.6rem',
-                fontSize: '0.75rem',
+                gap: '0.3rem',
+                padding: '0.35rem 0.7rem',
+                fontSize: '0.8rem',
                 background: '#3E3B37',
                 color: '#E8DDD4',
                 border: '1px solid #4A4641',
@@ -740,7 +744,7 @@ const RosteringSystem = () => {
       {/* Content Area */}
       <div className="tab-content" style={{ 
         marginTop: activeTab !== 'admin' && activeTab !== 'hours' ? `${calendarTop + effectiveCalendarHeight}px` : `${calendarTop}px`,
-        paddingTop: activeTab !== 'admin' && activeTab !== 'hours' ? '1rem' : '1.5rem'
+        paddingTop: activeTab !== 'admin' && activeTab !== 'hours' ? '1.5rem' : '1.5rem'
       }}>
         {activeTab === 'admin' ? (
           <WorkerManagement

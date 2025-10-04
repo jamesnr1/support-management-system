@@ -343,21 +343,22 @@ const CalendarAppointments = ({
                 e.currentTarget.style.boxShadow = '0 6px 20px rgba(0, 0, 0, 0.2)';
               }}
             >
-              {/* Person Header - Correctly styled to match participant cards */}
+              {/* Person Header - Compact single row */}
               <div style={{
                 background: '#4A4641',
-                padding: '0.6rem 1rem',
+                padding: '0.5rem 1rem',
                 borderBottom: '1px solid #4A4641',
-                color: '#E8DDD4'
+                color: '#E8DDD4',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '0.75rem'
               }}>
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '0.2rem' }}>
-                  <span style={{ color: '#D4A574', fontWeight: '600', fontSize: '0.9rem', textShadow: '1px 1px 2px rgba(0,0,0,0.2)' }}>
-                    {person.name}
-                  </span>
-                  <span style={{ fontSize: '0.7rem', color: '#8B9A7B' }}>
-                    {start.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })} - {end.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
-                  </span>
-                </div>
+                <span style={{ color: '#D4A574', fontWeight: '600', fontSize: '0.9rem', textShadow: '1px 1px 2px rgba(0,0,0,0.2)' }}>
+                  {person.name}
+                </span>
+                <span style={{ fontSize: '0.75rem', color: '#8B9A7B' }}>
+                  {start.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })} - {end.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
+                </span>
               </div>
 
               {/* Appointments List */}
