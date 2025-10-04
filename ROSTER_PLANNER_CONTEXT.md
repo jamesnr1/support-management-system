@@ -12,10 +12,9 @@
 
 ### **Roster Tab (Current Active Roster)**
 - Shows the CURRENT active roster that's in use
+- **EDITABLE** - because changes happen constantly with 30+ workers
 - **Currently EMPTY** - user is building roster in Planner first
-- **Week Pattern Indicator:** Shows "📅 Week A Pattern" or "📅 Week B Pattern" 
-  - This indicates which week logic is APPLIED to the roster
-  - Only shows on Roster tab, NOT on Planner
+- **NO Week Pattern Indicator** - clean interface for editing current week
 
 ### **Planner Tab (Build Future Rosters)**
 - Where user BUILDS rosters before they go live
@@ -54,9 +53,10 @@
 ## **UI Elements - What Shows Where**
 
 ### **Roster Tab:**
-- ✅ Week Pattern Indicator (top-right): "📅 Week A Pattern" or "📅 Week B Pattern"
+- ✅ Clean interface - NO week pattern indicators
 - ✅ Participant cards WITHOUT week labels
 - ✅ Edit Mode, Export buttons
+- ✅ For editing current week (changes happen constantly)
 
 ### **Planner Tab:**
 - ✅ Week Pattern Toggle Buttons: [Week A] [Week B]
@@ -114,7 +114,8 @@
 ## **What NOT to Do**
 
 ❌ DON'T show week labels on individual participant cards  
-❌ DON'T show Week Pattern Indicator on Planner tab  
+❌ DON'T show Week Pattern Indicator on Roster tab (removed entirely)
+❌ DON'T show Week Pattern Indicator on Planner tab (uses toggle buttons instead)
 ❌ DON'T confuse which person gets shared support (check plans.txt!)  
 ❌ DON'T change week logic without checking plans.txt first  
 
@@ -128,8 +129,8 @@
    - Week B = James shares
 
 2. **Showing indicators in wrong places**
-   - Roster = Indicator only
-   - Planner = Toggle buttons only
+   - Roster = NO indicators (clean editing interface)
+   - Planner = Toggle buttons only (no indicators)
 
 3. **Adding week labels back to participant cards**
    - They were removed intentionally!
