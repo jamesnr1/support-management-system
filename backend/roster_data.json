@@ -1624,5 +1624,17 @@
         ]
       }
     }
+  },
+  "planner_next": {
+    "week_type": "weekA",
+    "start_date": "",
+    "end_date": "",
+    "data": {}
+  },
+  "planner_after": {
+    "week_type": "weekB",
+    "start_date": "",
+    "end_date": "",
+    "data": {}
   }
 }
