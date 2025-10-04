@@ -426,18 +426,16 @@ input[type="time"]:disabled::-webkit-calendar-picker-indicator {
 .worker-card {
   background: linear-gradient(135deg, var(--bg-secondary), var(--bg-tertiary));
   border: 2px solid var(--accent-primary);
-  border-left: 4px solid #8B9A7B;
   border-radius: 12px;
   overflow: hidden;
   box-shadow: 0 6px 20px var(--shadow);
-  transition: transform 0.3s ease, box-shadow 0.3s ease, border-left-color 0.3s ease;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
   height: fit-content;
 }
 
 .worker-card:hover {
   transform: translateY(-4px);
   box-shadow: 0 8px 25px rgba(212, 165, 116, 0.25);
-  border-left-color: #9AAA89;
 }
 
 .worker-header {

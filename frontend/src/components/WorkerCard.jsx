@@ -51,15 +51,17 @@ const WorkerCard = ({ worker, onEdit, onManageAvailability, availabilityData, is
     return fullName.split(' ')[0];
   };
 
-  // Format time as HH.MM (24-hour format)
+  // Format time as 12-hour format (e.g., "9:00 AM", "2:30 PM")
   const formatTime = (timeString) => {
-    if (!timeString) return '09.00';
+    if (!timeString) return '9:00 AM';
     // Handle HH:MM:SS or HH:MM format
     const parts = timeString.split(':');
     if (parts.length >= 2) {
-      const hours = parts[0].padStart(2, '0');
+      let hours = parseInt(parts[0], 10);
       const minutes = parts[1].padStart(2, '0');
-      return `${hours}.${minutes}`;
+      const ampm = hours >= 12 ? 'PM' : 'AM';
+      hours = hours % 12 || 12; // Convert 0 to 12, and 13-23 to 1-11
+      return `${hours}:${minutes} ${ampm}`;
     }
     return timeString; // Fallback to original if format unexpected
   };
@@ -90,8 +92,7 @@ const WorkerCard = ({ worker, onEdit, onManageAvailability, availabilityData, is
       style={{ 
         minHeight: '360px', 
         display: 'flex', 
-        flexDirection: 'column',
-        borderLeftColor: currentUnavailability ? '#B87E7E' : undefined
+        flexDirection: 'column'
       }}
     >
       {/* Worker Name with Icons */}

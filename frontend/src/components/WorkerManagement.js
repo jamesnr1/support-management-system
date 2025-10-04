@@ -822,7 +822,7 @@ const AvailabilityModal = ({ worker, onClose, initialAvailabilityData }) => {
               {/* Weekly availability schedule */}
               <div style={{ marginBottom: '1.5rem' }}>
                 <h4 style={{ marginBottom: '1rem', color: 'var(--accent-primary)' }}>Weekly Schedule</h4>
-                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(110px, 1fr))', gap: '0.75rem', maxWidth: '100%' }}>
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(120px, 1fr))', gap: '0.75rem', maxWidth: '100%' }}>
                 {['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'].map((day, displayIndex) => {
                   // Map display order (Mon=0, Tue=1, ..., Sun=6) to backend weekday (Mon=1, Tue=2, ..., Sun=0)
                   const weekdayNumber = displayIndex === 6 ? 0 : displayIndex + 1;
@@ -848,9 +848,10 @@ const AvailabilityModal = ({ worker, onClose, initialAvailabilityData }) => {
                             step="900"
                             style={{ 
                               width: '100%', 
-                              maxWidth: '95px',
+                              minWidth: '105px',
+                              maxWidth: '110px',
                               fontSize: '0.85rem', 
-                              padding: '0.3rem', 
+                              padding: '0.35rem 0.3rem', 
                               marginBottom: '0.25rem', 
                               background: dayData.available ? 'var(--bg-secondary)' : 'var(--bg-tertiary)', 
                               border: '1px solid var(--border-color)', 
@@ -869,9 +870,10 @@ const AvailabilityModal = ({ worker, onClose, initialAvailabilityData }) => {
                             step="900"
                             style={{ 
                               width: '100%', 
-                              maxWidth: '95px',
+                              minWidth: '105px',
+                              maxWidth: '110px',
                               fontSize: '0.85rem', 
-                              padding: '0.3rem', 
+                              padding: '0.35rem 0.3rem', 
                               background: dayData.available ? 'var(--bg-secondary)' : 'var(--bg-tertiary)', 
                               border: '1px solid var(--border-color)', 
                               color: 'var(--text-primary)', 
