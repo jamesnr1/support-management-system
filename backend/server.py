@@ -188,8 +188,8 @@ async def get_participants():
 async def get_roster(week_type: str):
     """Get roster for specific week type from database"""
     try:
-        # Handle new roster/planner structure
-        if week_type in ['roster', 'planner']:
+        # Handle new roster/planner structure (including planner_next, planner_after)
+        if week_type in ['roster', 'planner', 'planner_next', 'planner_after']:
             roster_section = ROSTER_DATA.get(week_type, {})
             return {
                 "week_type": roster_section.get("week_type", "weekA"),
@@ -244,8 +244,8 @@ async def get_roster(week_type: str):
 async def update_roster(week_type: str, roster_data: Dict[str, Any]):
     """Robust roster update with comprehensive validation"""
     try:
-        # Handle new roster/planner structure
-        if week_type in ['roster', 'planner']:
+        # Handle new roster/planner structure (including planner_next, planner_after)
+        if week_type in ['roster', 'planner', 'planner_next', 'planner_after']:
             if not roster_data:
                 raise HTTPException(status_code=400, detail="No roster data provided")
             

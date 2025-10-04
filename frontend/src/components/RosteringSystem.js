@@ -194,17 +194,25 @@ const RosteringSystem = () => {
     staleTime: 1000 * 60 * 5
   });
 
-  // Fetch roster data (roster + planner)
+  // Fetch roster data (roster + planner based on selection)
   const { data: rosterData = {}, isLoading: rosterLoading } = useQuery({
-    queryKey: ['rosterData'],
+    queryKey: ['rosterData', selectedPlannerWeek],
     queryFn: async () => {
+      // Map planner week selection to backend endpoint
+      const plannerEndpoint = {
+        'current': 'planner',        // Use roster as template
+        'next': 'planner_next',      // Next week
+        'after': 'planner_after'     // Week after
+      }[selectedPlannerWeek] || 'planner';
+
       const [roster, planner] = await Promise.all([
         axios.get(`${API}/roster/roster`),
-        axios.get(`${API}/roster/planner`)
+        axios.get(`${API}/roster/${plannerEndpoint}`)
       ]);
       return {
         roster: roster.data,
-        planner: planner.data
+        planner: planner.data,
+        plannerEndpoint  // Store which endpoint we're using
       };
     }
   });
@@ -256,14 +264,21 @@ const RosteringSystem = () => {
       ...updatedParticipantData  // This will update/add the modified participant's data
     };
     
+    // Determine which endpoint to use based on activeTab and planner selection
+    let weekType = activeTab;
+    if (activeTab === 'planner' && rosterData.plannerEndpoint) {
+      weekType = rosterData.plannerEndpoint;  // Use the specific planner endpoint
+    }
+    
     console.log('handleRosterUpdate - merging participant data into full roster:', {
       activeTab,
+      weekType,
       participantCodes: Object.keys(updatedParticipantData),
       beforeCount: Object.keys(currentRosterData).length,
       afterCount: Object.keys(mergedData).length
     });
     
-    updateRosterMutation.mutate({ weekType: activeTab, data: mergedData });
+    updateRosterMutation.mutate({ weekType, data: mergedData });
   };
 
   // Export functionality - Two different formats
@@ -566,6 +581,9 @@ const RosteringSystem = () => {
                   value={selectedPlannerWeek}
                   onChange={(e) => {
                     setSelectedPlannerWeek(e.target.value);
+                    // Re-fetch roster data with new selection
+                    queryClient.invalidateQueries(['rosterData']);
+                    
                     const weekLabel = {
                       'current': 'Current Week (template from Roster)',
                       'next': 'Next Week',
