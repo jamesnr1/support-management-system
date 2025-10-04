@@ -475,13 +475,16 @@ const ShiftForm = ({
   // Check minimum break time between shifts
   const checkBreakTimeValidation = (shiftData) => {
     const issues = [];
-    const minBreakTime = 30; // 30 minutes minimum break for regular shifts
-    const splitShiftMinBreak = 60; // 60 minutes minimum break for split shifts
+    const SAME_DAY_MIN_BREAK = 120; // 2 hours minimum for same-day shifts
+    const ADJACENT_DAY_MIN_BREAK = 600; // 10 hours minimum between adjacent days
+    const SPLIT_SHIFT_MIN_BREAK = 60; // 60 minutes for split shifts (relaxed rule)
     
     // Only check break times if workers are selected
     if (!shiftData.workers || shiftData.workers.length === 0) {
       return issues;
     }
+    
+    const workerName = (workerId) => getDisplayName((workers || []).find(w => w.id === workerId)?.full_name);
     
     shiftData.workers.forEach(workerId => {
       // Check for shifts on the same day or adjacent days
@@ -492,22 +495,52 @@ const ShiftForm = ({
             const shifts = Array.isArray(participantData[shiftDate]) ? participantData[shiftDate] : [];
             shifts.forEach(existingShift => {
               const hasWorker = Array.isArray(existingShift.workers) && existingShift.workers.some(w => String(w) === String(workerId));
-              if (hasWorker) {
-                const breakTime = calculateBreakTime(
-                  existingShift.endTime, 
-                  shiftData.startTime, 
-                  shiftDate, 
-                  shiftData.date
-                );
+              if (hasWorker && existingShift.id !== shiftData.id) {
                 
-                // Determine if this is a split shift scenario
-                // Different support types (self-care vs community) = separate shifts, not split shifts
-                const isSplitShift = isSplitShiftScenario(existingShift, shiftData, shiftDate);
-                const requiredBreakTime = isSplitShift ? splitShiftMinBreak : minBreakTime;
-                const breakType = isSplitShift ? 'split shift' : 'separate shift';
+                // Calculate day difference
+                const existingDate = new Date(shiftDate);
+                const newDate = new Date(shiftData.date);
+                const dayDiff = Math.abs((newDate - existingDate) / (1000 * 60 * 60 * 24));
                 
-                if (breakTime < requiredBreakTime && breakTime >= 0) {
-                  issues.push(`${getDisplayName((workers || []).find(w => w.id === workerId)?.full_name)} has only ${breakTime} minutes break between ${breakType}s (minimum: ${requiredBreakTime} minutes)`);
+                // SAME DAY: Check for sufficient break time
+                if (dayDiff === 0) {
+                  const isSplitShift = isSplitShiftScenario(existingShift, shiftData, shiftDate);
+                  const requiredBreak = isSplitShift ? SPLIT_SHIFT_MIN_BREAK : SAME_DAY_MIN_BREAK;
+                  
+                  // Check gap after existing shift
+                  const gapAfter = calculateBreakMinutes(existingShift.endTime, shiftData.startTime);
+                  // Check gap before existing shift
+                  const gapBefore = calculateBreakMinutes(shiftData.endTime, existingShift.startTime);
+                  
+                  if (gapAfter > 0 && gapAfter < requiredBreak) {
+                    issues.push(`⚠️ ${workerName(workerId)}: Only ${Math.floor(gapAfter)} minutes break (need ${requiredBreak} min) - Shift ends ${existingShift.endTime}, next starts ${shiftData.startTime}`);
+                  } else if (gapBefore > 0 && gapBefore < requiredBreak) {
+                    issues.push(`⚠️ ${workerName(workerId)}: Only ${Math.floor(gapBefore)} minutes break (need ${requiredBreak} min) - Shift ends ${shiftData.endTime}, next starts ${existingShift.startTime}`);
+                  }
+                }
+                
+                // ADJACENT DAYS: Check for 10-hour rest period
+                else if (dayDiff === 1) {
+                  let gapMinutes;
+                  let earlierEnd, laterStart;
+                  
+                  if (newDate > existingDate) {
+                    // New shift is the next day
+                    earlierEnd = existingShift.endTime;
+                    laterStart = shiftData.startTime;
+                  } else {
+                    // Existing shift is the next day
+                    earlierEnd = shiftData.endTime;
+                    laterStart = existingShift.startTime;
+                  }
+                  
+                  // Calculate cross-day gap
+                  gapMinutes = calculateCrossDayBreak(earlierEnd, laterStart);
+                  
+                  if (gapMinutes < ADJACENT_DAY_MIN_BREAK) {
+                    const gapHours = (gapMinutes / 60).toFixed(1);
+                    issues.push(`❌ ${workerName(workerId)}: Only ${gapHours} hours rest between days (need 10 hours) - Ends ${earlierEnd}, next starts ${laterStart}`);
+                  }
                 }
               }
             });
@@ -582,23 +615,39 @@ const ShiftForm = ({
     return (start2Min - end1Min) / 60;
   };
 
-  // Calculate break time between shifts
-  const calculateBreakTime = (endTime1, startTime2, date1, date2) => {
+  // Calculate break time in minutes (same day only)
+  const calculateBreakMinutes = (endTime, startTime) => {
     const timeToMinutes = (timeStr) => {
       const [hours, minutes] = timeStr.split(':').map(Number);
       return hours * 60 + minutes;
     };
     
-    const end1Min = timeToMinutes(endTime1);
-    const start2Min = timeToMinutes(startTime2);
+    const endMin = timeToMinutes(endTime);
+    const startMin = timeToMinutes(startTime);
     
-    // Same day
-    if (date1 === date2) {
-      return start2Min - end1Min;
+    // Handle overnight shifts
+    if (startMin < endMin) {
+      // Next shift is "tomorrow" within the same calendar day
+      return (startMin + 24 * 60) - endMin;
     }
     
-    // Different days - assume sufficient break
-    return 24 * 60; // 24 hours in minutes
+    return startMin - endMin;
+  };
+  
+  // Calculate break time between shifts on adjacent days
+  const calculateCrossDayBreak = (earlierEnd, laterStart) => {
+    const timeToMinutes = (timeStr) => {
+      const [hours, minutes] = timeStr.split(':').map(Number);
+      return hours * 60 + minutes;
+    };
+    
+    const earlierEndMin = timeToMinutes(earlierEnd);
+    const laterStartMin = timeToMinutes(laterStart);
+    
+    // Add 24 hours to the later start (next day) and subtract earlier end
+    const gapMinutes = (laterStartMin + 24 * 60) - earlierEndMin;
+    
+    return gapMinutes;
   };
 
   // Get smart start time based on previous shifts
