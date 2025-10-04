@@ -843,7 +843,7 @@ const ShiftForm = ({
     
     let duration = (endMinutes - startMinutes) / 60;
     if (duration <= 0) duration += 24; // Handle overnight
-    return Math.max(0, duration).toFixed(1); // Ensure no negative duration
+    return Math.max(0, duration); // Return NUMBER, not string - toFixed() was breaking validation
   };
 
   // Show loading state if form isn't ready
