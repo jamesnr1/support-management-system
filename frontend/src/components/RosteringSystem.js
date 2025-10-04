@@ -244,8 +244,23 @@ const RosteringSystem = () => {
     setEditMode(!editMode);
   };
 
-  const handleRosterUpdate = (data) => {
-    updateRosterMutation.mutate({ weekType: activeTab, data });
+  const handleRosterUpdate = (updatedParticipantData) => {
+    // CRITICAL: Merge updated participant data with existing full roster data
+    // ParticipantSchedule only sends ONE participant's data, but backend expects FULL roster
+    const currentRosterData = rosterData[activeTab]?.data || {};
+    const mergedData = {
+      ...currentRosterData,
+      ...updatedParticipantData  // This will update/add the modified participant's data
+    };
+    
+    console.log('handleRosterUpdate - merging participant data into full roster:', {
+      activeTab,
+      participantCodes: Object.keys(updatedParticipantData),
+      beforeCount: Object.keys(currentRosterData).length,
+      afterCount: Object.keys(mergedData).length
+    });
+    
+    updateRosterMutation.mutate({ weekType: activeTab, data: mergedData });
   };
 
   // Export functionality - Two different formats
