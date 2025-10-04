@@ -294,6 +294,14 @@ const CalendarAppointments = ({
               {start.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })} - {end.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
               {' • '}
               {appointments.length} appointment{appointments.length !== 1 ? 's' : ''}
+              {lastSync && (
+                <>
+                  {' • '}
+                  <span style={{ fontSize: '0.75rem', opacity: 0.8 }}>
+                    Updated {lastSync.getHours().toString().padStart(2, '0')}.{lastSync.getMinutes().toString().padStart(2, '0')}
+                  </span>
+                </>
+              )}
             </span>
           </div>
         </div>
@@ -378,11 +386,6 @@ const CalendarAppointments = ({
           {/* Divider */}
           <div style={{ width: '1px', height: '24px', background: '#4A4641', margin: '0 0.25rem' }}></div>
           
-          {lastSync && (
-            <span style={{ fontSize: '0.8rem', color: '#8B9A7B' }}>
-              Updated {lastSync.getHours().toString().padStart(2, '0')}.{lastSync.getMinutes().toString().padStart(2, '0')}
-            </span>
-          )}
           <button
             className="btn btn-secondary"
             onClick={fetchAppointments}
