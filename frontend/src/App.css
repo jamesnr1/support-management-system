@@ -96,7 +96,7 @@ body {
 .tab-btn {
   flex: 1;
   padding: 0.875rem 1rem;
-  background: transparent;
+  background: linear-gradient(180deg, #3E3B37 0%, #2D2B28 100%);
   border: none;
   color: #C4915C;
   cursor: pointer;
@@ -104,11 +104,13 @@ body {
   font-weight: 500;
   font-size: 1rem;
   position: relative;
+  border-bottom: 2px solid transparent;
 }
 
 .tab-btn:hover {
-  background: var(--bg-tertiary);
+  background: linear-gradient(180deg, #4A4641 0%, #3E3B37 100%);
   color: #D4A574;
+  border-bottom-color: rgba(212, 165, 116, 0.3);
 }
 
 .tab-btn.active {

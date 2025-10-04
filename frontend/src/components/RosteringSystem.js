@@ -637,6 +637,11 @@ const RosteringSystem = () => {
             <CalendarAppointments 
               weekType={activeTab} 
               onHeightChange={(height) => setCalendarHeight(height)}
+              editMode={editMode}
+              onToggleEditMode={toggleEditMode}
+              onExportRoster={exportRoster}
+              onCopyToTemplate={copyToTemplate}
+              copyTemplateRunning={copyTemplateRunning}
             />
           </div>
         </div>
@@ -660,51 +665,6 @@ const RosteringSystem = () => {
           />
         ) : (
           <>
-            {/* Export buttons and action buttons for roster tabs - right aligned */}
-            <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '0.5rem', marginBottom: '1rem', paddingRight: '1rem' }}>
-              {activeTab !== 'admin' && activeTab !== 'hours' && (
-                <button
-                  className={`btn ${editMode ? 'btn-warning' : 'btn-secondary'}`}
-                  onClick={toggleEditMode}
-                  style={{ padding: '0.5rem 1rem', fontSize: '0.9rem' }}
-                >
-                  {editMode ? '❌ Exit Edit' : '✏️ Edit Mode'}
-                </button>
-              )}
-              {(activeTab === 'weekA' || activeTab === 'weekB') && (
-                <button
-                  className="btn btn-secondary"
-                  onClick={copyToTemplate}
-                  disabled={copyTemplateRunning}
-                  title={`Copy to ${activeTab === 'weekA' ? 'Next A' : 'Next B'}`}
-                  style={{ 
-                    padding: '0.5rem 1rem', 
-                    fontSize: '0.9rem',
-                    opacity: copyTemplateRunning ? 0.7 : 1,
-                    backgroundColor: copyTemplateRunning ? '#666' : '#4A4641'
-                  }}
-                >
-                  {copyTemplateRunning ? '⏳ Copying...' : `📋 Copy to ${activeTab === 'weekA' ? 'Next A' : 'Next B'}`}
-                </button>
-              )}
-              <button
-                className="btn btn-secondary"
-                onClick={() => exportRoster('payroll')}
-                title="Export payroll data"
-                style={{ padding: '0.5rem 1rem', fontSize: '0.9rem' }}
-              >
-                📊 Export Payroll
-              </button>
-              <button
-                className="btn btn-secondary"
-                onClick={() => exportRoster('shifts')}
-                title="Export shift report"
-                style={{ padding: '0.5rem 1rem', fontSize: '0.9rem' }}
-              >
-                📋 Export Shifts
-              </button>
-            </div>
-            
             {rosterLoading ? (
               <div className="loading">
                 <div className="spinner"></div>

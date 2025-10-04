@@ -6,7 +6,15 @@ import { Calendar as CalendarIcon, RefreshCw, ExternalLink } from 'lucide-react'
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 const API = `${BACKEND_URL}/api`;
 
-const CalendarAppointments = ({ weekType, onHeightChange }) => {
+const CalendarAppointments = ({ 
+  weekType, 
+  onHeightChange,
+  editMode,
+  onToggleEditMode,
+  onExportRoster,
+  onCopyToTemplate,
+  copyTemplateRunning
+}) => {
   const [appointments, setAppointments] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [lastSync, setLastSync] = useState(null);
@@ -291,6 +299,85 @@ const CalendarAppointments = ({ weekType, onHeightChange }) => {
         </div>
         
         <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
+          {/* Edit Mode & Export buttons */}
+          {onToggleEditMode && (
+            <button
+              className={`btn ${editMode ? 'btn-warning' : 'btn-secondary'}`}
+              onClick={onToggleEditMode}
+              style={{ 
+                padding: '0.4rem 0.75rem',
+                fontSize: '0.85rem',
+                background: editMode ? '#C4915C' : '#3E3B37',
+                color: '#E8DDD4',
+                border: '2px solid ' + (editMode ? '#C4915C' : '#4A4641'),
+                borderRadius: '6px',
+                fontWeight: editMode ? '600' : '500'
+              }}
+            >
+              {editMode ? '❌ Exit Edit' : '✏️ Edit Mode'}
+            </button>
+          )}
+          
+          {(weekType === 'weekA' || weekType === 'weekB') && onCopyToTemplate && (
+            <button
+              className="btn btn-secondary"
+              onClick={onCopyToTemplate}
+              disabled={copyTemplateRunning}
+              title={`Copy to ${weekType === 'weekA' ? 'Next A' : 'Next B'}`}
+              style={{ 
+                padding: '0.4rem 0.75rem',
+                fontSize: '0.85rem',
+                background: copyTemplateRunning ? '#666' : '#3E3B37',
+                color: '#E8DDD4',
+                border: '2px solid #4A4641',
+                borderRadius: '6px',
+                opacity: copyTemplateRunning ? 0.7 : 1
+              }}
+            >
+              {copyTemplateRunning ? '⏳ Copying...' : `📋 Copy to ${weekType === 'weekA' ? 'Next A' : 'Next B'}`}
+            </button>
+          )}
+          
+          {onExportRoster && (
+            <>
+              <button
+                className="btn btn-success"
+                onClick={() => onExportRoster('payroll')}
+                title="Export payroll data"
+                style={{ 
+                  padding: '0.4rem 0.75rem',
+                  fontSize: '0.85rem',
+                  background: '#8B9A7B',
+                  color: 'white',
+                  border: '2px solid #8B9A7B',
+                  borderRadius: '6px',
+                  fontWeight: '500'
+                }}
+              >
+                📊 Export Payroll
+              </button>
+              <button
+                className="btn btn-success"
+                onClick={() => onExportRoster('shifts')}
+                title="Export shift report"
+                style={{ 
+                  padding: '0.4rem 0.75rem',
+                  fontSize: '0.85rem',
+                  background: '#8B9A7B',
+                  color: 'white',
+                  border: '2px solid #8B9A7B',
+                  borderRadius: '6px',
+                  fontWeight: '500'
+                }}
+              >
+                📋 Export Shifts
+              </button>
+            </>
+          )}
+          
+          {/* Divider */}
+          <div style={{ width: '1px', height: '24px', background: '#4A4641', margin: '0 0.25rem' }}></div>
+          
           {lastSync && (
             <span style={{ fontSize: '0.8rem', color: '#8B9A7B' }}>
               Updated {lastSync.getHours().toString().padStart(2, '0')}.{lastSync.getMinutes().toString().padStart(2, '0')}
@@ -308,8 +395,8 @@ const CalendarAppointments = ({ weekType, onHeightChange }) => {
               fontSize: '0.85rem',
               background: '#3E3B37',
               color: '#E8DDD4',
-              border: '1px solid #4A4641',
-              borderRadius: '4px'
+              border: '2px solid #4A4641',
+              borderRadius: '6px'
             }}
           >
             <RefreshCw size={14} className={isLoading ? 'spinning' : ''} />
@@ -324,8 +411,8 @@ const CalendarAppointments = ({ weekType, onHeightChange }) => {
               fontSize: '0.85rem',
               background: '#3E3B37',
               color: '#E8DDD4',
-              border: '1px solid #4A4641',
-              borderRadius: '4px'
+              border: '2px solid #4A4641',
+              borderRadius: '6px'
             }}
           >
             {showAppointments ? 'Hide' : 'Show'}
