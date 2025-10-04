@@ -2,6 +2,7 @@ import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { toast } from 'react-hot-toast';
 import axios from 'axios';
+import { RefreshCw } from 'lucide-react';
 import Login from './Login';
 import WorkerManagement from './WorkerManagement';
 import ParticipantSchedule from './ParticipantSchedule';
@@ -27,6 +28,9 @@ const RosteringSystem = () => {
   const [copyTemplateRunning, setCopyTemplateRunning] = useState(false);
   const [calendarHeight, setCalendarHeight] = useState(300); // Dynamic calendar height
   const [calendarTop, setCalendarTop] = useState(130); // Dynamic top below tabs
+  const [calendarVisible, setCalendarVisible] = useState(true);
+  const [calendarRefreshTrigger, setCalendarRefreshTrigger] = useState(0);
+  const [lastCalendarUpdate, setLastCalendarUpdate] = useState(null);
   const [viewportHeight, setViewportHeight] = useState(() =>
     typeof window !== 'undefined' ? window.innerHeight : 900
   );
@@ -529,11 +533,11 @@ const RosteringSystem = () => {
         
         {/* Action Buttons (Roster/Planner only) */}
         {(activeTab === 'roster' || activeTab === 'planner') && (
-          <div style={{ display: 'flex', gap: '0.5rem', marginRight: '1rem', alignItems: 'center' }}>
+          <div style={{ display: 'flex', gap: '0.5rem', marginRight: 'auto', alignItems: 'center', flex: 1 }}>
             {/* Week Pattern Selector for Planner */}
             {activeTab === 'planner' && rosterData.planner?.week_type && (
               <>
-                <span style={{ color: '#8B9A7B', fontSize: '0.75rem', marginRight: '0.3rem' }}>
+                <span style={{ color: '#8B9A7B', fontSize: '0.75rem', marginRight: '0.2rem' }}>
                   Week:
                 </span>
                 <button
@@ -561,12 +565,17 @@ const RosteringSystem = () => {
                     border: '1px solid ' + (rosterData.planner.week_type === 'weekB' ? '#8B9A7B' : '#4A4641'),
                     borderRadius: '4px',
                     fontWeight: rosterData.planner.week_type === 'weekB' ? '600' : '500',
-                    cursor: 'pointer',
-                    marginRight: '0.5rem'
+                    cursor: 'pointer'
                   }}
                 >
                   B
                 </button>
+                <span style={{ color: '#8B9A7B', fontSize: '0.7rem', marginLeft: '0.5rem', fontStyle: 'italic' }}>
+                  {rosterData.planner.week_type === 'weekA' 
+                    ? '(Libby shared support)' 
+                    : '(James shared support)'}
+                </span>
+                <span style={{ margin: '0 0.5rem', color: '#4A4641' }}>|</span>
               </>
             )}
             
@@ -582,8 +591,9 @@ const RosteringSystem = () => {
                 borderRadius: '6px',
                 fontWeight: editMode ? '600' : '500'
               }}
+              title={editMode ? 'Exit Edit Mode' : 'Enter Edit Mode'}
             >
-              {editMode ? '❌ Exit' : '✏️ Edit'}
+              {editMode ? '✖️ Exit' : '✏️ Edit'}
             </button>
             {activeTab === 'roster' && (
               <button
@@ -598,8 +608,9 @@ const RosteringSystem = () => {
                   border: '2px solid #8B9A7B',
                   borderRadius: '6px'
                 }}
+                title="Copy current roster to planner"
               >
-                📋 Copy to Planner
+                📋 Copy
               </button>
             )}
             <button
@@ -614,8 +625,71 @@ const RosteringSystem = () => {
                 borderRadius: '6px',
                 fontWeight: '600'
               }}
+              title="Export payroll CSV"
             >
-              📤 Export
+              💰 Payroll
+            </button>
+            <button
+              className="btn btn-primary"
+              onClick={() => exportRoster('shifts')}
+              style={{ 
+                padding: '0.35rem 0.75rem',
+                fontSize: '0.8rem',
+                background: '#D4A574',
+                color: '#2D2B28',
+                border: '2px solid #D4A574',
+                borderRadius: '6px',
+                fontWeight: '600'
+              }}
+              title="Export shift report CSV"
+            >
+              📄 Shifts
+            </button>
+          </div>
+        )}
+        
+        {/* Calendar Controls (Roster/Planner only) */}
+        {(activeTab === 'roster' || activeTab === 'planner') && (
+          <div style={{ display: 'flex', gap: '0.4rem', alignItems: 'center', marginLeft: 'auto' }}>
+            <span style={{ fontSize: '0.65rem', color: '#8B9A7B', marginRight: '0.3rem' }}>
+              {lastCalendarUpdate && `Updated ${lastCalendarUpdate}`}
+            </span>
+            <button
+              onClick={() => setCalendarRefreshTrigger(prev => prev + 1)}
+              style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '0.25rem',
+                padding: '0.35rem 0.6rem',
+                fontSize: '0.75rem',
+                background: '#3E3B37',
+                color: '#E8DDD4',
+                border: '1px solid #4A4641',
+                borderRadius: '4px',
+                cursor: 'pointer'
+              }}
+              title="Refresh calendar"
+            >
+              <RefreshCw size={11} />
+              Refresh
+            </button>
+            <button
+              onClick={() => setCalendarVisible(!calendarVisible)}
+              style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '0.25rem',
+                padding: '0.35rem 0.6rem',
+                fontSize: '0.75rem',
+                background: '#3E3B37',
+                color: '#E8DDD4',
+                border: '1px solid #4A4641',
+                borderRadius: '4px',
+                cursor: 'pointer'
+              }}
+              title={calendarVisible ? 'Hide calendar' : 'Show calendar'}
+            >
+              {calendarVisible ? '👁️ Hide' : '👁️ Show'}
             </button>
           </div>
         )}
@@ -655,6 +729,9 @@ const RosteringSystem = () => {
               onExportRoster={exportRoster}
               onCopyToTemplate={copyToTemplate}
               copyTemplateRunning={copyTemplateRunning}
+              onRefreshRequest={calendarRefreshTrigger}
+              calendarVisible={calendarVisible}
+              onLastSyncUpdate={(time) => setLastCalendarUpdate(time)}
             />
           </div>
         </div>

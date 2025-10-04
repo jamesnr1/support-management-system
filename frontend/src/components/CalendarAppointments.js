@@ -13,14 +13,25 @@ const CalendarAppointments = ({
   onToggleEditMode,
   onExportRoster,
   onCopyToTemplate,
-  copyTemplateRunning
+  copyTemplateRunning,
+  onRefreshRequest,
+  calendarVisible,
+  onLastSyncUpdate
 }) => {
   const [appointments, setAppointments] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [lastSync, setLastSync] = useState(null);
-  const [showAppointments, setShowAppointments] = useState(true);
+  const [showAppointments, setShowAppointments] = useState(calendarVisible !== undefined ? calendarVisible : true);
   const [authUrl, setAuthUrl] = useState(null);
   const [authCode, setAuthCode] = useState('');
+  
+  // Sync with parent's visibility control
+  useEffect(() => {
+    if (calendarVisible !== undefined) {
+      setShowAppointments(calendarVisible);
+    }
+  }, [calendarVisible]);
+  
   const [isAuthorizing, setIsAuthorizing] = useState(false);
 
   // Get the week dates for the current week type
@@ -229,6 +240,21 @@ const CalendarAppointments = ({
   useEffect(() => {
     checkCalendarStatus();
   }, [weekType]);
+  
+  // Trigger refresh when parent requests it
+  useEffect(() => {
+    if (onRefreshRequest > 0) {
+      fetchAppointments();
+    }
+  }, [onRefreshRequest]);
+  
+  // Report last sync time to parent
+  useEffect(() => {
+    if (lastSync && onLastSyncUpdate) {
+      const timeStr = `${lastSync.getHours().toString().padStart(2, '0')}.${lastSync.getMinutes().toString().padStart(2, '0')}`;
+      onLastSyncUpdate(timeStr);
+    }
+  }, [lastSync, onLastSyncUpdate]);
 
   // Measure actual rendered height and notify parent precisely
   const rootRef = useRef(null);
@@ -267,64 +293,7 @@ const CalendarAppointments = ({
 
   return (
     <div ref={rootRef} style={{ background: 'var(--bg-primary)' }}>
-      {/* Compact Header - Just dates and count */}
-      <div style={{ 
-        display: 'flex', 
-        justifyContent: 'space-between', 
-        alignItems: 'center',
-        marginBottom: '0.35rem',
-        padding: '0.25rem 0'
-      }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-          <CalendarIcon size={14} color="#D4A574" />
-          <span style={{ 
-            margin: 0, 
-            fontSize: '0.75rem', 
-            color: '#8B9A7B'
-          }}>
-            {start.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })} - {end.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
-            {lastSync && ` • Updated ${lastSync.getHours().toString().padStart(2, '0')}.${lastSync.getMinutes().toString().padStart(2, '0')}`}
-          </span>
-        </div>
-        
-        <div style={{ display: 'flex', gap: '0.35rem', alignItems: 'center' }}>
-          {/* Only Refresh and Hide/Show buttons */}
-          <button
-            className="btn btn-secondary"
-            onClick={fetchAppointments}
-            disabled={isLoading}
-            style={{ 
-              display: 'inline-flex', 
-              alignItems: 'center', 
-              gap: '0.35rem',
-              padding: '0.25rem 0.5rem',
-              fontSize: '0.7rem',
-              background: '#3E3B37',
-              color: '#E8DDD4',
-              border: '1px solid #4A4641',
-              borderRadius: '4px'
-            }}
-          >
-            <RefreshCw size={12} className={isLoading ? 'spinning' : ''} />
-            Refresh
-          </button>
-          
-          <button
-            className="btn btn-secondary"
-            onClick={() => setShowAppointments(!showAppointments)}
-            style={{ 
-              padding: '0.25rem 0.5rem',
-              fontSize: '0.7rem',
-              background: '#3E3B37',
-              color: '#E8DDD4',
-              border: '1px solid #4A4641',
-              borderRadius: '4px'
-            }}
-          >
-            {showAppointments ? 'Hide' : 'Show'}
-          </button>
-        </div>
-      </div>
+      {/* Calendar header removed - controls moved to tab row */}
 
       {/* Loading State */}
       {isLoading && (
