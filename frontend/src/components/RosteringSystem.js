@@ -662,7 +662,8 @@ const RosteringSystem = () => {
 
       {/* Content Area */}
       <div className="tab-content" style={{ 
-        marginTop: activeTab !== 'admin' && activeTab !== 'hours' ? `${calendarTop + effectiveCalendarHeight}px` : `${calendarTop}px` 
+        marginTop: activeTab !== 'admin' && activeTab !== 'hours' ? `${calendarTop + effectiveCalendarHeight}px` : `${calendarTop}px`,
+        paddingTop: activeTab !== 'admin' && activeTab !== 'hours' ? '1rem' : '1.5rem'
       }}>
         {activeTab === 'admin' ? (
           <WorkerManagement
