@@ -622,8 +622,8 @@ const RosteringSystem = () => {
                 </div>
                 <span style={{ color: '#8B9A7B', fontSize: '0.8rem', marginLeft: 'auto' }}>
                   {rosterData.planner.week_type === 'weekA' 
-                    ? 'James gets shared night support with Ace & Grace' 
-                    : 'Libby gets shared night support with Ace & Grace'}
+                    ? 'Libby gets shared night support with Ace & Grace' 
+                    : 'James gets shared night support with Ace & Grace'}
                 </span>
               </div>
             )}
