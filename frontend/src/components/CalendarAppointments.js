@@ -407,7 +407,6 @@ const CalendarAppointments = ({
                       </div>
                     );
                   })
-                )
                 ) : (
                   <div style={{ textAlign: 'center', color: '#9AAA89', fontSize: '0.9rem', fontStyle: 'italic', padding: '1rem 0' }}>
                     No appointments
