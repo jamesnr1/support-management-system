@@ -103,9 +103,13 @@ const HoursTracker = (props) => {
         axios.get(`${API}/roster/planner`)
       ]);
       
-      // Map to old structure for compatibility (weekA/weekB are based on week_type)
-      rosterData.weekA = roster.data.week_type === 'weekA' ? roster.data.data : planner.data.data;
-      rosterData.weekB = roster.data.week_type === 'weekB' ? roster.data.data : planner.data.data;
+      // Map roster and planner to weekA/weekB based on their week_type
+      // Roster might be weekA or weekB, same with planner
+      const rosterWeekType = roster.data.week_type || 'weekB';
+      const plannerWeekType = planner.data.week_type || 'weekA';
+      
+      rosterData[rosterWeekType] = roster.data.data || {};
+      rosterData[plannerWeekType] = planner.data.data || {};
     } catch (error) {
       console.error('Error fetching roster data:', error);
     }
