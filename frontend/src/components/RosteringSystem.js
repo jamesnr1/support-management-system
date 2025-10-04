@@ -63,7 +63,7 @@ const RosteringSystem = () => {
   }, [viewportHeight, calendarTop]);
 
   const effectiveCalendarHeight = useMemo(() => {
-    if (activeTab === 'admin' || activeTab === 'hours') {
+    if (activeTab === 'profiles' || activeTab === 'tracking' || activeTab === 'shifts') {
       return 0;
     }
     // If calendar is hidden, return 0 to collapse it completely
@@ -232,12 +232,13 @@ const RosteringSystem = () => {
   const tabs = [
     { id: 'roster', label: 'Roster', color: '#D4A574' },
     { id: 'planner', label: 'Planner', color: '#8B9A7B' },
-    { id: 'admin', label: 'Admin', color: '#9A8F85' },
-    { id: 'hours', label: 'Hours', color: '#A89080' }
+    { id: 'shifts', label: 'Shifts', color: '#9A8F85' },
+    { id: 'profiles', label: 'Profiles', color: '#A89080' },
+    { id: 'tracking', label: 'Tracking', color: '#B89A8A' }
   ];
 
   const toggleHoursTracker = () => {
-    setActiveTab('hours');
+    setActiveTab('tracking');
   };
 
   const toggleEditMode = () => {
@@ -715,7 +716,7 @@ const RosteringSystem = () => {
       </nav>
 
       {/* Fixed Calendar Section - Stays at top while content scrolls */}
-      {activeTab !== 'admin' && activeTab !== 'hours' && (
+      {activeTab !== 'profiles' && activeTab !== 'tracking' && activeTab !== 'shifts' && (
         <div style={{
           position: 'fixed',
           top: `${calendarTop}px`,
@@ -758,22 +759,27 @@ const RosteringSystem = () => {
 
       {/* Content Area */}
       <div className="tab-content" style={{ 
-        marginTop: activeTab !== 'admin' && activeTab !== 'hours' ? `${calendarTop + effectiveCalendarHeight}px` : `${calendarTop}px`,
-        paddingTop: activeTab !== 'admin' && activeTab !== 'hours' ? '2.5rem' : '1.5rem',
+        marginTop: (activeTab === 'profiles' || activeTab === 'tracking' || activeTab === 'shifts') ? `${calendarTop}px` : `${calendarTop + effectiveCalendarHeight}px`,
+        paddingTop: (activeTab === 'profiles' || activeTab === 'tracking' || activeTab === 'shifts') ? '1.5rem' : '2.5rem',
         minHeight: '200px' // Prevent content from being too close to top
       }}>
-        {activeTab === 'admin' ? (
+        {activeTab === 'profiles' ? (
           <WorkerManagement
             workers={workers}
             locations={locations}
             onWorkersUpdate={handleForceRefetchWorkers}
           />
-        ) : activeTab === 'hours' ? (
+        ) : activeTab === 'tracking' ? (
           <HoursTracker 
             participants={participants}
             workers={workers}
             rosterData={rosterData}
           />
+        ) : activeTab === 'shifts' ? (
+          <div style={{ padding: '2rem', textAlign: 'center', color: 'var(--text-secondary)' }}>
+            <p>🚧 Shifts tab coming soon...</p>
+            <p style={{ fontSize: '0.9rem', marginTop: '1rem' }}>Worker view of roster + Telegram panel</p>
+          </div>
         ) : (
           <>
             {rosterLoading ? (
