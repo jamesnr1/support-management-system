@@ -100,7 +100,7 @@ const WorkerCard = ({ worker, onEdit, onManageAvailability, onDelete, availabili
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', width: '100%' }}>
           <div className="worker-name" style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', flexWrap: 'nowrap' }}>
             <span style={{ whiteSpace: 'nowrap' }}>{getDisplayName(worker.full_name)}</span>
-            <span style={{ display: 'flex', gap: '0.6rem', fontSize: '0.9em', whiteSpace: 'nowrap', color: 'var(--text-primary)' }}>
+            <span style={{ display: 'flex', gap: '0.25rem', fontSize: '0.9em', whiteSpace: 'nowrap', color: 'var(--text-primary)' }}>
               {getGenderIcon(worker.sex)}
               {getCarIcon(worker.car)}
               {getTelegramIcon(worker.telegram)}
@@ -119,15 +119,15 @@ const WorkerCard = ({ worker, onEdit, onManageAvailability, onDelete, availabili
               style={{
                 background: 'transparent',
                 border: 'none',
-                color: 'var(--text-error, #B87E7E)',
+                color: 'var(--text-secondary)',
                 cursor: 'pointer',
                 padding: '0.25rem',
                 display: 'flex',
                 alignItems: 'center',
                 transition: 'all 0.2s ease'
               }}
-              onMouseOver={(e) => { e.currentTarget.style.color = '#E88888'; e.currentTarget.style.transform = 'scale(1.1)'; }}
-              onMouseOut={(e) => { e.currentTarget.style.color = 'var(--text-error, #B87E7E)'; e.currentTarget.style.transform = 'scale(1)'; }}
+              onMouseOver={(e) => { e.currentTarget.style.color = 'var(--text-primary)'; e.currentTarget.style.transform = 'scale(1.1)'; }}
+              onMouseOut={(e) => { e.currentTarget.style.color = 'var(--text-secondary)'; e.currentTarget.style.transform = 'scale(1)'; }}
               title={`Delete ${worker.full_name}`}
             >
               <Trash2 size={16} />
@@ -152,12 +152,18 @@ const WorkerCard = ({ worker, onEdit, onManageAvailability, onDelete, availabili
         {isLoading ? (
           <div style={{ color: 'var(--text-secondary)', textAlign: 'center' }}>Loading...</div>
         ) : currentUnavailability ? (
-          <div style={{ color: 'var(--text-secondary)', fontSize: '0.85rem', marginTop: '0.5rem' }}>
-            <strong>Unavailable:</strong> {new Date(currentUnavailability.from_date).toLocaleDateString()} - {new Date(currentUnavailability.to_date).toLocaleDateString()}
+          <div style={{ textAlign: 'center' }}>
+            <h5 style={{ fontSize: '0.9rem', color: 'var(--text-secondary)', marginBottom: '8px', fontWeight: 'bold' }}>Weekly Availability</h5>
+            <div style={{ color: 'var(--text-secondary)', fontSize: '0.85rem', marginTop: '0.5rem' }}>
+              <strong>Unavailable</strong>
+            </div>
+            <div style={{ color: 'var(--text-secondary)', fontSize: '0.85rem', marginTop: '0.25rem' }}>
+              {new Date(currentUnavailability.from_date).toLocaleDateString()} - {new Date(currentUnavailability.to_date).toLocaleDateString()}
+            </div>
           </div>
         ) : (
           <div>
-            <h5 style={{ fontSize: '0.9rem', color: 'var(--text-secondary)', marginBottom: '8px', fontWeight: 'bold' }}>Weekly Availability</h5>
+            <h5 style={{ fontSize: '0.9rem', color: 'var(--text-secondary)', marginBottom: '8px', fontWeight: 'bold', textAlign: 'center' }}>Weekly Availability</h5>
             <div style={{ fontSize: '0.85rem', color: 'var(--text-secondary)' }}>
               {days.map(day => (
                 <div key={day} style={{ display: 'flex', justifyContent: 'space-between', padding: '4px 0', borderBottom: '1px solid var(--border-color)' }}>

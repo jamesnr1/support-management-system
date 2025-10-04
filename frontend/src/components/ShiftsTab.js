@@ -10,32 +10,35 @@ const ShiftsTab = ({ workers, rosterData }) => {
   const [selectedWorkers, setSelectedWorkers] = useState(new Set());
   const [sendToAll, setSendToAll] = useState(false);
 
-  // Calculate week date ranges
-  const getWeekRange = (weekType) => {
+  // Calculate week date ranges for all three weeks
+  const weekRanges = useMemo(() => {
     const today = new Date();
     const currentDay = today.getDay();
-    const daysToMonday = currentDay === 0 ? 6 : currentDay - 1; // If Sunday (0), go back 6 days
+    const daysToMonday = currentDay === 0 ? 6 : currentDay - 1;
     
-    let startDate;
-    if (weekType === 'current') {
-      startDate = new Date(today);
-      startDate.setDate(today.getDate() - daysToMonday);
-    } else if (weekType === 'next') {
-      startDate = new Date(today);
-      startDate.setDate(today.getDate() - daysToMonday + 7);
-    } else { // week_after
-      startDate = new Date(today);
-      startDate.setDate(today.getDate() - daysToMonday + 14);
-    }
+    const calculateRange = (offset) => {
+      const start = new Date(today);
+      start.setDate(today.getDate() - daysToMonday + offset);
+      start.setHours(0, 0, 0, 0);
+      
+      const end = new Date(start);
+      end.setDate(start.getDate() + 6);
+      
+      return {
+        startDate: start,
+        endDate: end,
+        label: `${start.toLocaleDateString()} - ${end.toLocaleDateString()}`
+      };
+    };
     
-    startDate.setHours(0, 0, 0, 0);
-    const endDate = new Date(startDate);
-    endDate.setDate(startDate.getDate() + 6);
-    
-    return { startDate, endDate };
-  };
+    return {
+      current: calculateRange(0),
+      next: calculateRange(7),
+      week_after: calculateRange(14)
+    };
+  }, []);
 
-  const { startDate, endDate } = getWeekRange(selectedWeek);
+  const { startDate, endDate } = weekRanges[selectedWeek];
 
   // Organize shifts by worker
   const workerShifts = useMemo(() => {
@@ -176,9 +179,9 @@ const ShiftsTab = ({ workers, rosterData }) => {
             cursor: 'pointer'
           }}
         >
-          <option value="current">Current Week ({startDate.toLocaleDateString()} - {endDate.toLocaleDateString()})</option>
-          <option value="next">Next Week</option>
-          <option value="week_after">Week After</option>
+          <option value="current">Current Week ({weekRanges.current.label})</option>
+          <option value="next">Next Week ({weekRanges.next.label})</option>
+          <option value="week_after">Week After ({weekRanges.week_after.label})</option>
         </select>
         <span style={{ fontSize: '0.9rem', color: 'var(--text-secondary)' }}>
           {workersWithShifts.length} worker{workersWithShifts.length !== 1 ? 's' : ''} with shifts
