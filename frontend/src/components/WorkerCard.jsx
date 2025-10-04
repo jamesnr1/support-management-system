@@ -90,7 +90,7 @@ const WorkerCard = ({ worker, onEdit, onManageAvailability, onDelete, availabili
     <div 
       className="worker-card" 
       style={{ 
-        height: '440px', 
+        height: '480px', 
         display: 'flex', 
         flexDirection: 'column'
       }}
@@ -136,7 +136,7 @@ const WorkerCard = ({ worker, onEdit, onManageAvailability, onDelete, availabili
         </div>
       </div>
 
-      <div className="worker-content" style={{ display: 'flex', flexDirection: 'column', flexGrow: 1 }}>
+      <div className="worker-content" style={{ display: 'flex', flexDirection: 'column', flex: 1, overflow: 'hidden' }}>
         {/* Availability Schedule Box */}
         <div style={{
           background: '#4A4641',
@@ -145,7 +145,7 @@ const WorkerCard = ({ worker, onEdit, onManageAvailability, onDelete, availabili
           padding: '0.75rem',
           margin: '0.75rem 0',
           fontSize: '0.85rem',
-          height: '310px',
+          height: '330px',
           display: 'flex',
           flexDirection: 'column',
           overflow: 'auto'
@@ -186,7 +186,7 @@ const WorkerCard = ({ worker, onEdit, onManageAvailability, onDelete, availabili
         </div>
 
         {/* Action Buttons */}
-        <div className="worker-actions">
+        <div className="worker-actions" style={{ marginTop: 'auto', paddingTop: '0.75rem' }}>
           <div style={{ display: 'flex', gap: '0.5rem' }}>
             <button
               className="btn btn-primary btn-sm"
