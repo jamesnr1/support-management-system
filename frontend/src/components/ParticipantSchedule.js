@@ -170,14 +170,27 @@ const ParticipantSchedule = ({
   // Toggle shift lock status
   const handleToggleLock = async (shiftIndex, shiftDate) => {
     try {
-      const currentRoster = JSON.parse(JSON.stringify(rosterData || {}));
-      const shift = currentRoster[participant.code][shiftDate][shiftIndex];
+      // Create a copy with ONLY this participant's data
+      const participantData = JSON.parse(JSON.stringify(rosterData || {}));
+      
+      // Access the shift through the participant's data structure
+      if (!participantData[shiftDate] || !participantData[shiftDate][shiftIndex]) {
+        throw new Error('Shift not found');
+      }
+      
+      const shift = participantData[shiftDate][shiftIndex];
       
       // Toggle the locked state
       shift.locked = !shift.locked;
       
       console.log(`Shift ${shift.locked ? 'locked 🔒' : 'unlocked 🔓'}:`, shift.shiftNumber);
-      await onRosterUpdate(currentRoster);
+      
+      // Wrap in participant code for onRosterUpdate
+      const updatedParticipantData = {
+        [participant.code]: participantData
+      };
+      
+      await onRosterUpdate(updatedParticipantData);
     } catch (error) {
       console.error('Error toggling lock:', error);
     }
@@ -188,7 +201,7 @@ const ParticipantSchedule = ({
     console.log('DELETE FUNCTION - Starting delete for index:', shiftIndex, 'date:', shiftDate);
     
     // Check if shift is locked
-    const shift = rosterData[participant.code]?.[shiftDate]?.[shiftIndex];
+    const shift = rosterData[shiftDate]?.[shiftIndex];
     if (shift?.locked) {
       alert('⚠️ This shift is locked. Please unlock it before deleting.');
       return;
@@ -199,17 +212,17 @@ const ParticipantSchedule = ({
     }
     
     try {
-      // Get current roster data
-      const currentRoster = JSON.parse(JSON.stringify(rosterData || {}));
+      // Get current participant's roster data (rosterData is already participant-specific)
+      const participantData = JSON.parse(JSON.stringify(rosterData || {}));
       
-      // Check if participant and date exist
-      if (!currentRoster[participant.code] || !currentRoster[participant.code][shiftDate]) {
+      // Check if date exists
+      if (!participantData[shiftDate]) {
         console.log('No shifts found for deletion');
         return;
       }
       
       // Remove the shift at the specified index
-      const shifts = currentRoster[participant.code][shiftDate];
+      const shifts = participantData[shiftDate];
       console.log('Before delete - shifts:', shifts);
       
       // Remove shift by index
@@ -218,15 +231,20 @@ const ParticipantSchedule = ({
       
       // If no shifts remain for this date, remove the date
       if (shifts.length === 0) {
-        delete currentRoster[participant.code][shiftDate];
+        delete participantData[shiftDate];
         console.log('Removed empty date entry');
       } else {
-        currentRoster[participant.code][shiftDate] = shifts;
+        participantData[shiftDate] = shifts;
       }
       
+      // Wrap in participant code for onRosterUpdate (which expects {participantCode: data})
+      const updatedParticipantData = {
+        [participant.code]: participantData
+      };
+      
       // Update the roster
-      console.log('Updating roster with:', currentRoster);
-      await onRosterUpdate(currentRoster);
+      console.log('Updating roster with:', updatedParticipantData);
+      await onRosterUpdate(updatedParticipantData);
       
       // Force reload to show changes
       setTimeout(() => {

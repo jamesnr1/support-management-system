@@ -11,7 +11,7 @@
 - ✅ PASS: 0
 - ⚠️ NEEDS TESTING: 0  
 - ❌ FAIL: 0
-- 🔧 FIXED: 2 (ShiftForm initialization, Data loss bug)
+- 🔧 FIXED: 3 (ShiftForm init, Data loss, Worker hours calculation)
 
 ---
 
@@ -236,6 +236,13 @@
    - Backend would replace entire roster with that one participant
    - Fixed by merging updated participant data with existing full roster before POST
    - Fixed in commit: 9867ee5
+
+3. **CRITICAL: Incorrect worker hours in ShiftForm dropdown** - Would show much lower hours than actual
+   - ShiftForm's calculateWorkerHours expected ALL participants' data
+   - Was only receiving ONE participant's data
+   - Result: Worker hours appeared as 5h instead of 30h, risking massive over-allocation
+   - Fixed by passing fullRosterData prop through ParticipantSchedule to ShiftForm
+   - Fixed in commit: a5613f9
 
 ### ❌ OPEN ISSUES
 (To be populated as audit progresses)
