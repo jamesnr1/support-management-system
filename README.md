@@ -1,7 +1,7 @@
 # Support Management System - NDIS Rostering Application
 
-**Last Updated:** October 4, 2025
-**Status:** ✅ Fully Operational - Roster/Planner System
+**Last Updated:** October 8, 2025
+**Status:** ✅ Fully Operational - 3-Week Rolling Roster
 **Database:** PostgreSQL via Supabase
 **Branch:** `feature/current-planning-tabs`
 
@@ -14,18 +14,17 @@
 This is a **specialized rostering system** for managing NDIS (National Disability Insurance Scheme) support services across 5 participants with complex support needs.
 
 **The Challenge:**
-- 5 participants with varying support needs (1:1, 2:1, 2:3 ratios)
+- 5 participants with varying support needs (1:1, 2:1 ratios)
 - ~100+ worker assignments per week
 - Alternating week patterns (Week A vs Week B)
 - 30+ active support workers
-- NDIS compliance requirements
+- NDIS compliance requirements (12hr/day, 50hr/week limits)
 - Real-time availability tracking
 
 **The Solution:**
-- **Roster Tab:** Current active week (editable, what's happening now)
-- **Planner Tab:** Build future weeks (toggle Week A/B patterns)
-- **Admin Tab:** Manage workers, availability, Telegram messaging
-- **Hours Tab:** Track participant hours by NDIS funding categories
+- **Roster Tab:** 3-week rolling view (Current Week, Next Week, Week After)
+- **Staff Tab:** Manage workers, availability, and worker cards
+- **Tracking Tab:** Track participant hours by NDIS funding categories
 
 ---
 
@@ -55,70 +54,65 @@ yarn start
 
 ## 📊 TABS & FUNCTIONALITY
 
-### 🗓️ **Roster Tab** (Current Active Roster)
-**Purpose:** View and edit the current week's roster
+### 🗓️ **Roster Tab** (3-Week Rolling View)
+**Purpose:** View and edit rosters across a 3-week rolling window
+
+**Week Selector:**
+- **Current Week** - The active roster (dates auto-update daily)
+- **Next Week** - Planning for next week
+- **Week After** - Planning for 2 weeks ahead
 
 **Features:**
 - ✅ Edit Mode - Modify shifts in real-time
-- ✅ Copy to Planner - Duplicate roster for planning next week
-- ✅ Export Payroll CSV - Worker hours for payroll
-- ✅ Export Shifts CSV - Shift details report
-- ✅ Participant cards with shift details
+- ✅ Week Toggle - Switch between Current/Next/After weeks
+- ✅ Export Payroll CSV - Organized by date/participant for payroll
+- ✅ Export Shift Report CSV - Detailed shift information with shift numbers
+- ✅ Participant cards with shift details (Monday-Sunday view)
 - ✅ Google Calendar integration (appointments display)
-- ✅ Clean interface (no week pattern indicators)
+- ✅ Shift locking (🔒/🔓) - Prevent accidental changes
+- ✅ Auto-location assignment (James→Plympton Park, Libby→Glandore)
+- ✅ Worker filtering (only shows available workers based on availability rules)
 
-**Use Case:** This week, Grace calls in sick. Edit her shifts immediately and assign replacement workers.
+**Validation Rules:**
+- ❌ No breaks between shifts on same day (removed)
+- ✅ 12-hour daily maximum per worker
+- ✅ 50-hour weekly maximum per worker (configurable)
+- ✅ 8-hour rest period between shifts on adjacent days
+- ✅ No double-booking (same worker, different participants, overlapping times)
+- ✅ Split shifts allowed (same worker, same participant, back-to-back times)
 
----
-
-### 📋 **Planner Tab** (Build Future Rosters)
-**Purpose:** Plan upcoming weeks before they go live
-
-**Features:**
-- ✅ Week A/B Toggle - Select which pattern to use
-- ✅ Pattern Explanation - Shows who gets shared night support
-  - Week A: Libby shared support
-  - Week B: James shared support
-- ✅ Edit Mode - Build and modify future shifts
-- ✅ Export Payroll CSV
-- ✅ Export Shifts CSV
-- ✅ Same participant cards as Roster
-
-**Use Case:** Next week is Week B. Toggle to Week B pattern, adjust James's shared night shifts, balance worker hours across the fortnight.
-
-**Week A vs Week B:**
-- **Week A:** Libby gets 2:3 shared night support with Ace & Grace
-- **Week B:** James gets 2:3 shared night support with Ace & Grace
-- **Why:** Optimizes support resources while meeting NDIS funding requirements
+**Use Case:** This week, Grace calls in sick. Edit her shifts immediately and assign replacement workers. Lock completed shifts to prevent changes.
 
 ---
 
-### 👥 **Admin Tab** (Worker Management)
-**Purpose:** Manage support workers
+### 👥 **Staff Tab** (Worker Management)
+**Purpose:** Manage support workers and their availability
 
 **Features:**
-- ✅ Worker Cards - View all active workers
-- ✅ Add/Edit/Delete Workers
-- ✅ Availability Management:
-  - Set weekly availability (Monday-Sunday, time ranges)
-  - Add unavailability periods (dates, reasons)
-  - Max hours tracking
-- ✅ Telegram Messaging:
-  - Send messages to individual workers
-  - Broadcast to all workers
-  - Notify coordinators
-  - Shift notifications
+- ✅ Worker Cards - View all active workers with their weekly availability
+- ✅ Availability Modal - Set worker availability:
+  - Weekly schedule (Monday-Sunday)
+  - Multiple time ranges per day (e.g., 06:00-14:00, 18:00-22:00)
+  - All-day availability option
 - ✅ Worker Details:
   - Contact info (email, phone, Telegram ID)
+  - Max hours per week
   - Skills & qualifications
   - Car availability
-  - Gender (for specific support needs)
+- ✅ Quick view of shifts in compact format
 
-**Use Case:** Sarah can only work mornings now. Update her availability and send a Telegram to confirm her new schedule.
+**Worker Filtering Logic:**
+Workers are automatically hidden from shift assignment if:
+- They have no availability set for that day
+- They already have a shift that day
+- They would violate the 8-hour rest rule from previous/next day
+- They are on leave/unavailable
+
+**Use Case:** Sarah can only work mornings now. Update her availability (Mon-Fri, 06:00-14:00) and she'll only appear for morning shifts.
 
 ---
 
-### ⏱️ **Hours Tab** (NDIS Hours Tracking)
+### ⏱️ **Tracking Tab** (NDIS Hours Tracking)
 **Purpose:** Track participant hours by NDIS funding categories
 
 **Features:**
@@ -131,7 +125,7 @@ yarn start
   - **CDSC** - Core Daily Social Capacity
 - ✅ Time bands (Day: 6am-6pm, Evening: 6pm-10pm, Night: 10pm-6am)
 - ✅ Week A/B pattern awareness
-- ✅ Support ratio calculations (1:1, 2:1, 2:3)
+- ✅ Support ratio calculations (1:1, 2:1)
 - ✅ CSV export for funding claims
 
 **Use Case:** Generate monthly NDIS reports showing Libby's hour breakdown across all funding categories.
@@ -307,11 +301,12 @@ Reference: `AI_HANDOVER.md`
 - **Shifts CSV:** Detailed shift report for coordination
 
 ### 3. **NDIS Validation** ✅
-- Detects double bookings
-- Flags 16+ hour shifts
+- Detects double bookings (different participants, overlapping times)
+- Allows split shifts (same participant, back-to-back times)
+- Flags 12+ hour shifts per day
 - Checks support ratios (e.g., 2:1 shift with only 1 worker)
-- Warns about short breaks (<10h between shifts)
-- Validates weekly max hours
+- Validates 8h rest between adjacent days
+- Validates weekly max hours (50h default, configurable per worker)
 
 ### 4. **Google Calendar Integration** ✅
 - Displays participant appointments
@@ -331,36 +326,36 @@ Reference: `AI_HANDOVER.md`
 - Hours calculations
 - Compliance checks
 
-### 7. **Sunday Automation** (Planned)
-- Automatically moves Planner → Roster at 3 AM on Sunday
-- Clears Planner for next planning cycle
-- Preserves week_type
+### 7. **Automatic Week Transition** ✅
+- Frontend checks every minute for Sunday 3am
+- Backend endpoint `/api/roster/transition_to_roster` handles rotation:
+  - Next Week → Current Week
+  - Week After → Next Week
+  - New empty Week After is created
+- Dates automatically recalculate based on current date
 
 ---
 
-## 🔧 RECENT CHANGES (Oct 4, 2025)
+## 🔧 RECENT CHANGES (Oct 8, 2025)
 
-### Space-Saving UI Refactor ✅
-1. ✅ Combined tab navigation + action buttons in one row
-2. ✅ Moved calendar controls (Refresh, Hide/Show) to tab row
-3. ✅ Calendar collapses completely when hidden (saves full space)
-4. ✅ Thinner tab underline (3px→1px, gold→sage green)
-5. ✅ Compact calendar headers (name & date on same row)
-6. ✅ Proper spacing (0.75rem between elements, 2rem from tabs)
-7. ✅ Readable font sizes (0.9rem for all controls)
+### Validation & UI Improvements ✅
+1. ✅ **Removed break time rules** - No more 30min/2hr break requirements between shifts
+2. ✅ **Updated hours limits** - 12hrs/day (was 16), 50hrs/week (was 35)
+3. ✅ **Re-added shift locking** - Lock/unlock buttons (🔒/🔓) now visible on shift cards
+4. ✅ **Fixed CSV exports** - Payroll CSV organized by date/participant, Shift Report includes shift numbers
+5. ✅ **UI polish** - Removed location pin (📍), fixed dropdown widths, prevented text wrapping
+6. ✅ **Worker dropdown sizing** - Fixed to 140px width with smaller font
+7. ✅ **Location display** - Auto-assigned, compact display without wrapping
 
-**Result:** ~120-140px of vertical space saved!
-
-### Tab Row Layout ✅
-**Planner Tab:**
+### Tab Structure ✅
 ```
-[Roster] [Planner] [Admin] [Hours]    Week: [A] [B] (Libby shared support) | ✏️ Edit 💰 Payroll 📄 Shifts    Updated 23.40 🔄 Refresh 👁️ Hide
+[Roster] [Staff] [Tracking]    View: [Current Week ▾] (Oct 6 - Oct 12) | ✏️ Edit 💰 Payroll 📄 Shifts    🔄 Refresh 👁️ Hide
 ```
 
-**Roster Tab:**
-```
-[Roster] [Planner] [Admin] [Hours]    ✏️ Edit 📋 Copy 💰 Payroll 📄 Shifts    Updated 23.40 🔄 Refresh 👁️ Hide
-```
+**Week Selector Options:**
+- Current Week (auto-updates dates)
+- Next Week
+- Week After
 
 ---
 
@@ -508,6 +503,6 @@ REACT_APP_GOOGLE_CLIENT_ID=your_google_client_id
 ---
 
 **System Status:** ✅ Production Ready
-**Last Major Update:** October 4, 2025 - Space-saving UI refactor
-**Next Milestone:** Sunday automation implementation
+**Last Major Update:** October 8, 2025 - Validation rules & UI improvements
+**Next Milestone:** Mobile-responsive design & advanced worker filtering
 
