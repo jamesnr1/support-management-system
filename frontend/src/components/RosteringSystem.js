@@ -256,7 +256,7 @@ const RosteringSystem = () => {
       next: { label: formatDateRange(nextMonday), startDate: nextMonday },
       after: { label: formatDateRange(afterMonday), startDate: afterMonday }
     };
-  }, []); // Empty deps - recalculates on component mount
+  }, [selectedRosterWeek]); // Recalculate when week changes
   
   // Get the actual start date for the selected planner week
   const plannerWeekStartDate = useMemo(() => {
@@ -369,38 +369,38 @@ const RosteringSystem = () => {
                 return worker ? worker.full_name : `Worker-${workerId}`;
               });
               const workersList = workerNames.length > 0 ? workerNames.join(', ') : 'UNASSIGNED';
-              
-              // Calculate funding code
-              const shiftDate = new Date(date);
-              const startHour = parseInt(shift.startTime?.split(':')[0] || '9');
-              const dayOfWeek = shiftDate.getDay();
-              let fundingCode = '';
+                
+                // Calculate funding code
+                const shiftDate = new Date(date);
+                const startHour = parseInt(shift.startTime?.split(':')[0] || '9');
+                const dayOfWeek = shiftDate.getDay();
+                let fundingCode = '';
               
               // Get day name
               const dayNames = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
               const dayName = dayNames[dayOfWeek];
-              
-              if (dayOfWeek === 6) {
-                fundingCode = shift.supportType === 'Community Participation' ? 'CPSat' : 'SCSat';
-              } else if (dayOfWeek === 0) {
-                fundingCode = shift.supportType === 'Community Participation' ? 'CPSun' : 'SCSun';
-              } else if (startHour >= 20 || startHour < 6) {
-                fundingCode = shift.supportType === 'Community Participation' ? 'CPWN' : 'SCWN';
-              } else if (startHour >= 18) {
-                fundingCode = shift.supportType === 'Community Participation' ? 'CPWE' : 'SCWE';
-              } else {
-                fundingCode = shift.supportType === 'Community Participation' ? 'CPWD' : 'SCWD';
-              }
-              
+                
+                if (dayOfWeek === 6) {
+                  fundingCode = shift.supportType === 'Community Participation' ? 'CPSat' : 'SCSat';
+                } else if (dayOfWeek === 0) {
+                  fundingCode = shift.supportType === 'Community Participation' ? 'CPSun' : 'SCSun';
+                } else if (startHour >= 20 || startHour < 6) {
+                  fundingCode = shift.supportType === 'Community Participation' ? 'CPWN' : 'SCWN';
+                } else if (startHour >= 18) {
+                  fundingCode = shift.supportType === 'Community Participation' ? 'CPWE' : 'SCWE';
+                } else {
+                  fundingCode = shift.supportType === 'Community Participation' ? 'CPWD' : 'SCWD';
+                }
+                
               allShifts.push({
                 day: dayName,
                 date,
-                participantName,
-                startTime: shift.startTime,
-                endTime: shift.endTime,
-                hours: shift.duration || '0',
+                  participantName,
+                  startTime: shift.startTime,
+                  endTime: shift.endTime,
+                  hours: shift.duration || '0',
                 workers: workersList,
-                location: locationName,
+                  location: locationName,
                 fundingCode
               });
             });
@@ -589,11 +589,6 @@ const RosteringSystem = () => {
       {/* Header */}
       <header className="header">
         <h2>Support Management System</h2>
-          <div>
-          <button className="logout" onClick={handleLogout}>
-            Logout
-          </button>
-              </div>
       </header>
 
       {/* Tab Navigation */}
@@ -613,7 +608,7 @@ const RosteringSystem = () => {
           <div className="action-buttons" style={{ display: 'flex', alignItems: 'center', gap: '1rem', flexWrap: 'wrap' }}>
             {/* Week Selector */}
             <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-              <span style={{ fontSize: '0.9rem', fontWeight: '500', color: 'var(--text-secondary)' }}>View:</span>
+              <span style={{ fontSize: '0.9rem', fontWeight: '500', color: 'var(--text-secondary)' }}>Week:</span>
               <div style={{ position: 'relative', display: 'inline-block' }}>
                 <select
                   value={selectedRosterWeek}
@@ -652,11 +647,6 @@ const RosteringSystem = () => {
               </div>
               <span style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', fontWeight: '500' }}>
                 {plannerWeekRanges[selectedRosterWeek]?.label}
-                {rosterData.isUsingFallback && (
-                  <span style={{ color: 'var(--accent)', marginLeft: '0.25rem' }}>
-                    (fallback)
-                  </span>
-                )}
               </span>
             </div>
 
@@ -672,15 +662,16 @@ const RosteringSystem = () => {
                       color: rosterData.current.week_type === 'weekA' ? 'white' : 'var(--text-primary)',
                       border: '1px solid var(--border)',
                       borderRadius: '50%',
-                      width: '28px',
-                      height: '28px',
+                      width: '36px',
+                      height: '36px',
                       display: 'flex',
                       alignItems: 'center',
                       justifyContent: 'center',
-                      fontSize: '0.8rem',
+                      fontSize: '0.9rem',
                       fontWeight: '600',
                       cursor: 'pointer',
-                      transition: 'all 0.2s ease'
+                      transition: 'all 0.2s ease',
+                      padding: 0
                     }}
                   >
                     A
@@ -692,15 +683,16 @@ const RosteringSystem = () => {
                       color: rosterData.current.week_type === 'weekB' ? 'white' : 'var(--text-primary)',
                       border: '1px solid var(--border)',
                       borderRadius: '50%',
-                      width: '28px',
-                      height: '28px',
+                      width: '36px',
+                      height: '36px',
                       display: 'flex',
                       alignItems: 'center',
                       justifyContent: 'center',
-                      fontSize: '0.8rem',
+                      fontSize: '0.9rem',
                       fontWeight: '600',
                       cursor: 'pointer',
-                      transition: 'all 0.2s ease'
+                      transition: 'all 0.2s ease',
+                      padding: 0
                     }}
                   >
                     B
@@ -711,7 +703,6 @@ const RosteringSystem = () => {
                 </span>
               </div>
             )}
-        )}
             
               <button 
                 onClick={toggleEditMode}
@@ -731,14 +722,43 @@ const RosteringSystem = () => {
             <button 
               onClick={() => exportRoster('payroll')}
               title="Export payroll CSV"
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                width: '32px',
+                height: '32px',
+                background: 'transparent',
+                border: 'none',
+                cursor: 'pointer'
+              }}
             >
-              Payroll
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                <line x1="12" y1="1" x2="12" y2="23"></line>
+                <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
+              </svg>
             </button>
             <button
               onClick={() => exportRoster('shifts')}
               title="Export shifts CSV"
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                width: '32px',
+                height: '32px',
+                background: 'transparent',
+                border: 'none',
+                cursor: 'pointer'
+              }}
             >
-              Shifts
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                <polyline points="14 2 14 8 20 8"></polyline>
+                <line x1="16" y1="13" x2="8" y2="13"></line>
+                <line x1="16" y1="17" x2="8" y2="17"></line>
+                <polyline points="10 9 9 9 8 9"></polyline>
+              </svg>
             </button>
           </div>
         )}
@@ -761,7 +781,7 @@ const RosteringSystem = () => {
                 justifyContent: 'center'
               }}
             >
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
                 <polyline points="23 4 23 10 17 10"></polyline>
                 <polyline points="1 20 1 14 7 14"></polyline>
                 <path d="m3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path>
@@ -781,7 +801,7 @@ const RosteringSystem = () => {
                 justifyContent: 'center'
               }}
             >
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
                 <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
                 <line x1="16" y1="2" x2="16" y2="6"></line>
                 <line x1="8" y1="2" x2="8" y2="6"></line>
@@ -795,17 +815,17 @@ const RosteringSystem = () => {
               }}
               title="Logout"
             style={{ 
-                background: 'var(--bg-primary)',
-                border: '1px solid var(--border)',
-                borderRadius: '6px',
-                padding: '0.5rem',
+                background: 'transparent',
+                border: 'none',
+                width: '32px',
+                height: '32px',
                 cursor: 'pointer',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center'
               }}
             >
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
                 <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
                 <polyline points="16 17 21 12 16 7"></polyline>
                 <line x1="21" y1="12" x2="9" y2="12"></line>
@@ -853,19 +873,16 @@ const RosteringSystem = () => {
               </div>
             ) : (
               <div className="participant-schedules-list">
-                {(() => {
+                {[...participants].sort((a, b) => {
                   // Custom participant order: James, Libby, Ace, Grace, Milan
                   const participantOrder = ['JAM001', 'LIB001', 'ACE001', 'GRA001', 'MIL001'];
-                  const sortedParticipants = [...participants].sort((a, b) => {
                     const aIndex = participantOrder.indexOf(a.code);
                     const bIndex = participantOrder.indexOf(b.code);
                     // If not in custom order, put at end
                     if (aIndex === -1) return 1;
                     if (bIndex === -1) return -1;
                     return aIndex - bIndex;
-                  });
-                  return sortedParticipants;
-                })().map(participant => (
+                }).map(participant => (
                   <ParticipantSchedule
                     key={participant.id}
                     participant={participant}

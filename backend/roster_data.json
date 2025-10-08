@@ -368,22 +368,6 @@
       "ACE001": {
         "2025-10-11": [
           {
-            "id": "shift_1759897212654_ny5i392u2",
-            "date": "2025-10-11",
-            "startTime": "14:00",
-            "endTime": "22:00",
-            "supportType": "Self-Care",
-            "ratio": "1:1",
-            "workers": [
-              "138"
-            ],
-            "location": "1",
-            "notes": "",
-            "shiftNumber": "A2025101105",
-            "duration": 8,
-            "isSplitShift": false
-          },
-          {
             "id": "shift_1759897422091_g8djfq2rd",
             "date": "2025-10-11",
             "startTime": "06:00",
@@ -396,6 +380,23 @@
             "location": "2",
             "notes": "",
             "shiftNumber": "A2025101180",
+            "duration": 8,
+            "isSplitShift": false,
+            "locked": true
+          },
+          {
+            "id": "shift_1759897212654_ny5i392u2",
+            "date": "2025-10-11",
+            "startTime": "14:00",
+            "endTime": "22:00",
+            "supportType": "Self-Care",
+            "ratio": "1:1",
+            "workers": [
+              "138"
+            ],
+            "location": "1",
+            "notes": "",
+            "shiftNumber": "A2025101105",
             "duration": 8,
             "isSplitShift": false
           }
@@ -451,7 +452,8 @@
             "notes": "",
             "shiftNumber": "G2025100622",
             "duration": 2,
-            "isSplitShift": false
+            "isSplitShift": false,
+            "locked": true
           },
           {
             "id": "shift_1759882440216_lr7kezf6m",
@@ -501,7 +503,8 @@
             "notes": "",
             "shiftNumber": "G2025100736",
             "duration": 2,
-            "isSplitShift": false
+            "isSplitShift": false,
+            "locked": true
           },
           {
             "id": "shift_1759882536805_h0l05g2jf",
@@ -551,7 +554,8 @@
             "notes": "",
             "shiftNumber": "G2025100823",
             "duration": 2,
-            "isSplitShift": false
+            "isSplitShift": false,
+            "locked": true
           },
           {
             "id": "shift_1759888728980_7hxr64rr5",
@@ -601,7 +605,8 @@
             "notes": "",
             "shiftNumber": "G2025101083",
             "duration": 2,
-            "isSplitShift": false
+            "isSplitShift": false,
+            "locked": true
           },
           {
             "id": "shift_1759888864547_75yc8803b",
@@ -651,7 +656,8 @@
             "notes": "",
             "shiftNumber": "G2025100918",
             "duration": 6,
-            "isSplitShift": false
+            "isSplitShift": false,
+            "locked": false
           },
           {
             "id": "shift_1759896321576_urp9o9gic",

@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { useQueryClient } from '@tanstack/react-query';
 import ShiftForm from './ShiftForm';
 
@@ -58,6 +58,15 @@ const ParticipantSchedule = React.memo(({
   const [isDragging, setIsDragging] = useState(false);
   const [draggedShift, setDraggedShift] = useState(null);
   const queryClient = useQueryClient();
+
+  // Clear editing state when edit mode is turned off or participant/week changes
+  useEffect(() => {
+    if (!editMode) {
+      setShowShiftForm(false);
+      setEditingShift(null);
+      setSelectedDate(null);
+    }
+  }, [editMode, participant?.id, weekType]);
 
   // Get participant's shifts for this week
   // rosterData is now the correctly sliced data for this specific participant
@@ -499,14 +508,16 @@ const ParticipantSchedule = React.memo(({
                                   right: '4px',
                                   background: 'transparent',
                                   border: 'none',
-                                  fontSize: '1.2rem',
+                                  fontSize: '1rem',
                                   cursor: 'pointer',
                                   padding: '2px',
-                                  borderRadius: '3px'
+                                  borderRadius: '3px',
+                                  fontWeight: 'bold',
+                                  color: shift.locked ? 'var(--accent)' : 'var(--text-secondary)'
                                 }}
                                 title={shift.locked ? 'Unlock shift' : 'Lock shift'}
                               >
-                                {shift.locked ? '🔒' : '🔓'}
+                                {shift.locked ? '■' : '□'}
                               </button>
                             )}
                           </div>
