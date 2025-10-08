@@ -129,7 +129,7 @@ class RosterValidator:
                                 )
     
     def check_continuous_hours(self):
-        """Check for excessive continuous working hours (16+ hours)"""
+        """Check for excessive continuous working hours (12+ hours)"""
         worker_schedule = {}
         
         for p_code, dates in self.roster.items():
@@ -154,16 +154,10 @@ class RosterValidator:
             for date, day_shifts in dates.items():
                 total_hours = sum(s['duration'] for s in day_shifts)
                 
-                if total_hours >= 16:
+                if total_hours >= 12:
                     times = ', '.join([f"{s['start']}-{s['end']}" for s in day_shifts])
                     self.errors.append(
                         f"❌ EXCESSIVE HOURS: {worker_name} on {date} "
-                        f"scheduled for {total_hours:.1f} hours ({times})"
-                    )
-                elif total_hours >= 12:
-                    times = ', '.join([f"{s['start']}-{s['end']}" for s in day_shifts])
-                    self.warnings.append(
-                        f"⚠️ LONG SHIFT: {worker_name} on {date} "
                         f"scheduled for {total_hours:.1f} hours ({times})"
                     )
     

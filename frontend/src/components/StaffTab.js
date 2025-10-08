@@ -932,9 +932,8 @@ const AvailabilityModal = ({ worker, onClose, initialAvailabilityData }) => {
                           </label>
                           
                           {timeRange.enabled && (
-                            <div style={{ display: 'flex', alignItems: 'center', gap: '0.15rem', flex: 1 }}>
-                              <input
-                                type="time"
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '0.3rem', flex: 1 }}>
+                              <select
                                 value={timeRange.fromTime || (rangeIndex === 0 ? '06:00' : '18:00')}
                                 onChange={(e) => handleTimeRangeChange(index, rangeIndex, 'fromTime', e.target.value)}
                                 style={{ 
@@ -942,13 +941,18 @@ const AvailabilityModal = ({ worker, onClose, initialAvailabilityData }) => {
                                   borderRadius: '4px', 
                                   border: '1px solid var(--border)', 
                                   fontSize: '1rem',
-                                  width: '100px',
-                                  minWidth: '100px'
+                                  width: '90px',
+                                  background: 'var(--card-bg)',
+                                  color: 'var(--text-primary)',
+                                  cursor: 'pointer'
                                 }}
-                              />
-                              <span style={{ color: 'var(--text-secondary)', fontSize: '1rem', padding: '0 0.3rem' }}>-</span>
-                              <input
-                                type="time"
+                              >
+                                {['00:00', '01:00', '02:00', '03:00', '04:00', '05:00', '06:00', '07:00', '08:00', '09:00', '10:00', '11:00', '12:00', '13:00', '14:00', '15:00', '16:00', '17:00', '18:00', '19:00', '20:00', '21:00', '22:00', '23:00'].map(time => (
+                                  <option key={time} value={time}>{time}</option>
+                                ))}
+                              </select>
+                              <span style={{ color: 'var(--text-secondary)', fontSize: '1rem' }}>-</span>
+                              <select
                                 value={timeRange.toTime || (rangeIndex === 0 ? '14:00' : '23:00')}
                                 onChange={(e) => handleTimeRangeChange(index, rangeIndex, 'toTime', e.target.value)}
                                 style={{ 
@@ -956,10 +960,16 @@ const AvailabilityModal = ({ worker, onClose, initialAvailabilityData }) => {
                                   borderRadius: '4px', 
                                   border: '1px solid var(--border)', 
                                   fontSize: '1rem',
-                                  width: '100px',
-                                  minWidth: '100px'
+                                  width: '90px',
+                                  background: 'var(--card-bg)',
+                                  color: 'var(--text-primary)',
+                                  cursor: 'pointer'
                                 }}
-                              />
+                              >
+                                {['00:00', '01:00', '02:00', '03:00', '04:00', '05:00', '06:00', '07:00', '08:00', '09:00', '10:00', '11:00', '12:00', '13:00', '14:00', '15:00', '16:00', '17:00', '18:00', '19:00', '20:00', '21:00', '22:00', '23:00'].map(time => (
+                                  <option key={time} value={time}>{time}</option>
+                                ))}
+                              </select>
                             </div>
                           )}
                         </div>

@@ -89,11 +89,11 @@ export function check16HourDay(workerId, date, additionalHours, rosterData) {
         }
     });
     
-    if (totalHours >= 16) {
+    if (totalHours >= 12) {
         return {
             valid: false,
             totalHours,
-            warning: `❌ Would create 16+ hour day (${totalHours.toFixed(1)}h total)`
+            warning: `❌ Would create 12+ hour day (${totalHours.toFixed(1)}h total)`
         };
     }
     

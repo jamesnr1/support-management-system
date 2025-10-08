@@ -313,15 +313,14 @@ class SupabaseDatabase:
             if rules:
                 rules_to_insert = []
                 for rule in rules:
+                    # Only include fields that exist in the current schema
                     rule_data = {
                         'worker_id': worker_id,
                         'weekday': rule.get('weekday'),
-                        'sequence_number': rule.get('sequence_number', 1),
                         'from_time': rule.get('from_time'),
                         'to_time': rule.get('to_time'),
                         'is_full_day': rule.get('is_full_day', False),
-                        'wraps_midnight': rule.get('wraps_midnight', False),
-                        'rule_type': rule.get('rule_type', 'standard')
+                        'wraps_midnight': rule.get('wraps_midnight', False)
                     }
                     rules_to_insert.append(rule_data)
                 

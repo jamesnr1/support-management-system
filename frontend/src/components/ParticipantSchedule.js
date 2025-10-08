@@ -479,12 +479,36 @@ const ParticipantSchedule = React.memo(({
                             draggable={editMode}
                             onDragStart={(e) => handleDragStart(e, shift, date)}
                             onDragEnd={handleDragEnd}
+                            style={{ position: 'relative' }}
                           >
                             <div className="shift-card-content">
                               <div className="shift-time">{`${formatTime(shift.startTime || shift.start_time)} - ${formatTime(shift.endTime || shift.end_time)}`}</div>
                               <div className="worker-name">{getWorkerDisplayName(shift.workers || shift.worker_id)}</div>
                             </div>
                             <div className="shift-hours">{shift.duration || shift.hours}h</div>
+                            {editMode && (
+                              <button
+                                className="lock-button"
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  handleToggleLock(index, date);
+                                }}
+                                style={{
+                                  position: 'absolute',
+                                  top: '4px',
+                                  right: '4px',
+                                  background: 'transparent',
+                                  border: 'none',
+                                  fontSize: '1.2rem',
+                                  cursor: 'pointer',
+                                  padding: '2px',
+                                  borderRadius: '3px'
+                                }}
+                                title={shift.locked ? 'Unlock shift' : 'Lock shift'}
+                              >
+                                {shift.locked ? '🔒' : '🔓'}
+                              </button>
+                            )}
                           </div>
                         </div>
                       )}

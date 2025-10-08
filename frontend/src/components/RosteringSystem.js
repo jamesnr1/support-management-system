@@ -336,18 +336,18 @@ const RosteringSystem = () => {
       
       // Fetch roster data for active tab only
       const response = await axios.get(`${API}/roster/${activeTab}`);
-      const tabData = response.data;
+      const tabData = response.data.data || response.data; // Handle nested data structure
       
       // Participant order (James → Libby → Ace → Grace → Milan)
       const participantOrder = ['JAM001', 'LIB001', 'ACE001', 'GRA001', 'MIL001'];
       
       if (type === 'payroll') {
-        // PAYROLL EXPORT - Organized by worker for payroll processing
-        csvContent = "Worker Name,Participant,Date,Start Time,End Time,Hours,Location,Support Type,Funding Code,Shift Number\n";
+        // PAYROLL EXPORT - Organized by date for payroll processing
+        csvContent = "Day,Date,Participant Name,Start Time,End Time,Hours,Workers,Location,Funding Code\n";
         filename = `payroll_${activeTab}_${new Date().toISOString().split('T')[0]}.csv`;
         
-        // Collect all worker-shift combinations
-        const workerShifts = [];
+        // Collect all shifts with grouped workers
+        const allShifts = [];
         
         participantOrder.forEach(participantCode => {
           if (!tabData[participantCode]) return;
@@ -362,60 +362,66 @@ const RosteringSystem = () => {
               const locationName = shift.location ? 
                 locations.find(l => l.id === shift.location)?.name || '' : '';
               
+              // Get all worker names for this shift
               const workerIds = shift.workers || [];
-              workerIds.forEach(workerId => {
+              const workerNames = workerIds.map(workerId => {
                 const worker = workers.find(w => w.id === workerId);
-                const workerName = worker ? worker.full_name : `Worker-${workerId}`;
-                
-                // Calculate funding code
-                const shiftDate = new Date(date);
-                const startHour = parseInt(shift.startTime?.split(':')[0] || '9');
-                const dayOfWeek = shiftDate.getDay();
-                let fundingCode = '';
-                
-                if (dayOfWeek === 6) {
-                  fundingCode = shift.supportType === 'Community Participation' ? 'CPSat' : 'SCSat';
-                } else if (dayOfWeek === 0) {
-                  fundingCode = shift.supportType === 'Community Participation' ? 'CPSun' : 'SCSun';
-                } else if (startHour >= 20 || startHour < 6) {
-                  fundingCode = shift.supportType === 'Community Participation' ? 'CPWN' : 'SCWN';
-                } else if (startHour >= 18) {
-                  fundingCode = shift.supportType === 'Community Participation' ? 'CPWE' : 'SCWE';
-                } else {
-                  fundingCode = shift.supportType === 'Community Participation' ? 'CPWD' : 'SCWD';
-                }
-                
-                workerShifts.push({
-                  workerName,
-                  participantName,
-                  date,
-                  startTime: shift.startTime,
-                  endTime: shift.endTime,
-                  hours: shift.duration || '0',
-                  location: locationName,
-                  supportType: shift.supportType || 'Self-Care',
-                  fundingCode,
-                  shiftNumber: shift.shiftNumber || ''
-                });
+                return worker ? worker.full_name : `Worker-${workerId}`;
+              });
+              const workersList = workerNames.length > 0 ? workerNames.join(', ') : 'UNASSIGNED';
+              
+              // Calculate funding code
+              const shiftDate = new Date(date);
+              const startHour = parseInt(shift.startTime?.split(':')[0] || '9');
+              const dayOfWeek = shiftDate.getDay();
+              let fundingCode = '';
+              
+              // Get day name
+              const dayNames = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+              const dayName = dayNames[dayOfWeek];
+              
+              if (dayOfWeek === 6) {
+                fundingCode = shift.supportType === 'Community Participation' ? 'CPSat' : 'SCSat';
+              } else if (dayOfWeek === 0) {
+                fundingCode = shift.supportType === 'Community Participation' ? 'CPSun' : 'SCSun';
+              } else if (startHour >= 20 || startHour < 6) {
+                fundingCode = shift.supportType === 'Community Participation' ? 'CPWN' : 'SCWN';
+              } else if (startHour >= 18) {
+                fundingCode = shift.supportType === 'Community Participation' ? 'CPWE' : 'SCWE';
+              } else {
+                fundingCode = shift.supportType === 'Community Participation' ? 'CPWD' : 'SCWD';
+              }
+              
+              allShifts.push({
+                day: dayName,
+                date,
+                participantName,
+                startTime: shift.startTime,
+                endTime: shift.endTime,
+                hours: shift.duration || '0',
+                workers: workersList,
+                location: locationName,
+                fundingCode
               });
             });
           });
         });
         
-        // Sort by worker name, then date
-        workerShifts.sort((a, b) => {
-          if (a.workerName !== b.workerName) return a.workerName.localeCompare(b.workerName);
-          return a.date.localeCompare(b.date);
+        // Sort by date first, then participant, then start time (grouped by participant per day)
+        allShifts.sort((a, b) => {
+          if (a.date !== b.date) return a.date.localeCompare(b.date);
+          if (a.participantName !== b.participantName) return a.participantName.localeCompare(b.participantName);
+          return a.startTime.localeCompare(b.startTime);
         });
         
         // Write CSV rows
-        workerShifts.forEach(row => {
-          csvContent += `"${row.workerName}","${row.participantName}","${row.date}","${row.startTime}","${row.endTime}","${row.hours}","${row.location}","${row.supportType}","${row.fundingCode}","${row.shiftNumber}"\n`;
+        allShifts.forEach(row => {
+          csvContent += `"${row.day}","${row.date}","${row.participantName}","${row.startTime}","${row.endTime}","${row.hours}","${row.workers}","${row.location}","${row.fundingCode}"\n`;
         });
         
       } else {
         // SHIFT REPORT EXPORT - Organized by participant (matches import format)
-        csvContent = "Participant,Date,Start Time,End Time,Support Worker,Location,Support Type,Ratio,Shift Number,Hours\n";
+        csvContent = "Shift Number,Day,Date,Participant,Start Time,End Time,Ratio,Workers,Support Type,Location\n";
         filename = `shift_report_${activeTab}_${new Date().toISOString().split('T')[0]}.csv`;
         
         participantOrder.forEach(participantCode => {
@@ -437,13 +443,13 @@ const RosteringSystem = () => {
                 workers.find(w => w.id === id)?.full_name || `Worker-${id}`
               );
               
-              if (workerList.length > 0) {
-                workerList.forEach(workerName => {
-                  csvContent += `"${participantName}","${date}","${shift.startTime}","${shift.endTime}","${workerName}","${locationName}","${shift.supportType || 'Self-Care'}","${shift.ratio || '1:1'}","${shift.shiftNumber || ''}","${shift.duration || '0'}"\n`;
-                });
-              } else {
-                csvContent += `"${participantName}","${date}","${shift.startTime}","${shift.endTime}","UNASSIGNED","${locationName}","${shift.supportType || 'Self-Care'}","${shift.ratio || '1:1'}","${shift.shiftNumber || ''}","${shift.duration || '0'}"\n`;
-              }
+              // Get day name
+              const dayName = new Date(date).toLocaleDateString('en-US', { weekday: 'long' });
+              
+              // Combine all workers into one string
+              const workersString = workerList.length > 0 ? workerList.join(' + ') : 'UNASSIGNED';
+              
+              csvContent += `"${shift.shiftNumber || ''}","${dayName}","${date}","${participantName}","${shift.startTime}","${shift.endTime}","${shift.ratio || '1:1'}","${workersString}","${shift.supportType || 'Self-Care'}","${locationName}"\n`;
             });
           });
         });

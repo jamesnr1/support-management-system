@@ -66,10 +66,10 @@ const ShiftForm = ({
     const roundedHours = Math.round(hours * 10) / 10; // Round to 1 decimal
     let color = "#28a745"; // Green for normal
     
-    if (hours >= 35) {
-      color = "#dc3545"; // Red for over limit
-    } else if (hours >= 30) {
-      color = "#ffc107"; // Yellow for approaching limit
+    if (hours >= 50) {
+      color = "#dc3545"; // Red for over weekly limit
+    } else if (hours >= 12) {
+      color = "#ffc107"; // Yellow for daily limit
     }
     
     return { hours: roundedHours, color };
@@ -370,8 +370,8 @@ const ShiftForm = ({
         return false; // No rules = not available
       }
       
-      // Check for conflicts with existing shifts on the same date
-      const hasConflict = existingShifts.some(existingShift => {
+      // Check if worker has ANY shift on this date (regardless of time)
+      const hasShiftOnDate = existingShifts.some(existingShift => {
         // CRITICAL: Skip the shift we're currently editing
         if (editingShift && existingShift.id === editingShift.id) {
           return false;
@@ -379,29 +379,58 @@ const ShiftForm = ({
         
         // Check if worker is assigned to this existing shift
         const isAssigned = Array.isArray(existingShift.workers) && existingShift.workers.some(w => String(w) === String(worker.id));
-        if (!isAssigned) return false;
         
-        // Check for time overlap - this is the key conflict check
-        const hasTimeOverlap = timeRangesOverlap(
-          startTime, endTime,
-          existingShift.startTime, existingShift.endTime
-        );
-        
-        if (hasTimeOverlap) {
-          console.log(`🚫 Worker ${worker.full_name} filtered out: time conflict with existing shift ${existingShift.startTime}-${existingShift.endTime}`);
+        if (isAssigned) {
+          console.log(`🚫 Worker ${worker.full_name} filtered out: already has shift ${existingShift.startTime}-${existingShift.endTime} on ${date}`);
           return true;
         }
         
         return false;
       });
       
-      if (hasConflict) {
+      if (hasShiftOnDate) {
         return false;
       }
       
-      // Check for insufficient rest from previous day (CRITICAL for Monday shifts checking Sunday)
+      // Check for insufficient rest from previous day
       if (hasInsufficientRest(worker)) {
         return false;
+      }
+      
+      // Check for insufficient rest TO next day (NEW)
+      const currentDate = new Date(date);
+      const nextDate = new Date(currentDate);
+      nextDate.setDate(nextDate.getDate() + 1);
+      const nextDateStr = nextDate.toISOString().split('T')[0];
+      
+      // Check all participants for this worker on next day
+      for (const participantCode in rosterData) {
+        const participantShifts = rosterData[participantCode];
+        if (participantShifts && participantShifts[nextDateStr]) {
+          for (const nextShift of participantShifts[nextDateStr]) {
+            const hasWorker = Array.isArray(nextShift.workers) 
+              ? nextShift.workers.some(w => String(w) === String(worker.id))
+              : String(nextShift.workers) === String(worker.id) || String(nextShift.worker_id) === String(worker.id);
+            
+            if (hasWorker) {
+              const nextStartTime = nextShift.startTime || nextShift.start_time;
+              const currentEndTime = endTime;
+              
+              const currentEndMin = timeToMinutes(currentEndTime);
+              const nextStartMin = timeToMinutes(nextStartTime);
+              
+              const hoursFromCurrentEndToMidnight = (1440 - currentEndMin) / 60;
+              const hoursFromMidnightToNextStart = nextStartMin / 60;
+              const totalRestHours = hoursFromCurrentEndToMidnight + hoursFromMidnightToNextStart;
+              
+              const minRestHours = 8;
+              if (totalRestHours < minRestHours) {
+                console.log(`🚫 Worker ${worker.full_name} filtered out: insufficient rest before next day shift (${totalRestHours.toFixed(1)}h < ${minRestHours}h)`);
+                return false;
+              }
+            }
+          }
+        }
       }
       
       // Worker is available
@@ -635,10 +664,8 @@ const ShiftForm = ({
   // Check minimum break time between shifts
   const checkBreakTimeValidation = (shiftData) => {
     const issues = [];
-    const CONTINUITY_OF_CARE_MAX_BREAK = 30; // Up to 30 min break OK for same participant (continuity of care)
-    const DIFFERENT_PARTICIPANT_MIN_BREAK = 120; // 2 hours minimum when switching participants (travel time)
-    const ADJACENT_DAY_MIN_BREAK = 600; // 10 hours minimum between adjacent days
-    const SPLIT_SHIFT_MIN_BREAK = 60; // 60 minutes for split shifts (relaxed rule)
+      const ADJACENT_DAY_MIN_BREAK = 480; // 8 hours minimum between adjacent days
+      const SPLIT_SHIFT_MIN_BREAK = 60; // 60 minutes for split shifts (relaxed rule)
     
     // Only check break times if workers are selected
     if (!shiftData.workers || shiftData.workers.length === 0) {
@@ -666,40 +693,7 @@ const ShiftForm = ({
                 
                 // SAME DAY: Check for sufficient break time
                 if (dayDiff === 0) {
-                  // Check if this is the SAME participant (continuity of care)
-                  const isSameParticipant = participantCode === currentParticipantCode;
-                  
-                  let requiredBreak;
-                  let breakReason;
-                  
-                  if (isSameParticipant) {
-                    // Same participant = continuity of care
-                    // Allow back-to-back or short breaks (up to 30 min is OK)
-                    requiredBreak = 0; // Allow back-to-back
-                    breakReason = 'continuity of care';
-                  } else {
-                    // Different participant = need travel time
-                    const isSplitShift = isSplitShiftScenario(existingShift, shiftData, shiftDate);
-                    requiredBreak = isSplitShift ? SPLIT_SHIFT_MIN_BREAK : DIFFERENT_PARTICIPANT_MIN_BREAK;
-                    breakReason = 'travel time between participants';
-                  }
-                  
-                  // Check gap after existing shift
-                  const gapAfter = calculateBreakMinutes(existingShift.endTime, shiftData.startTime);
-                  // Check gap before existing shift
-                  const gapBefore = calculateBreakMinutes(shiftData.endTime, existingShift.startTime);
-                  
-                  // Only warn if breaks are insufficient
-                  if (gapAfter > 0 && gapAfter < requiredBreak) {
-                    issues.push(`⚠️ ${workerName(workerId)}: Only ${Math.floor(gapAfter)} min break (need ${requiredBreak} min for ${breakReason}) - ${participantCode}: ${existingShift.endTime} → ${currentParticipantCode}: ${shiftData.startTime}`);
-                  } else if (gapBefore > 0 && gapBefore < requiredBreak) {
-                    issues.push(`⚠️ ${workerName(workerId)}: Only ${Math.floor(gapBefore)} min break (need ${requiredBreak} min for ${breakReason}) - ${currentParticipantCode}: ${shiftData.endTime} → ${participantCode}: ${existingShift.startTime}`);
-                  }
-                  
-                  // Additional warning if same participant has >30 min gap (unusual)
-                  if (isSameParticipant && gapAfter > CONTINUITY_OF_CARE_MAX_BREAK && gapAfter < 120) {
-                    issues.push(`ℹ️ ${workerName(workerId)}: ${Math.floor(gapAfter)} min gap for same participant (${participantCode}) - Consider if this is intentional`);
-                  }
+                  // SAME DAY: No break time rules - removed as requested
                 }
                 
                 // ADJACENT DAYS: Check for 10-hour rest period
@@ -725,10 +719,10 @@ const ShiftForm = ({
                   // Calculate cross-day gap
                   gapMinutes = calculateCrossDayBreak(earlierEnd, laterStart);
                   
-                  if (gapMinutes < ADJACENT_DAY_MIN_BREAK) {
-                    const gapHours = (gapMinutes / 60).toFixed(1);
-                    issues.push(`❌ ${workerName(workerId)}: Only ${gapHours}h rest between days (need 10h) - ${earlierParticipant} ends ${earlierEnd} → ${laterParticipant} starts ${laterStart}`);
-                  }
+                    if (gapMinutes < ADJACENT_DAY_MIN_BREAK) {
+                      const gapHours = (gapMinutes / 60).toFixed(1);
+                      issues.push(`❌ ${workerName(workerId)}: Only ${gapHours}h rest between days (need 8h) - ${earlierParticipant} ends ${earlierEnd} → ${laterParticipant} starts ${laterStart}`);
+                    }
                 }
               }
             });
@@ -1221,8 +1215,9 @@ const ShiftForm = ({
           value={formData.workers[0] || ''}
           onChange={(e) => handleWorkerChange(0, e.target.value)}
           style={{ 
-            minWidth: '120px', 
-            fontSize: '1rem',
+            width: '140px',
+            maxWidth: '140px',
+            fontSize: '0.9rem',
             padding: '0.5rem',
             borderRadius: '6px',
             background: 'var(--bg-secondary)',
@@ -1249,8 +1244,9 @@ const ShiftForm = ({
             value={formData.workers[1] || ''}
             onChange={(e) => handleWorkerChange(1, e.target.value)}
             style={{ 
-              minWidth: '120px', 
-              fontSize: '1rem',
+              width: '140px',
+              maxWidth: '140px',
+              fontSize: '0.9rem',
               padding: '0.5rem',
               borderRadius: '6px',
               background: 'var(--bg-secondary)',
@@ -1272,27 +1268,67 @@ const ShiftForm = ({
           </select>
         )}
 
-        {/* Location */}
-        <select 
-          value={formData.location}
-          onChange={(e) => handleInputChange('location', e.target.value)}
-          style={{ 
-            minWidth: '130px', 
-            fontSize: '1rem',
-            padding: '0.5rem',
-            borderRadius: '6px',
-            background: 'var(--bg-secondary)',
-            color: 'var(--text-primary)',
-            border: '1px solid var(--border-color)'
-          }}
-        >
-          <option value="">Location</option>
-          {locations.map(location => (
-            <option key={location.id} value={location.id}>
-              {location.name}
-            </option>
-          ))}
-        </select>
+        {/* Location - Auto-assigned based on participant and week type */}
+        {(() => {
+          // Get the assigned location based on participant and week rules
+          const getAssignedLocation = () => {
+            const participantCode = participant?.code;
+            
+            // James (JAM001) - always at Plympton Park (his suburb)
+            if (participantCode === 'JAM001') {
+              return locations.find(loc => loc.name.toLowerCase().includes('plympton park')) || locations[0];
+            }
+            
+            // Libby (LIB001) - always at Glandore (her suburb)
+            if (participantCode === 'LIB001') {
+              return locations.find(loc => loc.name.toLowerCase().includes('glandore')) || locations[0];
+            }
+            
+            
+            // Ace & Grace - Week-based logic
+            if (participantCode === 'ACE001' || participantCode === 'GRA001') {
+              if (weekType === 'weekA') {
+                // Week A: Share with Libby at Glandore
+                return locations.find(loc => loc.name.toLowerCase().includes('glandore')) || locations[0];
+              } else {
+                // Week B: Share with James at Plympton Park
+                return locations.find(loc => loc.name.toLowerCase().includes('plympton park')) || locations[0];
+              }
+            }
+            
+            // Default fallback
+            return locations[0];
+          };
+          
+          const assignedLocation = getAssignedLocation();
+          const locationName = assignedLocation?.name || 'Auto-assigned';
+          
+          // Auto-set the location in form data if not already set
+          if (!formData.location && assignedLocation) {
+            handleInputChange('location', assignedLocation.id);
+          }
+          
+          return (
+            <div style={{ 
+              minWidth: '110px',
+              maxWidth: '150px',
+              fontSize: '0.9rem',
+              padding: '0.5rem',
+              borderRadius: '6px',
+              background: 'var(--bg-secondary)',
+              color: 'var(--text-primary)',
+              border: '1px solid var(--border-color)',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              whiteSpace: 'nowrap',
+              overflow: 'hidden',
+              textOverflow: 'ellipsis'
+            }}>
+              {locationName}
+            </div>
+          );
+        })()}
 
         {/* Split Shift Checkbox - only show for shifts < 4 hours */}
         {calculateDuration(formData.startTime, formData.endTime) < 4 && (
