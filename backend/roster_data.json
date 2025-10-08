@@ -872,8 +872,8 @@
   },
   "planner_next": {
     "week_type": "weekA",
-    "start_date": "2025-10-20",
-    "end_date": "2025-10-26",
+    "start_date": "2025-10-13",
+    "end_date": "2025-10-19",
     "data": {
       "JAM001": {},
       "LIB001": {},

@@ -1254,7 +1254,7 @@ const ShiftForm = ({
               border: '1px solid var(--border-color)'
             }}
           >
-            <option value="">SW2</option>
+            <option value="">Select Worker 2</option>
             {!unavailabilityCheckComplete && <option value="" disabled>Loading workers...</option>}
           {availableWorkers.filter(worker => worker.id !== formData.workers[0]).map(worker => (
               <option key={worker.id} value={worker.id}>
@@ -1377,7 +1377,22 @@ const ShiftForm = ({
             Save
           </button>
           
-          {editingShift ? (
+          <button 
+            type="button" 
+            onClick={(e) => {
+              e.preventDefault();
+              onCancel();
+            }}
+            className="btn btn-secondary"
+            style={{ 
+              padding: '0.5rem 1rem',
+              fontSize: '0.9rem'
+            }}
+          >
+            Cancel
+          </button>
+          
+          {editingShift && (
             <button 
               type="button" 
               onClick={(e) => {
@@ -1386,25 +1401,10 @@ const ShiftForm = ({
                   onDelete?.(editingShift);
                 }
               }} 
-              className="btn btn-secondary"
+              className="btn btn-danger"
               style={{ padding: '0.5rem 1rem', fontSize: '0.9rem' }}
             >
               Delete
-            </button>
-          ) : (
-            <button 
-              type="button" 
-              onClick={(e) => {
-                e.preventDefault();
-                onCancel();
-              }}
-              className="btn btn-secondary"
-              style={{ 
-                padding: '0.5rem 1rem',
-                fontSize: '0.9rem'
-              }}
-            >
-              Cancel
             </button>
           )}
         </div>

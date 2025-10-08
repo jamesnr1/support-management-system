@@ -551,10 +551,14 @@ const StaffTab = ({ workers = [], locations = [], onWorkersUpdate, rosterData, p
               </button>
             </div>
             <div style={{ padding: '2rem', textAlign: 'center' }}>
-              <p style={{ marginBottom: '2rem', color: 'var(--text-secondary)' }}>
-                Worker editing functionality will be implemented here.
-                <br />
+              <p style={{ marginBottom: '2rem', color: 'var(--text-primary)', fontSize: '1.1rem' }}>
                 <strong>Worker:</strong> {editingWorker?.full_name}
+              </p>
+              <p style={{ marginBottom: '2rem', color: 'var(--text-secondary)' }}>
+                To edit worker details (name, contact info, etc.), please use the <strong>Profiles</strong> tab.
+                <br />
+                <br />
+                To manage availability (days/hours), click the <strong style={{ color: 'var(--accent)' }}>Availability icon</strong> on the worker card.
               </p>
               <div style={{ display: 'flex', gap: '1rem', justifyContent: 'center' }}>
                 <button 
@@ -566,17 +570,6 @@ const StaffTab = ({ workers = [], locations = [], onWorkersUpdate, rosterData, p
                   style={{ padding: '0.75rem 1.5rem' }}
                 >
                   Close
-                </button>
-                <button 
-                  className="btn btn-primary" 
-                  onClick={() => {
-                    toast.success(`Worker ${editingWorker?.full_name} would be saved here`);
-                    setShowWorkerModal(false);
-                    setEditingWorker(null);
-                  }}
-                  style={{ padding: '0.75rem 1.5rem' }}
-                >
-                  Save Changes
                 </button>
               </div>
             </div>
