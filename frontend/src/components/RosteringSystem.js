@@ -186,8 +186,13 @@ const RosteringSystem = () => {
                   color: 'white'
                 }
               });
+              // Use fallback shifts but keep the correct dates for the selected week
               return {
-                current: fallbackData,
+                current: {
+                  ...fallbackData,
+                  start_date: weekData.start_date,  // Keep the correct dates for selected week
+                  end_date: weekData.end_date
+                },
                 weekEndpoint,
                 isUsingFallback: true,
                 fallbackFrom: fallbackEndpoint
@@ -605,7 +610,7 @@ const RosteringSystem = () => {
         
         {/* Action Buttons (Roster only) */}
         {activeTab === 'roster' && (
-          <div className="action-buttons" style={{ display: 'flex', alignItems: 'center', gap: '1rem', flexWrap: 'wrap' }}>
+          <div className="action-buttons" style={{ display: 'flex', alignItems: 'center', gap: '1rem', flexWrap: 'wrap', marginLeft: '0' }}>
             {/* Week Selector */}
             <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
               <span style={{ fontSize: '0.9rem', fontWeight: '500', color: 'var(--text-secondary)' }}>Week:</span>
@@ -723,7 +728,7 @@ const RosteringSystem = () => {
         )}
         
         {/* Action Icons - Always Visible */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginLeft: activeTab === 'roster' ? '0' : 'auto' }}>
+        <div className="action-icons" style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginLeft: 'auto' }}>
           {activeTab === 'roster' && (
             <>
               {lastCalendarUpdate && <span style={{ fontSize: '0.85rem', color: 'var(--text-secondary)' }}>{lastCalendarUpdate}</span>}
