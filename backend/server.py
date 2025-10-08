@@ -240,18 +240,17 @@ async def get_roster(week_type: str):
         if week_type in ['roster', 'planner', 'planner_next', 'planner_after']:
             roster_section = ROSTER_DATA.get(week_type, {})
             
-            # For roster, use current week dates if not set
-            if week_type == 'roster' and not roster_section.get("start_date"):
+            # Always calculate dates dynamically based on current time
+            if week_type == 'roster':
                 start_date, end_date = get_current_week_dates()
                 roster_section["start_date"] = start_date
                 roster_section["end_date"] = end_date
-            
-            # For planner, use appropriate dates if not set
-            if week_type in ['planner', 'planner_next', 'planner_after'] and not roster_section.get("start_date"):
-                if week_type == 'planner_after':
-                    start_date, end_date = get_week_after_next_dates()
-                else:  # planner or planner_next
-                    start_date, end_date = get_next_week_dates()
+            elif week_type == 'planner_after':
+                start_date, end_date = get_week_after_next_dates()
+                roster_section["start_date"] = start_date
+                roster_section["end_date"] = end_date
+            elif week_type in ['planner', 'planner_next']:
+                start_date, end_date = get_next_week_dates()
                 roster_section["start_date"] = start_date
                 roster_section["end_date"] = end_date
             

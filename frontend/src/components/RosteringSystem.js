@@ -723,7 +723,7 @@ const RosteringSystem = () => {
         )}
         
         {/* Action Icons - Always Visible */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginLeft: activeTab === 'roster' ? '0' : 'auto' }}>
           {activeTab === 'roster' && (
             <>
               {lastCalendarUpdate && <span style={{ fontSize: '0.85rem', color: 'var(--text-secondary)' }}>{lastCalendarUpdate}</span>}
