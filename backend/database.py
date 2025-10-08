@@ -304,7 +304,7 @@ class SupabaseDatabase:
             return []
 
     def save_availability_rules(self, worker_id: int, rules: List[Dict]) -> bool:
-        """Save availability rules for a worker"""
+        """Save availability rules for a worker (now supports split availability)"""
         try:
             # First, delete existing rules for this worker
             self.client.table('availability_rule').delete().eq('worker_id', worker_id).execute()
@@ -316,10 +316,12 @@ class SupabaseDatabase:
                     rule_data = {
                         'worker_id': worker_id,
                         'weekday': rule.get('weekday'),
+                        'sequence_number': rule.get('sequence_number', 1),
                         'from_time': rule.get('from_time'),
                         'to_time': rule.get('to_time'),
                         'is_full_day': rule.get('is_full_day', False),
-                        'wraps_midnight': rule.get('wraps_midnight', False)
+                        'wraps_midnight': rule.get('wraps_midnight', False),
+                        'rule_type': rule.get('rule_type', 'standard')
                     }
                     rules_to_insert.append(rule_data)
                 

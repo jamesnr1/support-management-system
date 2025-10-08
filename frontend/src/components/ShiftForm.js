@@ -1,5 +1,4 @@
-import React, { useState, useEffect, useMemo } from 'react';
-import { Save, X } from 'lucide-react';
+import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import axios from 'axios';
 import { toast } from 'react-hot-toast';
 import { validateRosterAPI } from '../utils/shiftValidation';
@@ -14,6 +13,7 @@ const ShiftForm = ({
   locations, 
   onSave, 
   onCancel,
+  onDelete,
   existingShifts = [],
   weekType,
   rosterData = {}
@@ -22,6 +22,8 @@ const ShiftForm = ({
   const [workers, setWorkers] = useState(allWorkers || []);
   const [isFormReady, setIsFormReady] = useState(false);
   const [unavailableWorkers, setUnavailableWorkers] = React.useState(new Set());
+  const [unavailabilityCheckComplete, setUnavailabilityCheckComplete] = useState(false);
+  const [workerAvailabilityRules, setWorkerAvailabilityRules] = React.useState({}); // Store availability rules for each worker
 
   // Helper functions for name formatting
   const getDisplayName = (fullName) => {
@@ -132,59 +134,106 @@ const ShiftForm = ({
     return `${participantInitial}${dateStr}${sequenceNum}`; // Format: L2025092201
   }
   
-  // Fetch unavailability status for all workers
+  // Fetch unavailability status and availability rules for all workers
   React.useEffect(() => {
-    const fetchUnavailability = async () => {
+    // CRITICAL: Reset state immediately when date changes
+    setUnavailabilityCheckComplete(false);
+    setUnavailableWorkers(new Set());
+    setWorkerAvailabilityRules({}); // Reset rules as well
+    
+    const fetchAvailabilityData = async () => {
       if (!workers || workers.length === 0 || !date) {
-        console.log('⏭️ Skipping unavailability fetch:', { workersCount: workers?.length, date });
+        console.log('⏭️ Skipping availability fetch:', { workersCount: workers?.length, date });
+        setUnavailabilityCheckComplete(true); // Mark as complete even if skipping
         return;
       }
       
-      console.log('🔄 Starting unavailability fetch for', workers.length, 'workers on', date);
+      console.log('🔄 Starting availability fetch for', workers.length, 'workers on', date);
       
       try {
         const shiftDate = new Date(date);
         shiftDate.setHours(0, 0, 0, 0);
+        const dayOfWeek = shiftDate.getDay();
         
         const unavailableIds = new Set();
         
-        // Check unavailability for each worker
-        await Promise.all(workers.map(async (worker) => {
-          try {
-            const response = await axios.get(`${BACKEND_URL}/api/workers/${worker.id}/unavailability`);
-            const periods = response.data || [];
-            
-            // Check if worker is unavailable on this date
-            const isUnavailable = periods.some(period => {
-              const fromDate = new Date(period.from_date);
-              const toDate = new Date(period.to_date);
-              fromDate.setHours(0, 0, 0, 0);
-              toDate.setHours(23, 59, 59, 999);
-              return shiftDate >= fromDate && shiftDate <= toDate;
-            });
-            
-            if (isUnavailable) {
-              unavailableIds.add(worker.id);
-              console.log(`🔴 Worker ${worker.full_name} (ID: ${worker.id}) is unavailable on ${date}`);
-            }
-          } catch (error) {
-            console.error(`Error checking unavailability for ${worker.full_name}:`, error);
-          }
-        }));
+        // Fetch unavailability periods in a SINGLE batch query (much faster)
+        try {
+          const unavailabilityResponse = await axios.get(`${BACKEND_URL}/api/unavailability-periods`, {
+            params: { check_date: date }
+          });
+          
+          const unavailableWorkers = unavailabilityResponse.data || [];
+          unavailableWorkers.forEach(period => {
+            unavailableIds.add(String(period.worker_id));
+          });
+          
+          console.log(`🚫 Found ${unavailableIds.size} unavailable workers on ${date}`);
+        } catch (error) {
+          console.error('Error fetching unavailability periods:', error);
+          // Continue without unavailability check - allow all workers
+        }
         
-        console.log('✅ Unavailability fetch complete. Unavailable workers:', Array.from(unavailableIds));
+        // Fetch ALL availability rules for this day of week in a SINGLE batch query
+        // This is much faster than individual queries per worker
+        try {
+          const rulesResponse = await axios.get(`${BACKEND_URL}/api/availability-rules`, {
+            params: { weekday: dayOfWeek }
+          });
+          
+          const allRules = rulesResponse.data || [];
+          
+          // Group rules by worker ID (convert to string for consistency)
+          const rulesByWorker = {};
+          allRules.forEach(rule => {
+            const workerId = String(rule.worker_id);
+            if (!rulesByWorker[workerId]) {
+              rulesByWorker[workerId] = [];
+            }
+            rulesByWorker[workerId].push(rule);
+          });
+          
+          console.log(`📋 Fetched ${allRules.length} availability rules for weekday ${dayOfWeek}`);
+          console.log(`📋 Rules grouped for ${Object.keys(rulesByWorker).length} workers`);
+          console.log('📋 Sample rules:', Object.entries(rulesByWorker).slice(0, 3));
+          
+          setWorkerAvailabilityRules(rulesByWorker);
+        } catch (error) {
+          console.error('Error fetching availability rules:', error);
+          // Continue without availability rules - allow all workers
+          setWorkerAvailabilityRules({});
+        }
+        
+        console.log('✅ Availability fetch complete. Unavailable workers:', Array.from(unavailableIds));
         setUnavailableWorkers(unavailableIds);
+        setUnavailabilityCheckComplete(true);
       } catch (error) {
-        console.error('Error fetching unavailability:', error);
+        console.error('Error fetching availability:', error);
+        setUnavailabilityCheckComplete(true);
       }
     };
     
-    fetchUnavailability();
+    fetchAvailabilityData();
   }, [workers, date]);
   
   // Filter available workers based on time and date
-  const getAvailableWorkers = (currentFormData, workersList = []) => {
+  const getAvailableWorkers = useCallback((currentFormData, workersList = []) => {
+    console.log('🔄 getAvailableWorkers called with:', {
+      formData: currentFormData,
+      workersCount: workersList?.length,
+      date,
+      unavailabilityCheckComplete,
+      rulesLoaded: Object.keys(workerAvailabilityRules).length
+    });
+    
     if (!currentFormData?.startTime || !currentFormData?.endTime || !date) return workersList || [];
+    
+    // Wait for unavailability check to complete before showing any workers
+    // This prevents showing unavailable workers on first click
+    if (!unavailabilityCheckComplete) {
+      console.log('⏳ Waiting for unavailability check to complete');
+      return [];
+    }
     
     const startTime = currentFormData.startTime;
     const endTime = currentFormData.endTime;
@@ -223,30 +272,142 @@ const ShiftForm = ({
       }
     };
     
+    // Helper function to check insufficient rest time with previous day's shifts
+    const hasInsufficientRest = (worker) => {
+      // Calculate previous date
+      const currentDate = new Date(date);
+      const previousDate = new Date(currentDate);
+      previousDate.setDate(previousDate.getDate() - 1);
+      const prevDateStr = previousDate.toISOString().split('T')[0];
+      
+      // Check all participants for this worker on previous day
+      for (const participantCode in rosterData) {
+        const participantShifts = rosterData[participantCode];
+        if (participantShifts && participantShifts[prevDateStr]) {
+          for (const prevShift of participantShifts[prevDateStr]) {
+            const hasWorker = Array.isArray(prevShift.workers) 
+              ? prevShift.workers.some(w => String(w) === String(worker.id))
+              : String(prevShift.workers) === String(worker.id) || String(prevShift.worker_id) === String(worker.id);
+            
+            if (hasWorker) {
+              // Get previous shift end time and current shift start time
+              const prevEndTime = prevShift.endTime || prevShift.end_time;
+              const currentStartTime = startTime;
+              
+              // Calculate hours between shifts (cross-day rest period)
+              const prevEndMin = timeToMinutes(prevEndTime);
+              const currentStartMin = timeToMinutes(currentStartTime);
+              
+              // For cross-day rest: previous day end to next day start
+              // This is always a full day minus the time from midnight to current start
+              const hoursFromMidnightToCurrentStart = currentStartMin / 60;
+              const hoursFromPrevEndToMidnight = (1440 - prevEndMin) / 60;
+              const totalRestHours = hoursFromPrevEndToMidnight + hoursFromMidnightToCurrentStart;
+              
+              // Require at least 8 hours rest between shifts
+              const minRestHours = 8;
+              if (totalRestHours < minRestHours) {
+                console.log(`⚠️ Worker ${worker.id} has insufficient rest: ${totalRestHours.toFixed(1)}h between ${prevEndTime} (${prevDateStr}) and ${currentStartTime} (${date})`);
+                return true;
+              }
+            }
+          }
+        }
+      }
+      return false;
+    };
+    
     return (workersList || []).filter(worker => {
       // Exclude workers who are unavailable on this date
-      if (unavailableWorkers.has(worker.id)) {
-        console.log(`⛔ Filtering out ${worker.full_name} - unavailable on ${date}`);
+      if (unavailableWorkers.has(String(worker.id))) { // Ensure ID is compared as string
         return false;
+      }
+      
+      // Check availability rules for this worker (ensure string ID comparison)
+      const rules = workerAvailabilityRules[String(worker.id)] || [];
+      
+      // If worker has rules for this day, check them
+      if (rules.length > 0) {
+        const dayOfWeekRule = rules[0]; // We already filtered by weekday in the fetch
+        
+        console.log(`🔍 Checking ${worker.full_name} (ID: ${worker.id}):`, {
+          rule: dayOfWeekRule,
+          shift: `${startTime}-${endTime}`
+        });
+        
+        // Check if worker is available during the shift time
+        if (dayOfWeekRule.is_full_day || dayOfWeekRule.wraps_midnight) {
+          // Worker is available 24/7 on this day
+          console.log(`✅ ${worker.full_name} is available (full day or wraps midnight)`);
+          // Continue to other checks
+        } else {
+          // Check if shift time falls within worker's available hours
+          const shiftStartMin = timeToMinutes(startTime);
+          const shiftEndMin = timeToMinutes(endTime);
+          const ruleStartMin = timeToMinutes(dayOfWeekRule.from_time);
+          const ruleEndMin = timeToMinutes(dayOfWeekRule.to_time);
+          
+          // Handle overnight shifts
+          const isShiftOvernight = shiftEndMin < shiftStartMin;
+          const isRuleOvernight = ruleEndMin < ruleStartMin;
+          
+          if (isShiftOvernight || isRuleOvernight) {
+            // Complex overnight logic - for now, allow if worker has any availability
+            console.log(`✅ ${worker.full_name} allowed (overnight shift logic)`);
+            // This can be refined later
+          } else {
+            // Normal (same-day) shift and rule
+            // Shift must be entirely within worker's available hours
+            if (shiftStartMin < ruleStartMin || shiftEndMin > ruleEndMin) {
+              console.log(`❌ ${worker.full_name} filtered out: shift ${startTime}-${endTime} outside rule ${dayOfWeekRule.from_time}-${dayOfWeekRule.to_time}`);
+              return false; // Shift is outside worker's available hours
+            }
+            console.log(`✅ ${worker.full_name} is available (within hours)`);
+          }
+        }
+      } else {
+        console.log(`❌ ${worker.full_name} (ID: ${worker.id}) has no availability rules - not available`);
+        return false; // No rules = not available
       }
       
       // Check for conflicts with existing shifts on the same date
       const hasConflict = existingShifts.some(existingShift => {
+        // CRITICAL: Skip the shift we're currently editing
+        if (editingShift && existingShift.id === editingShift.id) {
+          return false;
+        }
+        
         // Check if worker is assigned to this existing shift
         const isAssigned = Array.isArray(existingShift.workers) && existingShift.workers.some(w => String(w) === String(worker.id));
         if (!isAssigned) return false;
         
-        // Check for time overlap
-        return timeRangesOverlap(
+        // Check for time overlap - this is the key conflict check
+        const hasTimeOverlap = timeRangesOverlap(
           startTime, endTime,
           existingShift.startTime, existingShift.endTime
         );
+        
+        if (hasTimeOverlap) {
+          console.log(`🚫 Worker ${worker.full_name} filtered out: time conflict with existing shift ${existingShift.startTime}-${existingShift.endTime}`);
+          return true;
+        }
+        
+        return false;
       });
       
-      // Exclude workers who have conflicts
-      return !hasConflict;
+      if (hasConflict) {
+        return false;
+      }
+      
+      // Check for insufficient rest from previous day (CRITICAL for Monday shifts checking Sunday)
+      if (hasInsufficientRest(worker)) {
+        return false;
+      }
+      
+      // Worker is available
+      return true;
     });
-  };
+  }, [unavailableWorkers, date, existingShifts, unavailabilityCheckComplete, rosterData, editingShift, workerAvailabilityRules]);
 
   // Helper: Check if worker is assigned to another participant at the same time
   const checkCrossParticipantConflicts = (workerId, shiftDate, startTime, endTime, currentShiftId) => {
@@ -415,9 +576,8 @@ const ShiftForm = ({
           
           if (totalHours > worker.max_hours) {
             errors.push(`❌ ${workerName} would exceed maximum hours: ${totalHours.toFixed(1)}/${worker.max_hours}`);
-          } else if (totalHours > worker.max_hours * 0.9) {
-            warnings.push(`⚠️ ${workerName} approaching maximum hours: ${totalHours.toFixed(1)}/${worker.max_hours}`);
           }
+          // Removed "approaching maximum" warning - only warn when actually exceeding
         }
       });
     }
@@ -692,6 +852,24 @@ const ShiftForm = ({
     return '06:00'; // Default 6am start
   };
 
+  // Get smart end time based on start time to create standard 8-hour shifts
+  const getSmartEndTime = (startTime) => {
+    if (editingShift) return editingShift.endTime;
+    
+    if (!startTime) return '14:00';
+    
+    // Standard shift patterns: 06:00-14:00, 14:00-22:00, 22:00-06:00
+    if (startTime === '06:00') return '14:00';
+    if (startTime === '14:00') return '22:00';
+    if (startTime === '22:00') return '06:00';
+    
+    // For custom start times, default to 8 hours later
+    const [hours, minutes] = startTime.split(':').map(Number);
+    let endHours = hours + 8;
+    if (endHours >= 24) endHours -= 24;
+    return `${endHours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}`;
+  };
+
   // Get default location for participant
   const getDefaultLocation = () => {
     if (editingShift) return editingShift.location;
@@ -725,17 +903,14 @@ const ShiftForm = ({
 
   // Get available workers - use useMemo to avoid initialization issues
   const availableWorkers = useMemo(() => {
-    console.log('🔍 availableWorkers useMemo recalculating:', {
-      workersCount: workers?.length,
-      unavailableCount: unavailableWorkers.size,
-      unavailableIds: Array.from(unavailableWorkers),
-      date,
-      formDataTime: `${formData?.startTime}-${formData?.endTime}`
+    const filtered = getAvailableWorkers(formData, workers);
+    // Sort by preferred name (in brackets) or first name
+    return filtered.sort((a, b) => {
+      const aDisplay = getDisplayName(a.full_name);
+      const bDisplay = getDisplayName(b.full_name);
+      return aDisplay.localeCompare(bDisplay);
     });
-    const result = getAvailableWorkers(formData, workers);
-    console.log('✅ availableWorkers result:', result.length, 'workers available');
-    return result;
-  }, [formData, workers, unavailableWorkers, date]); // CRITICAL: Must include unavailableWorkers!
+  }, [getAvailableWorkers, formData, workers]); // Dependencies: getAvailableWorkers (which includes unavailableWorkers), formData, workers
 
   // Fetch workers for the specific shift date
   useEffect(() => {
@@ -778,9 +953,10 @@ const ShiftForm = ({
         });
       } else {
         console.log('Initializing form for new shift');
+        const smartStartTime = getSmartStartTime();
         setFormData({
-          startTime: getSmartStartTime(),
-          endTime: '14:00',
+          startTime: smartStartTime,
+          endTime: getSmartEndTime(smartStartTime),
           supportType: 'Self-Care',
           ratio: participant?.default_ratio || '1:1',
           workers: [],
@@ -860,16 +1036,15 @@ const ShiftForm = ({
       
       // Workers are optional - shifts can be created without workers for planning purposes
       
-      // Basic validation only
-      if (formData.startTime >= formData.endTime) {
-        alert('End time must be after start time');
-        return;
-      }
-      
-      // Check shift duration
+      // Check shift duration (this handles overnight shifts correctly)
       const duration = calculateDuration(formData.startTime, formData.endTime);
       if (parseFloat(duration) > 12) {
         alert('Shift duration cannot exceed 12 hours');
+        return;
+      }
+      
+      if (parseFloat(duration) <= 0) {
+        alert('Invalid shift times');
         return;
       }
 
@@ -903,7 +1078,7 @@ const ShiftForm = ({
       // Show warnings (allow override)
       if (validation.warnings.length > 0) {
         validation.warnings.forEach(warning => {
-          toast.warning(warning, { duration: 4000 });
+          toast(warning, { duration: 4000 });
         });
         
         const proceed = window.confirm(
@@ -937,6 +1112,16 @@ const ShiftForm = ({
     if (duration <= 0) duration += 24; // Handle overnight
     return Math.max(0, duration); // Return NUMBER, not string - toFixed() was breaking validation
   };
+
+  // Helper function for night shift logic
+  function shouldShowSecondWorker() {
+    // For James/Libby sharing with Ace/Grace for night shifts
+    if (!formData?.startTime || !formData?.endTime || !participant?.code) return false;
+    
+    const isNightShift = formData.startTime >= '22:00' || formData.endTime <= '06:00';
+    const isJamesOrLibby = participant.code === 'JAM001' || participant.code === 'LIB001';
+    return isNightShift && isJamesOrLibby;
+  }
 
   // Show loading state if form isn't ready
   if (!isFormReady) {
@@ -1046,6 +1231,7 @@ const ShiftForm = ({
           }}
         >
           <option value="">SW1</option>
+          {!unavailabilityCheckComplete && <option value="" disabled>Loading workers...</option>}
           {availableWorkers.filter(worker => worker.id !== formData.workers[1]).map(worker => (
             <option key={worker.id} value={worker.id}>
               {(() => {
@@ -1073,6 +1259,7 @@ const ShiftForm = ({
             }}
           >
             <option value="">SW2</option>
+            {!unavailabilityCheckComplete && <option value="" disabled>Loading workers...</option>}
           {availableWorkers.filter(worker => worker.id !== formData.workers[0]).map(worker => (
               <option key={worker.id} value={worker.id}>
               {(() => {
@@ -1148,29 +1335,46 @@ const ShiftForm = ({
           }}
         />
 
-        {/* Save and Cancel buttons */}
-        <div style={{ display: 'flex', gap: '0.3rem', alignItems: 'center', flexShrink: 0 }}>
-          <button type="submit" className="btn btn-success">
-            <Save size={14} />
+        {/* Save and Cancel/Delete buttons */}
+        <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center', flexShrink: 0 }}>
+          <button type="submit" className="btn btn-success" style={{ padding: '0.5rem 1rem', fontSize: '0.9rem' }}>
+            Save
           </button>
           
-          <button type="button" onClick={onCancel} className="btn-cancel-x">
-            ×
-          </button>
+          {editingShift ? (
+            <button 
+              type="button" 
+              onClick={(e) => {
+                e.preventDefault();
+                if (window.confirm('Are you sure you want to delete this shift?')) {
+                  onDelete?.(editingShift);
+                }
+              }} 
+              className="btn btn-secondary"
+              style={{ padding: '0.5rem 1rem', fontSize: '0.9rem' }}
+            >
+              Delete
+            </button>
+          ) : (
+            <button 
+              type="button" 
+              onClick={(e) => {
+                e.preventDefault();
+                onCancel();
+              }}
+              className="btn btn-secondary"
+              style={{ 
+                padding: '0.5rem 1rem',
+                fontSize: '0.9rem'
+              }}
+            >
+              Cancel
+            </button>
+          )}
         </div>
       </form>
     </div>
   );
-
-  // Helper function for night shift logic
-  function shouldShowSecondWorker() {
-    // For James/Libby sharing with Ace/Grace for night shifts
-    if (!formData?.startTime || !formData?.endTime || !participant?.code) return false;
-    
-    const isNightShift = formData.startTime >= '22:00' || formData.endTime <= '06:00';
-    const isJamesOrLibby = participant.code === 'JAM001' || participant.code === 'LIB001';
-    return isNightShift && isJamesOrLibby;
-  }
 };
 
 export default ShiftForm;

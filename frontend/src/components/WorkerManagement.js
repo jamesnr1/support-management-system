@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { toast } from 'react-hot-toast';
 import axios from 'axios';
-import { X, Edit, Trash2, Plus, Calendar } from 'lucide-react';
 import WorkerCard from './WorkerCard';
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
@@ -13,14 +12,19 @@ const WorkerManagement = ({ workers = [], locations = [], onWorkersUpdate }) => 
   const [allAvailabilityData, setAllAvailabilityData] = useState({});
   const [availabilityLoading, setAvailabilityLoading] = useState(true);
   
-  // When availability is saved in the modal, we bump this key so WorkerCard re-fetches
-  const [cardsRefreshKey, setCardsRefreshKey] = useState(0);
   // Filter state (search removed per request)
   const [availabilityFilter, setAvailabilityFilter] = useState('all'); // 'all', 'available', 'unavailable'
 
-  // Sort workers alphabetically by full name
+  // Helper to extract preferred name (in brackets) or first name
+  const getDisplayNameForSort = (fullName) => {
+    if (!fullName) return '';
+    const match = fullName.match(/\(([^)]+)\)/);
+    return match ? match[1] : fullName.split(' ')[0]; // Use preferred name or first name
+  };
+
+  // Sort workers alphabetically by preferred name (in brackets) or first name
   const sortedWorkers = [...workers].sort((a, b) => 
-    (a.full_name || '').localeCompare(b.full_name || '')
+    getDisplayNameForSort(a.full_name).localeCompare(getDisplayNameForSort(b.full_name))
   );
 
   // Apply filters (no name search)
@@ -111,7 +115,7 @@ const WorkerManagement = ({ workers = [], locations = [], onWorkersUpdate }) => 
     };
 
     fetchAllAvailability();
-  }, [workers, cardsRefreshKey]); // Re-fetch when workers change or refresh key bumps
+  }, [workers]); // Re-fetch when workers change
 
   // Create worker mutation
   const createWorkerMutation = useMutation({
@@ -236,7 +240,7 @@ const WorkerManagement = ({ workers = [], locations = [], onWorkersUpdate }) => 
             unavailability: unavailRes.data || []
           }
         }));
-      } catch (error) {
+    } catch (error) {
         console.error(`Failed to refresh availability for worker ${editedWorkerId}:`, error);
       }
     }
@@ -339,33 +343,32 @@ const WorkerManagement = ({ workers = [], locations = [], onWorkersUpdate }) => 
               setShowWorkerModal(true);
             }}
           >
-            <Plus size={16} /> Add Worker
+            + Add Worker
           </button>
         </div>
 
         {/* Worker cards - narrower layout without telegram panel */}
         <div className="workers-section" style={{ maxWidth: '1400px', margin: '0 auto' }}>
           {!filteredWorkers || filteredWorkers.length === 0 ? (
-            <div style={{ textAlign: 'center', color: 'var(--text-muted)', padding: '2rem' }}>
+              <div style={{ textAlign: 'center', color: 'var(--text-secondary)', padding: '2rem' }}>
               {!workers ? 'Loading workers...' : 'No workers found. Click "Add Worker" to create the first worker.'}
-            </div>
-          ) : (
-            <div className="workers-grid">
+              </div>
+            ) : (
+              <div className="workers-grid">
               {filteredWorkers.map(worker => (
-                <WorkerCard
+                <WorkerCard 
                   key={worker.id}
                   worker={worker}
-                  refreshKey={cardsRefreshKey}
                   onEdit={handleEditWorker}
                   onManageAvailability={handleManageAvailability}
                   onDelete={handleDeleteWorker}
                   availabilityData={allAvailabilityData[worker.id]}
                   isLoading={availabilityLoading}
                 />
-              ))}
-            </div>
-          )}
-        </div>
+                ))}
+              </div>
+            )}
+          </div>
 
         {/* Filter Bar removed per request */}
 
@@ -385,7 +388,7 @@ const WorkerManagement = ({ workers = [], locations = [], onWorkersUpdate }) => 
                   setEditingWorker(null);
                 }}
               >
-                <X size={20} />
+                ×
               </button>
             </div>
             
@@ -398,7 +401,7 @@ const WorkerManagement = ({ workers = [], locations = [], onWorkersUpdate }) => 
                   defaultValue={editingWorker?.code || ''}
                   placeholder={editingWorker ? 'Edit code' : 'Auto-generated'}
                   disabled={!editingWorker}
-                  style={{ width: '100%', padding: '0.75rem', borderRadius: '4px', border: '1px solid var(--border-color)', background: editingWorker ? 'var(--bg-input)' : 'var(--bg-tertiary)', color: 'var(--text-primary)' }}
+                  style={{ width: '100%', padding: '0.75rem', borderRadius: '4px', border: '1px solid var(--border)', background: editingWorker ? 'var(--card-bg)' : 'var(--card-bg)', color: 'var(--text-primary)' }}
                 />
                 {!editingWorker && <small style={{ color: 'var(--text-secondary)', fontSize: '0.8rem' }}>Code will be auto-generated (e.g., SW001, SW002)</small>}
               </div>
@@ -410,7 +413,7 @@ const WorkerManagement = ({ workers = [], locations = [], onWorkersUpdate }) => 
                   name="full_name"
                   defaultValue={editingWorker?.full_name || ''}
                   required
-                  style={{ width: '100%', padding: '0.75rem', borderRadius: '4px', border: '1px solid var(--border-color)', background: 'var(--bg-input)', color: 'var(--text-primary)' }}
+                  style={{ width: '100%', padding: '0.75rem', borderRadius: '4px', border: '1px solid var(--border)', background: 'var(--card-bg)', color: 'var(--text-primary)' }}
                 />
               </div>
               
@@ -420,7 +423,7 @@ const WorkerManagement = ({ workers = [], locations = [], onWorkersUpdate }) => 
                   type="email"
                   name="email"
                   defaultValue={editingWorker?.email || ''}
-                  style={{ width: '100%', padding: '0.75rem', borderRadius: '4px', border: '1px solid var(--border-color)', background: 'var(--bg-input)', color: 'var(--text-primary)' }}
+                  style={{ width: '100%', padding: '0.75rem', borderRadius: '4px', border: '1px solid var(--border)', background: 'var(--card-bg)', color: 'var(--text-primary)' }}
                 />
               </div>
               
@@ -430,7 +433,7 @@ const WorkerManagement = ({ workers = [], locations = [], onWorkersUpdate }) => 
                   type="text"
                   name="phone"
                   defaultValue={editingWorker?.phone || ''}
-                  style={{ width: '100%', padding: '0.75rem', borderRadius: '4px', border: '1px solid var(--border-color)', background: 'var(--bg-input)', color: 'var(--text-primary)' }}
+                  style={{ width: '100%', padding: '0.75rem', borderRadius: '4px', border: '1px solid var(--border)', background: 'var(--card-bg)', color: 'var(--text-primary)' }}
                 />
               </div>
               
@@ -440,11 +443,11 @@ const WorkerManagement = ({ workers = [], locations = [], onWorkersUpdate }) => 
                   type="number"
                   name="max_hours"
                   min="0"
-                  max="60"
+                  max="48"
                   defaultValue={editingWorker?.max_hours || ''}
-                  style={{ width: '100%', padding: '0.75rem', borderRadius: '4px', border: '1px solid var(--border-color)', background: 'var(--bg-input)', color: 'var(--text-primary)' }}
+                  style={{ width: '100%', padding: '0.75rem', borderRadius: '4px', border: '1px solid var(--border)', background: 'var(--card-bg)', color: 'var(--text-primary)' }}
                 />
-                <small style={{ color: 'var(--text-secondary)', fontSize: '0.8rem' }}>Maximum 60 hours per week</small>
+                <small style={{ color: 'var(--text-secondary)', fontSize: '0.8rem' }}>Maximum 48 hours per week</small>
               </div>
               
               <div className="form-group">
@@ -453,7 +456,7 @@ const WorkerManagement = ({ workers = [], locations = [], onWorkersUpdate }) => 
                   type="text"
                   name="skills"
                   defaultValue={editingWorker?.skills || ''}
-                  style={{ width: '100%', padding: '0.75rem', borderRadius: '4px', border: '1px solid var(--border-color)', background: 'var(--bg-input)', color: 'var(--text-primary)' }}
+                  style={{ width: '100%', padding: '0.75rem', borderRadius: '4px', border: '1px solid var(--border)', background: 'var(--card-bg)', color: 'var(--text-primary)' }}
                 />
               </div>
               
@@ -462,7 +465,7 @@ const WorkerManagement = ({ workers = [], locations = [], onWorkersUpdate }) => 
                 <select 
                   name="car" 
                   defaultValue={editingWorker?.car || ''}
-                  style={{ width: '100%', padding: '0.75rem', borderRadius: '4px', border: '1px solid var(--border-color)', background: 'var(--bg-input)', color: 'var(--text-primary)' }}
+                  style={{ width: '100%', padding: '0.75rem', borderRadius: '4px', border: '1px solid var(--border)', background: 'var(--card-bg)', color: 'var(--text-primary)' }}
                 >
                   <option value="">Select...</option>
                   <option value="Yes">Yes</option>
@@ -475,7 +478,7 @@ const WorkerManagement = ({ workers = [], locations = [], onWorkersUpdate }) => 
                 <select 
                   name="sex" 
                   defaultValue={editingWorker?.sex || ''}
-                  style={{ width: '100%', padding: '0.75rem', borderRadius: '4px', border: '1px solid var(--border-color)', background: 'var(--bg-input)', color: 'var(--text-primary)' }}
+                  style={{ width: '100%', padding: '0.75rem', borderRadius: '4px', border: '1px solid var(--border)', background: 'var(--card-bg)', color: 'var(--text-primary)' }}
                 >
                   <option value="">Select...</option>
                   <option value="M">Male</option>
@@ -491,12 +494,12 @@ const WorkerManagement = ({ workers = [], locations = [], onWorkersUpdate }) => 
                   name="telegram"
                   placeholder="@username or user ID"
                   defaultValue={editingWorker?.telegram || ''}
-                  style={{ width: '100%', padding: '0.75rem', borderRadius: '4px', border: '1px solid var(--border-color)', background: 'var(--bg-input)', color: 'var(--text-primary)' }}
+                  style={{ width: '100%', padding: '0.75rem', borderRadius: '4px', border: '1px solid var(--border)', background: 'var(--card-bg)', color: 'var(--text-primary)' }}
                 />
                 <small style={{ color: 'var(--text-secondary)', fontSize: '0.8rem' }}>Enter @username or Telegram user ID</small>
               </div>
               
-              <div className="modal-actions" style={{ gridColumn: 'span 2', display: 'flex', gap: '1rem', justifyContent: 'flex-end', marginTop: '2rem', paddingTop: '1rem', borderTop: '1px solid var(--border-color)' }}>
+              <div className="modal-actions" style={{ gridColumn: 'span 2', display: 'flex', gap: '1rem', justifyContent: 'flex-end', marginTop: '2rem', paddingTop: '1rem', borderTop: '1px solid var(--border)' }}>
                 <button 
                   type="submit" 
                   className="btn btn-primary"
@@ -588,11 +591,14 @@ const AvailabilityModal = ({ worker, onClose, initialAvailabilityData }) => {
         .map(day => {
           const dayData = weeklyAvailability[day];
           const isFullDay = dayData.from_time === '00:00' && (dayData.to_time === '23:59' || dayData.to_time === '24:00');
+          // CRITICAL: If from_time equals to_time, interpret as 24-hour availability (wraps midnight)
+          const wraps_midnight = !isFullDay && dayData.from_time === dayData.to_time && dayData.from_time !== '00:00';
           return {
             weekday: parseInt(day),
             from_time: isFullDay ? null : dayData.from_time,
             to_time: isFullDay ? null : dayData.to_time,
-            is_full_day: isFullDay,
+            is_full_day: isFullDay || wraps_midnight, // Mark as full day if it wraps
+            wraps_midnight: wraps_midnight,
           };
         });
 
@@ -646,7 +652,7 @@ const AvailabilityModal = ({ worker, onClose, initialAvailabilityData }) => {
           <div className="modal-content" onClick={(e) => e.stopPropagation()} style={{ width: '800px', maxWidth: '90vw' }}>
             <div className="modal-header">
           <h3>Availability - {worker.full_name}</h3>
-          <button className="btn-cancel-x" onClick={onClose}><X size={20} /></button>
+          <button className="btn-cancel-x" onClick={onClose}>×</button>
             </div>
             
         {!weeklyAvailability ? (
@@ -655,14 +661,14 @@ const AvailabilityModal = ({ worker, onClose, initialAvailabilityData }) => {
             <div style={{ padding: '1rem' }}>
               {/* Weekly availability schedule */}
               <div style={{ marginBottom: '1.5rem' }}>
-                <h4 style={{ marginBottom: '1rem', color: 'var(--accent-primary)' }}>Weekly Schedule</h4>
-                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(120px, 1fr))', gap: '0.75rem', maxWidth: '100%' }}>
+                <h4 style={{ marginBottom: '1rem', color: 'var(--accent)' }}>Weekly Schedule</h4>
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', gap: '1rem', maxWidth: '100%' }}>
                 {['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'].map((day, displayIndex) => {
                   // Map display order (Mon=0, Tue=1, ..., Sun=6) to backend weekday (Mon=1, Tue=2, ..., Sun=0)
                   const weekdayNumber = displayIndex === 6 ? 0 : displayIndex + 1;
                   const dayData = weeklyAvailability[weekdayNumber];
                     return (
-                      <div key={day} style={{ textAlign: 'center', padding: '0.5rem', background: 'var(--bg-input)', borderRadius: '4px', minWidth: '110px' }}>
+                      <div key={day} style={{ textAlign: 'center', padding: '0.75rem', background: 'var(--card-bg)', borderRadius: '12px', border: '1px solid var(--border)' }}>
                         <div style={{ fontWeight: 'bold', marginBottom: '0.5rem', fontSize: '0.9rem', whiteSpace: 'nowrap' }}>{day}</div>
                         <div style={{ marginBottom: '0.5rem' }}>
                           <input 
@@ -682,14 +688,15 @@ const AvailabilityModal = ({ worker, onClose, initialAvailabilityData }) => {
                             step="900"
                             style={{ 
                               width: '100%', 
-                              minWidth: '105px',
-                              maxWidth: '110px',
+                              minWidth: '120px',
+                              maxWidth: '130px',
                               fontSize: '0.85rem', 
-                              padding: '0.35rem 0.3rem', 
-                              marginBottom: '0.25rem', 
-                              background: dayData.available ? 'var(--bg-secondary)' : 'var(--bg-tertiary)', 
-                              border: '1px solid var(--border-color)', 
-                              color: 'var(--text-primary)', 
+                              padding: '0.4rem', 
+                              marginBottom: '0.25rem',
+                              background: dayData.available ? 'var(--card-bg)' : 'var(--card-bg)', 
+                              border: '1px solid var(--border)',
+                              borderRadius: '8px',
+                              color: 'var(--text-primary)',
                               opacity: dayData.available ? 1 : 0.5,
                               textAlign: 'center',
                               cursor: dayData.available ? 'pointer' : 'not-allowed'
@@ -704,13 +711,14 @@ const AvailabilityModal = ({ worker, onClose, initialAvailabilityData }) => {
                             step="900"
                             style={{ 
                               width: '100%', 
-                              minWidth: '105px',
-                              maxWidth: '110px',
+                              minWidth: '120px',
+                              maxWidth: '130px',
                               fontSize: '0.85rem', 
-                              padding: '0.35rem 0.3rem', 
-                              background: dayData.available ? 'var(--bg-secondary)' : 'var(--bg-tertiary)', 
-                              border: '1px solid var(--border-color)', 
-                              color: 'var(--text-primary)', 
+                              padding: '0.4rem', 
+                              background: dayData.available ? 'var(--card-bg)' : 'var(--card-bg)', 
+                              border: '1px solid var(--border)',
+                              borderRadius: '8px',
+                              color: 'var(--text-primary)',
                               opacity: dayData.available ? 1 : 0.5,
                               textAlign: 'center',
                               cursor: dayData.available ? 'pointer' : 'not-allowed'
@@ -724,13 +732,13 @@ const AvailabilityModal = ({ worker, onClose, initialAvailabilityData }) => {
               </div>
               
             {/* Unavailable periods */}
-              <div style={{ marginBottom: '1.5rem', borderTop: '1px solid var(--border-color)', paddingTop: '1rem' }}>
-                <h4 style={{ marginBottom: '1rem', color: 'var(--accent-primary)' }}>Unavailable Periods</h4>
+              <div style={{ marginBottom: '1.5rem', borderTop: '1px solid var(--border)', paddingTop: '1rem' }}>
+                <h4 style={{ marginBottom: '1rem', color: 'var(--accent)' }}>Unavailable Periods</h4>
                 
                 {existingUnavailability.length > 0 && (
                   <div style={{ marginBottom: '1rem' }}>
                   <h5 style={{ fontSize: '0.9rem', color: 'var(--text-secondary)', marginBottom: '0.5rem' }}>Current Periods:</h5>
-                    <div style={{ background: 'var(--bg-tertiary)', padding: '0.75rem', borderRadius: '4px' }}>
+                    <div style={{ background: 'var(--card-bg)', padding: '0.75rem', borderRadius: '4px' }}>
                     {existingUnavailability.map((period) => (
                       <div key={period.id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '0.5rem 0' }}>
                           <span style={{ fontSize: '0.85rem' }}>
@@ -759,8 +767,8 @@ const AvailabilityModal = ({ worker, onClose, initialAvailabilityData }) => {
                           width: '100%', 
                           padding: '0.75rem 3rem 0.75rem 0.75rem',
                           borderRadius: '6px', 
-                          border: '2px solid var(--border-color)', 
-                        background: 'var(--bg-input)',
+                          border: '2px solid var(--border)', 
+                        background: 'var(--card-bg)',
                         color: 'var(--text-primary)',
                           fontSize: '1rem',
                           cursor: 'pointer',
@@ -768,21 +776,23 @@ const AvailabilityModal = ({ worker, onClose, initialAvailabilityData }) => {
                           outline: 'none'
                         }}
                         onMouseEnter={(e) => e.target.style.borderColor = '#D4A574'}
-                        onMouseLeave={(e) => e.target.style.borderColor = 'var(--border-color)'}
+                        onMouseLeave={(e) => e.target.style.borderColor = 'var(--border)'}
                         onFocus={(e) => e.target.style.borderColor = '#D4A574'}
-                        onBlur={(e) => e.target.style.borderColor = 'var(--border-color)'}
+                        onBlur={(e) => e.target.style.borderColor = 'var(--border)'}
                       />
-                      <Calendar 
-                        size={20} 
+                      <span 
                         style={{ 
                           position: 'absolute', 
                           right: '0.75rem', 
                           top: '50%', 
                           transform: 'translateY(-50%)',
                           color: '#D4A574',
-                          pointerEvents: 'none'
+                          pointerEvents: 'none',
+                          fontSize: '16px'
                         }} 
-                      />
+                      >
+                        📅
+                      </span>
                     </div>
                   </div>
                   <div>
@@ -797,8 +807,8 @@ const AvailabilityModal = ({ worker, onClose, initialAvailabilityData }) => {
                           width: '100%', 
                           padding: '0.75rem 3rem 0.75rem 0.75rem',
                           borderRadius: '6px', 
-                          border: '2px solid var(--border-color)', 
-                        background: 'var(--bg-input)',
+                          border: '2px solid var(--border)', 
+                        background: 'var(--card-bg)',
                         color: 'var(--text-primary)',
                           fontSize: '1rem',
                           cursor: 'pointer',
@@ -806,21 +816,23 @@ const AvailabilityModal = ({ worker, onClose, initialAvailabilityData }) => {
                           outline: 'none'
                         }}
                         onMouseEnter={(e) => e.target.style.borderColor = '#D4A574'}
-                        onMouseLeave={(e) => e.target.style.borderColor = 'var(--border-color)'}
+                        onMouseLeave={(e) => e.target.style.borderColor = 'var(--border)'}
                         onFocus={(e) => e.target.style.borderColor = '#D4A574'}
-                        onBlur={(e) => e.target.style.borderColor = 'var(--border-color)'}
+                        onBlur={(e) => e.target.style.borderColor = 'var(--border)'}
                       />
-                      <Calendar 
-                        size={20} 
+                      <span 
                       style={{
                           position: 'absolute', 
                           right: '0.75rem', 
                           top: '50%', 
                           transform: 'translateY(-50%)',
                           color: '#D4A574',
-                          pointerEvents: 'none'
+                          pointerEvents: 'none',
+                          fontSize: '16px'
                         }} 
-                      />
+                      >
+                        📅
+                      </span>
                     </div>
                   </div>
                 </div>

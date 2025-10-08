@@ -1,13 +1,14 @@
 import React, { useState, useEffect, useMemo, useRef } from 'react';
 import { toast } from 'react-hot-toast';
 import axios from 'axios';
-import { Calendar as CalendarIcon, RefreshCw, ExternalLink } from 'lucide-react';
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 const API = `${BACKEND_URL}/api`;
 
 const CalendarAppointments = ({ 
   weekType, 
+  weekStartDate,
+  weekEndDate,
   onHeightChange,
   editMode,
   onToggleEditMode,
@@ -34,44 +35,29 @@ const CalendarAppointments = ({
   
   const [isAuthorizing, setIsAuthorizing] = useState(false);
 
-  // Get the week dates for the current week type
-  const getWeekRange = () => {
-    const today = new Date();
-    const currentDay = today.getDay();
-    const daysFromMonday = currentDay === 0 ? 6 : currentDay - 1;
-    
-    const monday = new Date(today);
-    monday.setDate(today.getDate() - daysFromMonday);
-    monday.setHours(0, 0, 0, 0);
-    
-    // Adjust dates based on week type
-    if (weekType === 'weekA') {
-      monday.setDate(monday.getDate() - 7);  // Last week
-    } else if (weekType === 'nextA') {
-      monday.setDate(monday.getDate() + 7);  // Next week
-    } else if (weekType === 'nextB') {
-      monday.setDate(monday.getDate() + 14); // Week after next
-    }
-    // weekB uses current week (no offset)
-    
-    const sunday = new Date(monday);
-    sunday.setDate(monday.getDate() + 6);
-    sunday.setHours(23, 59, 59, 999);
-    
-    return { start: monday, end: sunday };
-  };
 
   // Fetch calendar appointments
   const fetchAppointments = async () => {
     setIsLoading(true);
     try {
-      const { start, end } = getWeekRange();
+      // Only proceed if we have valid dates
+      if (!weekStartDate || !weekEndDate) {
+        setIsLoading(false);
+        return;
+      }
+      
+      const start = new Date(weekStartDate);
+      const end = new Date(weekEndDate);
+      // Set proper time for start and end dates
+      start.setHours(0, 0, 0, 0);
+      end.setHours(23, 59, 59, 999);
       
       const response = await axios.get(`${API}/calendar/appointments`, {
         params: {
           startDate: start.toISOString(),
           endDate: end.toISOString(),
-          weekType: weekType
+          weekType: weekType,
+          _t: Date.now() // Prevent caching
         }
       });
       
@@ -93,8 +79,8 @@ const CalendarAppointments = ({
   const checkCalendarStatus = async () => {
     try {
       const response = await axios.get(`${API}/calendar/status`);
-      if (response.data.connected) {
-        // Already connected, try to fetch appointments
+      if (response.data.connected && weekStartDate && weekEndDate) {
+        // Already connected and we have valid dates, try to fetch appointments
         fetchAppointments();
       }
     } catch (error) {
@@ -220,7 +206,34 @@ const CalendarAppointments = ({
     // For Planner and other tabs, show all appointments
 
     filteredAppointments.forEach((apt) => {
-      const target = Object.keys(groups).find((name) => apt.summary?.includes(name));
+      // 1) Prefer backend-provided participantCode
+      const code = apt.participantCode;
+      if (code) {
+        const map = { JAM001: 'James', LIB001: 'Libby', ACE001: 'Ace', GRA001: 'Grace', MIL001: 'Milan' };
+        const name = map[code];
+        if (name && groups[name]) {
+          groups[name].push(apt);
+          return;
+        }
+      }
+
+      // 2) Fallback: calendarName contains participant display name
+      const calendarName = apt.calendarName || '';
+      for (const name of Object.keys(groups)) {
+        if (calendarName.toLowerCase().includes(name.toLowerCase())) {
+          groups[name].push(apt);
+          return;
+        }
+      }
+
+      // 3) Fallback: title starts with participant name
+      const target = Object.keys(groups).find((name) => {
+        const summary = apt.summary || '';
+        return summary.startsWith(`${name} -`) || 
+               summary.startsWith(`${name}:`) || 
+               summary.startsWith(`${name},`) ||
+               summary === name;
+      });
       if (target) {
         groups[target].push(apt);
       }
@@ -255,8 +268,8 @@ const CalendarAppointments = ({
   // Load appointments on component mount and when week changes
   useEffect(() => {
     checkCalendarStatus();
-  }, [weekType]);
-  
+  }, [weekType, weekStartDate, weekEndDate]);
+
   // Trigger refresh when parent requests it
   useEffect(() => {
     if (onRefreshRequest > 0) {
@@ -287,14 +300,58 @@ const CalendarAppointments = ({
     return () => clearTimeout(handle);
   }, [onHeightChange, calculateCalendarHeight, appointments, showAppointments]);
 
-  // Format date for display
+  // Format date for header range (kept compact: 6th Oct)
   const formatDate = (dateString) => {
     const date = new Date(dateString);
-    return date.toLocaleDateString('en-US', { 
-      weekday: 'short', 
-      month: 'short', 
-      day: 'numeric' 
-    });
+    const day = date.getDate();
+    const month = date.toLocaleDateString('en-US', { month: 'short' });
+    const suffix = getOrdinalSuffix(day);
+    return `${day}${suffix} ${month}`;
+  };
+
+  // Get display name: preferred name in brackets, else first name
+  const getDisplayName = (fullName) => {
+    if (!fullName) return '';
+    const match = fullName.match(/\(([^)]+)\)/);
+    if (match && match[1]) return match[1];
+    const parts = fullName.trim().split(/\s+/);
+    return parts[0] || fullName;
+  };
+
+  // Format appointment date like: M 6 October
+  const formatShortDayDate = (dateObj) => {
+    const dayAbbrevMap = ['Su', 'M', 'T', 'W', 'Th', 'F', 'Sa'];
+    const dayLabel = dayAbbrevMap[dateObj.getDay()] || '';
+    const day = dateObj.getDate();
+    const month = dateObj.toLocaleDateString('en-AU', { month: 'long' });
+    return `${dayLabel} ${day} ${month}`.trim();
+  };
+
+  // Format 12h time range with am/pm on end if same half-day
+  const formatTimeRange = (startObj, endObj) => {
+    const to12 = (d, withPeriod = true) => {
+      let h = d.getHours();
+      const m = d.getMinutes().toString().padStart(2, '0');
+      const period = h >= 12 ? 'pm' : 'am';
+      h = h % 12 || 12;
+      return withPeriod ? `${h}:${m}${period}` : `${h}:${m}`;
+    };
+    const startPeriod = startObj.getHours() >= 12 ? 'pm' : 'am';
+    const endPeriod = endObj.getHours() >= 12 ? 'pm' : 'am';
+    if (startPeriod === endPeriod) {
+      return `${to12(startObj, false)} – ${to12(endObj, true)}`;
+    }
+    return `${to12(startObj, true)} – ${to12(endObj, true)}`;
+  };
+  
+  const getOrdinalSuffix = (day) => {
+    if (day >= 11 && day <= 13) return 'th';
+    switch (day % 10) {
+      case 1: return 'st';
+      case 2: return 'nd';
+      case 3: return 'rd';
+      default: return 'th';
+    }
   };
 
   // Format time for display - 24-hour HH.MM format
@@ -305,7 +362,9 @@ const CalendarAppointments = ({
     return `${hours}.${minutes}`;
   };
 
-  const { start, end } = getWeekRange();
+  // Create start and end dates for display purposes
+  const start = weekStartDate ? new Date(weekStartDate) : new Date();
+  const end = weekEndDate ? new Date(weekEndDate) : new Date();
 
   return (
     <div ref={rootRef} style={{ background: 'var(--bg-primary)' }}>
@@ -326,8 +385,8 @@ const CalendarAppointments = ({
 
       {/* Person Cards - 5 Vertical Cards */}
       {!isLoading && showAppointments && (
-        <div style={{
-          display: 'grid',
+        <div style={{ 
+          display: 'grid', 
           gridTemplateColumns: 'repeat(5, minmax(140px, 1fr))',
           gap: '0.6rem',
           marginTop: '0.5rem',
@@ -337,82 +396,80 @@ const CalendarAppointments = ({
           {groupedAppointments.map((person) => (
             <div
               key={person.name}
-              style={{
-                background: 'linear-gradient(135deg, #3E3B37, #3E3B37)',
-                border: '2px solid #D4A574',
-                borderRadius: '12px',
-                boxShadow: '0 6px 20px rgba(0, 0, 0, 0.2)',
-                transition: 'transform 0.3s ease, box-shadow 0.3s ease',
-                cursor: 'default',
-                position: 'relative',
-                display: 'flex',
-                flexDirection: 'column',
-                maxHeight: '100%',
-                overflow: 'hidden'
-              }}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.transform = 'translateY(-4px)';
-                e.currentTarget.style.boxShadow = '0 8px 25px rgba(212, 165, 116, 0.25)';
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.transform = 'translateY(0)';
-                e.currentTarget.style.boxShadow = '0 6px 20px rgba(0, 0, 0, 0.2)';
-              }}
+              className="calendar-card"
             >
-              {/* Person Header - Compact single row */}
-              <div style={{
-                background: '#4A4641',
-                padding: '0.5rem 1rem',
-                borderBottom: '1px solid #4A4641',
-                color: '#E8DDD4',
-                display: 'flex',
-                alignItems: 'center',
-                gap: '0.75rem'
-              }}>
-                <span style={{ color: '#D4A574', fontWeight: '600', fontSize: '0.9rem', textShadow: '1px 1px 2px rgba(0,0,0,0.2)' }}>
-                  {person.name}
+              <div className="calendar-card-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <span>
+                  {/* Remove icons; show preferred names (in brackets) or first names */}
+                  {['James','Libby','Ace','Grace','Milan'].map(name => name === person.name && getDisplayName(name)).filter(Boolean)}
                 </span>
-                <span style={{ fontSize: '0.75rem', color: '#8B9A7B' }}>
-                  {start.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })} - {end.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
+                <span style={{ fontSize: '0.75rem' }}>
+                  {formatDate(start.toISOString().split('T')[0])} - {formatDate(end.toISOString().split('T')[0])}
                 </span>
               </div>
-
-              {/* Appointments List */}
-              <div style={{ padding: '0.5rem', display: 'flex', flexDirection: 'column', gap: '0.3rem' }}>
+              
+              <div className="calendar-appointments" style={{ padding: '12px' }}>
                 {person.appointments.length > 0 ? (
-                  person.appointments.map((apt, aptIndex) => {
-                    // Format: "Date, Time - Appointment"
-                    const appointmentTitle = apt.summary?.replace(`${person.name} - `, '').replace(`${person.name}`, '') || 'Untitled';
-                    const dateStr = apt.start ? new Date(apt.start).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) : '';
-                    const timeStr = apt.start ? formatTime(apt.start) : '';
-                    
-                    return (
-                      <div key={apt.id || aptIndex} style={{
-                        padding: '0.4rem 0.5rem',
-                        background: '#4A4641',
-                        borderRadius: '4px',
-                        fontSize: '0.8rem',
-                        color: '#E8DDD4',
-                        lineHeight: '1.3',
-                        border: '1px solid #2D2B28'
-                      }}>
-                        <div style={{ fontSize: '0.8rem' }}>
-                          <span style={{ color: '#D4A574', fontWeight: '500' }}>
-                            {dateStr}, {timeStr}
-                          </span>
-                          <span style={{ color: '#E8DDD4', fontWeight: '400' }}>
-                            {' - '}{appointmentTitle}
-                          </span>
-                        </div>
-                      </div>
-                    );
-                  })
+                  <ul style={{ listStyle: 'none', padding: 0, margin: 0 }}>
+                    {person.appointments.map((apt, aptIndex) => {
+                      // Desired: Monday, 6 October⋅9:00 – 9:45am.
+                      const startObj = apt.start ? new Date(apt.start) : null;
+                      const endObj = apt.end ? new Date(apt.end) : null;
+                      if (!startObj || !endObj) {
+                        return (
+                          <li key={apt.id || aptIndex} style={{ marginBottom: '4px', color: 'var(--text-secondary)', fontSize: '14px' }}>
+                            {/* Fallback to previous formatting if end missing */}
+                            {apt.start ? `${formatShortDayDate(new Date(apt.start))}⋅${formatTime(new Date(apt.start))}` : '—'}
+                          </li>
+                        );
+                      }
+
+                      const appointmentTitle = apt.summary?.replace(`${person.name} - `, '').replace(`${person.name}`, '').trim();
+                      const timeLabel = formatTimeRange(startObj, endObj);
+                      const description = appointmentTitle || '';
+                      const dayAbbrevMap = ['Su', 'M', 'T', 'W', 'Th', 'F', 'Sa'];
+                      const dayAbbrev = dayAbbrevMap[startObj.getDay()] || '';
+                      const dayNumber = startObj.getDate();
+                      const monthShort = startObj.toLocaleDateString('en-AU', { month: 'short' });
+                      const dateText = `${dayNumber}${getOrdinalSuffix(dayNumber)} ${monthShort}`;
+
+                      return (
+                        <li
+                          key={apt.id || aptIndex}
+                          className="appointment-list-item"
+                          style={{
+                            marginBottom: '4px',
+                            display: 'grid',
+                            gridTemplateColumns: 'auto 1fr',
+                            columnGap: '0.5rem',
+                            alignItems: 'baseline',
+                          }}
+                        >
+                          <span>{dayAbbrev}</span>
+                          <div>
+                            <span style={{ color: 'var(--text-primary)', whiteSpace: 'nowrap' }}>{dateText}</span>
+                            <span style={{ color: 'var(--text-primary)', marginLeft: '0.5rem', whiteSpace: 'nowrap' }}>
+                              {timeLabel}
+                            </span>
+                            {description && (
+                              <span style={{ marginLeft: '0.25rem' }}>
+                                <span style={{ color: 'var(--text-primary)' }}>– </span>
+                                <span style={{ color: 'var(--accent)', fontWeight: 600 }}>
+                                  {description}
+                                </span>
+                              </span>
+                            )}
+                          </div>
+                        </li>
+                      );
+                    })}
+                  </ul>
                 ) : (
-                  <div style={{ textAlign: 'center', color: '#9AAA89', fontSize: '0.9rem', fontStyle: 'italic', padding: '1rem 0' }}>
+                  <div className="no-appointments">
                     No appointments
-                  </div>
-                )}
-              </div>
+                        </div>
+                      )}
+                    </div>
             </div>
           ))}
         </div>
@@ -420,8 +477,8 @@ const CalendarAppointments = ({
 
       {/* Empty State */}
       {!isLoading && showAppointments && appointments.length === 0 && (
-        <div style={{
-          textAlign: 'center',
+        <div style={{ 
+          textAlign: 'center', 
           padding: '2rem',
           color: 'var(--text-muted)'
         }}>

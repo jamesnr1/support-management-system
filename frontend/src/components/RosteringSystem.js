@@ -2,7 +2,6 @@ import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { toast } from 'react-hot-toast';
 import axios from 'axios';
-import { RefreshCw } from 'lucide-react';
 import Login from './Login';
 import WorkerManagement from './WorkerManagement';
 import ParticipantSchedule from './ParticipantSchedule';
@@ -10,6 +9,7 @@ import HoursTracker from './HoursTracker';
 import CalendarAppointments from './CalendarAppointments';
 import AIChat from './AIChat';
 import ShiftsTab from './ShiftsTab';
+import StaffTab from './StaffTab';
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 const API = `${BACKEND_URL}/api`;
@@ -27,15 +27,11 @@ const RosteringSystem = () => {
   });
   const [editMode, setEditMode] = useState(false);
   const [copyTemplateRunning, setCopyTemplateRunning] = useState(false);
-  const [calendarHeight, setCalendarHeight] = useState(300); // Dynamic calendar height
-  const [calendarTop, setCalendarTop] = useState(130); // Dynamic top below tabs
+  const [calendarHeight, setCalendarHeight] = useState(300);
   const [calendarVisible, setCalendarVisible] = useState(true);
   const [calendarRefreshTrigger, setCalendarRefreshTrigger] = useState(0);
   const [lastCalendarUpdate, setLastCalendarUpdate] = useState(null);
-  const [selectedPlannerWeek, setSelectedPlannerWeek] = useState('current'); // 'current', 'next', 'after'
-  const [viewportHeight, setViewportHeight] = useState(() =>
-    typeof window !== 'undefined' ? window.innerHeight : 900
-  );
+  const [selectedRosterWeek, setSelectedRosterWeek] = useState('current'); // 'current', 'next', 'after'
   const queryClient = useQueryClient();
 
   // Save activeTab to localStorage whenever it changes
@@ -43,77 +39,21 @@ const RosteringSystem = () => {
     localStorage.setItem('activeTab', activeTab);
   }, [activeTab]);
 
-  useEffect(() => {
-    if (typeof window === 'undefined') {
-      return undefined;
-    }
 
-    const handleResize = () => {
-      setViewportHeight(window.innerHeight);
-    };
-
-    window.addEventListener('resize', handleResize);
-    return () => window.removeEventListener('resize', handleResize);
-  }, []);
-
-  // Compute header + tabs actual height for pixel-perfect positioning
-  const fixedTopOffset = 130; // default fallback
-  const calendarMaxHeight = useMemo(() => {
-    // Use measured viewport minus calendarTop minus small breathing room
-    const available = viewportHeight - calendarTop - 12;
-    return Math.max(available, 220);
-  }, [viewportHeight, calendarTop]);
-
-  const effectiveCalendarHeight = useMemo(() => {
-    if (activeTab === 'profiles' || activeTab === 'tracking' || activeTab === 'shifts') {
-      return 0;
-    }
-    // If calendar is hidden, return 0 to collapse it completely
-    if (!calendarVisible) {
-      return 0;
-    }
-    return Math.min(Math.max(calendarHeight, 220), calendarMaxHeight);
-  }, [activeTab, calendarHeight, calendarMaxHeight, calendarVisible]);
-
-  // Measure the bottom of the tabs to position the calendar flush under them
-  useEffect(() => {
-    const computeCalendarTop = () => {
-      if (typeof window === 'undefined') return;
-      const nav = document.querySelector('.tab-nav');
-      const header = document.querySelector('.header');
-      let topPx = 130;
-      if (nav && nav.getBoundingClientRect) {
-        const rect = nav.getBoundingClientRect();
-        topPx = Math.max(0, Math.round(rect.bottom));
-      } else if (header && header.getBoundingClientRect) {
-        const rect = header.getBoundingClientRect();
-        topPx = Math.max(0, Math.round(rect.bottom));
-      }
-      setCalendarTop(topPx);
-    };
-    computeCalendarTop();
-    window.addEventListener('resize', computeCalendarTop);
-    const id = setInterval(computeCalendarTop, 500); // account for font/layout shifts
-    return () => {
-      window.removeEventListener('resize', computeCalendarTop);
-      clearInterval(id);
-    };
-  }, []);
-
-  // Week transition logic - every fortnight at 3am
+  // Week transition logic - every week at 3am on Sunday
   const checkWeekTransition = () => {
     const now = new Date();
     const currentHour = now.getHours();
     const currentMinute = now.getMinutes();
     const currentDay = now.getDay(); // 0=Sunday, 1=Monday, etc.
     
-    // Check if it's 3am on Monday (day 1)
-    if (currentDay === 1 && currentHour === 3 && currentMinute === 0) {
-      // Check if it's been 2 weeks since last transition
+    // Check if it's 3am on Sunday (day 0)
+    if (currentDay === 0 && currentHour === 3 && currentMinute === 0) {
+      // Check if it's been 1 week since last transition
       const lastTransition = localStorage.getItem('lastWeekTransition');
-      const twoWeeksAgo = new Date(now.getTime() - (14 * 24 * 60 * 60 * 1000));
+      const oneWeekAgo = new Date(now.getTime() - (7 * 24 * 60 * 60 * 1000));
       
-      if (!lastTransition || new Date(lastTransition) < twoWeeksAgo) {
+      if (!lastTransition || new Date(lastTransition) < oneWeekAgo) {
         performWeekTransition();
       }
     }
@@ -121,7 +61,7 @@ const RosteringSystem = () => {
 
   const performWeekTransition = async () => {
     try {
-      console.log('Performing week transition at 3am Monday');
+      console.log('Performing week transition at 3am Sunday');
       
       // Call backend to transition planner to roster
       await axios.post(`${API}/roster/transition_to_roster`);
@@ -194,26 +134,79 @@ const RosteringSystem = () => {
     staleTime: 1000 * 60 * 5
   });
 
-  // Fetch roster data (roster + planner based on selection)
+  // Fetch roster data based on selected week with fallback logic
   const { data: rosterData = {}, isLoading: rosterLoading } = useQuery({
-    queryKey: ['rosterData', selectedPlannerWeek],
+    queryKey: ['rosterData', selectedRosterWeek],
     queryFn: async () => {
-      // Map planner week selection to backend endpoint
-      const plannerEndpoint = {
-        'current': 'planner',        // Use roster as template
-        'next': 'planner_next',      // Next week
+      // Map week selection to backend endpoint
+      const weekEndpoint = {
+        'current': 'roster',         // Current week
+        'next': 'planner_next',      // Next week  
         'after': 'planner_after'     // Week after
-      }[selectedPlannerWeek] || 'planner';
+      }[selectedRosterWeek] || 'roster';
 
-      const [roster, planner] = await Promise.all([
-        axios.get(`${API}/roster/roster`),
-        axios.get(`${API}/roster/${plannerEndpoint}`)
-      ]);
-      return {
-        roster: roster.data,
-        planner: planner.data,
-        plannerEndpoint  // Store which endpoint we're using
-      };
+      try {
+        // Try to get data for the selected week
+        const response = await axios.get(`${API}/roster/${weekEndpoint}`);
+        const weekData = response.data;
+        
+        // Check if this week has actual shift data
+        const hasShiftData = weekData?.data && Object.values(weekData.data).some(participantData => 
+          Object.values(participantData).some(dayShifts => 
+            Array.isArray(dayShifts) && dayShifts.length > 0
+          )
+        );
+
+        // If selected week has no shift data and it's not current week, try to get previous week's data as fallback
+        if (!hasShiftData && selectedRosterWeek !== 'current') {
+          console.log(`No shift data found for ${selectedRosterWeek} week, trying to get previous week's data as fallback`);
+          
+          // For next week, fallback to current week (roster)
+          // For week after, fallback to next week (planner_next)
+          const fallbackEndpoint = selectedRosterWeek === 'next' ? 'roster' : 'planner_next';
+          
+          try {
+            const fallbackResponse = await axios.get(`${API}/roster/${fallbackEndpoint}`);
+            const fallbackData = fallbackResponse.data;
+            
+            // Check if fallback week has data
+            const fallbackHasData = fallbackData?.data && Object.values(fallbackData.data).some(participantData => 
+              Object.values(participantData).some(dayShifts => 
+                Array.isArray(dayShifts) && dayShifts.length > 0
+              )
+            );
+
+            if (fallbackHasData) {
+              console.log(`Using fallback data from ${fallbackEndpoint} for ${selectedRosterWeek} week`);
+              // Show toast notification about fallback data
+              toast(`Showing ${fallbackEndpoint === 'roster' ? 'current' : 'next'} week's data as starting point for ${selectedRosterWeek} week`, {
+                duration: 4000,
+                style: {
+                  background: 'var(--accent)',
+                  color: 'white'
+                }
+              });
+              return {
+                current: fallbackData,
+                weekEndpoint,
+                isUsingFallback: true,
+                fallbackFrom: fallbackEndpoint
+              };
+            }
+          } catch (fallbackError) {
+            console.log('Fallback data fetch failed:', fallbackError);
+          }
+        }
+
+        return {
+          current: weekData,
+          weekEndpoint,
+          isUsingFallback: false
+        };
+      } catch (error) {
+        console.error(`Error fetching data for ${weekEndpoint}:`, error);
+        throw error;
+      }
     }
   });
 
@@ -227,7 +220,17 @@ const RosteringSystem = () => {
       const formatDate = (d) => {
         const month = d.toLocaleDateString('en-US', { month: 'short' });
         const day = d.getDate();
-        return `${month} ${day}`;
+        return `${day}${getOrdinalSuffix(day)} ${month}`;
+      };
+      
+      const getOrdinalSuffix = (day) => {
+        if (day >= 11 && day <= 13) return 'th';
+        switch (day % 10) {
+          case 1: return 'st';
+          case 2: return 'nd';
+          case 3: return 'rd';
+          default: return 'th';
+        }
       };
       
       return `${formatDate(start)} - ${formatDate(end)}`;
@@ -261,10 +264,10 @@ const RosteringSystem = () => {
       'current': plannerWeekRanges.current?.startDate,
       'next': plannerWeekRanges.next?.startDate,
       'after': plannerWeekRanges.after?.startDate
-    }[selectedPlannerWeek];
+    }[selectedRosterWeek];
     
     return weekData || new Date();
-  }, [selectedPlannerWeek, plannerWeekRanges]);
+  }, [selectedRosterWeek, plannerWeekRanges]);
 
   // Update roster mutation
   const updateRosterMutation = useMutation({
@@ -290,9 +293,7 @@ const RosteringSystem = () => {
 
   const tabs = [
     { id: 'roster', label: 'Roster', color: '#D4A574' },
-    { id: 'planner', label: 'Planner', color: '#8B9A7B' },
-    { id: 'shifts', label: 'Shifts', color: '#9A8F85' },
-    { id: 'profiles', label: 'Profiles', color: '#A89080' },
+    { id: 'staff', label: 'Staff', color: '#9A8F85' },
     { id: 'tracking', label: 'Tracking', color: '#B89A8A' }
   ];
 
@@ -307,20 +308,17 @@ const RosteringSystem = () => {
   const handleRosterUpdate = (updatedParticipantData) => {
     // CRITICAL: Merge updated participant data with existing full roster data
     // ParticipantSchedule only sends ONE participant's data, but backend expects FULL roster
-    const currentRosterData = rosterData[activeTab]?.data || {};
+    const currentRosterData = rosterData.current?.data || {};
     const mergedData = {
       ...currentRosterData,
       ...updatedParticipantData  // This will update/add the modified participant's data
     };
     
-    // Determine which endpoint to use based on activeTab and planner selection
-    let weekType = activeTab;
-    if (activeTab === 'planner' && rosterData.plannerEndpoint) {
-      weekType = rosterData.plannerEndpoint;  // Use the specific planner endpoint
-    }
+    // Use the correct endpoint - if using fallback, save to the intended week endpoint
+    const weekType = rosterData.weekEndpoint || 'roster';
     
     console.log('handleRosterUpdate - merging participant data into full roster:', {
-      activeTab,
+      selectedRosterWeek,
       weekType,
       participantCodes: Object.keys(updatedParticipantData),
       beforeCount: Object.keys(currentRosterData).length,
@@ -480,18 +478,17 @@ const RosteringSystem = () => {
 
     try {
       // Get current roster data
-      const roster = rosterData.roster;
+      const roster = rosterData.current;
       if (!roster || !roster.data) {
         toast.error('No roster data to copy', { id: toastId });
         return;
       }
 
-      // Determine which planner endpoint to save to
+      // Determine which planner endpoint to save to based on selected week
       const plannerEndpoint = {
-        'current': 'planner',
         'next': 'planner_next',
         'after': 'planner_after'
-      }[selectedPlannerWeek] || 'planner';
+      }[selectedRosterWeek] || 'planner_next';
 
       // Deep copy roster data to selected planner week
       const rosterCopy = JSON.parse(JSON.stringify(roster.data));
@@ -516,25 +513,27 @@ const RosteringSystem = () => {
     }
   };
 
-  // Toggle Week Pattern in Planner
+  // Toggle Week Pattern (Week A/Week B)
   const toggleWeekPattern = async (newWeekType) => {
-    if (activeTab !== 'planner') return;
+    if (activeTab !== 'roster') return;
     
     try {
-      const currentPlanner = rosterData.planner;
-      if (!currentPlanner) {
-        toast.error('No planner data to update');
+      const currentRoster = rosterData.current;
+      if (!currentRoster) {
+        toast.error('No roster data to update');
         return;
       }
 
       // Update the week_type
-      const updatedPlanner = {
-        ...currentPlanner,
+      const updatedRoster = {
+        ...currentRoster,
         week_type: newWeekType
       };
 
-      // Save to backend
-      await axios.post(`${API}/roster/planner`, updatedPlanner);
+      // Save to backend - use the correct endpoint based on selectedRosterWeek
+      const weekEndpoint = rosterData.weekEndpoint || 'roster';
+      
+      await axios.post(`${API}/roster/${weekEndpoint}`, updatedRoster);
       
       // Refetch data
       await queryClient.refetchQueries({ queryKey: ['rosterData'], type: 'active' });
@@ -583,335 +582,271 @@ const RosteringSystem = () => {
     <div className="app-container">
       {/* Header */}
       <header className="header">
-        <div className="header-top">
+        <h2>Support Management System</h2>
           <div>
-            <h1 className="header-title">Support Management System</h1>
-            {(workersLoading || locationsLoading) && (
-              <div style={{ fontSize: '12px', color: 'var(--text-muted)', marginTop: '4px' }}>
-                {workersLoading && 'Loading workers... '}
-                {locationsLoading && 'Loading locations... '}
+          <button className="logout" onClick={handleLogout}>
+            Logout
+          </button>
               </div>
-            )}
-          </div>
-          <div className="header-controls">
-            <button
-              onClick={handleLogout}
-              style={{
-                padding: '0.5rem 1rem',
-                background: '#B87E7E',
-                color: '#E8DDD4',
-                border: 'none',
-                borderRadius: '4px',
-                cursor: 'pointer',
-                fontSize: '0.9rem',
-                fontWeight: '500',
-                transition: 'background 0.2s'
-              }}
-              onMouseEnter={(e) => e.currentTarget.style.background = '#A86E6E'}
-              onMouseLeave={(e) => e.currentTarget.style.background = '#B87E7E'}
-            >
-              Logout
-            </button>
-          </div>
-        </div>
       </header>
 
-      {/* Tab Navigation + Action Buttons (Same Row) */}
-      <nav className="tab-nav" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-        <div style={{ display: 'flex' }}>
+      {/* Tab Navigation */}
+      <nav className="tabs">
           {tabs.map(tab => (
             <button
               key={tab.id}
-              className={`tab-btn ${activeTab === tab.id ? 'active' : ''}`}
+              className={`tab ${activeTab === tab.id ? 'active' : ''}`}
               onClick={() => setActiveTab(tab.id)}
-              style={{ 
-                '--tab-color': tab.color,
-                borderBottom: activeTab === tab.id ? `1px solid #8B9A7B` : 'none'
-              }}
             >
               {tab.label}
             </button>
           ))}
-        </div>
         
-        {/* Action Buttons (Roster/Planner only) */}
-        {(activeTab === 'roster' || activeTab === 'planner') && (
-          <div style={{ display: 'flex', gap: '0.75rem', marginLeft: '2rem', marginRight: 'auto', alignItems: 'center', flex: 1 }}>
-            {/* Planner Week Selector Dropdown */}
-            {activeTab === 'planner' && (
-              <>
-                <span style={{ color: '#8B9A7B', fontSize: '0.9rem', marginRight: '0.4rem' }}>
-                  Planning:
-                </span>
+        {/* Action Buttons (Roster only) */}
+        {activeTab === 'roster' && (
+          <div className="action-buttons" style={{ display: 'flex', alignItems: 'center', gap: '1rem', flexWrap: 'wrap' }}>
+            {/* Week Selector */}
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+              <span style={{ fontSize: '0.9rem', fontWeight: '500', color: 'var(--text-secondary)' }}>View:</span>
+              <div style={{ position: 'relative', display: 'inline-block' }}>
                 <select
-                  value={selectedPlannerWeek}
+                  value={selectedRosterWeek}
                   onChange={(e) => {
-                    setSelectedPlannerWeek(e.target.value);
-                    // Re-fetch roster data with new selection
+                    setSelectedRosterWeek(e.target.value);
                     queryClient.invalidateQueries(['rosterData']);
-                    
                     const weekLabel = {
-                      'current': 'Current Week (template from Roster)',
+                      'current': 'Current Week',
                       'next': 'Next Week',
                       'after': 'Week After'
                     }[e.target.value];
-                    toast(`Planning for: ${weekLabel}`);
+                    toast(`Viewing: ${weekLabel}`);
                   }}
                   style={{
-                    padding: '0.4rem 0.75rem',
+                    background: 'var(--bg-primary)',
+                    color: 'var(--text-primary)',
+                    border: '1px solid var(--border)',
+                    borderRadius: '9999px',
+                    padding: '0.25rem 1.6rem 0.25rem 0.9rem',
+                    minHeight: '32px',
+                    lineHeight: '1',
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    WebkitAppearance: 'none',
+                    MozAppearance: 'none',
+                    appearance: 'none',
                     fontSize: '0.85rem',
-                    background: '#3E3B37',
-                    color: '#E8DDD4',
-                    border: '1px solid #8B9A7B',
-                    borderRadius: '4px',
-                    cursor: 'pointer',
                     fontWeight: '500'
                   }}
                 >
-                  <option value="current">Current Week ({plannerWeekRanges.current?.label})</option>
-                  <option value="next">Next Week ({plannerWeekRanges.next?.label})</option>
-                  <option value="after">Week After ({plannerWeekRanges.after?.label})</option>
+                  <option value="current">Current</option>
+                  <option value="next">Next</option>
+                  <option value="after">After</option>
                 </select>
-                <span style={{ margin: '0 0.75rem', color: '#4A4641' }}>|</span>
-              </>
-            )}
-            
-            {/* Week Pattern Selector for Planner */}
-            {activeTab === 'planner' && rosterData.planner?.week_type && (
-              <>
-                <span style={{ color: '#8B9A7B', fontSize: '0.9rem', marginRight: '0.4rem' }}>
-                  Week:
+                <span style={{ position: 'absolute', right: '12px', top: '50%', transform: 'translateY(-50%)', pointerEvents: 'none', color: 'var(--text-secondary)', fontSize: '10px' }}>▾</span>
+              </div>
+              <span style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', fontWeight: '500' }}>
+                {plannerWeekRanges[selectedRosterWeek]?.label}
+                {rosterData.isUsingFallback && (
+                  <span style={{ color: 'var(--accent)', marginLeft: '0.25rem' }}>
+                    (fallback)
+                  </span>
+                )}
+              </span>
+            </div>
+
+            {/* Week Pattern Selector */}
+            {rosterData.current?.week_type && (
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                <span style={{ fontSize: '0.9rem', fontWeight: '500', color: 'var(--text-secondary)' }}>Pattern:</span>
+                <div style={{ display: 'flex', gap: '0.25rem' }}>
+                  <button
+                    onClick={() => toggleWeekPattern('weekA')}
+                    style={{
+                      background: rosterData.current.week_type === 'weekA' ? 'var(--accent)' : 'var(--bg-primary)',
+                      color: rosterData.current.week_type === 'weekA' ? 'white' : 'var(--text-primary)',
+                      border: '1px solid var(--border)',
+                      borderRadius: '50%',
+                      width: '28px',
+                      height: '28px',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      fontSize: '0.8rem',
+                      fontWeight: '600',
+                      cursor: 'pointer',
+                      transition: 'all 0.2s ease'
+                    }}
+                  >
+                    A
+                  </button>
+                  <button
+                    onClick={() => toggleWeekPattern('weekB')}
+                    style={{
+                      background: rosterData.current.week_type === 'weekB' ? 'var(--accent)' : 'var(--bg-primary)',
+                      color: rosterData.current.week_type === 'weekB' ? 'white' : 'var(--text-primary)',
+                      border: '1px solid var(--border)',
+                      borderRadius: '50%',
+                      width: '28px',
+                      height: '28px',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      fontSize: '0.8rem',
+                      fontWeight: '600',
+                      cursor: 'pointer',
+                      transition: 'all 0.2s ease'
+                    }}
+                  >
+                    B
+                  </button>
+                </div>
+                <span style={{ fontSize: '0.8rem', color: 'var(--text-primary)', fontWeight: '500' }}>
+                  {rosterData.current.week_type === 'weekA' ? 'Libby' : 'James'}
                 </span>
-                <button
-                  onClick={() => toggleWeekPattern('weekA')}
-                  style={{
-                    padding: '0.35rem 0.75rem',
-                    fontSize: '0.9rem',
-                    background: rosterData.planner.week_type === 'weekA' ? '#8B9A7B' : '#3E3B37',
-                    color: '#E8DDD4',
-                    border: '1px solid ' + (rosterData.planner.week_type === 'weekA' ? '#8B9A7B' : '#4A4641'),
-                    borderRadius: '4px',
-                    fontWeight: rosterData.planner.week_type === 'weekA' ? '600' : '500',
-                    cursor: 'pointer'
-                  }}
-                >
-                  A
-                </button>
-                <button
-                  onClick={() => toggleWeekPattern('weekB')}
-                  style={{
-                    padding: '0.35rem 0.75rem',
-                    fontSize: '0.9rem',
-                    background: rosterData.planner.week_type === 'weekB' ? '#8B9A7B' : '#3E3B37',
-                    color: '#E8DDD4',
-                    border: '1px solid ' + (rosterData.planner.week_type === 'weekB' ? '#8B9A7B' : '#4A4641'),
-                    borderRadius: '4px',
-                    fontWeight: rosterData.planner.week_type === 'weekB' ? '600' : '500',
-                    cursor: 'pointer'
-                  }}
-                >
-                  B
-                </button>
-                <span style={{ color: '#8B9A7B', fontSize: '0.9rem', marginLeft: '0.5rem' }}>
-                  {rosterData.planner.week_type === 'weekA' 
-                    ? '(Libby shared support)' 
-                    : '(James shared support)'}
-                </span>
-                <span style={{ margin: '0 0.75rem', color: '#4A4641' }}>|</span>
-              </>
+              </div>
             )}
+        )}
             
-            <button
-              className={`btn ${editMode ? 'btn-warning' : 'btn-secondary'}`}
-              onClick={toggleEditMode}
-              style={{ 
-                padding: '0.35rem 0.75rem',
-                fontSize: '0.8rem',
-                background: editMode ? '#C4915C' : '#3E3B37',
-                color: '#E8DDD4',
-                border: '2px solid ' + (editMode ? '#C4915C' : '#4A4641'),
-                borderRadius: '6px',
-                fontWeight: editMode ? '600' : '500'
-              }}
+              <button 
+                onClick={toggleEditMode}
               title={editMode ? 'Exit Edit Mode' : 'Enter Edit Mode'}
             >
-              {editMode ? '✖️ Exit' : '✏️ Edit'}
+              {editMode ? 'Done' : 'Edit'}
             </button>
             {activeTab === 'planner' && (
               <button
-                className="btn btn-success"
                 onClick={copyToTemplate}
                 disabled={copyTemplateRunning}
-                style={{ 
-                  padding: '0.35rem 0.75rem',
-                  fontSize: '0.8rem',
-                  background: '#8B9A7B',
-                  color: '#E8DDD4',
-                  border: '2px solid #8B9A7B',
-                  borderRadius: '6px'
-                }}
-                title="Load current roster as template"
+                title="Copy roster from previous week"
               >
-                📋 Copy
+                Copy
               </button>
             )}
-            <button
-              className="btn btn-primary"
+            <button 
               onClick={() => exportRoster('payroll')}
-              style={{ 
-                padding: '0.35rem 0.75rem',
-                fontSize: '0.8rem',
-                background: '#D4A574',
-                color: '#2D2B28',
-                border: '2px solid #D4A574',
-                borderRadius: '6px',
-                fontWeight: '600'
-              }}
               title="Export payroll CSV"
             >
-              💰 Payroll
+              Payroll
             </button>
             <button
-              className="btn btn-primary"
               onClick={() => exportRoster('shifts')}
-              style={{ 
-                padding: '0.35rem 0.75rem',
-                fontSize: '0.8rem',
-                background: '#D4A574',
-                color: '#2D2B28',
-                border: '2px solid #D4A574',
-                borderRadius: '6px',
-                fontWeight: '600'
-              }}
-              title="Export shift report CSV"
+              title="Export shifts CSV"
             >
-              📄 Shifts
+              Shifts
             </button>
           </div>
         )}
         
-        {/* Calendar Controls (Roster/Planner only) */}
-        {(activeTab === 'roster' || activeTab === 'planner') && (
-          <div style={{ display: 'flex', gap: '0.6rem', alignItems: 'center', marginLeft: 'auto' }}>
-            <span style={{ fontSize: '0.85rem', color: '#8B9A7B', marginRight: '0.3rem' }}>
-              {lastCalendarUpdate && `Updated ${lastCalendarUpdate}`}
-            </span>
+        {/* Calendar Controls (Roster only) */}
+        {activeTab === 'roster' && (
+          <div className="calendar-controls" style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+            {lastCalendarUpdate && <span style={{ fontSize: '0.85rem', color: 'var(--text-secondary)' }}>{lastCalendarUpdate}</span>}
             <button
               onClick={() => setCalendarRefreshTrigger(prev => prev + 1)}
-              style={{
-                display: 'inline-flex',
-                alignItems: 'center',
-                gap: '0.35rem',
-                padding: '0.35rem 0.75rem',
-                fontSize: '0.9rem',
-                background: '#3E3B37',
-                color: '#E8DDD4',
-                border: '1px solid #4A4641',
-                borderRadius: '4px',
-                cursor: 'pointer'
-              }}
               title="Refresh calendar"
-            >
-              <RefreshCw size={14} />
-              Refresh
-            </button>
-            <button
-              onClick={() => setCalendarVisible(!calendarVisible)}
               style={{
-                display: 'inline-flex',
+                background: 'var(--bg-primary)',
+                border: '1px solid var(--border)',
+                borderRadius: '6px',
+                padding: '0.5rem',
+                cursor: 'pointer',
+                display: 'flex',
                 alignItems: 'center',
-                gap: '0.35rem',
-                padding: '0.35rem 0.75rem',
-                fontSize: '0.9rem',
-                background: '#3E3B37',
-                color: '#E8DDD4',
-                border: '1px solid #4A4641',
-                borderRadius: '4px',
-                cursor: 'pointer'
+                justifyContent: 'center'
               }}
-              title={calendarVisible ? 'Hide calendar' : 'Show calendar'}
             >
-              {calendarVisible ? '📅 Calendar' : '📅 Calendar'}
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <polyline points="23 4 23 10 17 10"></polyline>
+                <polyline points="1 20 1 14 7 14"></polyline>
+                <path d="m3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path>
+              </svg>
             </button>
+            <button 
+              onClick={() => setCalendarVisible(!calendarVisible)}
+              title={calendarVisible ? 'Hide Calendar' : 'Show Calendar'}
+              style={{
+                background: 'var(--bg-primary)',
+                border: '1px solid var(--border)',
+                borderRadius: '6px',
+                padding: '0.5rem',
+                cursor: 'pointer',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center'
+              }}
+            >
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                <line x1="16" y1="2" x2="16" y2="6"></line>
+                <line x1="8" y1="2" x2="8" y2="6"></line>
+                <line x1="3" y1="10" x2="21" y2="10"></line>
+              </svg>
+            </button>
+          <button
+              onClick={() => {
+                localStorage.removeItem('isAuthenticated');
+                setIsAuthenticated(false);
+              }}
+              title="Logout"
+            style={{ 
+                background: 'var(--bg-primary)',
+                border: '1px solid var(--border)',
+                borderRadius: '6px',
+                padding: '0.5rem',
+                cursor: 'pointer',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center'
+              }}
+            >
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+                <polyline points="16 17 21 12 16 7"></polyline>
+                <line x1="21" y1="12" x2="9" y2="12"></line>
+              </svg>
+          </button>
           </div>
         )}
       </nav>
 
-      {/* Fixed Calendar Section - Stays at top while content scrolls */}
-      {activeTab !== 'profiles' && activeTab !== 'tracking' && activeTab !== 'shifts' && (
-        <div style={{
-          position: 'fixed',
-          top: `${calendarTop}px`,
-          left: '0',
-          right: '0',
-          zIndex: 1002,
-          background: 'var(--bg-primary)',
-          height: `${effectiveCalendarHeight}px`,
-          overflowY: calendarHeight > calendarMaxHeight ? 'auto' : 'visible',
-          boxShadow: '0 4px 12px rgba(0,0,0,0.2)',
-          borderBottom: '1px solid var(--border-primary)'
-        }}>
-          <div style={{
-            position: 'absolute',
-            inset: 0,
-            background: 'var(--bg-primary)'
-          }} />
-          <div style={{
-            position: 'relative',
-            height: '100%',
-            padding: '0.75rem 1.5rem'
-          }}>
-            {/* Week Pattern moved to tab row */}
-
-            <CalendarAppointments 
-              weekType={activeTab} 
-              onHeightChange={(height) => setCalendarHeight(height)}
-              editMode={editMode}
-              onToggleEditMode={toggleEditMode}
-              onExportRoster={exportRoster}
-              onCopyToTemplate={copyToTemplate}
-              copyTemplateRunning={copyTemplateRunning}
-              onRefreshRequest={calendarRefreshTrigger}
-              calendarVisible={calendarVisible}
-              onLastSyncUpdate={(time) => setLastCalendarUpdate(time)}
-            />
-          </div>
-        </div>
-      )}
-
+      <div className="main-layout-container">
       {/* Content Area */}
-      <div className="tab-content" style={{ 
-        marginTop: (activeTab === 'profiles' || activeTab === 'tracking' || activeTab === 'shifts') ? `${calendarTop}px` : `${calendarTop + effectiveCalendarHeight}px`,
-        paddingTop: (activeTab === 'profiles' || activeTab === 'tracking' || activeTab === 'shifts') ? '1.5rem' : '2.5rem',
-        minHeight: '200px' // Prevent content from being too close to top
-      }}>
-        {activeTab === 'profiles' ? (
-          <WorkerManagement
+        <div id="main-content" className="tab-content" role="main" aria-label="Main content area">
+          {activeTab === 'staff' ? (
+            <StaffTab 
             workers={workers}
             locations={locations}
-            onWorkersUpdate={handleForceRefetchWorkers}
+              onWorkersUpdate={handleForceRefetchWorkers}
+              rosterData={rosterData}
+              participants={participants}
           />
-        ) : activeTab === 'tracking' ? (
+          ) : activeTab === 'tracking' ? (
           <HoursTracker 
             participants={participants}
             workers={workers}
             rosterData={rosterData}
           />
-        ) : activeTab === 'shifts' ? (
-          <ShiftsTab 
-            workers={workers}
-            rosterData={rosterData}
-          />
         ) : (
-          <>
+          <div className="roster-planner-view">
+            {/* Calendar Section */}
+            {calendarVisible && rosterData.current?.start_date && rosterData.current?.end_date && (
+              <CalendarAppointments
+                weekType={selectedRosterWeek}
+                weekStartDate={rosterData.current.start_date}
+                weekEndDate={rosterData.current.end_date}
+                onRefreshRequest={calendarRefreshTrigger}
+                onLastSyncUpdate={(time) => setLastCalendarUpdate(time)}
+              />
+            )}
+
+            {/* Participant Schedules */}
             {rosterLoading ? (
               <div className="loading">
                 <div className="spinner"></div>
                 Loading roster data...
               </div>
             ) : (
-              <>
-                {/* Participant Schedules */}
+              <div className="participant-schedules-list">
                 {(() => {
                   // Custom participant order: James, Libby, Ace, Grace, Milan
                   const participantOrder = ['JAM001', 'LIB001', 'ACE001', 'GRA001', 'MIL001'];
@@ -928,20 +863,22 @@ const RosteringSystem = () => {
                   <ParticipantSchedule
                     key={participant.id}
                     participant={participant}
-                    weekType={rosterData[activeTab]?.week_type || 'weekA'}
-                    weekStartDate={activeTab === 'planner' ? plannerWeekStartDate : null}  // Pass calculated start date for planner
-                    rosterData={rosterData[activeTab]?.data?.[participant.code] || {}}
-                    fullRosterData={rosterData[activeTab]?.data || {}}  // Full roster for ShiftForm hours calculation
+                      weekType={rosterData.current?.week_type || 'weekA'}
+                      weekStartDate={rosterData.current?.start_date || null}  // Use actual start date from backend
+                      weekEndDate={rosterData.current?.end_date || null}      // Use actual end date from backend
+                      rosterData={rosterData.current?.data?.[participant.code] || {}}
+                      fullRosterData={rosterData.current?.data || {}}  // Full roster for ShiftForm hours calculation
                     workers={workers || []} // Ensure it's always an array
                     locations={locations || []} // Ensure it's always an array
                     editMode={editMode}
                     onRosterUpdate={handleRosterUpdate}
                   />
                 ))}
-              </>
+              </div>
             )}
-          </>
+          </div>
         )}
+        </div>
       </div>
 
       {/* AI Chat - Always visible floating button */}

@@ -71,6 +71,54 @@ ROSTER_DATA = {
     'nextB': {}
 }
 
+def get_current_week_dates():
+    """Calculate current week start and end dates (Monday to Sunday)"""
+    now = datetime.now()
+    # Get Monday of current week
+    days_since_monday = now.weekday()  # Monday is 0, Sunday is 6
+    monday = now - timedelta(days=days_since_monday)
+    monday = monday.replace(hour=0, minute=0, second=0, microsecond=0)
+    
+    # Get Sunday of current week
+    sunday = monday + timedelta(days=6)
+    sunday = sunday.replace(hour=23, minute=59, second=59, microsecond=999999)
+    
+    return monday.strftime('%Y-%m-%d'), sunday.strftime('%Y-%m-%d')
+
+def get_next_week_dates():
+    """Calculate next week start and end dates (Monday to Sunday)"""
+    now = datetime.now()
+    # Get Monday of current week
+    days_since_monday = now.weekday()  # Monday is 0, Sunday is 6
+    monday = now - timedelta(days=days_since_monday)
+    monday = monday.replace(hour=0, minute=0, second=0, microsecond=0)
+    
+    # Get Monday of next week
+    next_monday = monday + timedelta(days=7)
+    
+    # Get Sunday of next week
+    next_sunday = next_monday + timedelta(days=6)
+    next_sunday = next_sunday.replace(hour=23, minute=59, second=59, microsecond=999999)
+    
+    return next_monday.strftime('%Y-%m-%d'), next_sunday.strftime('%Y-%m-%d')
+
+def get_week_after_next_dates():
+    """Calculate week after next start and end dates (Monday to Sunday)"""
+    now = datetime.now()
+    # Get Monday of current week
+    days_since_monday = now.weekday()  # Monday is 0, Sunday is 6
+    monday = now - timedelta(days=days_since_monday)
+    monday = monday.replace(hour=0, minute=0, second=0, microsecond=0)
+    
+    # Get Monday of week after next
+    week_after_monday = monday + timedelta(days=14)
+    
+    # Get Sunday of week after next
+    week_after_sunday = week_after_monday + timedelta(days=6)
+    week_after_sunday = week_after_sunday.replace(hour=23, minute=59, second=59, microsecond=999999)
+    
+    return week_after_monday.strftime('%Y-%m-%d'), week_after_sunday.strftime('%Y-%m-%d')
+
 # File-based persistence for roster data
 ROSTER_FILE = Path(__file__).parent / 'roster_data.json'
 
@@ -191,6 +239,22 @@ async def get_roster(week_type: str):
         # Handle new roster/planner structure (including planner_next, planner_after)
         if week_type in ['roster', 'planner', 'planner_next', 'planner_after']:
             roster_section = ROSTER_DATA.get(week_type, {})
+            
+            # For roster, use current week dates if not set
+            if week_type == 'roster' and not roster_section.get("start_date"):
+                start_date, end_date = get_current_week_dates()
+                roster_section["start_date"] = start_date
+                roster_section["end_date"] = end_date
+            
+            # For planner, use appropriate dates if not set
+            if week_type in ['planner', 'planner_next', 'planner_after'] and not roster_section.get("start_date"):
+                if week_type == 'planner_after':
+                    start_date, end_date = get_week_after_next_dates()
+                else:  # planner or planner_next
+                    start_date, end_date = get_next_week_dates()
+                roster_section["start_date"] = start_date
+                roster_section["end_date"] = end_date
+            
             return {
                 "week_type": roster_section.get("week_type", "weekA"),
                 "start_date": roster_section.get("start_date", ""),
@@ -211,13 +275,15 @@ async def get_roster(week_type: str):
             logger.info(f"Returning stored roster for {week_type}: {len(week_data)} participants")
             return week_data
         
-        # Define date ranges for Week A and Week B (with date-based filtering)
+        # Define date ranges for Week A and Week B (with dynamic date calculation)
         if week_type == 'weekA':
-            start_date = date(2025, 9, 22)
-            end_date = date(2025, 9, 28)
+            start_date_str, end_date_str = get_current_week_dates()
+            start_date = datetime.strptime(start_date_str, '%Y-%m-%d').date()
+            end_date = datetime.strptime(end_date_str, '%Y-%m-%d').date()
         elif week_type == 'weekB':
-            start_date = date(2025, 9, 29)
-            end_date = date(2025, 10, 5)
+            start_date_str, end_date_str = get_next_week_dates()
+            start_date = datetime.strptime(start_date_str, '%Y-%m-%d').date()
+            end_date = datetime.strptime(end_date_str, '%Y-%m-%d').date()
         else:
             # Unknown week type
             logger.warning(f"Unknown week type requested: {week_type}")
@@ -349,19 +415,25 @@ async def transition_to_roster():
         if not planner or not planner.get("data"):
             raise HTTPException(status_code=400, detail="No planner data to transition")
         
-        # Move planner to roster (keeping the week_type)
+        # Get current week dates for the roster
+        start_date, end_date = get_current_week_dates()
+        
+        # Move planner to roster (keeping the week_type and updating dates)
         ROSTER_DATA["roster"] = {
             "week_type": planner.get("week_type", "weekA"),
-            "start_date": planner.get("start_date", ""),
-            "end_date": planner.get("end_date", ""),
+            "start_date": start_date,
+            "end_date": end_date,
             "data": planner.get("data", {})
         }
         
-        # Clear planner
+        # Get next week dates for the new planner
+        next_start_date, next_end_date = get_next_week_dates()
+        
+        # Clear planner and set it up for next week
         ROSTER_DATA["planner"] = {
             "week_type": "weekA",  # Default for empty planner
-            "start_date": "",
-            "end_date": "",
+            "start_date": next_start_date,
+            "end_date": next_end_date,
             "data": {}
         }
         
@@ -413,9 +485,57 @@ async def get_worker_availability(worker_id: str):
     """Get worker availability rules"""
     try:
         rules = db.get_availability_rules(int(worker_id))
-        return rules
+        
+        # Format the data for the frontend
+        days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday']
+        weekly_availability = {}
+        
+        # Group rules by weekday
+        for rule in rules:
+            day_name = days[rule['weekday']]
+            if day_name not in weekly_availability:
+                weekly_availability[day_name] = {
+                    'available': True,
+                    'from_time': rule['from_time'],
+                    'to_time': rule['to_time'],
+                    'is_full_day': rule['is_full_day'],
+                    'wraps_midnight': rule['wraps_midnight']
+                }
+        
+        return {
+            'weeklyAvailability': weekly_availability,
+            'rules': rules  # Also return raw rules for new split availability support
+        }
     except Exception as e:
         logger.error(f"Error fetching availability: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+@api_router.get("/availability-rules")
+async def get_availability_rules_batch(weekday: Optional[int] = None):
+    """Get availability rules for all workers, optionally filtered by weekday (0=Sunday, 6=Saturday)"""
+    try:
+        query = db.client.table('availability_rule').select('*')
+        
+        if weekday is not None:
+            query = query.eq('weekday', weekday)
+        
+        response = query.execute()
+        return response.data or []
+    except Exception as e:
+        logger.error(f"Error fetching availability rules batch: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+@api_router.get("/unavailability-periods")
+async def get_unavailability_periods_batch(check_date: Optional[str] = None):
+    """Get unavailability periods for all workers on a specific date"""
+    try:
+        from datetime import datetime
+        check_date = check_date or datetime.now().date().isoformat()
+        
+        response = db.client.table('unavailability_periods').select('worker_id').lte('from_date', check_date).gte('to_date', check_date).execute()
+        return response.data or []
+    except Exception as e:
+        logger.error(f"Error fetching unavailability periods batch: {e}")
         raise HTTPException(status_code=500, detail=str(e))
 
 @api_router.post("/workers/{worker_id}/availability")
@@ -822,6 +942,50 @@ async def send_shift_notification(data: Dict[str, Any]):
         
     except Exception as e:
         logger.error(f"Error sending shift notification: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+@api_router.post("/calendar/events")
+async def create_calendar_event(event_data: dict):
+    """Create a new event in Google Calendar"""
+    try:
+        # Validate required fields
+        required_fields = ['calendar_id', 'summary', 'start', 'end']
+        for field in required_fields:
+            if field not in event_data:
+                raise HTTPException(status_code=400, detail=f"Missing required field: {field}")
+        
+        # Create the event
+        created_event = calendar_service.create_calendar_event(
+            calendar_id=event_data['calendar_id'],
+            event_data=event_data
+        )
+        
+        if created_event:
+            return {
+                "success": True,
+                "event": created_event,
+                "message": "Event created successfully"
+            }
+        else:
+            raise HTTPException(status_code=500, detail="Failed to create event")
+            
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error creating calendar event: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+@api_router.get("/calendar/list")
+async def list_calendars():
+    """Get list of available calendars"""
+    try:
+        calendars = calendar_service.get_calendars()
+        return {
+            "success": True,
+            "calendars": calendars
+        }
+    except Exception as e:
+        logger.error(f"Error listing calendars: {e}")
         raise HTTPException(status_code=500, detail=str(e))
 
 # ============================================

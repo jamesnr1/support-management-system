@@ -13,7 +13,10 @@ from googleapiclient.errors import HttpError
 import json
 
 # Configuration
-SCOPES = ['https://www.googleapis.com/auth/calendar.readonly']
+SCOPES = [
+    'https://www.googleapis.com/auth/calendar.readonly',
+    'https://www.googleapis.com/auth/calendar.events'
+]
 CLIENT_SECRETS_FILE = os.getenv('GOOGLE_CLIENT_SECRETS_FILE', 'client_secrets.json')
 
 
@@ -275,6 +278,62 @@ class CalendarService:
         except HttpError as e:
             print(f"Error fetching appointments: {e}")
             return []
+    
+    def create_calendar_event(self, calendar_id: str, event_data: Dict[str, Any]) -> Optional[Dict[str, Any]]:
+        """
+        Create a new event in the specified calendar
+        
+        Args:
+            calendar_id: The calendar ID to create the event in
+            event_data: Dictionary containing event details:
+                - summary: Event title
+                - description: Event description
+                - start: Start datetime (ISO format)
+                - end: End datetime (ISO format)
+                - location: Event location
+                - attendees: List of attendee emails
+        """
+        if not self.service:
+            print("Calendar service not initialized")
+            return None
+            
+        try:
+            # Build the event object
+            event = {
+                'summary': event_data.get('summary', 'Support Shift'),
+                'description': event_data.get('description', ''),
+                'location': event_data.get('location', ''),
+                'start': {
+                    'dateTime': event_data['start'],
+                    'timeZone': 'Australia/Adelaide'
+                },
+                'end': {
+                    'dateTime': event_data['end'],
+                    'timeZone': 'Australia/Adelaide'
+                }
+            }
+            
+            # Add attendees if provided
+            if event_data.get('attendees'):
+                event['attendees'] = [
+                    {'email': email} for email in event_data['attendees']
+                ]
+            
+            # Create the event
+            created_event = self.service.events().insert(
+                calendarId=calendar_id,
+                body=event
+            ).execute()
+            
+            print(f"Created event: {created_event.get('htmlLink')}")
+            return created_event
+            
+        except HttpError as e:
+            print(f"Error creating calendar event: {e}")
+            return None
+        except Exception as e:
+            print(f"Unexpected error creating event: {e}")
+            return None
     
     def get_calendars(self) -> List[Dict[str, str]]:
         """

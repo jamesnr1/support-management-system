@@ -66,7 +66,7 @@ class RosterValidator:
     
     def check_double_bookings(self):
         """Detect if a worker is scheduled at two places at the same time"""
-        worker_schedule = {}  # {worker_id: [(date, start, end, participant)]}
+        worker_schedule = {}  # {worker_id: [(date, start, end, participant, funding_category)]}
         
         for p_code, dates in self.roster.items():
             for date, shifts in dates.items():
@@ -82,7 +82,9 @@ class RosterValidator:
                             'start': start,
                             'end': end,
                             'participant': p_code,
-                            'shift_time': f"{shift['startTime']}-{shift['endTime']}"
+                            'shift_time': f"{shift['startTime']}-{shift['endTime']}",
+                            'funding_category': shift.get('funding_category', 'default'),
+                            'shift_id': shift.get('id', 'unknown')
                         })
         
         # Check for overlaps
@@ -95,14 +97,36 @@ class RosterValidator:
                 next_shift = schedule[i + 1]
                 
                 if current['date'] == next_shift['date']:
+                    # Only flag as conflict if:
+                    # 1. Different participants (true conflict)
+                    # 2. Same participant but overlapping times (invalid split shift)
                     if current['participant'] != next_shift['participant']:
-                        # Check for overlap
+                        # Check for overlap - this is a real conflict
                         if current['end'] > next_shift['start']:
                             self.errors.append(
-                                f"❌ DOUBLE BOOKING: {worker_name} on {current['date']} "
+                                f"❌ WORKER CONFLICT: {worker_name} on {current['date']} "
                                 f"scheduled for {current['participant']} ({current['shift_time']}) "
                                 f"AND {next_shift['participant']} ({next_shift['shift_time']})"
                             )
+                    elif current['participant'] == next_shift['participant']:
+                        # Same participant - check if this is a valid split shift
+                        if current['end'] > next_shift['start']:
+                            # Overlapping times for same participant - this is invalid
+                            self.errors.append(
+                                f"❌ INVALID SPLIT SHIFT: {worker_name} on {current['date']} "
+                                f"has overlapping times {current['shift_time']} and {next_shift['shift_time']} "
+                                f"for {current['participant']}"
+                            )
+                        elif current['end'] == next_shift['start']:
+                            # Back-to-back shifts for same participant - this is valid for different funding categories
+                            current_funding = current.get('funding_category', 'default')
+                            next_funding = next_shift.get('funding_category', 'default')
+                            if current_funding == next_funding:
+                                self.warnings.append(
+                                    f"ℹ️ SPLIT SHIFT: {worker_name} on {current['date']} "
+                                    f"has back-to-back shifts {current['shift_time']} and {next_shift['shift_time']} "
+                                    f"for {current['participant']} with same funding category"
+                                )
     
     def check_continuous_hours(self):
         """Check for excessive continuous working hours (16+ hours)"""
@@ -164,11 +188,6 @@ class RosterValidator:
                 if total_hours > max_hours:
                     self.errors.append(
                         f"❌ MAX HOURS EXCEEDED: {worker_name} has {total_hours:.1f}h "
-                        f"(max: {max_hours}h)"
-                    )
-                elif total_hours > max_hours * 0.9:
-                    self.warnings.append(
-                        f"⚠️ APPROACHING MAX: {worker_name} has {total_hours:.1f}h "
                         f"(max: {max_hours}h)"
                     )
     
@@ -267,6 +286,13 @@ def validate_roster_data(roster_data: dict, workers: dict) -> dict:
         'errors': errors,
         'warnings': warnings
     }
+
+
+
+
+
+
+
 
 
 

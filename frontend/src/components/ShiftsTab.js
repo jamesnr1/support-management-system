@@ -4,7 +4,396 @@ import axios from 'axios';
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 const API = `${BACKEND_URL}/api`;
 
-const ShiftsTab = ({ workers, rosterData }) => {
+// Calendar Appointment Form Component
+const CalendarAppointmentForm = () => {
+  const [formData, setFormData] = useState({
+    calendar_id: '',
+    summary: '',
+    description: '',
+    location: '',
+    start_date: '',
+    start_time: '',
+    end_date: '',
+    end_time: '',
+    attendees: []
+  });
+  const [calendars, setCalendars] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [message, setMessage] = useState('');
+
+  // Fetch available calendars
+  const fetchCalendars = async () => {
+    try {
+      const response = await axios.get(`${API}/calendar/list`);
+      if (response.data.success) {
+        setCalendars(response.data.calendars);
+      }
+    } catch (error) {
+      console.error('Error fetching calendars:', error);
+      setMessage('Error fetching calendars. Make sure Google Calendar is connected.');
+    }
+  };
+
+  // Load calendars on component mount
+  React.useEffect(() => {
+    fetchCalendars();
+  }, []);
+
+  const handleInputChange = (field, value) => {
+    setFormData(prev => ({ ...prev, [field]: value }));
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setLoading(true);
+    setMessage('');
+
+    try {
+      // Combine date and time for start and end
+      const startDateTime = `${formData.start_date}T${formData.start_time}:00`;
+      const endDateTime = `${formData.end_date}T${formData.end_time}:00`;
+
+      const eventData = {
+        calendar_id: formData.calendar_id,
+        summary: formData.summary,
+        description: formData.description,
+        location: formData.location,
+        start: startDateTime,
+        end: endDateTime,
+        attendees: formData.attendees.filter(email => email.trim())
+      };
+
+      const response = await axios.post(`${API}/calendar/events`, eventData);
+      
+      if (response.data.success) {
+        setMessage('✅ Appointment created successfully in Google Calendar!');
+        setFormData({
+          calendar_id: '',
+          summary: '',
+          description: '',
+          location: '',
+          start_date: '',
+          start_time: '',
+          end_date: '',
+          end_time: '',
+          attendees: []
+        });
+      } else {
+        setMessage('❌ Failed to create appointment');
+      }
+    } catch (error) {
+      console.error('Error creating calendar event:', error);
+      setMessage('❌ Error creating appointment: ' + (error.response?.data?.detail || error.message));
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const addAttendee = () => {
+    setFormData(prev => ({ ...prev, attendees: [...prev.attendees, ''] }));
+  };
+
+  const updateAttendee = (index, email) => {
+    setFormData(prev => ({
+      ...prev,
+      attendees: prev.attendees.map((addr, i) => i === index ? email : addr)
+    }));
+  };
+
+  const removeAttendee = (index) => {
+    setFormData(prev => ({
+      ...prev,
+      attendees: prev.attendees.filter((_, i) => i !== index)
+    }));
+  };
+
+  // Filter participant calendars (James, Libby, Ace, Grace, Milan)
+  const participantCalendars = calendars.filter(cal => 
+    ['James', 'Libby', 'Ace', 'Grace', 'Milan'].some(name => 
+      cal.summary && cal.summary.includes(name)
+    )
+  );
+
+  return (
+    <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+      {/* Calendar Selection */}
+      <div>
+        <label style={{ display: 'block', marginBottom: '0.5rem', fontSize: '0.9rem', fontWeight: '500', color: 'var(--text-secondary)' }}>
+          Participant Calendar
+        </label>
+        <select
+          value={formData.calendar_id}
+          onChange={(e) => handleInputChange('calendar_id', e.target.value)}
+          required
+          style={{
+            width: '100%',
+            padding: '0.75rem',
+            borderRadius: '8px',
+            border: '1px solid var(--border)',
+            background: 'var(--card-bg)',
+            color: 'var(--text-primary)',
+            fontSize: '0.95rem'
+          }}
+        >
+          <option value="">Select a participant calendar...</option>
+          {participantCalendars.map(cal => (
+            <option key={cal.id} value={cal.id}>
+              {cal.summary}
+            </option>
+          ))}
+        </select>
+      </div>
+
+      {/* Appointment Title */}
+      <div>
+        <label style={{ display: 'block', marginBottom: '0.5rem', fontSize: '0.9rem', fontWeight: '500', color: 'var(--text-secondary)' }}>
+          Appointment Title
+        </label>
+        <input
+          type="text"
+          value={formData.summary}
+          onChange={(e) => handleInputChange('summary', e.target.value)}
+          placeholder="e.g., Speech Therapy, Doctor Appointment, etc."
+          required
+          style={{
+            width: '100%',
+            padding: '0.75rem',
+            borderRadius: '8px',
+            border: '1px solid var(--border)',
+            background: 'var(--card-bg)',
+            color: 'var(--text-primary)',
+            fontSize: '0.95rem'
+          }}
+        />
+      </div>
+
+      {/* Description */}
+      <div>
+        <label style={{ display: 'block', marginBottom: '0.5rem', fontSize: '0.9rem', fontWeight: '500', color: 'var(--text-secondary)' }}>
+          Description
+        </label>
+        <textarea
+          value={formData.description}
+          onChange={(e) => handleInputChange('description', e.target.value)}
+          placeholder="Shift details, notes, etc."
+          rows={3}
+          style={{
+            width: '100%',
+            padding: '0.75rem',
+            borderRadius: '8px',
+            border: '1px solid var(--border)',
+            background: 'var(--card-bg)',
+            color: 'var(--text-primary)',
+            fontSize: '0.95rem',
+            resize: 'vertical'
+          }}
+        />
+      </div>
+
+      {/* Location */}
+      <div>
+        <label style={{ display: 'block', marginBottom: '0.5rem', fontSize: '0.9rem', fontWeight: '500', color: 'var(--text-secondary)' }}>
+          Location
+        </label>
+        <input
+          type="text"
+          value={formData.location}
+          onChange={(e) => handleInputChange('location', e.target.value)}
+          placeholder="e.g., Glandore, SA"
+          style={{
+            width: '100%',
+            padding: '0.75rem',
+            borderRadius: '8px',
+            border: '1px solid var(--border)',
+            background: 'var(--card-bg)',
+            color: 'var(--text-primary)',
+            fontSize: '0.95rem'
+          }}
+        />
+      </div>
+
+      {/* Date and Time */}
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
+        <div>
+          <label style={{ display: 'block', marginBottom: '0.5rem', fontSize: '0.9rem', fontWeight: '500', color: 'var(--text-secondary)' }}>
+            Start Date
+          </label>
+          <input
+            type="date"
+            value={formData.start_date}
+            onChange={(e) => handleInputChange('start_date', e.target.value)}
+            required
+            style={{
+              width: '100%',
+              padding: '0.75rem',
+              borderRadius: '8px',
+              border: '1px solid var(--border)',
+              background: 'var(--card-bg)',
+              color: 'var(--text-primary)',
+              fontSize: '0.95rem'
+            }}
+          />
+        </div>
+        <div>
+          <label style={{ display: 'block', marginBottom: '0.5rem', fontSize: '0.9rem', fontWeight: '500', color: 'var(--text-secondary)' }}>
+            Start Time
+          </label>
+          <input
+            type="time"
+            value={formData.start_time}
+            onChange={(e) => handleInputChange('start_time', e.target.value)}
+            required
+            style={{
+              width: '100%',
+              padding: '0.75rem',
+              borderRadius: '8px',
+              border: '1px solid var(--border)',
+              background: 'var(--card-bg)',
+              color: 'var(--text-primary)',
+              fontSize: '0.95rem'
+            }}
+          />
+        </div>
+        <div>
+          <label style={{ display: 'block', marginBottom: '0.5rem', fontSize: '0.9rem', fontWeight: '500', color: 'var(--text-secondary)' }}>
+            End Date
+          </label>
+          <input
+            type="date"
+            value={formData.end_date}
+            onChange={(e) => handleInputChange('end_date', e.target.value)}
+            required
+            style={{
+              width: '100%',
+              padding: '0.75rem',
+              borderRadius: '8px',
+              border: '1px solid var(--border)',
+              background: 'var(--card-bg)',
+              color: 'var(--text-primary)',
+              fontSize: '0.95rem'
+            }}
+          />
+        </div>
+        <div>
+          <label style={{ display: 'block', marginBottom: '0.5rem', fontSize: '0.9rem', fontWeight: '500', color: 'var(--text-secondary)' }}>
+            End Time
+          </label>
+          <input
+            type="time"
+            value={formData.end_time}
+            onChange={(e) => handleInputChange('end_time', e.target.value)}
+            required
+            style={{
+              width: '100%',
+              padding: '0.75rem',
+              borderRadius: '8px',
+              border: '1px solid var(--border)',
+              background: 'var(--card-bg)',
+              color: 'var(--text-primary)',
+              fontSize: '0.95rem'
+            }}
+          />
+        </div>
+      </div>
+
+      {/* Attendees */}
+      <div>
+        <label style={{ display: 'block', marginBottom: '0.5rem', fontSize: '0.9rem', fontWeight: '500', color: 'var(--text-secondary)' }}>
+          Attendees (Email addresses)
+        </label>
+        {formData.attendees.map((email, index) => (
+          <div key={index} style={{ display: 'flex', gap: '0.5rem', marginBottom: '0.5rem' }}>
+            <input
+              type="email"
+              value={email}
+              onChange={(e) => updateAttendee(index, e.target.value)}
+              placeholder="worker@example.com"
+              style={{
+                flex: 1,
+                padding: '0.75rem',
+                borderRadius: '8px',
+                border: '1px solid var(--border)',
+                background: 'var(--card-bg)',
+                color: 'var(--text-primary)',
+                fontSize: '0.95rem'
+              }}
+            />
+            <button
+              type="button"
+              onClick={() => removeAttendee(index)}
+              style={{
+                padding: '0.75rem',
+                borderRadius: '8px',
+                border: '1px solid var(--border)',
+                background: 'var(--bg-secondary)',
+                color: 'var(--text-primary)',
+                cursor: 'pointer'
+              }}
+            >
+              Remove
+            </button>
+          </div>
+        ))}
+        <button
+          type="button"
+          onClick={addAttendee}
+          style={{
+            padding: '0.5rem 1rem',
+            borderRadius: '8px',
+            border: '1px solid var(--border)',
+            background: 'var(--bg-secondary)',
+            color: 'var(--text-primary)',
+            cursor: 'pointer',
+            fontSize: '0.9rem'
+          }}
+        >
+          + Add Attendee
+        </button>
+      </div>
+
+      {/* Message */}
+      {message && (
+        <div style={{
+          padding: '0.75rem',
+          borderRadius: '8px',
+          background: message.includes('✅') ? 'var(--success-bg)' : 'var(--error-bg)',
+          color: message.includes('✅') ? 'var(--success-text)' : 'var(--error-text)',
+          fontSize: '0.9rem'
+        }}>
+          {message}
+        </div>
+      )}
+
+      {/* Submit Button */}
+      <button
+        type="submit"
+        disabled={loading}
+        style={{
+          padding: '0.75rem 1.5rem',
+          borderRadius: '8px',
+          border: 'none',
+          background: loading ? 'var(--bg-secondary)' : 'var(--accent)',
+          color: 'white',
+          fontSize: '0.95rem',
+          fontWeight: '500',
+          cursor: loading ? 'not-allowed' : 'pointer',
+          opacity: loading ? 0.7 : 1
+        }}
+      >
+        {loading ? 'Creating Shift...' : 'Create Calendar Shift'}
+      </button>
+    </form>
+  );
+};
+
+const ShiftsTab = ({ workers, participants = [], rosterData }) => {
+  const getDisplayName = (fullName = '') => {
+    if (!fullName) return '';
+    const match = fullName.match(/\(([^)]+)\)/);
+    if (match && match[1]) return match[1];
+    const parts = fullName.trim().split(/\s+/);
+    return parts[0] || fullName;
+  };
   const [selectedWeek, setSelectedWeek] = useState('current');
   const [telegramMessage, setTelegramMessage] = useState('');
   const [selectedWorkers, setSelectedWorkers] = useState(new Set());
@@ -40,53 +429,60 @@ const ShiftsTab = ({ workers, rosterData }) => {
 
   const { startDate, endDate } = weekRanges[selectedWeek];
 
+  const participantLookup = useMemo(() => {
+    const lookup = {};
+    (participants || []).forEach(participant => {
+      lookup[participant.code] = participant.full_name;
+    });
+    return lookup;
+  }, [participants]);
+
   // Organize shifts by worker
   const workerShifts = useMemo(() => {
+    
     if (!rosterData || !workers) return {};
-    
+
     const shifts = {};
-    
-    // Get the appropriate roster data (roster or planner based on selected week)
-    const dataSource = selectedWeek === 'current' ? rosterData.roster?.data : rosterData.planner?.data;
+
+    // Use the data from the currently selected week in the Roster tab
+    let dataSource = rosterData.current?.data;
     
     if (!dataSource) return {};
-    
-    // Iterate through all participants and their shifts
-    Object.keys(dataSource).forEach(participantCode => {
-      const participantShifts = dataSource[participantCode];
-      
-      Object.keys(participantShifts).forEach(date => {
+
+    const participantLookup = (workers || []).reduce((acc, worker) => {
+      acc[worker.id] = worker;
+      return acc;
+    }, {});
+
+    Object.entries(dataSource).forEach(([participantCode, participantShifts]) => {
+      Object.entries(participantShifts).forEach(([date, dayShifts]) => {
         const dateObj = new Date(date);
         dateObj.setHours(0, 0, 0, 0);
-        
-        // Check if this date is in the selected week range
-        if (dateObj >= startDate && dateObj <= endDate) {
-          const dayShifts = participantShifts[date];
-          
-          if (Array.isArray(dayShifts)) {
-            dayShifts.forEach(shift => {
-              const workerIds = shift.workers || [];
-              
-              workerIds.forEach(workerId => {
-                if (!shifts[workerId]) {
-                  shifts[workerId] = [];
-                }
-                
-                shifts[workerId].push({
-                  date,
-                  day: dateObj.toLocaleDateString('en-US', { weekday: 'long' }),
-                  participant: participantCode,
-                  startTime: shift.start_time,
-                  endTime: shift.end_time,
-                  hours: shift.duration || 0
-                });
-              });
+
+        if (dateObj >= startDate && dateObj <= endDate && Array.isArray(dayShifts)) {
+          dayShifts.forEach(shift => {
+            const workerIds = shift.workers || [];
+
+            workerIds.forEach(workerId => {
+              if (!shifts[workerId]) {
+                shifts[workerId] = [];
+              }
+
+            shifts[workerId].push({
+              date,
+              day: dateObj.toLocaleDateString('en-US', { weekday: 'long' }),
+              participant: participantCode,
+              startTime: shift.start_time || shift.startTime,
+              endTime: shift.end_time || shift.endTime,
+              hours: shift.duration || 0
             });
-          }
+            });
+          });
         }
       });
     });
-    
+
+
     return shifts;
   }, [rosterData, selectedWeek, startDate, endDate, workers]);
 
@@ -100,10 +496,21 @@ const ShiftsTab = ({ workers, rosterData }) => {
     return totals;
   }, [workerShifts]);
 
+  const getWorkerMaxHours = (workerId) => {
+    const workerInfo = workers?.find(w => w.id === workerId);
+    return workerInfo?.max_hours ?? 48;
+  };
+
   // Get workers who have shifts in the selected week
   const workersWithShifts = useMemo(() => {
-    return workers?.filter(w => workerShifts[w.id] && workerShifts[w.id].length > 0) || [];
+    const result = workers?.filter(w => workerShifts[w.id] && workerShifts[w.id].length > 0) || [];
+    return result;
   }, [workers, workerShifts]);
+  
+  // Filter workers who have telegram (for the messaging panel) 
+  const workersWithTelegram = useMemo(() => {
+    return workers?.filter(w => w.telegram) || [];
+  }, [workers]);
 
   // Format time
   const formatTime = (timeString) => {
@@ -135,7 +542,7 @@ const ShiftsTab = ({ workers, rosterData }) => {
     
     try {
       const workersToSend = sendToAll 
-        ? workersWithShifts.filter(w => w.telegram).map(w => w.id)
+        ? workersWithTelegram.map(w => w.id)
         : Array.from(selectedWorkers);
       
       await axios.post(`${API}/telegram/send`, {
@@ -163,33 +570,34 @@ const ShiftsTab = ({ workers, rosterData }) => {
     <div style={{ padding: '1rem' }}>
       {/* Week Selector */}
       <div style={{ marginBottom: '2rem', display: 'flex', alignItems: 'center', gap: '1rem' }}>
-        <label style={{ fontSize: '1.1rem', fontWeight: '500', color: 'var(--text-primary)' }}>
+        <label style={{ fontSize: '0.95rem', fontWeight: '500', color: 'var(--text-secondary)' }}>
           Week:
         </label>
         <select
           value={selectedWeek}
           onChange={(e) => setSelectedWeek(e.target.value)}
           style={{
-            padding: '0.5rem 1rem',
-            borderRadius: '6px',
-            border: '1px solid var(--border-color)',
-            background: 'var(--bg-secondary)',
+            padding: '0.35rem 0.75rem',
+            borderRadius: '8px',
+            border: '1px solid var(--border)',
+            background: 'var(--card-bg)',
             color: 'var(--text-primary)',
-            fontSize: '1rem',
-            cursor: 'pointer'
+            fontSize: '0.85rem',
+            cursor: 'pointer',
+            fontWeight: '500'
           }}
         >
           <option value="current">Current Week ({weekRanges.current.label})</option>
           <option value="next">Next Week ({weekRanges.next.label})</option>
           <option value="week_after">Week After ({weekRanges.week_after.label})</option>
         </select>
-        <span style={{ fontSize: '0.9rem', color: 'var(--text-secondary)' }}>
+        <span style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', whiteSpace: 'nowrap' }}>
           {workersWithShifts.length} worker{workersWithShifts.length !== 1 ? 's' : ''} with shifts
         </span>
       </div>
 
       {/* Main layout: Worker shift cards on left, Telegram panel on right */}
-      <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr', gap: '2rem', alignItems: 'start' }}>
+      <div style={{ display: 'grid', gridTemplateColumns: '3fr 1fr', gap: '1.5rem', alignItems: 'start' }}>
         
         {/* Left side: Worker shift cards */}
         <div>
@@ -198,58 +606,68 @@ const ShiftsTab = ({ workers, rosterData }) => {
               No shifts assigned for this week
             </div>
           ) : (
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: '1rem' }}>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(240px, 1fr))', gap: '12px' }}>
               {workersWithShifts.map(worker => (
                 <div
                   key={worker.id}
                   style={{
-                    background: 'var(--bg-secondary)',
-                    border: '2px solid var(--accent-primary)',
-                    borderRadius: '8px',
-                    padding: '1rem',
-                    minHeight: '200px'
+                    background: 'var(--card-bg)',
+                    border: '1px solid var(--border)',
+                    borderRadius: '12px',
+                    overflow: 'hidden',
+                    marginBottom: '8px',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    height: '220px'
                   }}
                 >
-                  {/* Worker name and total hours */}
-                  <div style={{ 
-                    marginBottom: '1rem', 
-                    paddingBottom: '0.75rem', 
-                    borderBottom: '1px solid var(--border-color)',
-                    display: 'flex',
-                    justifyContent: 'space-between',
-                    alignItems: 'center'
-                  }}>
-                    <h4 style={{ margin: 0, color: 'var(--accent-primary)', fontSize: '1rem' }}>
-                      {worker.full_name}
-                    </h4>
-                    <div style={{ fontSize: '0.9rem', color: 'var(--text-secondary)' }}>
-                      <strong>{workerTotalHours[worker.id]?.toFixed(1) || 0}h</strong> / {worker.max_hours}h
-                    </div>
+                  {/* Worker Header - Exact match to calendar cards */}
+                  <div 
+                    style={{
+                      display: 'flex',
+                      justifyContent: 'space-between',
+                      alignItems: 'center',
+                      background: 'var(--hover-bg)',
+                      padding: '8px 12px',
+                      borderBottom: '1px solid var(--border)',
+                      fontSize: '18px',
+                      fontWeight: '600',
+                      color: 'var(--accent)'
+                    }}
+                  >
+                    <span style={{ color: 'var(--accent)' }}>
+                      {getDisplayName(worker.full_name)}
+                    </span>
+                    <span style={{ fontSize: '0.75rem', color: 'var(--text-secondary)' }}>
+                      {workerTotalHours[worker.id]?.toFixed(1) || 0}h / {getWorkerMaxHours(worker.id)}h
+                    </span>
                   </div>
 
-                  {/* Shifts list */}
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
-                    {workerShifts[worker.id]?.map((shift, index) => (
-                      <div
-                        key={index}
-                        style={{
-                          background: 'var(--bg-tertiary)',
-                          padding: '0.5rem',
-                          borderRadius: '4px',
-                          fontSize: '0.85rem'
-                        }}
-                      >
-                        <div style={{ fontWeight: '500', color: 'var(--text-primary)', marginBottom: '0.25rem' }}>
-                          {shift.day}
-                        </div>
-                        <div style={{ color: 'var(--text-secondary)' }}>
-                          {shift.participant}
-                        </div>
-                        <div style={{ color: 'var(--text-secondary)', marginTop: '0.25rem' }}>
-                          {formatTime(shift.startTime)} - {formatTime(shift.endTime)} ({shift.hours.toFixed(1)}h)
-                        </div>
-                      </div>
-                    ))}
+                  {/* Shifts Section - Exact match to calendar appointments */}
+                  <div 
+                    style={{
+                      flex: 1,
+                      overflowY: 'auto',
+                      padding: '8px'
+                    }}
+                  >
+                    <div>
+                      {Array.isArray(workerShifts[worker.id]) ? workerShifts[worker.id].map((shift, index) => {
+                        const dayAbbrev = shift.day ? shift.day.charAt(0) : '';
+                        const participantFullName = participantLookup[shift.participant] || shift.participant;
+                        const participantName = getDisplayName(participantFullName);
+                        return (
+                          <div key={index} style={{ 
+                            marginBottom: '4px', 
+                            color: 'var(--text-secondary)', 
+                            fontSize: '14px',
+                            display: 'block'
+                          }}>
+                            {dayAbbrev} - {participantName} - {shift.startTime}-{shift.endTime}
+                          </div>
+                        );
+                      }) : <div style={{ color: 'var(--text-secondary)', fontSize: '14px' }}>No shifts</div>}
+                    </div>
                   </div>
                 </div>
               ))}
@@ -259,41 +677,43 @@ const ShiftsTab = ({ workers, rosterData }) => {
 
         {/* Right side: Telegram messaging panel */}
         <div className="telegram-panel" style={{ 
-          background: 'linear-gradient(135deg, #3E3B37, #3E3B37)',
-          border: '2px solid #D4A574',
+          background: 'var(--card-bg)',
+          border: '1px solid var(--border)',
           borderRadius: '12px',
-          boxShadow: '0 6px 20px rgba(0, 0, 0, 0.2)',
+          boxShadow: '0 2px 4px var(--shadow)',
           padding: '0',
           position: 'sticky',
           top: '1rem',
-          overflow: 'hidden'
+          overflow: 'hidden',
+          maxHeight: '600px'
         }}>
-          {/* Header */}
+          {/* Header - Consistent with calendar cards */}
           <div style={{
-            background: '#4A4641',
-            padding: '1rem 1.5rem',
-            borderBottom: '1px solid #2D2B28'
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            padding: '8px 12px',
+            borderBottom: '1px solid var(--border)',
+            background: 'var(--hover-bg)'
           }}>
-            <h4 style={{ 
-              margin: 0, 
-              color: '#D4A574', 
-              fontSize: '1.2rem',
-              fontWeight: '600',
-              textShadow: '1px 1px 2px rgba(0,0,0,0.2)',
-              display: 'flex',
-              alignItems: 'center',
-              gap: '0.5rem'
+            <span style={{ 
+              color: 'var(--accent)', 
+              fontSize: '18px',
+              fontWeight: '600'
             }}>
-              💬 Telegram Messaging
-            </h4>
+              Telegram
+            </span>
+            <span style={{ fontSize: '0.75rem', color: 'var(--text-secondary)' }}>
+              Messaging
+            </span>
           </div>
 
-          {/* Content */}
-          <div style={{ padding: '1.5rem' }}>
+          {/* Content - Consistent with calendar appointments */}
+          <div style={{ padding: '12px' }}>
             
             {/* Message composition area */}
             <div style={{ marginBottom: '1rem' }}>
-              <label style={{ display: 'block', marginBottom: '0.5rem', fontSize: '1.1rem', fontWeight: '500', color: '#E8DDD4' }}>
+              <label style={{ display: 'block', marginBottom: '0.5rem', fontSize: '0.9rem', fontWeight: '500', color: 'var(--text-secondary)' }}>
                 Message
               </label>
               <textarea
@@ -304,49 +724,50 @@ const ShiftsTab = ({ workers, rosterData }) => {
                   width: '100%',
                   height: '80px',
                   padding: '0.75rem',
-                  borderRadius: '4px',
-                  border: '1px solid #4A4641',
-                  background: '#2D2B28',
-                  color: '#E8DDD4',
-                  fontSize: '1rem',
-                  resize: 'vertical'
+                  borderRadius: '8px',
+                  border: '1px solid var(--border)',
+                  background: 'var(--card-bg)',
+                  color: 'var(--text-primary)',
+                  fontSize: '0.95rem',
+                  resize: 'vertical',
+                  fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif'
                 }}
               />
             </div>
 
             {/* Worker selection */}
             <div style={{ marginBottom: '1rem' }}>
-              <label style={{ display: 'block', marginBottom: '0.5rem', fontSize: '1.1rem', fontWeight: '500', color: '#E8DDD4' }}>
+              <label style={{ display: 'block', marginBottom: '0.5rem', fontSize: '0.9rem', fontWeight: '500', color: 'var(--text-secondary)' }}>
                 Send to
               </label>
               <div style={{ 
                 maxHeight: '200px', 
                 overflowY: 'auto', 
-                border: '1px solid #4A4641', 
-                borderRadius: '4px',
-                background: '#2D2B28'
+                border: '1px solid var(--border)', 
+                borderRadius: '8px',
+                background: 'var(--card-bg)'
               }}>
-                <div style={{ padding: '0.75rem', borderBottom: '1px solid #4A4641' }}>
-                  <label style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', fontSize: '1rem', fontWeight: '500', color: '#E8DDD4' }}>
+                <div style={{ padding: '0.75rem', borderBottom: '1px solid var(--border)' }}>
+                  <label style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', fontSize: '0.95rem', fontWeight: '500', color: 'var(--text-primary)', cursor: 'pointer' }}>
                     <input 
                       type="checkbox" 
                       checked={sendToAll}
                       onChange={(e) => setSendToAll(e.target.checked)}
-                      style={{ transform: 'scale(1.2)' }} 
+                      style={{ transform: 'scale(1.1)', cursor: 'pointer' }} 
                     />
-                    📢 All Workers ({workersWithShifts?.filter(w => w.telegram).length || 0} with Telegram)
+                    All Workers ({workersWithTelegram.length} with Telegram)
                   </label>
                 </div>
-                {!sendToAll && workersWithShifts?.filter(w => w.telegram).map(worker => (
-                  <div key={worker.id} style={{ padding: '0.75rem', borderBottom: '1px solid #4A4641' }}>
-                    <label style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', fontSize: '1rem', color: '#E8DDD4' }}>
+                {!sendToAll && workersWithTelegram.map(worker => (
+                  <div key={worker.id} style={{ padding: '0.75rem', borderBottom: '1px solid var(--border)' }}>
+                    <label style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', fontSize: '0.9rem', color: 'var(--text-secondary)', cursor: 'pointer' }}>
                       <input 
                         type="checkbox" 
                         checked={selectedWorkers.has(worker.id)}
                         onChange={(e) => handleWorkerSelection(worker.id, e.target.checked)}
-                        style={{ transform: 'scale(1.2)' }} 
+                        style={{ transform: 'scale(1.1)', cursor: 'pointer' }} 
                       />
-                      {worker.full_name}
+                      {getDisplayName(worker.full_name)}
                     </label>
                   </div>
                 ))}
@@ -358,64 +779,54 @@ const ShiftsTab = ({ workers, rosterData }) => {
               <button 
                 onClick={handleSendTelegramMessage}
                 disabled={!telegramMessage.trim() || (!sendToAll && selectedWorkers.size === 0)}
-                className="btn btn-primary"
                 style={{ 
                   flex: '1', 
-                  fontSize: '1rem', 
-                  padding: '0.85rem',
-                  background: (!telegramMessage.trim() || (!sendToAll && selectedWorkers.size === 0)) ? '#6B6B6B' : '#D4A574',
-                  color: '#2D2B28',
-                  border: '2px solid #D4A574',
-                  borderRadius: '6px',
-                  fontWeight: '600',
+                  fontSize: '14px', 
+                  padding: '8px 15px',
+                  borderRadius: '25px',
+                  background: (!sendToAll && selectedWorkers.size === 0) ? 'var(--bg-secondary)' : 'var(--accent)',
+                  color: (!sendToAll && selectedWorkers.size === 0) ? 'var(--text-secondary)' : 'white',
+                  border: 'none',
                   cursor: (!telegramMessage.trim() || (!sendToAll && selectedWorkers.size === 0)) ? 'not-allowed' : 'pointer',
-                  transition: 'all 0.2s ease'
-                }}
-                onMouseEnter={(e) => {
-                  if (!e.currentTarget.disabled) {
-                    e.currentTarget.style.background = '#C4915C';
-                    e.currentTarget.style.borderColor = '#C4915C';
-                    e.currentTarget.style.transform = 'translateY(-1px)';
-                    e.currentTarget.style.boxShadow = '0 4px 12px rgba(212, 165, 116, 0.3)';
-                  }
-                }}
-                onMouseLeave={(e) => {
-                  if (!e.currentTarget.disabled) {
-                    e.currentTarget.style.background = '#D4A574';
-                    e.currentTarget.style.borderColor = '#D4A574';
-                    e.currentTarget.style.transform = 'translateY(0)';
-                    e.currentTarget.style.boxShadow = 'none';
-                  }
+                  fontWeight: '500'
                 }}
               >
-                📤 Send Message
-              </button>
-              <button 
-                onClick={handleClearTelegramMessage}
-                className="btn btn-secondary"
-                style={{ 
-                  fontSize: '1.1rem', 
-                  padding: '0.85rem',
-                  background: '#3E3B37',
-                  color: '#E8DDD4',
-                  border: '2px solid #4A4641',
-                  borderRadius: '6px',
-                  transition: 'all 0.2s ease',
-                  cursor: 'pointer'
-                }}
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.background = '#4A4641';
-                  e.currentTarget.style.borderColor = '#8B9A7B';
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.background = '#3E3B37';
-                  e.currentTarget.style.borderColor = '#4A4641';
-                }}
-                title="Clear message"
-              >
-                🗑️
+                Send Message
               </button>
             </div>
+          </div>
+        </div>
+
+        {/* Calendar Shift Creation Window */}
+        <div style={{
+          display: 'flex',
+          flexDirection: 'column',
+          height: '100%',
+          background: 'var(--card-bg)',
+          borderRadius: '12px',
+          border: '1px solid var(--border)',
+          overflow: 'hidden'
+        }}>
+          {/* Header */}
+          <div style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: '0.75rem',
+            padding: '12px',
+            borderBottom: '1px solid var(--border)',
+            background: 'var(--bg-secondary)'
+          }}>
+            <span style={{ fontSize: '1rem', fontWeight: '600', color: 'var(--text-primary)' }}>
+              📅 Add Calendar Appointment
+            </span>
+            <span style={{ fontSize: '0.75rem', color: 'var(--text-secondary)' }}>
+              Create appointments in Google Calendar
+            </span>
+          </div>
+
+          {/* Content */}
+          <div style={{ padding: '8px', flex: 1, overflowY: 'auto' }}>
+            <CalendarAppointmentForm />
           </div>
         </div>
 

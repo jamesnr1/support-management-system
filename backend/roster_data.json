@@ -1,1640 +1,775 @@
 {
   "roster": {
-    "week_type": "weekA",
-    "start_date": "2025-09-29",
-    "end_date": "2025-10-05",
+    "week_type": "weekB",
+    "start_date": "2025-10-06",
+    "end_date": "2025-10-12",
     "data": {
-      "LIB001": {
-        "2025-10-02": [
+      "JAM001": {
+        "2025-10-06": [
           {
-            "id": "L2025100201",
-            "date": "2025-10-02",
-            "shiftNumber": "L2025100201",
-            "startTime": "12:00",
+            "id": "shift_1759836301995_9172sk599",
+            "date": "2025-10-06",
+            "startTime": "06:00",
+            "endTime": "14:00",
+            "supportType": "Self-Care",
+            "ratio": "2:1",
+            "workers": [
+              "125",
+              "130"
+            ],
+            "location": "2",
+            "notes": "",
+            "shiftNumber": "J2025100643",
+            "duration": 8,
+            "isSplitShift": false
+          },
+          {
+            "id": "shift_1759835938012_ytam831lu",
+            "date": "2025-10-06",
+            "startTime": "14:00",
             "endTime": "22:00",
             "supportType": "Self-Care",
             "ratio": "2:1",
             "workers": [
-              "Harshkumar (Happy) Modi",
-              "Japneet (Rosie) Kaur"
+              "127",
+              "126"
+            ],
+            "location": "2",
+            "notes": "",
+            "shiftNumber": "J2025100661",
+            "duration": 8,
+            "isSplitShift": false
+          },
+          {
+            "id": "shift_1759837706514_27qd48ben",
+            "date": "2025-10-06",
+            "startTime": "22:00",
+            "endTime": "06:00",
+            "supportType": "Self-Care",
+            "ratio": "2:1",
+            "workers": [
+              "132",
+              "136"
+            ],
+            "location": "2",
+            "notes": "",
+            "shiftNumber": "J2025100661",
+            "duration": 8,
+            "isSplitShift": false
+          }
+        ],
+        "2025-10-07": [
+          {
+            "id": "shift_1759836562983_9ql3tvl55",
+            "date": "2025-10-07",
+            "startTime": "06:00",
+            "endTime": "14:00",
+            "supportType": "Self-Care",
+            "ratio": "2:1",
+            "workers": [
+              "127",
+              "131"
+            ],
+            "location": "2",
+            "notes": "",
+            "shiftNumber": "J2025100739",
+            "duration": 8,
+            "isSplitShift": false
+          },
+          {
+            "id": "shift_1759836636073_4drsw844k",
+            "date": "2025-10-07",
+            "startTime": "14:00",
+            "endTime": "22:00",
+            "supportType": "Self-Care",
+            "ratio": "2:1",
+            "workers": [
+              "136",
+              "126"
+            ],
+            "location": "2",
+            "notes": "",
+            "shiftNumber": "J2025100703",
+            "duration": 8,
+            "isSplitShift": false
+          },
+          {
+            "id": "shift_1759837741127_vg7dpz98n",
+            "date": "2025-10-07",
+            "startTime": "22:00",
+            "endTime": "06:00",
+            "supportType": "Self-Care",
+            "ratio": "2:1",
+            "workers": [
+              "138",
+              "132"
+            ],
+            "location": "2",
+            "notes": "",
+            "shiftNumber": "J2025100727",
+            "duration": 8,
+            "isSplitShift": false
+          }
+        ],
+        "2025-10-08": [
+          {
+            "id": "shift_1759837770842_ibzpot8kf",
+            "date": "2025-10-08",
+            "startTime": "06:00",
+            "endTime": "14:00",
+            "supportType": "Self-Care",
+            "ratio": "2:1",
+            "workers": [
+              "129",
+              "125"
+            ],
+            "location": "2",
+            "notes": "",
+            "shiftNumber": "J2025100899",
+            "duration": 8,
+            "isSplitShift": false
+          },
+          {
+            "id": "shift_1759837817541_6qcheemkx",
+            "date": "2025-10-08",
+            "startTime": "14:00",
+            "endTime": "22:00",
+            "supportType": "Self-Care",
+            "ratio": "2:1",
+            "workers": [
+              "127",
+              "126"
+            ],
+            "location": "2",
+            "notes": "",
+            "shiftNumber": "J2025100819",
+            "duration": 8,
+            "isSplitShift": false
+          },
+          {
+            "id": "shift_1759842279594_koithu70g",
+            "date": "2025-10-08",
+            "startTime": "22:00",
+            "endTime": "06:00",
+            "supportType": "Self-Care",
+            "ratio": "2:1",
+            "workers": [
+              "138",
+              "136"
+            ],
+            "location": "2",
+            "notes": "",
+            "shiftNumber": "J2025100851",
+            "duration": 8,
+            "isSplitShift": false
+          }
+        ],
+        "2025-10-09": [
+          {
+            "id": "shift_1759842303635_v7b5xpxvy",
+            "date": "2025-10-09",
+            "startTime": "06:00",
+            "endTime": "14:00",
+            "supportType": "Self-Care",
+            "ratio": "2:1",
+            "workers": [
+              "132",
+              "131"
+            ],
+            "location": "2",
+            "notes": "",
+            "shiftNumber": "J2025100937",
+            "duration": 8,
+            "isSplitShift": false
+          },
+          {
+            "id": "shift_1759842325152_279sq1ygg",
+            "date": "2025-10-09",
+            "startTime": "14:00",
+            "endTime": "22:00",
+            "supportType": "Self-Care",
+            "ratio": "2:1",
+            "workers": [
+              "127",
+              "126"
+            ],
+            "location": "2",
+            "notes": "",
+            "shiftNumber": "J2025100966",
+            "duration": 8,
+            "isSplitShift": false
+          },
+          {
+            "id": "shift_1759842338154_v9dg4rdb9",
+            "date": "2025-10-09",
+            "startTime": "22:00",
+            "endTime": "06:00",
+            "supportType": "Self-Care",
+            "ratio": "2:1",
+            "workers": [
+              "138",
+              "130"
+            ],
+            "location": "2",
+            "notes": "",
+            "shiftNumber": "J2025100985",
+            "duration": 8,
+            "isSplitShift": false
+          }
+        ],
+        "2025-10-10": [
+          {
+            "id": "shift_1759842356355_iek4nwaye",
+            "date": "2025-10-10",
+            "startTime": "06:00",
+            "endTime": "14:00",
+            "supportType": "Self-Care",
+            "ratio": "2:1",
+            "workers": [
+              "136",
+              "129"
+            ],
+            "location": "2",
+            "notes": "",
+            "shiftNumber": "J2025101096",
+            "duration": 8,
+            "isSplitShift": false
+          },
+          {
+            "id": "shift_1759842367047_0x3jox9rz",
+            "date": "2025-10-10",
+            "startTime": "14:00",
+            "endTime": "22:00",
+            "supportType": "Self-Care",
+            "ratio": "2:1",
+            "workers": [
+              "131",
+              "132"
+            ],
+            "location": "2",
+            "notes": "",
+            "shiftNumber": "J2025101098",
+            "duration": 8,
+            "isSplitShift": false,
+            "locked": false
+          },
+          {
+            "id": "shift_1759842379516_rnr2qw9bs",
+            "date": "2025-10-10",
+            "startTime": "22:00",
+            "endTime": "06:00",
+            "supportType": "Self-Care",
+            "ratio": "2:1",
+            "workers": [
+              "138",
+              "125"
+            ],
+            "location": "2",
+            "notes": "",
+            "shiftNumber": "J2025101057",
+            "duration": 8,
+            "isSplitShift": false,
+            "locked": false
+          }
+        ],
+        "2025-10-11": [
+          {
+            "id": "shift_1759849204726_lygu2lamd",
+            "date": "2025-10-11",
+            "startTime": "06:00",
+            "endTime": "14:00",
+            "supportType": "Self-Care",
+            "ratio": "2:1",
+            "workers": [
+              "136",
+              "126"
+            ],
+            "location": "2",
+            "notes": "",
+            "shiftNumber": "J2025101168",
+            "duration": 8,
+            "isSplitShift": false,
+            "locked": false
+          },
+          {
+            "id": "shift_1759849221686_nguxy6h7u",
+            "date": "2025-10-11",
+            "startTime": "14:00",
+            "endTime": "22:00",
+            "supportType": "Self-Care",
+            "ratio": "2:1",
+            "workers": [
+              "129",
+              "119"
+            ],
+            "location": "2",
+            "notes": "",
+            "shiftNumber": "J2025101192",
+            "duration": 8,
+            "isSplitShift": false
+          },
+          {
+            "id": "shift_1759849238659_2dwggk6u5",
+            "date": "2025-10-11",
+            "startTime": "22:00",
+            "endTime": "06:00",
+            "supportType": "Self-Care",
+            "ratio": "2:1",
+            "workers": [
+              "139",
+              "131"
+            ],
+            "location": "2",
+            "notes": "",
+            "shiftNumber": "J2025101177",
+            "duration": 8,
+            "isSplitShift": false,
+            "locked": false
+          }
+        ],
+        "2025-10-12": [
+          {
+            "id": "shift_1759849293810_s2gfs0mho",
+            "date": "2025-10-12",
+            "startTime": "06:00",
+            "endTime": "14:00",
+            "supportType": "Self-Care",
+            "ratio": "2:1",
+            "workers": [
+              "130",
+              "126"
+            ],
+            "location": "2",
+            "notes": "",
+            "shiftNumber": "J2025101212",
+            "duration": 8,
+            "isSplitShift": false,
+            "locked": false
+          },
+          {
+            "id": "shift_1759849385436_rc8rhs73u",
+            "date": "2025-10-12",
+            "startTime": "14:00",
+            "endTime": "22:00",
+            "supportType": "Self-Care",
+            "ratio": "2:1",
+            "workers": [
+              "125",
+              "119"
+            ],
+            "location": "2",
+            "notes": "",
+            "shiftNumber": "J2025101295",
+            "duration": 8,
+            "isSplitShift": false,
+            "locked": false
+          },
+          {
+            "id": "shift_1759849404896_413z8g8l4",
+            "date": "2025-10-12",
+            "startTime": "22:00",
+            "endTime": "06:00",
+            "supportType": "Self-Care",
+            "ratio": "2:1",
+            "workers": [
+              "129",
+              "132"
+            ],
+            "location": "2",
+            "notes": "",
+            "shiftNumber": "J2025101245",
+            "duration": 8,
+            "isSplitShift": false
+          }
+        ]
+      },
+      "LIB001": {},
+      "ACE001": {},
+      "GRA001": {
+        "2025-10-06": [
+          {
+            "id": "shift_1759853507977_s2r1iw7x7",
+            "date": "2025-10-06",
+            "startTime": "06:00",
+            "endTime": "08:00",
+            "supportType": "Self-Care",
+            "ratio": "1:1",
+            "workers": [
+              "135"
+            ],
+            "location": "2",
+            "notes": "",
+            "shiftNumber": "G2025100622",
+            "duration": 2,
+            "isSplitShift": false
+          },
+          {
+            "id": "shift_1759882440216_lr7kezf6m",
+            "date": "2025-10-06",
+            "startTime": "08:00",
+            "endTime": "12:00",
+            "supportType": "Self-Care",
+            "ratio": "1:1",
+            "workers": [
+              "118"
             ],
             "location": "1",
             "notes": "",
-            "duration": "10.0"
-          }
-        ]
-      },
-      "GRA001": {
-        "2025-09-29": [
-          {
-            "id": "G2025092901",
-            "date": "2025-09-29",
-            "shiftNumber": "G2025092901",
-            "startTime": "06:00",
-            "endTime": "08:00",
-            "supportType": "Self-Care",
-            "ratio": "1:1",
-            "workers": [
-              "Sandy Tran"
-            ],
-            "location": "2",
-            "notes": "",
-            "duration": "2.0"
+            "shiftNumber": "G2025100602",
+            "duration": 4,
+            "isSplitShift": false
           },
           {
-            "id": "G2025092902",
-            "date": "2025-09-29",
-            "shiftNumber": "G2025092902",
-            "startTime": "08:00",
-            "endTime": "15:00",
-            "supportType": "Self-Care",
-            "ratio": "1:1",
-            "workers": [
-              "Chaynne Humphrys"
-            ],
-            "location": "2",
-            "notes": "",
-            "duration": "7.0"
-          },
-          {
-            "id": "G2025092903",
-            "date": "2025-09-29",
-            "shiftNumber": "G2025092903",
+            "id": "shift_1759882466538_2vy67cvsa",
+            "date": "2025-10-06",
             "startTime": "20:00",
             "endTime": "22:00",
             "supportType": "Self-Care",
             "ratio": "1:1",
             "workers": [
-              "Parvinder Singh"
+              "139"
             ],
-            "location": "2",
+            "location": "1",
             "notes": "",
-            "duration": "2.0"
+            "shiftNumber": "G2025100670",
+            "duration": 2,
+            "isSplitShift": false
           }
         ],
-        "2025-09-30": [
+        "2025-10-07": [
           {
-            "id": "G2025093001",
-            "date": "2025-09-30",
-            "shiftNumber": "G2025093001",
+            "id": "shift_1759853543622_m5knwv9ct",
+            "date": "2025-10-07",
             "startTime": "06:00",
             "endTime": "08:00",
             "supportType": "Self-Care",
             "ratio": "1:1",
             "workers": [
-              "Sandy Tran"
+              "135"
             ],
             "location": "2",
             "notes": "",
-            "duration": "2.0"
+            "shiftNumber": "G2025100736",
+            "duration": 2,
+            "isSplitShift": false
           },
           {
-            "id": "G2025093002",
-            "date": "2025-09-30",
-            "shiftNumber": "G2025093002",
-            "startTime": "10:00",
-            "endTime": "16:00",
-            "supportType": "Self-Care",
-            "ratio": "1:1",
-            "workers": [
-              "Anika"
-            ],
-            "location": "2",
-            "notes": "",
-            "duration": "6.0"
-          },
-          {
-            "id": "G2025093003",
-            "date": "2025-09-30",
-            "shiftNumber": "G2025093003",
-            "startTime": "20:00",
-            "endTime": "22:00",
-            "supportType": "Self-Care",
-            "ratio": "1:1",
-            "workers": [
-              "Avani Patel"
-            ],
-            "location": "2",
-            "notes": "",
-            "duration": "2.0"
-          }
-        ],
-        "2025-10-01": [
-          {
-            "id": "G2025100101",
-            "date": "2025-10-01",
-            "shiftNumber": "G2025100101",
-            "startTime": "06:00",
+            "id": "shift_1759882536805_h0l05g2jf",
+            "date": "2025-10-07",
+            "startTime": "09:00",
             "endTime": "13:00",
             "supportType": "Self-Care",
             "ratio": "1:1",
             "workers": [
-              "Chaynne Humphrys"
+              "120"
             ],
-            "location": "2",
+            "location": "1",
             "notes": "",
-            "duration": "7.0"
+            "shiftNumber": "G2025100733",
+            "duration": 4,
+            "isSplitShift": false
           },
           {
-            "id": "G2025100102",
-            "date": "2025-10-01",
-            "shiftNumber": "G2025100102",
+            "id": "shift_1759882551266_8yfrv8whl",
+            "date": "2025-10-07",
             "startTime": "20:00",
             "endTime": "22:00",
             "supportType": "Self-Care",
             "ratio": "1:1",
             "workers": [
-              "Parvinder Singh"
+              "139"
             ],
-            "location": "2",
+            "location": "1",
             "notes": "",
-            "duration": "2.0"
+            "shiftNumber": "G2025100789",
+            "duration": 2,
+            "isSplitShift": false
           }
         ],
-        "2025-10-02": [
+        "2025-10-08": [
           {
-            "id": "G2025100201",
-            "date": "2025-10-02",
-            "shiftNumber": "G2025100201",
-            "startTime": "10:00",
-            "endTime": "16:00",
-            "supportType": "Self-Care",
-            "ratio": "1:1",
-            "workers": [
-              "Anika"
-            ],
-            "location": "2",
-            "notes": "",
-            "duration": "6.0"
-          },
-          {
-            "id": "G2025100202",
-            "date": "2025-10-02",
-            "shiftNumber": "G2025100202",
-            "startTime": "20:00",
-            "endTime": "22:00",
-            "supportType": "Self-Care",
-            "ratio": "1:1",
-            "workers": [
-              "Avani Patel"
-            ],
-            "location": "2",
-            "notes": "",
-            "duration": "2.0"
-          }
-        ],
-        "2025-10-03": [
-          {
-            "id": "G2025100301",
-            "date": "2025-10-03",
-            "shiftNumber": "G2025100301",
+            "id": "shift_1759853560099_8tn8c4txx",
+            "date": "2025-10-08",
             "startTime": "06:00",
             "endTime": "08:00",
             "supportType": "Self-Care",
             "ratio": "1:1",
             "workers": [
-              "Sandy Tran"
+              "135"
             ],
             "location": "2",
             "notes": "",
-            "duration": "2.0"
+            "shiftNumber": "G2025100823",
+            "duration": 2,
+            "isSplitShift": false
           },
           {
-            "id": "G2025100302",
-            "date": "2025-10-03",
-            "shiftNumber": "G2025100302",
+            "id": "shift_1759888728980_7hxr64rr5",
+            "date": "2025-10-08",
             "startTime": "08:00",
-            "endTime": "15:00",
+            "endTime": "12:00",
             "supportType": "Self-Care",
             "ratio": "1:1",
             "workers": [
-              "Chaynne Humphrys"
+              "118"
             ],
-            "location": "2",
+            "location": "1",
             "notes": "",
-            "duration": "7.0"
+            "shiftNumber": "G2025100836",
+            "duration": 4,
+            "isSplitShift": false
           },
           {
-            "id": "G2025100303",
-            "date": "2025-10-03",
-            "shiftNumber": "G2025100303",
+            "id": "shift_1759888743895_fbsebdrz2",
+            "date": "2025-10-08",
             "startTime": "20:00",
             "endTime": "22:00",
             "supportType": "Self-Care",
             "ratio": "1:1",
             "workers": [
-              "Parvinder Singh"
+              "139"
             ],
-            "location": "2",
+            "location": "1",
             "notes": "",
-            "duration": "2.0"
+            "shiftNumber": "G2025100836",
+            "duration": 2,
+            "isSplitShift": false
           }
         ],
-        "2025-10-04": [
+        "2025-10-10": [
           {
-            "id": "G2025100401",
-            "date": "2025-10-04",
-            "shiftNumber": "G2025100401",
+            "id": "shift_1759853590879_lqxo5uouq",
+            "date": "2025-10-10",
             "startTime": "06:00",
-            "endTime": "14:00",
+            "endTime": "08:00",
             "supportType": "Self-Care",
             "ratio": "1:1",
             "workers": [
-              "Artiben (Arti) Patel"
+              "135"
             ],
             "location": "2",
             "notes": "",
-            "duration": "8.0"
+            "shiftNumber": "G2025101083",
+            "duration": 2,
+            "isSplitShift": false
           },
           {
-            "id": "G2025100402",
-            "date": "2025-10-04",
-            "shiftNumber": "G2025100402",
-            "startTime": "14:00",
+            "id": "shift_1759888864547_75yc8803b",
+            "date": "2025-10-10",
+            "startTime": "12:00",
+            "endTime": "16:00",
+            "supportType": "Self-Care",
+            "ratio": "1:1",
+            "workers": [
+              "120"
+            ],
+            "location": "1",
+            "notes": "",
+            "shiftNumber": "G2025101044",
+            "duration": 4,
+            "isSplitShift": false
+          }
+        ],
+        "2025-10-09": [
+          {
+            "id": "shift_1759888800342_msiyitki0",
+            "date": "2025-10-09",
+            "startTime": "06:00",
+            "endTime": "12:00",
+            "supportType": "Self-Care",
+            "ratio": "1:1",
+            "workers": [
+              "137"
+            ],
+            "location": "1",
+            "notes": "",
+            "shiftNumber": "G2025100918",
+            "duration": 6,
+            "isSplitShift": false
+          },
+          {
+            "id": "shift_1759888826526_t7qiyugm2",
+            "date": "2025-10-09",
+            "startTime": "20:00",
             "endTime": "22:00",
             "supportType": "Self-Care",
             "ratio": "1:1",
             "workers": [
-              "Parvinder Singh"
+              "139"
+            ],
+            "location": "1",
+            "notes": "",
+            "shiftNumber": "G2025100919",
+            "duration": 2,
+            "isSplitShift": false
+          }
+        ],
+        "2025-10-12": [
+          {
+            "id": "shift_1759889188221_54sn6d6n5",
+            "date": "2025-10-12",
+            "startTime": "06:00",
+            "endTime": "08:00",
+            "supportType": "Self-Care",
+            "ratio": "1:1",
+            "workers": [
+              "135"
             ],
             "location": "2",
             "notes": "",
-            "duration": "8.0"
-          }
-        ],
-        "2025-10-05": [
+            "shiftNumber": "G2025101231",
+            "duration": 2,
+            "isSplitShift": false,
+            "locked": false
+          },
           {
-            "id": "G2025100501",
-            "date": "2025-10-05",
-            "shiftNumber": "G2025100501",
-            "startTime": "06:00",
+            "id": "shift_1759889257701_2j6ao82ll",
+            "date": "2025-10-12",
+            "startTime": "08:00",
             "endTime": "14:00",
             "supportType": "Self-Care",
             "ratio": "1:1",
             "workers": [
-              "Avani Patel"
+              "129"
             ],
             "location": "2",
             "notes": "",
-            "duration": "8.0"
-          },
-          {
-            "id": "G2025100502",
-            "date": "2025-10-05",
-            "shiftNumber": "G2025100502",
-            "startTime": "14:00",
-            "endTime": "22:00",
-            "supportType": "Self-Care",
-            "ratio": "1:1",
-            "workers": [
-              "Parvinder Singh"
-            ],
-            "location": "2",
-            "notes": "",
-            "duration": "8.0"
+            "shiftNumber": "G2025101283",
+            "duration": 6,
+            "isSplitShift": false,
+            "locked": false
           }
         ]
       },
-      "JAM001": {},
       "MIL001": {
-        "2025-10-04": [
+        "2025-10-12": [
           {
-            "id": "M2025100401",
-            "date": "2025-10-04",
-            "shiftNumber": "M2025100401",
-            "startTime": "10:00",
-            "endTime": "13:00",
+            "id": "shift_1759849884568_y0x494m6a",
+            "date": "2025-10-12",
+            "startTime": "09:00",
+            "endTime": "12:00",
             "supportType": "Self-Care",
             "ratio": "1:1",
             "workers": [
-              "Taufique Raza"
+              "137"
             ],
-            "location": "2",
+            "location": "1",
             "notes": "",
-            "duration": "3.0"
+            "shiftNumber": "M2025101273",
+            "duration": 3,
+            "isSplitShift": true,
+            "locked": false
           },
           {
-            "id": "M2025100402",
-            "date": "2025-10-04",
-            "shiftNumber": "M2025100402",
-            "startTime": "13:00",
-            "endTime": "16:00",
-            "supportType": "Community Participation",
+            "id": "shift_1759853262945_s5qgbg741",
+            "date": "2025-10-12",
+            "startTime": "12:00",
+            "endTime": "15:00",
+            "supportType": "Self-Care",
             "ratio": "1:1",
             "workers": [
-              "Taufique Raza"
+              "137"
             ],
-            "location": "2",
+            "location": "1",
             "notes": "",
-            "duration": "3.0"
+            "shiftNumber": "M2025101224",
+            "duration": 3,
+            "isSplitShift": true,
+            "locked": false
           }
         ],
-        "2025-10-05": [
+        "2025-10-11": [
           {
-            "id": "M2025100501",
-            "date": "2025-10-05",
-            "shiftNumber": "M2025100501",
-            "startTime": "13:00",
-            "endTime": "16:00",
+            "id": "shift_1759853339676_ahuoom3bp",
+            "date": "2025-10-11",
+            "startTime": "06:00",
+            "endTime": "09:00",
             "supportType": "Self-Care",
             "ratio": "1:1",
             "workers": [
-              "Taufique Raza"
+              "137"
             ],
             "location": "2",
             "notes": "",
-            "duration": "3.0"
+            "shiftNumber": "M2025101101",
+            "duration": 3,
+            "isSplitShift": true,
+            "locked": false
           },
           {
-            "id": "M2025100502",
-            "date": "2025-10-05",
-            "shiftNumber": "M2025100502",
-            "startTime": "16:00",
-            "endTime": "19:00",
-            "supportType": "Community Participation",
+            "id": "shift_1759889551701_xl3jlr8a8",
+            "date": "2025-10-11",
+            "startTime": "09:00",
+            "endTime": "12:00",
+            "supportType": "Self-Care",
             "ratio": "1:1",
             "workers": [
-              "Artiben (Arti) Patel"
+              "137"
             ],
             "location": "2",
             "notes": "",
-            "duration": "3.0"
+            "shiftNumber": "M2025101190",
+            "duration": 3,
+            "isSplitShift": false,
+            "locked": false
           }
         ]
       },
-      "ACE001": {
-        "2025-10-04": [
-          {
-            "id": "A2025100401",
-            "date": "2025-10-04",
-            "shiftNumber": "A2025100401",
-            "startTime": "06:00",
-            "endTime": "14:00",
-            "supportType": "Self-Care",
-            "ratio": "1:1",
-            "workers": [
-              "Mayurkumar (Mayu) Patel"
-            ],
-            "location": "2",
-            "notes": "",
-            "duration": "8.0"
-          },
-          {
-            "id": "A2025100402",
-            "date": "2025-10-04",
-            "shiftNumber": "A2025100402",
-            "startTime": "14:00",
-            "endTime": "20:00",
-            "supportType": "Self-Care",
-            "ratio": "1:1",
-            "workers": [
-              "Avani Patel"
-            ],
-            "location": "2",
-            "notes": "",
-            "duration": "6.0"
-          },
-          {
-            "id": "A2025100403",
-            "date": "2025-10-04",
-            "shiftNumber": "A2025100403",
-            "startTime": "20:00",
-            "endTime": "22:00",
-            "supportType": "Self-Care",
-            "ratio": "1:1",
-            "workers": [
-              "Mayurkumar (Mayu) Patel"
-            ],
-            "location": "2",
-            "notes": "",
-            "duration": "2.0"
-          }
-        ],
-        "2025-10-05": [
-          {
-            "id": "A2025100501",
-            "date": "2025-10-05",
-            "shiftNumber": "A2025100501",
-            "startTime": "06:00",
-            "endTime": "14:00",
-            "supportType": "Self-Care",
-            "ratio": "1:1",
-            "workers": [
-              "Harshkumar (Happy) Modi"
-            ],
-            "location": "2",
-            "notes": "",
-            "duration": "8.0"
-          },
-          {
-            "id": "A2025100502",
-            "date": "2025-10-05",
-            "shiftNumber": "A2025100502",
-            "startTime": "14:00",
-            "endTime": "22:00",
-            "supportType": "Self-Care",
-            "ratio": "1:1",
-            "workers": [
-              "Krunalkumar (Krunal) Patel"
-            ],
-            "location": "2",
-            "notes": "",
-            "duration": "8.0"
-          }
-        ]
-      },
-      "2025-09-29": [
+      "2025-10-06": [
         {
-          "id": "J2025092901",
-          "date": "2025-09-29",
-          "shiftNumber": "J2025092901",
+          "id": "shift_1759835886136_jzyzyjscs",
+          "date": "2025-10-06",
           "startTime": "06:00",
           "endTime": "14:00",
           "supportType": "Self-Care",
           "ratio": "2:1",
           "workers": [
-            "Krunalkumar (Krunal) Patel",
-            "Mayurkumar (Mayu) Patel"
+            "125",
+            "130"
           ],
           "location": "2",
           "notes": "",
-          "duration": "8.0"
-        },
-        {
-          "id": "J2025092902",
-          "date": "2025-09-29",
-          "shiftNumber": "J2025092902",
-          "startTime": "14:00",
-          "endTime": "22:00",
-          "supportType": "Self-Care",
-          "ratio": "2:1",
-          "workers": [
-            "Japneet (Rosie) Kaur",
-            "Sanjaykumar (Sanjay) Patel"
-          ],
-          "location": "2",
-          "notes": "",
-          "duration": "8.0"
-        },
-        {
-          "id": "J2025092903",
-          "date": "2025-09-29",
-          "shiftNumber": "J2025092903",
-          "startTime": "22:00",
-          "endTime": "06:00",
-          "supportType": "Self-Care",
-          "ratio": "2:1",
-          "workers": [
-            "Margerite (Rita) Gjergji",
-            "Sanjaykumar (Sanjay) Patel"
-          ],
-          "location": "2",
-          "notes": "",
-          "duration": "8.0"
-        }
-      ],
-      "2025-09-30": [
-        {
-          "id": "J2025093001",
-          "date": "2025-09-30",
-          "shiftNumber": "J2025093001",
-          "startTime": "06:00",
-          "endTime": "13:00",
-          "supportType": "Self-Care",
-          "ratio": "2:1",
-          "workers": [
-            "Chaynne Humphrys",
-            "Avani Patel"
-          ],
-          "location": "2",
-          "notes": "",
-          "duration": "7.0"
-        },
-        {
-          "id": "J2025093002",
-          "date": "2025-09-30",
-          "shiftNumber": "J2025093002",
-          "startTime": "14:00",
-          "endTime": "22:00",
-          "supportType": "Self-Care",
-          "ratio": "2:1",
-          "workers": [
-            "Harshkumar (Happy) Modi",
-            "Mihir Patel"
-          ],
-          "location": "2",
-          "notes": "",
-          "duration": "8.0"
-        },
-        {
-          "id": "J2025093003",
-          "date": "2025-09-30",
-          "shiftNumber": "J2025093003",
-          "startTime": "22:00",
-          "endTime": "06:00",
-          "supportType": "Self-Care",
-          "ratio": "2:1",
-          "workers": [
-            "Taufique Raza",
-            "Sapanaben (Sapana) Krunalkumar Patel"
-          ],
-          "location": "2",
-          "notes": "",
-          "duration": "8.0"
-        }
-      ],
-      "2025-10-01": [
-        {
-          "id": "J2025100101",
-          "date": "2025-10-01",
-          "shiftNumber": "J2025100101",
-          "startTime": "06:00",
-          "endTime": "14:00",
-          "supportType": "Self-Care",
-          "ratio": "2:1",
-          "workers": [
-            "Artiben (Arti) Patel",
-            "Muhammad (Hamza) Hamza"
-          ],
-          "location": "2",
-          "notes": "",
-          "duration": "8.0"
-        },
-        {
-          "id": "J2025100102",
-          "date": "2025-10-01",
-          "shiftNumber": "J2025100102",
-          "startTime": "14:00",
-          "endTime": "22:00",
-          "supportType": "Self-Care",
-          "ratio": "2:1",
-          "workers": [
-            "Krunalkumar (Krunal) Patel",
-            "Sanjaykumar (Sanjay) Patel"
-          ],
-          "location": "2",
-          "notes": "",
-          "duration": "8.0"
-        },
-        {
-          "id": "J2025100103",
-          "date": "2025-10-01",
-          "shiftNumber": "J2025100103",
-          "startTime": "22:00",
-          "endTime": "06:00",
-          "supportType": "Self-Care",
-          "ratio": "2:1",
-          "workers": [
-            "Mihir Patel",
-            "Mrunalkumar (MP) Patel"
-          ],
-          "location": "2",
-          "notes": "",
-          "duration": "8.0"
-        }
-      ],
-      "2025-10-02": [
-        {
-          "id": "J2025100201",
-          "date": "2025-10-02",
-          "shiftNumber": "J2025100201",
-          "startTime": "06:00",
-          "endTime": "14:00",
-          "supportType": "Self-Care",
-          "ratio": "2:1",
-          "workers": [
-            "Mayurkumar (Mayu) Patel",
-            "Sapanaben (Sapana) Krunalkumar Patel"
-          ],
-          "location": "2",
-          "notes": "",
-          "duration": "8.0"
-        },
-        {
-          "id": "J2025100202",
-          "date": "2025-10-02",
-          "shiftNumber": "J2025100202",
-          "startTime": "14:00",
-          "endTime": "22:00",
-          "supportType": "Self-Care",
-          "ratio": "2:1",
-          "workers": [
-            "Artiben (Arti) Patel",
-            "Mihir Patel"
-          ],
-          "location": "2",
-          "notes": "",
-          "duration": "8.0"
-        },
-        {
-          "id": "J2025100203",
-          "date": "2025-10-02",
-          "shiftNumber": "J2025100203",
-          "startTime": "22:00",
-          "endTime": "06:00",
-          "supportType": "Self-Care",
-          "ratio": "2:1",
-          "workers": [
-            "Mrunalkumar (MP) Patel",
-            "Sapanaben (Sapana) Krunalkumar Patel"
-          ],
-          "location": "2",
-          "notes": "",
-          "duration": "8.0"
-        }
-      ],
-      "2025-10-03": [
-        {
-          "id": "J2025100301",
-          "date": "2025-10-03",
-          "shiftNumber": "J2025100301",
-          "startTime": "06:00",
-          "endTime": "14:00",
-          "supportType": "Self-Care",
-          "ratio": "2:1",
-          "workers": [
-            "Krunalkumar (Krunal) Patel",
-            "Muhammad (Hamza) Hamza"
-          ],
-          "location": "2",
-          "notes": "",
-          "duration": "8.0"
-        },
-        {
-          "id": "J2025100302",
-          "date": "2025-10-03",
-          "shiftNumber": "J2025100302",
-          "startTime": "14:00",
-          "endTime": "22:00",
-          "supportType": "Self-Care",
-          "ratio": "2:1",
-          "workers": [
-            "Mayurkumar (Mayu) Patel",
-            "Taufique Raza"
-          ],
-          "location": "2",
-          "notes": "",
-          "duration": "8.0"
-        },
-        {
-          "id": "J2025100303",
-          "date": "2025-10-03",
-          "shiftNumber": "J2025100303",
-          "startTime": "22:00",
-          "endTime": "06:00",
-          "supportType": "Self-Care",
-          "ratio": "2:1",
-          "workers": [
-            "Muhammad (Hamza) Hamza",
-            "Taufique Raza"
-          ],
-          "location": "2",
-          "notes": "",
-          "duration": "8.0"
-        }
-      ],
-      "2025-10-04": [
-        {
-          "id": "J2025100401",
-          "date": "2025-10-04",
-          "shiftNumber": "J2025100401",
-          "startTime": "06:00",
-          "endTime": "14:00",
-          "supportType": "Self-Care",
-          "ratio": "2:1",
-          "workers": [
-            "Japneet (Rosie) Kaur",
-            "Sapanaben (Sapana) Krunalkumar Patel"
-          ],
-          "location": "2",
-          "notes": "",
-          "duration": "8.0"
-        },
-        {
-          "id": "J2025100402",
-          "date": "2025-10-04",
-          "shiftNumber": "J2025100402",
-          "startTime": "14:00",
-          "endTime": "22:00",
-          "supportType": "Self-Care",
-          "ratio": "2:1",
-          "workers": [
-            "Muhammad (Hamza) Hamza",
-            "Mrunalkumar (MP) Patel"
-          ],
-          "location": "2",
-          "notes": "",
-          "duration": "8.0"
-        },
-        {
-          "id": "J2025100403",
-          "date": "2025-10-04",
-          "shiftNumber": "J2025100403",
-          "startTime": "22:00",
-          "endTime": "06:00",
-          "supportType": "Self-Care",
-          "ratio": "2:1",
-          "workers": [
-            "Mayurkumar (Mayu) Patel",
-            "Sanjaykumar (Sanjay) Patel"
-          ],
-          "location": "2",
-          "notes": "",
-          "duration": "8.0"
-        }
-      ],
-      "2025-10-05": [
-        {
-          "id": "J2025100501",
-          "date": "2025-10-05",
-          "shiftNumber": "J2025100501",
-          "startTime": "06:00",
-          "endTime": "14:00",
-          "supportType": "Self-Care",
-          "ratio": "2:1",
-          "workers": [
-            "Japneet (Rosie) Kaur",
-            "Mrunalkumar (MP) Patel"
-          ],
-          "location": "2",
-          "notes": "",
-          "duration": "8.0"
-        },
-        {
-          "id": "J2025100502",
-          "date": "2025-10-05",
-          "shiftNumber": "J2025100502",
-          "startTime": "14:00",
-          "endTime": "22:00",
-          "supportType": "Self-Care",
-          "ratio": "3:1",
-          "workers": [
-            "Harshkumar (Happy) Modi",
-            "Japneet (Rosie) Kaur",
-            "Mayurkumar (Mayu) Patel"
-          ],
-          "location": "2",
-          "notes": "",
-          "duration": "8.0"
-        },
-        {
-          "id": "J2025100503",
-          "date": "2025-10-05",
-          "shiftNumber": "J2025100503",
-          "startTime": "22:00",
-          "endTime": "06:00",
-          "supportType": "Self-Care",
-          "ratio": "2:1",
-          "workers": [
-            "Muhammad (Hamza) Hamza",
-            "Sanjaykumar (Sanjay) Patel"
-          ],
-          "location": "2",
-          "notes": "",
-          "duration": "8.0"
+          "shiftNumber": "J2025100682",
+          "duration": 8,
+          "isSplitShift": false
         }
       ]
     }
   },
   "planner": {
     "week_type": "weekB",
-    "start_date": "2025-10-06",
-    "end_date": "2025-10-12",
+    "start_date": "2025-10-13",
+    "end_date": "2025-10-19",
     "data": {
-      "LIB001": {
-        "2025-10-09": [
-          {
-            "id": "L2025100901",
-            "date": "2025-10-09",
-            "shiftNumber": "L2025100901",
-            "startTime": "14:00",
-            "endTime": "22:00",
-            "supportType": "Self Care",
-            "ratio": "2:1",
-            "workers": [
-              "Taufique Raza",
-              "Arti Patel"
-            ],
-            "location": "1",
-            "notes": "",
-            "duration": "8",
-            "locked": false
-          }
-        ]
-      },
-      "GRA001": {
-        "2025-10-06": [
-          {
-            "id": "G2025100601",
-            "date": "2025-10-06",
-            "shiftNumber": "G2025100601",
-            "startTime": "06:00",
-            "endTime": "08:00",
-            "supportType": "Self Care",
-            "ratio": "1:1",
-            "workers": [
-              "Sandy Tran"
-            ],
-            "location": "2",
-            "notes": "",
-            "duration": "2",
-            "locked": false
-          },
-          {
-            "id": "G2025100602",
-            "date": "2025-10-06",
-            "shiftNumber": "G2025100602",
-            "startTime": "09:00",
-            "endTime": "16:00",
-            "supportType": "Self Care",
-            "ratio": "1:1",
-            "workers": [
-              "Chaynne Humphrys"
-            ],
-            "location": "2",
-            "notes": "",
-            "duration": "7",
-            "locked": false
-          },
-          {
-            "id": "G2025100603",
-            "date": "2025-10-06",
-            "shiftNumber": "G2025100603",
-            "startTime": "20:00",
-            "endTime": "22:00",
-            "supportType": "Self Care",
-            "ratio": "1:1",
-            "workers": [
-              "Parvinder Kaur"
-            ],
-            "location": "2",
-            "notes": "",
-            "duration": "2",
-            "locked": false
-          }
-        ],
-        "2025-10-07": [
-          {
-            "id": "G2025100701",
-            "date": "2025-10-07",
-            "shiftNumber": "G2025100701",
-            "startTime": "06:00",
-            "endTime": "08:00",
-            "supportType": "Self Care",
-            "ratio": "1:1",
-            "workers": [
-              "Sandy Tran"
-            ],
-            "location": "2",
-            "notes": "",
-            "duration": "2",
-            "locked": false
-          },
-          {
-            "id": "G2025100702",
-            "date": "2025-10-07",
-            "shiftNumber": "G2025100702",
-            "startTime": "10:00",
-            "endTime": "16:00",
-            "supportType": "Self Care",
-            "ratio": "1:1",
-            "workers": [
-              "Anika"
-            ],
-            "location": "2",
-            "notes": "",
-            "duration": "6",
-            "locked": false
-          },
-          {
-            "id": "G2025100703",
-            "date": "2025-10-07",
-            "shiftNumber": "G2025100703",
-            "startTime": "20:00",
-            "endTime": "22:00",
-            "supportType": "Self Care",
-            "ratio": "1:1",
-            "workers": [
-              "Parvinder Kaur"
-            ],
-            "location": "2",
-            "notes": "",
-            "duration": "2",
-            "locked": false
-          }
-        ],
-        "2025-10-08": [
-          {
-            "id": "G2025100801",
-            "date": "2025-10-08",
-            "shiftNumber": "G2025100801",
-            "startTime": "06:00",
-            "endTime": "08:00",
-            "supportType": "Self Care",
-            "ratio": "1:1",
-            "workers": [
-              "Sandy Tran"
-            ],
-            "location": "2",
-            "notes": "",
-            "duration": "2",
-            "locked": false
-          },
-          {
-            "id": "G2025100802",
-            "date": "2025-10-08",
-            "shiftNumber": "G2025100802",
-            "startTime": "09:00",
-            "endTime": "16:00",
-            "supportType": "Self Care",
-            "ratio": "1:1",
-            "workers": [
-              "Chaynne Humphrys"
-            ],
-            "location": "2",
-            "notes": "",
-            "duration": "7",
-            "locked": false
-          }
-        ],
-        "2025-10-09": [
-          {
-            "id": "G2025100901",
-            "date": "2025-10-09",
-            "shiftNumber": "G2025100901",
-            "startTime": "10:00",
-            "endTime": "16:00",
-            "supportType": "Self Care",
-            "ratio": "1:1",
-            "workers": [
-              "Anika"
-            ],
-            "location": "2",
-            "notes": "",
-            "duration": "6",
-            "locked": false
-          }
-        ],
-        "2025-10-10": [
-          {
-            "id": "G2025101001",
-            "date": "2025-10-10",
-            "shiftNumber": "G2025101001",
-            "startTime": "06:00",
-            "endTime": "08:00",
-            "supportType": "Self Care",
-            "ratio": "1:1",
-            "workers": [
-              "Sandy Tran"
-            ],
-            "location": "2",
-            "notes": "",
-            "duration": "2",
-            "locked": false
-          },
-          {
-            "id": "G2025101002",
-            "date": "2025-10-10",
-            "shiftNumber": "G2025101002",
-            "startTime": "09:00",
-            "endTime": "16:00",
-            "supportType": "Self Care",
-            "ratio": "1:1",
-            "workers": [
-              "Chaynne Humphrys"
-            ],
-            "location": "2",
-            "notes": "",
-            "duration": "7",
-            "locked": false
-          }
-        ],
-        "2025-10-11": [
-          {
-            "id": "G2025101101",
-            "date": "2025-10-11",
-            "shiftNumber": "G2025101101",
-            "startTime": "06:00",
-            "endTime": "14:00",
-            "supportType": "Self Care",
-            "ratio": "1:1",
-            "workers": [
-              "Parvinder Kaur"
-            ],
-            "location": "2",
-            "notes": "",
-            "duration": "8",
-            "locked": false
-          },
-          {
-            "id": "G2025101102",
-            "date": "2025-10-11",
-            "shiftNumber": "G2025101102",
-            "startTime": "14:00",
-            "endTime": "20:00",
-            "supportType": "Self Care",
-            "ratio": "1:1",
-            "workers": [
-              "Arti Patel"
-            ],
-            "location": "2",
-            "notes": "",
-            "duration": "6",
-            "locked": false
-          }
-        ],
-        "2025-10-12": [
-          {
-            "id": "G2025101201",
-            "date": "2025-10-12",
-            "shiftNumber": "G2025101201",
-            "startTime": "06:00",
-            "endTime": "14:00",
-            "supportType": "Self Care",
-            "ratio": "1:1",
-            "workers": [
-              "Avani Patel"
-            ],
-            "location": "2",
-            "notes": "",
-            "duration": "8",
-            "locked": false
-          },
-          {
-            "id": "G2025101202",
-            "date": "2025-10-12",
-            "shiftNumber": "G2025101202",
-            "startTime": "14:00",
-            "endTime": "20:00",
-            "supportType": "Self Care",
-            "ratio": "1:1",
-            "workers": [
-              "Mayurkumar (Mayu) Patel"
-            ],
-            "location": "2",
-            "notes": "",
-            "duration": "6",
-            "locked": false
-          }
-        ]
-      },
-      "JAM001": {
-        "2025-10-06": [
-          {
-            "id": "J2025100601",
-            "date": "2025-10-06",
-            "shiftNumber": "J2025100601",
-            "startTime": "06:00",
-            "endTime": "14:00",
-            "supportType": "Self Care",
-            "ratio": "2:1",
-            "workers": [
-              "Arti Patel",
-              "Mrunalkumar (MP) Patel"
-            ],
-            "location": "2",
-            "notes": "",
-            "duration": "8",
-            "locked": false
-          },
-          {
-            "id": "J2025100602",
-            "date": "2025-10-06",
-            "shiftNumber": "J2025100602",
-            "startTime": "14:00",
-            "endTime": "22:00",
-            "supportType": "Self Care",
-            "ratio": "2:1",
-            "workers": [
-              "Sanjaykumar (Sanjay) Patel",
-              "Japneet (Rosie) Kaur"
-            ],
-            "location": "2",
-            "notes": "",
-            "duration": "8",
-            "locked": false
-          },
-          {
-            "id": "J2025100603",
-            "date": "2025-10-06",
-            "shiftNumber": "J2025100603",
-            "startTime": "22:00",
-            "endTime": "06:00",
-            "supportType": "Self Care",
-            "ratio": "2:1",
-            "workers": [
-              "Mayurkumar (Mayu) Patel",
-              "Margerite (Rita) Gjergji"
-            ],
-            "location": "2",
-            "notes": "",
-            "duration": "8",
-            "locked": false
-          }
-        ],
-        "2025-10-07": [
-          {
-            "id": "J2025100701",
-            "date": "2025-10-07",
-            "shiftNumber": "J2025100701",
-            "startTime": "06:00",
-            "endTime": "14:00",
-            "supportType": "Self Care",
-            "ratio": "2:1",
-            "workers": [
-              "Mrunalkumar (MP) Patel",
-              "Mihir Patel"
-            ],
-            "location": "2",
-            "notes": "",
-            "duration": "8",
-            "locked": false
-          },
-          {
-            "id": "J2025100702",
-            "date": "2025-10-07",
-            "shiftNumber": "J2025100702",
-            "startTime": "14:00",
-            "endTime": "22:00",
-            "supportType": "Self Care",
-            "ratio": "2:1",
-            "workers": [
-              "Harshkumar (Happy) Modi",
-              "Japneet (Rosie) Kaur"
-            ],
-            "location": "2",
-            "notes": "",
-            "duration": "8",
-            "locked": false
-          },
-          {
-            "id": "J2025100703",
-            "date": "2025-10-07",
-            "shiftNumber": "J2025100703",
-            "startTime": "22:00",
-            "endTime": "06:00",
-            "supportType": "Self Care",
-            "ratio": "2:1",
-            "workers": [
-              "Taufique Raza",
-              "Mayurkumar (Mayu) Patel"
-            ],
-            "location": "2",
-            "notes": "",
-            "duration": "8",
-            "locked": false
-          }
-        ],
-        "2025-10-08": [
-          {
-            "id": "J2025100801",
-            "date": "2025-10-08",
-            "shiftNumber": "J2025100801",
-            "startTime": "06:00",
-            "endTime": "14:00",
-            "supportType": "Self Care",
-            "ratio": "2:1",
-            "workers": [
-              "Muhammad (Hamza) Hamza",
-              "Sanjaykumar (Sanjay) Patel"
-            ],
-            "location": "2",
-            "notes": "",
-            "duration": "8",
-            "locked": false
-          },
-          {
-            "id": "J2025100802",
-            "date": "2025-10-08",
-            "shiftNumber": "J2025100802",
-            "startTime": "14:00",
-            "endTime": "22:00",
-            "supportType": "Self Care",
-            "ratio": "2:1",
-            "workers": [
-              "Sanjaykumar (Sanjay) Patel",
-              "Japneet (Rosie) Kaur"
-            ],
-            "location": "2",
-            "notes": "",
-            "duration": "8",
-            "locked": false
-          },
-          {
-            "id": "J2025100803",
-            "date": "2025-10-08",
-            "shiftNumber": "J2025100803",
-            "startTime": "22:00",
-            "endTime": "06:00",
-            "supportType": "Self Care",
-            "ratio": "2:1",
-            "workers": [
-              "Krunalkumar (Krunal) Patel",
-              "Harshkumar (Happy) Modi"
-            ],
-            "location": "2",
-            "notes": "",
-            "duration": "8",
-            "locked": false
-          }
-        ],
-        "2025-10-09": [
-          {
-            "id": "J2025100901",
-            "date": "2025-10-09",
-            "shiftNumber": "J2025100901",
-            "startTime": "06:00",
-            "endTime": "14:00",
-            "supportType": "Self Care",
-            "ratio": "2:1",
-            "workers": [
-              "Muhammad (Hamza) Hamza",
-              "Mihir Patel"
-            ],
-            "location": "2",
-            "notes": "",
-            "duration": "8",
-            "locked": false
-          },
-          {
-            "id": "J2025100902",
-            "date": "2025-10-09",
-            "shiftNumber": "J2025100902",
-            "startTime": "14:00",
-            "endTime": "22:00",
-            "supportType": "Self Care",
-            "ratio": "2:1",
-            "workers": [
-              "Harshkumar (Happy) Modi",
-              "Taufique Raza"
-            ],
-            "location": "2",
-            "notes": "",
-            "duration": "8",
-            "locked": false
-          },
-          {
-            "id": "J2025100903",
-            "date": "2025-10-09",
-            "shiftNumber": "J2025100903",
-            "startTime": "22:00",
-            "endTime": "06:00",
-            "supportType": "Self Care",
-            "ratio": "2:1",
-            "workers": [
-              "Taufique Raza",
-              "Sapanaben (Sapana) Krunalkumar Patel"
-            ],
-            "location": "2",
-            "notes": "",
-            "duration": "8",
-            "locked": false
-          }
-        ],
-        "2025-10-10": [
-          {
-            "id": "J2025101001",
-            "date": "2025-10-10",
-            "shiftNumber": "J2025101001",
-            "startTime": "06:00",
-            "endTime": "14:00",
-            "supportType": "Self Care",
-            "ratio": "2:1",
-            "workers": [
-              "Mihir Patel",
-              "Sanjaykumar (Sanjay) Patel"
-            ],
-            "location": "2",
-            "notes": "",
-            "duration": "8",
-            "locked": false
-          },
-          {
-            "id": "J2025101002",
-            "date": "2025-10-10",
-            "shiftNumber": "J2025101002",
-            "startTime": "14:00",
-            "endTime": "22:00",
-            "supportType": "Self Care",
-            "ratio": "2:1",
-            "workers": [
-              "Harshkumar (Happy) Modi",
-              "Mrunalkumar (MP) Patel"
-            ],
-            "location": "2",
-            "notes": "",
-            "duration": "8",
-            "locked": false
-          },
-          {
-            "id": "J2025101003",
-            "date": "2025-10-10",
-            "shiftNumber": "J2025101003",
-            "startTime": "22:00",
-            "endTime": "06:00",
-            "supportType": "Self Care",
-            "ratio": "2:1",
-            "workers": [
-              "Margerite (Rita) Gjergji",
-              "Muhammad (Hamza) Hamza"
-            ],
-            "location": "2",
-            "notes": "",
-            "duration": "8",
-            "locked": false
-          }
-        ],
-        "2025-10-11": [
-          {
-            "id": "J2025101101",
-            "date": "2025-10-11",
-            "shiftNumber": "J2025101101",
-            "startTime": "06:00",
-            "endTime": "14:00",
-            "supportType": "Self Care",
-            "ratio": "2:1",
-            "workers": [
-              "Japneet (Rosie) Kaur",
-              "Mihir Patel"
-            ],
-            "location": "2",
-            "notes": "",
-            "duration": "8",
-            "locked": false
-          },
-          {
-            "id": "J2025101102",
-            "date": "2025-10-11",
-            "shiftNumber": "J2025101102",
-            "startTime": "14:00",
-            "endTime": "22:00",
-            "supportType": "Self Care",
-            "ratio": "2:1",
-            "workers": [
-              "Krunalkumar (Krunal) Patel",
-              "Muhammad (Hamza) Hamza"
-            ],
-            "location": "2",
-            "notes": "",
-            "duration": "8",
-            "locked": false
-          },
-          {
-            "id": "J2025101103",
-            "date": "2025-10-11",
-            "shiftNumber": "J2025101103",
-            "startTime": "22:00",
-            "endTime": "06:00",
-            "supportType": "Self Care",
-            "ratio": "2:1",
-            "workers": [
-              "Margerite (Rita) Gjergji",
-              "Mayurkumar (Mayu) Patel"
-            ],
-            "location": "2",
-            "notes": "",
-            "duration": "8",
-            "locked": false
-          }
-        ],
-        "2025-10-12": [
-          {
-            "id": "J2025101201",
-            "date": "2025-10-12",
-            "shiftNumber": "J2025101201",
-            "startTime": "06:00",
-            "endTime": "14:00",
-            "supportType": "Self Care",
-            "ratio": "2:1",
-            "workers": [
-              "Japneet (Rosie) Kaur",
-              "Mihir Patel"
-            ],
-            "location": "2",
-            "notes": "",
-            "duration": "8",
-            "locked": false
-          },
-          {
-            "id": "J2025101202",
-            "date": "2025-10-12",
-            "shiftNumber": "J2025101202",
-            "startTime": "14:00",
-            "endTime": "22:00",
-            "supportType": "Self Care",
-            "ratio": "2:1",
-            "workers": [
-              "Harshkumar (Happy) Modi",
-              "Krunalkumar (Krunal) Patel"
-            ],
-            "location": "2",
-            "notes": "",
-            "duration": "8",
-            "locked": false
-          },
-          {
-            "id": "J2025101203",
-            "date": "2025-10-12",
-            "shiftNumber": "J2025101203",
-            "startTime": "22:00",
-            "endTime": "06:00",
-            "supportType": "Self Care",
-            "ratio": "2:1",
-            "workers": [
-              "Margerite (Rita) Gjergji",
-              "Muhammad (Hamza) Hamza"
-            ],
-            "location": "2",
-            "notes": "",
-            "duration": "8",
-            "locked": false
-          }
-        ]
-      },
-      "MIL001": {
-        "2025-10-11": [
-          {
-            "id": "M2025101101",
-            "date": "2025-10-11",
-            "shiftNumber": "M2025101101",
-            "startTime": "13:00",
-            "endTime": "16:00",
-            "supportType": "Self Care",
-            "ratio": "1:1",
-            "workers": [
-              "Sapanaben (Sapana) Krunalkumar Patel"
-            ],
-            "location": "2",
-            "notes": "",
-            "duration": "3",
-            "locked": false
-          },
-          {
-            "id": "M2025101102",
-            "date": "2025-10-11",
-            "shiftNumber": "M2025101102",
-            "startTime": "16:00",
-            "endTime": "19:00",
-            "supportType": "Community Access",
-            "ratio": "1:1",
-            "workers": [
-              "Sapanaben (Sapana) Krunalkumar Patel"
-            ],
-            "location": "2",
-            "notes": "",
-            "duration": "3",
-            "locked": false
-          }
-        ],
-        "2025-10-12": [
-          {
-            "id": "M2025101201",
-            "date": "2025-10-12",
-            "shiftNumber": "M2025101201",
-            "startTime": "13:00",
-            "endTime": "16:00",
-            "supportType": "Self Care",
-            "ratio": "1:1",
-            "workers": [
-              "Sapanaben (Sapana) Krunalkumar Patel"
-            ],
-            "location": "2",
-            "notes": "",
-            "duration": "3",
-            "locked": false
-          },
-          {
-            "id": "M2025101202",
-            "date": "2025-10-12",
-            "shiftNumber": "M2025101202",
-            "startTime": "16:00",
-            "endTime": "19:00",
-            "supportType": "Community Access",
-            "ratio": "1:1",
-            "workers": [
-              "Sapanaben (Sapana) Krunalkumar Patel"
-            ],
-            "location": "2",
-            "notes": "",
-            "duration": "3",
-            "locked": false
-          }
-        ]
-      },
-      "ACE001": {
-        "2025-10-11": [
-          {
-            "id": "A2025101101",
-            "date": "2025-10-11",
-            "shiftNumber": "A2025101101",
-            "startTime": "06:00",
-            "endTime": "14:00",
-            "supportType": "Self Care",
-            "ratio": "1:1",
-            "workers": [
-              "Krunalkumar (Krunal) Patel"
-            ],
-            "location": "2",
-            "notes": "",
-            "duration": "8",
-            "locked": false
-          },
-          {
-            "id": "A2025101102",
-            "date": "2025-10-11",
-            "shiftNumber": "A2025101102",
-            "startTime": "14:00",
-            "endTime": "20:00",
-            "supportType": "Self Care",
-            "ratio": "1:1",
-            "workers": [
-              "Avani Patel"
-            ],
-            "location": "2",
-            "notes": "",
-            "duration": "6",
-            "locked": false
-          },
-          {
-            "id": "A2025101103",
-            "date": "2025-10-11",
-            "shiftNumber": "A2025101103",
-            "startTime": "20:00",
-            "endTime": "22:00",
-            "supportType": "Self Care",
-            "ratio": "1:1",
-            "workers": [
-              "Krunalkumar (Krunal) Patel"
-            ],
-            "location": "2",
-            "notes": "",
-            "duration": "2",
-            "locked": false
-          }
-        ],
-        "2025-10-12": [
-          {
-            "id": "A2025101201",
-            "date": "2025-10-12",
-            "shiftNumber": "A2025101201",
-            "startTime": "06:00",
-            "endTime": "12:00",
-            "supportType": "Self Care",
-            "ratio": "1:1",
-            "workers": [
-              "Sanjaykumar (Sanjay) Patel"
-            ],
-            "location": "2",
-            "notes": "",
-            "duration": "6",
-            "locked": false
-          },
-          {
-            "id": "A2025101202",
-            "date": "2025-10-12",
-            "shiftNumber": "A2025101202",
-            "startTime": "12:00",
-            "endTime": "20:00",
-            "supportType": "Self Care",
-            "ratio": "1:1",
-            "workers": [
-              "Mihir Patel"
-            ],
-            "location": "2",
-            "notes": "",
-            "duration": "8",
-            "locked": false
-          },
-          {
-            "id": "A2025101203",
-            "date": "2025-10-12",
-            "shiftNumber": "A2025101203",
-            "startTime": "20:00",
-            "endTime": "22:00",
-            "supportType": "Self Care",
-            "ratio": "1:1",
-            "workers": [
-              "Krunalkumar (Krunal) Patel"
-            ],
-            "location": "2",
-            "notes": "",
-            "duration": "2",
-            "locked": false
-          }
-        ]
-      }
+      "JAM001": {},
+      "LIB001": {},
+      "ACE001": {},
+      "GRA001": {},
+      "MIL001": {}
     }
   },
   "planner_next": {
     "week_type": "weekA",
-    "start_date": "",
-    "end_date": "",
-    "data": {}
+    "start_date": "2025-10-20",
+    "end_date": "2025-10-26",
+    "data": {
+      "JAM001": {},
+      "LIB001": {},
+      "ACE001": {},
+      "GRA001": {},
+      "MIL001": {}
+    }
   },
   "planner_after": {
     "week_type": "weekB",
-    "start_date": "",
-    "end_date": "",
-    "data": {}
+    "start_date": "2025-10-27",
+    "end_date": "2025-11-02",
+    "data": {
+      "JAM001": {},
+      "LIB001": {},
+      "ACE001": {},
+      "GRA001": {},
+      "MIL001": {}
+    }
   }
 }

@@ -95,12 +95,6 @@ export function check16HourDay(workerId, date, additionalHours, rosterData) {
             totalHours,
             warning: `❌ Would create 16+ hour day (${totalHours.toFixed(1)}h total)`
         };
-    } else if (totalHours >= 12) {
-        return {
-            valid: true,
-            totalHours,
-            warning: `⚠️ Long day (${totalHours.toFixed(1)}h total)`
-        };
     }
     
     return { valid: true, totalHours, warning: null };
@@ -114,9 +108,10 @@ export function check16HourDay(workerId, date, additionalHours, rosterData) {
  * @param {string} endTime - HH:MM
  * @param {object} rosterData - Current roster data
  * @param {string} excludeShiftId - Shift ID to exclude (for updates)
+ * @param {string} currentParticipant - Current participant being scheduled for
  * @returns {object} - {hasConflict: bool, conflictDetails: string}
  */
-export function checkDoubleBooking(workerId, date, startTime, endTime, rosterData, excludeShiftId = null) {
+export function checkDoubleBooking(workerId, date, startTime, endTime, rosterData, excludeShiftId = null, currentParticipant = null) {
     const newStart = timeToMinutes(startTime);
     let newEnd = timeToMinutes(endTime);
     
@@ -145,10 +140,26 @@ export function checkDoubleBooking(workerId, date, startTime, endTime, rosterDat
                 
                 // Check overlap
                 if (newStart < existingEnd && newEnd > existingStart) {
-                    return {
-                        hasConflict: true,
-                        conflictDetails: `Already assigned to ${participantCode} at ${shift.startTime}-${shift.endTime}`
-                    };
+                    // If it's the same participant, this might be a valid split shift
+                    if (participantCode === currentParticipant) {
+                        // Same participant - check if this is back-to-back (valid split shift)
+                        if (newStart === existingEnd || newEnd === existingStart) {
+                            // Back-to-back shifts for same participant - this is valid for different funding categories
+                            return { hasConflict: false, conflictDetails: null };
+                        } else {
+                            // Overlapping times for same participant - this is invalid
+                            return {
+                                hasConflict: true,
+                                conflictDetails: `Invalid split shift: overlapping times with existing shift at ${shift.startTime}-${shift.endTime}`
+                            };
+                        }
+                    } else {
+                        // Different participants - this is a real conflict
+                        return {
+                            hasConflict: true,
+                            conflictDetails: `Already assigned to ${participantCode} at ${shift.startTime}-${shift.endTime}`
+                        };
+                    }
                 }
             }
         }
@@ -241,7 +252,7 @@ export async function validateShift(shiftData, rosterData, workers) {
         const workerName = worker.full_name.split(' ')[0]; // First name
         
         // Check double booking
-        const doubleBooking = checkDoubleBooking(workerId, date, startTime, endTime, rosterData, id);
+        const doubleBooking = checkDoubleBooking(workerId, date, startTime, endTime, rosterData, id, participant);
         if (doubleBooking.hasConflict) {
             errors.push(`❌ ${workerName} ${doubleBooking.conflictDetails}`);
         }
@@ -288,6 +299,13 @@ export async function validateRosterAPI(weekType, rosterData = null) {
         };
     }
 }
+
+
+
+
+
+
+
 
 
 

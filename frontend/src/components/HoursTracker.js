@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import { Calendar, Download, Upload, Users } from 'lucide-react';
 import axios from 'axios';
 import { toast } from 'react-hot-toast';
 
@@ -211,36 +210,36 @@ const HoursTracker = (props) => {
       <style>{`
         .hours-tracker {
           padding: 1rem;
-          background: var(--bg-primary);
+          background: var(--primary-bg);
         }
         
         .admin-section {
-          background: var(--bg-secondary);
-          border-radius: 8px;
+          background: var(--card-bg);
+          border-radius: 12px;
           padding: 1.5rem;
           margin-bottom: 1.5rem;
-          border: 1px solid var(--border-color);
+          border: 1px solid var(--border);
         }
         
         .admin-section h3 {
-          color: var(--accent-primary);
+          color: var(--accent);
           margin-bottom: 1rem;
           font-size: 1.2rem;
         }
         
         .participant-card {
-          background: var(--bg-secondary);
-          border: 1px solid var(--border-color);
-          border-radius: 8px;
+          background: var(--card-bg);
+          border: 1px solid var(--border);
+          border-radius: 12px;
           margin-bottom: 1.5rem;
           overflow: hidden;
           box-shadow: 0 2px 8px var(--shadow);
         }
         
         .participant-header {
-          background: var(--bg-tertiary);
-          padding: 1rem 1.5rem;
-          border-bottom: 1px solid var(--border-color);
+          background: var(--hover-bg);
+          padding: 0.75rem 1.5rem;
+          border-bottom: 1px solid var(--border);
         }
         
         .participant-info {
@@ -250,10 +249,10 @@ const HoursTracker = (props) => {
         }
         
         .participant-name {
-          font-size: 1.2rem;
+          font-size: 1.1rem;
           font-weight: 600;
-          color: var(--accent-primary);
-          margin-bottom: 0.3rem;
+          color: var(--accent);
+          margin: 0;
         }
         
         .participant-details {
@@ -269,21 +268,21 @@ const HoursTracker = (props) => {
         }
         
         .hour-block {
-          background: var(--bg-tertiary);
+          background: var(--hover-bg);
           padding: 12px;
           border-radius: 6px;
           margin-bottom: 10px;
         }
         
         .hour-type {
-          color: var(--accent-primary);
+          color: var(--accent);
           font-weight: bold;
           margin-bottom: 8px;
           font-size: 0.9rem;
         }
         
         .hour-bar {
-          background: var(--bg-primary);
+          background: var(--primary-bg);
           height: 20px;
           border-radius: 10px;
           overflow: hidden;
@@ -295,10 +294,10 @@ const HoursTracker = (props) => {
           transition: width 0.3s ease;
         }
         
-        .hour-fill.good { background: linear-gradient(90deg, #5A7A5A, #6B8B6B); }
-        .hour-fill.warning { background: linear-gradient(90deg, #D4A574, #E5B685); }
-        .hour-fill.critical { background: linear-gradient(90deg, #C47F7F, #D48F8F); }
-        .hour-fill.empty { background: linear-gradient(90deg, #444, #555); }
+        .hour-fill.good { background: var(--accent); }
+        .hour-fill.warning { background: var(--accent-light); }
+        .hour-fill.critical { background: var(--accent); }
+        .hour-fill.empty { background: var(--border); }
         
         .hour-text {
           display: flex;
@@ -326,12 +325,11 @@ const HoursTracker = (props) => {
       `}</style>
       
       {/* Header */}
-      <div className="admin-section">
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '15px' }}>
-          <h3>📊 Hours Tracker</h3>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
+          <h3 style={{ fontSize: '18px', fontWeight: 600, color: 'var(--accent)', margin: 0, lineHeight: 1 }}>Hours Tracker</h3>
           {props.onClose && (
             <button 
-              className="btn-cancel-x"
+              className="btn btn-secondary"
               onClick={props.onClose}
               title="Close Hours Tracker"
             >
@@ -341,33 +339,34 @@ const HoursTracker = (props) => {
         </div>
         
         {/* Controls for CSV upload and export */}
-        <div className="controls-row" style={{ display: 'flex', gap: '1rem', marginBottom: '1.5rem', flexWrap: 'wrap' }}>
+        <div className="controls-row" style={{ display: 'flex', gap: '1rem', marginBottom: '1.5rem', flexWrap: 'wrap', alignItems: 'end' }}>
           <div>
-            <label style={{ display: 'block', marginBottom: '0.5rem', color: 'var(--text-secondary)', fontSize: '0.9rem' }}>
+            <label style={{ display: 'block', marginBottom: '0.5rem', color: 'var(--text-secondary)', fontSize: '0.9rem', fontWeight: '500' }}>
               Upload Plan Data (CSV):
             </label>
-            <input
-              type="file"
-              accept=".csv"
-              onChange={handlePlanUpload}
-              style={{
-                padding: '0.5rem',
-                borderRadius: '4px',
-                border: '1px solid var(--border-color)',
-                background: 'var(--bg-input)',
-                color: 'var(--text-primary)',
-                fontSize: '0.9rem'
-              }}
-            />
+            <label className="btn btn-secondary" style={{ 
+              display: 'inline-flex', 
+              alignItems: 'center', 
+              gap: '0.5rem',
+              cursor: 'pointer',
+              margin: 0
+            }}>
+              📁 Choose File
+              <input
+                type="file"
+                accept=".csv"
+                onChange={handlePlanUpload}
+                style={{ display: 'none' }}
+              />
+            </label>
           </div>
           
-          <div style={{ alignSelf: 'end' }}>
+          <div>
             <button 
               onClick={exportHoursSummary}
               className="btn btn-primary"
-              style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', padding: '0.5rem 1rem' }}
+              style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}
             >
-              <Download size={16} />
               Export Summary
             </button>
           </div>
@@ -376,20 +375,16 @@ const HoursTracker = (props) => {
         <div id="participantHourCards">
           {Object.entries(participantHours).map(([code, data]) => (
             <div key={code} className="participant-card">
-              <div className="participant-header">
-                <div className="participant-info">
-                  <div>
-                    <div className="participant-name">{data.participant.full_name}</div>
-                    <div className="participant-details">
-                      {code === 'LIB001' && 'Glandore'}
-                      {code === 'JAM001' && 'Plympton Park'}
-                      {(code === 'ACE001' || code === 'GRA001' || code === 'MIL001') && 'Various Locations'}
-                    </div>
-                  </div>
+              <div className="participant-header" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                <div className="participant-name" style={{ flex: '1 1 auto', minWidth: 0 }}>{data.participant.full_name}</div>
+                <div className="participant-details" style={{ flexShrink: 0, color: 'var(--text-secondary)', fontSize: '0.9rem', alignSelf: 'center' }}>
+                  {code === 'LIB001' && 'Glandore'}
+                  {code === 'JAM001' && 'Plympton Park'}
+                  {(code === 'ACE001' || code === 'GRA001' || code === 'MIL001') && 'Various Locations'}
                 </div>
               </div>
               
-              <div style={{ padding: '1rem' }}>
+              <div style={{ padding: '12px' }}>
                 <div className="hour-grid">
                   {hourCategories.map(category => {
                     const hourData = data.hours[category.code];
@@ -417,7 +412,6 @@ const HoursTracker = (props) => {
             </div>
           ))}
         </div>
-      </div>
     </div>
   );
 };

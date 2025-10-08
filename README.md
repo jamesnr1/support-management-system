@@ -166,6 +166,7 @@ yarn start
   - `HoursTracker.js` - Hours calculation
   - `CalendarAppointments.js` - Google Calendar integration
   - `AIChat.js` - AI assistant for roster queries
+  - `AI_HANDOVER.md` - consolidated reference for AI integration and roster workflows
   - `Login.js` - Simple authentication
 
 ---
@@ -221,6 +222,7 @@ POST   /api/telegram/shift-notification  Send shift notification
 ```
 POST   /api/chat                         Chat with AI assistant (OpenAI GPT-4)
 ```
+Reference: `AI_HANDOVER.md`
 
 ---
 

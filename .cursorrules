@@ -1,0 +1,24 @@
+# STRICT RULES - DO NOT VIOLATE
+
+## File Management
+- NEVER create new files unless explicitly asked
+- ALWAYS update existing files instead of duplicating
+- DO NOT create backup files (_old, _new, _backup, etc.)
+- DO NOT create multiple versions (v1, v2, FINAL, COMPLETE, etc.)
+
+## Code Changes
+- MAXIMUM 1 file change per request unless user says otherwise
+- ALWAYS show full file diff, never truncate
+- NO placeholder comments like "// rest of code stays same"
+- UPDATE existing functions, don't create duplicates
+
+## Architecture
+- CSV files are intentional for payroll/reports
+- Supabase is for reference data (workers, participants)
+- Frontend validation uses shiftValidation.js
+- Backend validation_rules.py exists but is separate
+
+## Before Making Changes
+1. Check if file already exists
+2. Check if function already exists
+3. Update existing code, don't duplicate

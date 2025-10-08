@@ -1,7 +1,7 @@
 import React from 'react';
-import { Edit, Calendar, Trash2 } from 'lucide-react';
+import { Trash2 } from 'lucide-react';
 
-const WorkerCard = ({ worker, onEdit, onManageAvailability, onDelete, availabilityData, isLoading }) => {
+const WorkerCard = React.memo(({ worker, onEdit, onManageAvailability, onDelete, availabilityData, isLoading, customAvailabilityDisplay, customAvailabilityDateRange }) => {
   // Use prop data instead of fetching - eliminates 48 API calls!
   const availability = availabilityData?.availability || [];
   const unavailability = availabilityData?.unavailability || [];
@@ -66,148 +66,163 @@ const WorkerCard = ({ worker, onEdit, onManageAvailability, onDelete, availabili
     return timeString; // Fallback to original if format unexpected
   };
 
-  // Get gender icon
-  const getGenderIcon = (sex) => {
+  // Get gender badge text
+  const getGenderBadge = (sex) => {
     switch (sex) {
-      case 'M': return '👨';
-      case 'F': return '👩';
-      case 'O': return '👤';
+      case 'M': return 'M';
+      case 'F': return 'F';
+      case 'O': return 'Other';
       default: return '';
     }
   };
 
-  // Get car icon
-  const getCarIcon = (car) => {
-    return car === 'Yes' ? '🚗' : '';
+  // Get car badge text
+  const getCarBadge = (car) => {
+    return car === 'Yes' ? 'C' : '';
   };
 
-  // Get telegram icon
-  const getTelegramIcon = (telegram) => {
-    return telegram ? '💬' : '';
+  // Get telegram badge text
+  const getTelegramBadge = (telegram) => {
+    return telegram ? 'TG' : '';
   };
 
   return (
     <div 
       className="worker-card" 
       style={{ 
-        height: '480px', 
-        display: 'flex', 
-        flexDirection: 'column'
+        position: 'relative',
+        background: 'var(--card-bg)',
+        border: '1px solid var(--border)',
+        borderRadius: '8px',
+        overflow: 'hidden',
+        marginBottom: '8px'
       }}
     >
-      {/* Worker Name with Icons */}
-      <div className="worker-header">
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', width: '100%' }}>
-          <div className="worker-name" style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', flexWrap: 'nowrap' }}>
-            <span style={{ whiteSpace: 'nowrap' }}>{getDisplayName(worker.full_name)}</span>
-            <span style={{ display: 'flex', gap: '0.4rem', fontSize: '0.9em', whiteSpace: 'nowrap', color: 'var(--text-primary)' }}>
-              {getGenderIcon(worker.sex) && <span>{getGenderIcon(worker.sex)}</span>}
-              {getCarIcon(worker.car) && <span>{getCarIcon(worker.car)}</span>}
-              {getTelegramIcon(worker.telegram) && <span>{getTelegramIcon(worker.telegram)}</span>}
-            </span>
-            <span style={{ fontSize: '0.8em', color: 'var(--accent-primary)', whiteSpace: 'nowrap' }}>
-              {worker.max_hours}h
-            </span>
-          </div>
-          {onDelete && (
+
+      {/* Worker Header - Exact match to calendar cards */}
+    <div
+      className="worker-header"
+      style={{
+        display: 'flex',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        gap: '0.5rem',
+        background: 'var(--hover-bg)',
+        padding: '8px 12px',
+        borderBottom: '1px solid var(--border)',
+        fontSize: '18px',
+        fontWeight: '600',
+        color: 'var(--accent)'
+      }}
+    >
+        {/* Left side container for name and all badges. This will grow. */}
+        <div style={{ flex: '1 1 auto', display: 'flex', alignItems: 'center', gap: '0.5rem', minWidth: 0 }}>
+              <span 
+                className="worker-name" 
+                style={{ 
+                  color: 'var(--accent)', 
+                  fontWeight: '600',
+                  whiteSpace: 'nowrap', 
+                  overflow: 'hidden', 
+                  textOverflow: 'ellipsis',
+                }}
+                title={worker.full_name}
+              >
+                {getDisplayName(worker.full_name)}
+              </span>
+              {/* Badges group restored */}
+              <div className="worker-icons" style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', flexShrink: 0 }}>
+                {getCarBadge(worker.car) && (
+                  <span className="worker-badge">{getCarBadge(worker.car)}</span>
+                )}
+                {getTelegramBadge(worker.telegram) && (
+                  <span className="worker-badge">{getTelegramBadge(worker.telegram)}</span>
+                )}
+                <span className="worker-status" style={{ backgroundColor: 'transparent', color: 'var(--text-secondary)', border: '1px solid var(--border)', padding: '2px 8px', borderRadius: '10px', fontWeight: 500 }}>{worker.shift_hours || 0}h</span>
+              </div>
+        </div>
+        
+        {/* Right side for the delete button. This will not grow or shrink. */}
+        {onDelete && (
+          <div style={{ flex: '0 0 auto' }}>
             <button
+              className="delete-btn"
+              style={{ 
+                padding: '8px',
+                lineHeight: 0
+              }} 
               onClick={() => {
-                if (window.confirm(`Are you sure you want to delete ${worker.full_name}? This action cannot be undone.`)) {
+                if (window.confirm(`Delete ${worker.full_name}?`)) {
                   onDelete(worker);
                 }
               }}
-              style={{
-                background: 'transparent',
-                border: 'none',
-                color: '#B87E7E',
-                cursor: 'pointer',
-                padding: '0.25rem',
-                display: 'flex',
-                alignItems: 'center',
-                transition: 'all 0.2s ease'
-              }}
-              onMouseOver={(e) => { e.currentTarget.style.color = '#A86E6E'; e.currentTarget.style.transform = 'scale(1.1)'; }}
-              onMouseOut={(e) => { e.currentTarget.style.color = '#B87E7E'; e.currentTarget.style.transform = 'scale(1)'; }}
               title={`Delete ${worker.full_name}`}
             >
               <Trash2 size={16} />
             </button>
-          )}
-        </div>
-      </div>
-
-      <div className="worker-content" style={{ display: 'flex', flexDirection: 'column', flex: 1, overflow: 'hidden' }}>
-        {/* Availability Schedule Box */}
-        <div style={{
-          background: '#4A4641',
-          border: '1px solid var(--border-color)',
-          borderRadius: '4px',
-          padding: '0.75rem',
-          margin: '0.75rem 0',
-          fontSize: '0.85rem',
-          height: '330px',
-          display: 'flex',
-          flexDirection: 'column',
-          overflow: 'auto'
-        }}>
-        {isLoading ? (
-          <div style={{ color: 'var(--text-secondary)', textAlign: 'center', flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>Loading...</div>
-        ) : currentUnavailability ? (
-          <div style={{ textAlign: 'center', flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
-            <h5 style={{ fontSize: '0.9rem', color: 'var(--text-secondary)', marginBottom: '8px', fontWeight: 'bold' }}>Weekly Availability</h5>
-            <div style={{ color: 'var(--text-secondary)', fontSize: '0.85rem', marginTop: '0.5rem' }}>
-              <strong>Unavailable</strong>
-            </div>
-            <div style={{ color: 'var(--text-secondary)', fontSize: '0.85rem', marginTop: '0.25rem' }}>
-              {new Date(currentUnavailability.from_date).toLocaleDateString()} - {new Date(currentUnavailability.to_date).toLocaleDateString()}
-            </div>
-          </div>
-        ) : (
-          <div style={{ flex: 1 }}>
-            <h5 style={{ fontSize: '0.9rem', color: 'var(--text-secondary)', marginBottom: '8px', fontWeight: 'bold', textAlign: 'center' }}>Weekly Availability</h5>
-            <div style={{ fontSize: '0.85rem', color: 'var(--text-secondary)' }}>
-              {days.map(day => (
-                <div key={day} style={{ display: 'flex', justifyContent: 'space-between', padding: '4px 0', borderBottom: '1px solid var(--border-color)' }}>
-                  <span style={{ fontWeight: '500' }}>{day}:</span>
-                  <div>
-                    {availabilityByDay[dayIndexMap[day]] ? (
-                      availabilityByDay[dayIndexMap[day]].map((rule, index) => (
-                        <div key={index}>
-                          {rule.is_full_day ? 'All Day' : `${formatTime(rule.from_time)} - ${formatTime(rule.to_time)}`}
-                        </div>
-                      ))
-                    ) : 'Not available'}
-                  </div>
-                </div>
-              ))}
-            </div>
           </div>
         )}
-        </div>
+      </div>
 
-        {/* Action Buttons */}
-        <div className="worker-actions" style={{ marginTop: 'auto', paddingTop: '0.75rem' }}>
-          <div style={{ display: 'flex', gap: '0.5rem' }}>
-            <button
-              className="btn btn-primary btn-sm"
-              onClick={() => onEdit(worker)}
-              style={{ background: 'var(--accent-primary)', color: 'var(--bg-primary)' }}
-            >
-              <Edit size={14} /> Edit
-            </button>
-            <button
-              className="btn btn-success btn-sm"
-              onClick={() => onManageAvailability(worker)}
-              style={{ background: 'var(--accent-success)', color: 'white' }}
-            >
-              <Calendar size={14} /> Availability
-            </button>
-          </div>
-        </div>
+      {/* Availability Section - Exact match to calendar appointments */}
+      <div 
+        className="availability" 
+        style={{ 
+          padding: '12px'
+        }}
+      >
+        {isLoading ? (
+          <p>Loading...</p>
+        ) : customAvailabilityDisplay ? (
+          <ul>
+            {Array.isArray(customAvailabilityDisplay) ? (
+              customAvailabilityDisplay.map((shift, index) => (
+                <li key={index} style={{ fontWeight: 400, color: 'var(--text-secondary)' }}>{shift}</li>
+              ))
+            ) : (
+              <li style={{ fontWeight: 400, color: 'var(--text-secondary)' }}>{customAvailabilityDisplay}</li>
+            )}
+            {customAvailabilityDateRange && (
+              <li style={{ color: 'var(--text-secondary)' }}>
+                {customAvailabilityDateRange}
+              </li>
+            )}
+          </ul>
+        ) : currentUnavailability ? (
+          <ul>
+            <li style={{ fontWeight: 600, color: 'var(--text-secondary)' }}>Unavailable</li>
+            <li style={{ color: 'var(--text-secondary)' }}>
+              {new Date(currentUnavailability.from_date).toLocaleDateString()} - {new Date(currentUnavailability.to_date).toLocaleDateString()}
+            </li>
+          </ul>
+        ) : (
+          <ul>
+            {days.flatMap(day => {
+              const dayData = availabilityByDay[dayIndexMap[day]];
+              if (!dayData || dayData.length === 0) return [];
+              
+              // Display each time range as a separate list item
+              return dayData.map((rule, index) => {
+                const timeRange = rule.is_full_day ? 'All Day' : `${formatTime(rule.from_time)} - ${formatTime(rule.to_time)}`;
+                return (
+                  <li key={`${day}-${index}`}>
+                    {day}: {timeRange}
+                  </li>
+                );
+              });
+            })}
+          </ul>
+        )}
+      </div>
+
+      {/* Action Buttons - Edit and Availability */}
+      <div className="worker-actions">
+        <button onClick={() => onEdit(worker)}>Edit</button>
+        <button onClick={() => onManageAvailability(worker)}>Availability</button>
       </div>
     </div>
   );
-};
+});
 
 export default WorkerCard;
 
