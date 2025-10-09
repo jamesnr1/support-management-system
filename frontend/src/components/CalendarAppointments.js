@@ -428,12 +428,12 @@ const CalendarAppointments = ({
                           style={{
                             marginBottom: '4px',
                             display: 'grid',
-                            gridTemplateColumns: 'auto 1fr',
+                            gridTemplateColumns: '1.5rem 1fr',
                             columnGap: '0.5rem',
                             alignItems: 'baseline',
                           }}
                         >
-                          <span>{dayAbbrev}</span>
+                          <span style={{ textAlign: 'left' }}>{dayAbbrev}</span>
                           <div>
                             <span style={{ color: 'var(--text-primary)', whiteSpace: 'nowrap' }}>{dateText}</span>
                             <span style={{ color: 'var(--text-primary)', marginLeft: '0.5rem', whiteSpace: 'nowrap' }}>
