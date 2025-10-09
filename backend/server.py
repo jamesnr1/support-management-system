@@ -1042,17 +1042,17 @@ async def list_calendars():
 # AI CHAT ASSISTANT ROUTES
 # ============================================
 
-# Initialize OpenAI client (will be None if API key not set)
-openai_client = None
+# Initialize Anthropic client (will be None if API key not set)
+anthropic_client = None
 try:
-    api_key = os.getenv('OPENAI_API_KEY')
+    api_key = os.getenv('ANTHROPIC_API_KEY')
     if api_key:
-        openai_client = OpenAI(api_key=api_key)
-        logger.info("OpenAI client initialized successfully")
+        anthropic_client = Anthropic(api_key=api_key)
+        logger.info("Anthropic (Claude) client initialized successfully")
     else:
-        logger.warning("OPENAI_API_KEY not found in environment. AI chat will not be available.")
+        logger.warning("ANTHROPIC_API_KEY not found in environment. AI chat will not be available.")
 except Exception as e:
-    logger.error(f"Failed to initialize OpenAI client: {e}")
+    logger.error(f"Failed to initialize Anthropic client: {e}")
 
 @api_router.post("/chat")
 async def chat_with_ai(data: Dict[str, Any]):
