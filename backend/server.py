@@ -1042,17 +1042,17 @@ async def list_calendars():
 # AI CHAT ASSISTANT ROUTES
 # ============================================
 
-# Initialize Anthropic client (will be None if API key not set)
-anthropic_client = None
+# Initialize OpenAI client (will be None if API key not set)
+openai_client = None
 try:
-    api_key = os.getenv('ANTHROPIC_API_KEY')
+    api_key = os.getenv('OPENAI_API_KEY')
     if api_key:
-        anthropic_client = Anthropic(api_key=api_key)
-        logger.info("Anthropic (Claude) client initialized successfully")
+        openai_client = OpenAI(api_key=api_key)
+        logger.info("OpenAI client initialized successfully")
     else:
-        logger.warning("ANTHROPIC_API_KEY not found in environment. AI chat will not be available.")
+        logger.warning("OPENAI_API_KEY not found in environment. AI chat will not be available.")
 except Exception as e:
-    logger.error(f"Failed to initialize Anthropic client: {e}")
+    logger.error(f"Failed to initialize OpenAI client: {e}")
 
 @api_router.post("/chat")
 async def chat_with_ai(data: Dict[str, Any]):
@@ -1071,18 +1071,72 @@ async def chat_with_ai(data: Dict[str, Any]):
         # Gather context: workers, availability, roster data
         workers = db.get_support_workers()
         participants = db.get_participants()
-        roster_data = roster_state.get('weekA', {})  # Use current week
+        roster_data = ROSTER_DATA.get('weekA', {})  # Use current week
         
-        # Build context string
+        # Build context string with detailed worker information
         worker_info = []
-        for w in workers[:20]:  # Limit to prevent token overflow
-            avail_summary = "availability data available" if w.get('id') else "no availability"
+        for w in workers[:45]:  # Include more workers for comprehensive queries
+            worker_id = w.get('id')
+            
+            # Get availability for this worker
+            availability_text = "No availability set"
+            unavailability_text = ""
+            if worker_id:
+                try:
+                    # Get regular availability rules
+                    avail_rules = db.get_availability_rules(worker_id)
+                    if avail_rules:
+                        # Group by weekday
+                        by_day = defaultdict(list)
+                        for rule in avail_rules:
+                            weekday = rule.get('weekday', 0)
+                            day_names = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday']
+                            day_name = day_names[weekday] if 0 <= weekday <= 6 else 'Unknown'
+                            
+                            if rule.get('is_full_day'):
+                                by_day[day_name].append('all day')
+                            else:
+                                from_time = rule.get('from_time', '')
+                                to_time = rule.get('to_time', '')
+                                by_day[day_name].append(f"{from_time}-{to_time}")
+                        
+                        # Format availability text
+                        avail_parts = [f"{day}: {', '.join(times)}" for day, times in sorted(by_day.items())]
+                        availability_text = "; ".join(avail_parts) if avail_parts else "Available but no times set"
+                    
+                    # Check for unavailability periods
+                    unavail_periods = db.get_unavailability_periods(worker_id)
+                    if unavail_periods:
+                        today = datetime.now().date()
+                        active_periods = []
+                        for period in unavail_periods:
+                            from_date_str = period.get('from_date', '')
+                            to_date_str = period.get('to_date', '')
+                            reason = period.get('reason', 'Leave')
+                            
+                            try:
+                                from_date = datetime.strptime(from_date_str, '%Y-%m-%d').date()
+                                to_date = datetime.strptime(to_date_str, '%Y-%m-%d').date()
+                                
+                                # Only include current or future unavailability
+                                if to_date >= today:
+                                    active_periods.append(f"{from_date_str} to {to_date_str} ({reason})")
+                            except:
+                                pass
+                        
+                        if active_periods:
+                            unavailability_text = f" | UNAVAILABLE: {'; '.join(active_periods)}"
+                except Exception as e:
+                    availability_text = f"Error fetching availability: {str(e)}"
+            
+            sex = w.get('sex', 'N/A')
             worker_info.append(
-                f"- {w.get('full_name', 'Unknown')} (ID: {w.get('id')}, "
-                f"Max hours: {w.get('max_hours', 'N/A')}, "
-                f"Car: {w.get('car', 'No')}, "
+                f"- {w.get('full_name', 'Unknown')} ({sex}, ID: {worker_id}, "
+                f"Max hours: {w.get('max_hours', 'N/A')}/week, "
+                f"Current hours: {w.get('current_hours', 0)}, "
+                f"Car: {'Yes' if w.get('car') else 'No'}, "
                 f"Skills: {w.get('skills', 'None')}, "
-                f"{avail_summary})"
+                f"Availability: {availability_text}{unavailability_text})"
             )
         
         participant_info = [
@@ -1091,7 +1145,60 @@ async def chat_with_ai(data: Dict[str, Any]):
             for p in participants[:10]
         ]
         
-        context = f"""You are a roster management assistant for a support services organization.
+        # Get current roster/shift assignments  
+        # Build worker ID to name mapping
+        worker_map = {str(w.get('id')): w.get('full_name', 'Unknown') for w in workers}
+        participant_map = {p.get('code'): p.get('name', p.get('full_name', 'Unknown')) for p in participants}
+        
+        shift_assignments = []
+        try:
+            # Get current roster from global ROSTER_DATA
+            roster_response = ROSTER_DATA.get('roster', {})
+            logger.info(f"AI Chat - Roster keys: {list(roster_response.keys()) if roster_response else 'None'}")
+            
+            if roster_response and 'data' in roster_response:
+                roster_data_dict = roster_response['data']
+                logger.info(f"AI Chat - Found {len(roster_data_dict)} participants in roster")
+                
+                # Roster structure: { participant_code: { date: [shifts] } }
+                for participant_code, dates_dict in roster_data_dict.items():
+                    # Skip entries that aren't participant codes (e.g., stray date keys)
+                    if not isinstance(dates_dict, dict):
+                        continue
+                    if participant_code.startswith('2025-'):  # Skip date keys
+                        continue
+                        
+                    participant_name = participant_map.get(participant_code, participant_code)
+                    for date_str, shifts in dates_dict.items():
+                        if isinstance(shifts, list):
+                            for shift in shifts:
+                                worker_ids = shift.get('workers', [])
+                                worker_names = [worker_map.get(str(wid), f'ID{wid}') for wid in worker_ids]
+                                if worker_names:
+                                    shift_time = f"{shift.get('startTime', '')}-{shift.get('endTime', '')}"
+                                    shift_assignments.append(
+                                        f"{date_str}: {participant_name} with {', '.join(worker_names)} ({shift_time})"
+                                    )
+                logger.info(f"AI Chat - Built {len(shift_assignments)} shift assignments")
+        except Exception as e:
+            logger.error(f"Error parsing roster for AI: {e}", exc_info=True)
+        
+        shift_info = "\n".join(shift_assignments[:150]) if shift_assignments else "No current shifts scheduled"
+        
+        # Pre-calculate statistics for accuracy
+        male_count = len([w for w in workers if w.get('sex') == 'M'])
+        female_count = len([w for w in workers if w.get('sex') == 'F'])
+        total_workers = len(workers)
+        
+        stats_summary = f"""STATISTICS (use these exact numbers, don't count):
+- Total workers: {total_workers}
+- Male workers: {male_count}
+- Female workers: {female_count}
+"""
+        
+        context = f"""Roster assistant. Answer ONLY what was asked. NO explanations, apologies, or extra context unless requested.
+
+{stats_summary}
 
 WORKERS:
 {chr(10).join(worker_info)}
@@ -1099,16 +1206,26 @@ WORKERS:
 PARTICIPANTS:
 {chr(10).join(participant_info)}
 
-CURRENT WEEK: Week A
+CURRENT SHIFTS:
+{shift_info}
 
-Your role is to:
-- Answer questions about worker availability
-- Suggest workers for specific shifts based on their skills, hours, and availability
-- Identify scheduling conflicts
-- Provide coverage recommendations
-- Help with ratio requirements (1:1, 2:1)
+RULES:
+1. Use STATISTICS section for counting questions - NEVER count manually
+2. If worker has "UNAVAILABLE:" they are NOT available during those dates
+3. State facts only - no "I apologize", "unfortunately", "please note"
+4. Answer the specific question asked - nothing more
+5. For unavailable workers: state when they'll be back (e.g., "Rita unavailable until Oct 28")
+6. Don't explain what you can/cannot do - just answer or say "No data"
 
-Keep answers concise and helpful. Use bullet points when listing workers or suggestions.
+RESPONSE FORMAT:
+- Counting questions: Use STATISTICS numbers exactly as shown
+- Worker availability: "[Name] available [days/times]" OR "[Name] unavailable until [date]"
+- "Who does [worker] work with?": Extract UNIQUE participant names from CURRENT SHIFTS - no dates unless asked
+- "Who works with [participant]?": Extract UNIQUE worker names from CURRENT SHIFTS - no dates unless asked
+- "What shifts/when": Then include dates and times
+- Multiple names: Simple list or comma-separated, no bullets unless 5+ items
+
+Be direct. Extract what's asked. No extra info.
 """
         
         # Call OpenAI API
@@ -1118,8 +1235,8 @@ Keep answers concise and helpful. Use bullet points when listing workers or sugg
                 {"role": "system", "content": context},
                 {"role": "user", "content": question}
             ],
-            temperature=0.7,
-            max_tokens=500
+            temperature=0.3,  # Lower temperature for more focused, deterministic responses
+            max_tokens=400  # Allow slightly longer responses for multiple shifts
         )
         
         answer = response.choices[0].message.content

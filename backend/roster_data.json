@@ -21,7 +21,8 @@
             "notes": "",
             "shiftNumber": "J2025100643",
             "duration": 8,
-            "isSplitShift": false
+            "isSplitShift": false,
+            "locked": false
           },
           {
             "id": "shift_1759835938012_ytam831lu",
