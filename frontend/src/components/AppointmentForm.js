@@ -33,30 +33,6 @@ const AppointmentForm = ({ isOpen, onClose, participants = [] }) => {
 
   const timeOptions = generateTimeOptions();
 
-  // Generate date options for the next 90 days
-  const generateDateOptions = () => {
-    const dates = [];
-    const today = new Date();
-    
-    for (let i = 0; i < 90; i++) {
-      const date = new Date(today);
-      date.setDate(today.getDate() + i);
-      
-      const dateString = date.toISOString().split('T')[0];
-      const dayName = date.toLocaleDateString('en-AU', { weekday: 'short' });
-      const dayMonth = date.toLocaleDateString('en-AU', { day: 'numeric', month: 'short', year: 'numeric' });
-      
-      dates.push({
-        value: dateString,
-        label: `${dayName}, ${dayMonth}`
-      });
-    }
-    
-    return dates;
-  };
-
-  const dateOptions = generateDateOptions();
-
   // Fetch available calendars and set default times/date when modal opens
   useEffect(() => {
     if (isOpen) {
@@ -194,7 +170,7 @@ const AppointmentForm = ({ isOpen, onClose, participants = [] }) => {
         backgroundColor: 'var(--card-bg)',
         border: '1px solid var(--border)',
         borderRadius: '12px',
-        padding: '2rem',
+        padding: '1.5rem',
         width: '100%',
         maxWidth: '500px',
         maxHeight: '90vh',
@@ -205,7 +181,7 @@ const AppointmentForm = ({ isOpen, onClose, participants = [] }) => {
           display: 'flex',
           justifyContent: 'space-between',
           alignItems: 'center',
-          marginBottom: '1.5rem'
+          marginBottom: '1rem'
         }}>
           <h3 style={{
             color: 'var(--accent)',
@@ -231,13 +207,13 @@ const AppointmentForm = ({ isOpen, onClose, participants = [] }) => {
         </div>
 
         <form onSubmit={handleSubmit}>
-          <div style={{ marginBottom: '1.5rem' }}>
+          <div style={{ marginBottom: '1rem' }}>
             <label style={{
               display: 'block',
-              marginBottom: '0.5rem',
+              marginBottom: '0.35rem',
               color: 'var(--text-primary)',
               fontWeight: '500',
-              fontSize: '0.95rem'
+              fontSize: '0.9rem'
             }}>
               Participant *
             </label>
@@ -265,13 +241,13 @@ const AppointmentForm = ({ isOpen, onClose, participants = [] }) => {
             </select>
           </div>
 
-          <div style={{ marginBottom: '1.5rem' }}>
+          <div style={{ marginBottom: '1rem' }}>
             <label style={{
               display: 'block',
-              marginBottom: '0.5rem',
+              marginBottom: '0.35rem',
               color: 'var(--text-primary)',
               fontWeight: '500',
-              fontSize: '0.95rem'
+              fontSize: '0.9rem'
             }}>
               Appointment Title *
             </label>
@@ -284,59 +260,53 @@ const AppointmentForm = ({ isOpen, onClose, participants = [] }) => {
               placeholder="e.g., Doctor Appointment, Therapy Session"
               style={{
                 width: '100%',
-                padding: '0.75rem',
+                padding: '0.6rem',
                 borderRadius: '8px',
                 border: '1px solid var(--border)',
                 background: 'var(--card-bg)',
                 color: 'var(--text-primary)',
-                fontSize: '1rem'
+                fontSize: '0.95rem'
               }}
             />
           </div>
 
-          <div style={{ marginBottom: '1.5rem' }}>
+          <div style={{ marginBottom: '1rem' }}>
             <label style={{
               display: 'block',
-              marginBottom: '0.5rem',
+              marginBottom: '0.35rem',
               color: 'var(--text-primary)',
               fontWeight: '500',
-              fontSize: '0.95rem'
+              fontSize: '0.9rem'
             }}>
               Date *
             </label>
-            <select
+            <input
+              type="date"
               name="date"
               value={formData.date}
               onChange={handleInputChange}
               required
               style={{
                 width: '100%',
-                padding: '0.75rem',
+                padding: '0.6rem',
                 borderRadius: '8px',
                 border: '1px solid var(--border)',
                 background: 'var(--card-bg)',
                 color: 'var(--text-primary)',
-                fontSize: '1rem',
+                fontSize: '0.95rem',
                 cursor: 'pointer'
               }}
-            >
-              <option value="">Select Date</option>
-              {dateOptions.map(date => (
-                <option key={date.value} value={date.value}>
-                  {date.label}
-                </option>
-              ))}
-            </select>
+            />
           </div>
 
-          <div style={{ display: 'flex', gap: '1rem', marginBottom: '1.5rem' }}>
+          <div style={{ display: 'flex', gap: '1rem', marginBottom: '1rem' }}>
             <div style={{ flex: 1 }}>
               <label style={{
                 display: 'block',
-                marginBottom: '0.5rem',
+                marginBottom: '0.35rem',
                 color: 'var(--text-primary)',
                 fontWeight: '500',
-                fontSize: '0.95rem'
+                fontSize: '0.9rem'
               }}>
                 Start Time *
               </label>
@@ -347,12 +317,12 @@ const AppointmentForm = ({ isOpen, onClose, participants = [] }) => {
                 required
                 style={{
                   width: '100%',
-                  padding: '0.75rem',
+                  padding: '0.6rem',
                   borderRadius: '8px',
                   border: '1px solid var(--border)',
                   background: 'var(--card-bg)',
                   color: 'var(--text-primary)',
-                  fontSize: '1rem',
+                  fontSize: '0.95rem',
                   cursor: 'pointer'
                 }}
               >
@@ -367,10 +337,10 @@ const AppointmentForm = ({ isOpen, onClose, participants = [] }) => {
             <div style={{ flex: 1 }}>
               <label style={{
                 display: 'block',
-                marginBottom: '0.5rem',
+                marginBottom: '0.35rem',
                 color: 'var(--text-primary)',
                 fontWeight: '500',
-                fontSize: '0.95rem'
+                fontSize: '0.9rem'
               }}>
                 End Time *
               </label>
@@ -381,12 +351,12 @@ const AppointmentForm = ({ isOpen, onClose, participants = [] }) => {
                 required
                 style={{
                   width: '100%',
-                  padding: '0.75rem',
+                  padding: '0.6rem',
                   borderRadius: '8px',
                   border: '1px solid var(--border)',
                   background: 'var(--card-bg)',
                   color: 'var(--text-primary)',
-                  fontSize: '1rem',
+                  fontSize: '0.95rem',
                   cursor: 'pointer'
                 }}
               >
@@ -400,13 +370,13 @@ const AppointmentForm = ({ isOpen, onClose, participants = [] }) => {
             </div>
           </div>
 
-          <div style={{ marginBottom: '2rem' }}>
+          <div style={{ marginBottom: '1.25rem' }}>
             <label style={{
               display: 'block',
-              marginBottom: '0.5rem',
+              marginBottom: '0.35rem',
               color: 'var(--text-primary)',
               fontWeight: '500',
-              fontSize: '0.95rem'
+              fontSize: '0.9rem'
             }}>
               Description (Optional)
             </label>
@@ -415,15 +385,15 @@ const AppointmentForm = ({ isOpen, onClose, participants = [] }) => {
               value={formData.description}
               onChange={handleInputChange}
               placeholder="Additional notes about the appointment..."
-              rows="3"
+              rows="2"
               style={{
                 width: '100%',
-                padding: '0.75rem',
+                padding: '0.6rem',
                 borderRadius: '8px',
                 border: '1px solid var(--border)',
                 background: 'var(--card-bg)',
                 color: 'var(--text-primary)',
-                fontSize: '1rem',
+                fontSize: '0.95rem',
                 resize: 'vertical'
               }}
             />
@@ -434,12 +404,12 @@ const AppointmentForm = ({ isOpen, onClose, participants = [] }) => {
               type="button"
               onClick={handleClose}
               style={{
-                padding: '0.75rem 1.5rem',
+                padding: '0.6rem 1.25rem',
                 borderRadius: '8px',
                 border: '1px solid var(--border)',
                 background: 'var(--card-bg)',
                 color: 'var(--text-primary)',
-                fontSize: '1rem',
+                fontSize: '0.95rem',
                 cursor: 'pointer',
                 transition: 'all 0.2s'
               }}
@@ -450,12 +420,12 @@ const AppointmentForm = ({ isOpen, onClose, participants = [] }) => {
               type="submit"
               disabled={isSubmitting}
               style={{
-                padding: '0.75rem 1.5rem',
+                padding: '0.6rem 1.25rem',
                 borderRadius: '8px',
                 border: 'none',
                 background: 'var(--accent)',
                 color: 'white',
-                fontSize: '1rem',
+                fontSize: '0.95rem',
                 cursor: isSubmitting ? 'not-allowed' : 'pointer',
                 opacity: isSubmitting ? 0.7 : 1,
                 transition: 'all 0.2s'
