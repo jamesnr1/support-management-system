@@ -219,6 +219,7 @@ const CalendarAppointments = ({
         return summary.startsWith(`${name} -`) || 
                summary.startsWith(`${name}:`) || 
                summary.startsWith(`${name},`) ||
+               summary.startsWith(`${name} `) ||  // Match "Grace Uni", "Ace Uni", etc.
                summary === name;
       });
       if (target) {
@@ -233,7 +234,7 @@ const CalendarAppointments = ({
       { name: 'Grace', appointments: groups.Grace },
       { name: 'Milan', appointments: groups.Milan }
     ];
-  }, [appointments, weekType]);
+  }, [appointments]);
 
   // Calculate dynamic height based on max appointments per person
   const calculateCalendarHeight = useMemo(() => {
