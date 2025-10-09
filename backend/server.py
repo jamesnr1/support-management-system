@@ -979,14 +979,13 @@ async def create_appointment(appointment_data: dict):
     """Create an appointment in Google Calendar for a participant"""
     try:
         # Validate required fields
-        required_fields = ['participant', 'title', 'date', 'startTime', 'endTime']
+        required_fields = ['calendarId', 'title', 'date', 'startTime', 'endTime']
         for field in required_fields:
             if field not in appointment_data:
                 raise HTTPException(status_code=400, detail=f"Missing required field: {field}")
 
         # Get participant name for calendar title
-        participant_code = appointment_data['participant']
-        participant_name = appointment_data.get('participantName', participant_code)
+        participant_name = appointment_data.get('participantName', 'Participant')
         
         # Create event data for Google Calendar
         date_str = appointment_data['date']
