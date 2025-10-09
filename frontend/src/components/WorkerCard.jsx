@@ -169,8 +169,8 @@ const WorkerCard = React.memo(({ worker, onEdit, onManageAvailability, onDelete,
         className="availability" 
         style={{ 
           padding: '12px',
-          minHeight: '180px',
-          maxHeight: '180px',
+          minHeight: '175px',
+          maxHeight: '175px',
           overflow: 'auto'
         }}
       >

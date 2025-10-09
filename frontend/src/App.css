@@ -174,7 +174,8 @@ h2 {
   color: var(--text-primary);
   display: flex;
   flex-direction: column;
-  height: 360px;
+  height: auto;
+  max-width: 300px;
 }
 
 /* Participant Cards - Compact */
@@ -302,10 +303,12 @@ h2 {
 
 /* Availability Section */
 .availability {
-  flex: 1;
   display: flex;
   flex-direction: column;
   padding: 8px 12px;
+  min-height: 175px !important;
+  max-height: 175px !important;
+  overflow: auto !important;
 }
 
 /* .availability h3 removed - no section titles for consistency with calendar */
