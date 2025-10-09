@@ -974,6 +974,63 @@ async def create_calendar_event(event_data: dict):
         logger.error(f"Error creating calendar event: {e}")
         raise HTTPException(status_code=500, detail=str(e))
 
+@api_router.post("/calendar/create-appointment")
+async def create_appointment(appointment_data: dict):
+    """Create an appointment in Google Calendar for a participant"""
+    try:
+        # Validate required fields
+        required_fields = ['participant', 'title', 'date', 'startTime', 'endTime']
+        for field in required_fields:
+            if field not in appointment_data:
+                raise HTTPException(status_code=400, detail=f"Missing required field: {field}")
+
+        # Get participant name for calendar title
+        participant_code = appointment_data['participant']
+        participant_name = appointment_data.get('participantName', participant_code)
+        
+        # Create event data for Google Calendar
+        date_str = appointment_data['date']
+        start_time = appointment_data['startTime']
+        end_time = appointment_data['endTime']
+        
+        # Combine date and time
+        start_datetime = f"{date_str}T{start_time}:00"
+        end_datetime = f"{date_str}T{end_time}:00"
+        
+        # Create the calendar event
+        event_data = {
+            'summary': f"{participant_name} - {appointment_data['title']}",
+            'description': appointment_data.get('description', ''),
+            'start': {
+                'dateTime': start_datetime,
+                'timeZone': 'Australia/Sydney'
+            },
+            'end': {
+                'dateTime': end_datetime,
+                'timeZone': 'Australia/Sydney'
+            }
+        }
+        
+        # Use primary calendar for now (can be enhanced to use specific participant calendars)
+        created_event = calendar_service.create_calendar_event(
+            calendar_id='primary',
+            event_data=event_data
+        )
+        
+        if created_event:
+            return {
+                "success": True,
+                "message": "Appointment created successfully",
+                "event_id": created_event.get('id'),
+                "event_url": created_event.get('htmlLink')
+            }
+        else:
+            raise HTTPException(status_code=500, detail="Failed to create appointment")
+            
+    except Exception as e:
+        logger.error(f"Error creating appointment: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
 @api_router.get("/calendar/list")
 async def list_calendars():
     """Get list of available calendars"""

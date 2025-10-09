@@ -6,6 +6,7 @@ import Login from './Login';
 import WorkerManagement from './WorkerManagement';
 import ParticipantSchedule from './ParticipantSchedule';
 import HoursTracker from './HoursTracker';
+import AppointmentForm from './AppointmentForm';
 import CalendarAppointments from './CalendarAppointments';
 import AIChat from './AIChat';
 import ShiftsTab from './ShiftsTab';
@@ -20,6 +21,9 @@ const RosteringSystem = () => {
   const [isAuthenticated, setIsAuthenticated] = useState(
     () => localStorage.getItem('isAuthenticated') === 'true'
   );
+
+  // Appointment form state
+  const [isAppointmentFormOpen, setIsAppointmentFormOpen] = useState(false);
 
   // Persist activeTab in localStorage to prevent jumping back to roster
   const [activeTab, setActiveTab] = useState(() => {
@@ -609,8 +613,7 @@ const RosteringSystem = () => {
         {/* Add Appointment Button */}
         <button
           onClick={() => {
-            // TODO: Open appointment form modal
-            toast('Add Appointment feature coming soon!');
+            setIsAppointmentFormOpen(true);
           }}
           style={{
             background: 'var(--accent)',
@@ -996,6 +999,13 @@ const RosteringSystem = () => {
 
       {/* AI Chat - Always visible floating button */}
       <AIChat />
+
+      {/* Appointment Form Modal */}
+      <AppointmentForm 
+        isOpen={isAppointmentFormOpen}
+        onClose={() => setIsAppointmentFormOpen(false)}
+        participants={participants || []}
+      />
     </div>
   );
 };
