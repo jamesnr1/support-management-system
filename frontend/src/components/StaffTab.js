@@ -8,7 +8,7 @@ import { useQuery } from '@tanstack/react-query';
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 const API = `${BACKEND_URL}/api`;
 
-const StaffTab = ({ workers = [], locations = [], onWorkersUpdate, rosterData, participants = [] }) => {
+const StaffTab = ({ workers = [], locations = [], onWorkersUpdate, rosterData, participants = [], selectedWeek = 'current' }) => {
   // Batch availability data - fetch once for all workers to avoid 48 sequential API calls
   const [allAvailabilityData, setAllAvailabilityData] = useState({});
   const [availabilityLoading, setAvailabilityLoading] = useState(true);
@@ -51,7 +51,7 @@ const StaffTab = ({ workers = [], locations = [], onWorkersUpdate, rosterData, p
   const [telegramStatus, setTelegramStatus] = useState(null);
 
   // Week selector for shifts
-  const [selectedWeek, setSelectedWeek] = useState('current');
+  // selectedWeek is now passed as a prop from RosteringSystem
 
   // Calculate week date ranges
   const weekRanges = useMemo(() => {
@@ -298,51 +298,18 @@ const StaffTab = ({ workers = [], locations = [], onWorkersUpdate, rosterData, p
     }
   };
 
-  const handleClearTelegramMessage = () => {
-    setTelegramMessage('');
-    setSelectedWorkers(new Set());
-    setSendToAll(false);
-  };
+
+  // Listen for Add Worker event from icon button in RosteringSystem
+  useEffect(() => {
+    const handleOpenAddWorker = () => {
+      setShowWorkerModal(true);
+    };
+    document.addEventListener('openAddWorkerModal', handleOpenAddWorker);
+    return () => document.removeEventListener('openAddWorkerModal', handleOpenAddWorker);
+  }, []);
 
   return (
     <div style={{ padding: '1rem' }}>
-      {/* Week Selector */}
-      <div style={{ marginBottom: '2rem', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-        <select
-          value={selectedWeek}
-          onChange={(e) => setSelectedWeek(e.target.value)}
-          style={{
-            padding: '0.5rem 0.75rem',
-            borderRadius: '8px',
-            border: '1px solid var(--border)',
-            background: 'var(--card-bg)',
-            color: 'var(--text-primary)',
-            fontSize: '0.9rem',
-            cursor: 'pointer',
-            fontWeight: '500'
-          }}
-        >
-          <option value="current">Current Week</option>
-          <option value="next">Next Week</option>
-          <option value="week_after">Week After</option>
-        </select>
-        <button
-          onClick={() => setShowWorkerModal(true)}
-          style={{
-            padding: '8px 15px',
-            borderRadius: '25px',
-            border: 'none',
-            background: 'var(--accent)',
-            color: 'white',
-            cursor: 'pointer',
-            fontSize: '14px',
-            fontWeight: '500'
-          }}
-        >
-          Add Worker
-        </button>
-      </div>
-
       {/* Main layout: Worker cards on left, Telegram panel on right */}
       <div style={{ display: 'grid', gridTemplateColumns: '3fr 1fr', gap: '1.5rem', alignItems: 'start' }}>
         
@@ -519,22 +486,10 @@ const StaffTab = ({ workers = [], locations = [], onWorkersUpdate, rosterData, p
                   borderRadius: '25px',
                   background: 'var(--accent)',
                   color: 'white',
-                  opacity: (!sendToAll && selectedWorkers.size === 0) ? 0.5 : 1,
                   cursor: (!telegramMessage.trim() || (!sendToAll && selectedWorkers.size === 0)) ? 'not-allowed' : 'pointer'
                 }}
               >
                 Send Message
-              </button>
-              <button 
-                onClick={handleClearTelegramMessage}
-                className="btn btn-secondary"
-                style={{ 
-                  fontSize: '0.85rem', 
-                  padding: '0.6rem 1rem',
-                  borderRadius: '25px'
-                }}
-              >
-                Clear
               </button>
             </div>
           </div>
