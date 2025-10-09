@@ -220,7 +220,7 @@ const ShiftForm = ({
     
     fetchAvailabilityData();
   }, [workers, date]);
-  
+
   // Filter available workers based on time and date
   const getAvailableWorkers = useCallback((currentFormData, workersList = []) => {
     console.log('🔄 getAvailableWorkers called with:', {
@@ -322,9 +322,14 @@ const ShiftForm = ({
       return false;
     };
     
+    console.log(`🔍 Filtering workers for shift ${startTime}-${endTime} on ${date}`);
+    
     return (workersList || []).filter(worker => {
+      console.log(`\n--- Checking ${worker.full_name} (ID: ${worker.id}) ---`);
+      
       // Exclude workers who are unavailable on this date
       if (unavailableWorkers.has(String(worker.id))) { // Ensure ID is compared as string
+        console.log(`❌ ${worker.full_name}: Unavailable on this date`);
         return false;
       }
       
@@ -375,31 +380,72 @@ const ShiftForm = ({
         return false; // No rules = not available
       }
       
-      // Check if worker has ANY shift on this date (regardless of time)
-      const hasShiftOnDate = existingShifts.some(existingShift => {
-        // CRITICAL: Skip the shift we're currently editing
-        if (editingShift && existingShift.id === editingShift.id) {
+      // Check for cross-participant conflicts (double-booking)
+      const conflicts = checkCrossParticipantConflicts(worker.id, date, startTime, endTime, editingShift?.id);
+      if (conflicts.length > 0) {
+        console.log(`🚫 ${worker.full_name} filtered out: double-booked with ${conflicts[0].participant} at ${conflicts[0].time}`);
+        return false;
+      } else {
+        console.log(`✅ ${worker.full_name} - no conflicts found`);
+      }
+      
+      // Check for back-to-back shifts (but allow if it's a valid split shift with same participant/location)
+      const backToBack = checkBackToBackShifts(worker.id, date, startTime, endTime, editingShift?.id);
+      if (backToBack.length > 0) {
+        // Check if this is a split shift scenario (same participant, same location)
+        const existingShift = backToBack[0].existingShift;
+        const existingParticipant = backToBack[0].participantCode;
+        
+        console.log(`🔍 Back-to-back check for ${worker.full_name}:`, {
+          existingParticipant,
+          currentParticipant: participant?.code,
+          existingLocation: existingShift?.location,
+          currentLocation: formData.location,
+          isSameParticipant: existingParticipant === participant?.code,
+          isSameLocation: existingShift?.location === formData.location
+        });
+        
+        if (existingParticipant === participant?.code && 
+            existingShift?.location === formData.location) {
+          console.log(`✅ ${worker.full_name} - back-to-back allowed (valid split shift with ${participant?.code})`);
+          // Allow it - it's a split shift
+        } else {
+          console.log(`🚫 ${worker.full_name} filtered out: back-to-back shift at ${backToBack[0].prevEnd}`);
           return false;
         }
-        
-        // Check if worker is assigned to this existing shift
-        const isAssigned = Array.isArray(existingShift.workers) && existingShift.workers.some(w => String(w) === String(worker.id));
-        
-        if (isAssigned) {
-          console.log(`🚫 Worker ${worker.full_name} filtered out: already has shift ${existingShift.startTime}-${existingShift.endTime} on ${date}`);
-          return true;
-        }
-        
-        return false;
-      });
+      }
       
-      if (hasShiftOnDate) {
+      // Check for insufficient rest on SAME DAY (not just cross-day)
+      const sameDayRest = checkSameDayRest(worker.id, date, startTime, endTime, editingShift?.id);
+      if (sameDayRest) {
+        console.log(`🚫 ${worker.full_name} filtered out: insufficient rest on same day (${sameDayRest.restHours.toFixed(1)}h < 8h)`);
         return false;
       }
       
       // Check for insufficient rest from previous day
       if (hasInsufficientRest(worker)) {
+        console.log(`🚫 ${worker.full_name} filtered out: insufficient rest from previous day`);
         return false;
+      }
+      
+      // Check for max hours (unless override is enabled)
+      if (worker.max_hours && !overrideValidation) {
+        const currentHours = calculateWorkerHours(worker.id, weekType);
+        
+        // Calculate duration inline to avoid hoisting issues
+        const timeToMins = (t) => {
+          const [h, m] = t.split(':').map(Number);
+          return h * 60 + (m || 0);
+        };
+        let shiftDuration = (timeToMins(endTime) - timeToMins(startTime)) / 60;
+        if (shiftDuration <= 0) shiftDuration += 24; // Handle overnight
+        
+        const totalHours = currentHours + shiftDuration;
+        
+        if (totalHours > worker.max_hours) {
+          console.log(`🚫 ${worker.full_name} filtered out: would exceed max hours (${totalHours.toFixed(1)}/${worker.max_hours})`);
+          return false;
+        }
       }
       
       // Check for insufficient rest TO next day (NEW)
@@ -488,6 +534,53 @@ const ShiftForm = ({
     return conflicts;
   };
   
+  // Helper: Check for insufficient rest on the same day
+  const checkSameDayRest = (workerId, shiftDate, startTime, endTime, currentShiftId) => {
+    const timeToMinutes = (timeStr) => {
+      const [hours, minutes] = timeStr.split(':').map(Number);
+      return hours * 60 + minutes;
+    };
+    
+    const MIN_REST_HOURS = 8;
+    
+    // Check all participants for this worker on the SAME date
+    for (const participantCode in (rosterData || {})) {
+      const participantShifts = rosterData[participantCode];
+      if (participantShifts && participantShifts[shiftDate]) {
+        for (const existingShift of participantShifts[shiftDate]) {
+          // Skip the shift we're editing
+          if (currentShiftId && existingShift.id === currentShiftId) continue;
+          
+          const hasWorker = Array.isArray(existingShift.workers) && existingShift.workers.some(w => String(w) === String(workerId));
+          if (hasWorker) {
+            const existingEndMin = timeToMinutes(existingShift.endTime || existingShift.end_time);
+            const newStartMin = timeToMinutes(startTime);
+            const existingStartMin = timeToMinutes(existingShift.startTime || existingShift.start_time);
+            const newEndMin = timeToMinutes(endTime);
+            
+            // Check rest BEFORE new shift (existing shift ends, then new shift starts)
+            if (existingEndMin <= newStartMin) {
+              const restHours = (newStartMin - existingEndMin) / 60;
+              if (restHours < MIN_REST_HOURS && restHours > 0) {
+                return { restHours, type: 'before', existingShift };
+              }
+            }
+            
+            // Check rest AFTER new shift (new shift ends, then existing shift starts)
+            if (newEndMin <= existingStartMin) {
+              const restHours = (existingStartMin - newEndMin) / 60;
+              if (restHours < MIN_REST_HOURS && restHours > 0) {
+                return { restHours, type: 'after', existingShift };
+              }
+            }
+          }
+        }
+      }
+    }
+    
+    return null; // No rest issues found
+  };
+  
   // Helper: Check for back-to-back shifts (no break between)
   const checkBackToBackShifts = (workerId, shiftDate, startTime, endTime, currentShiftId) => {
     const backToBack = [];
@@ -502,7 +595,9 @@ const ShiftForm = ({
             if (existingShift.endTime === startTime || existingShift.startTime === endTime) {
               backToBack.push({
                 prevEnd: existingShift.endTime,
-                nextStart: startTime
+                nextStart: startTime,
+                existingShift: existingShift,
+                participantCode: participantCode
               });
             }
           }
@@ -520,11 +615,11 @@ const ShiftForm = ({
     // Look for connected shifts (where one ends and next begins immediately)
     const findConnectedShifts = (date, time, direction) => {
       let hours = 0;
-    Object.keys(rosterData || {}).forEach(participantCode => {
-      const participantShifts = rosterData[participantCode];
-      if (participantShifts && participantShifts[date]) {
-        participantShifts[date].forEach(shift => {
-          if (currentShiftId && shift.id === currentShiftId) return;
+      Object.keys(rosterData || {}).forEach(participantCode => {
+        const participantShifts = rosterData[participantCode];
+        if (participantShifts && participantShifts[date]) {
+          participantShifts[date].forEach(shift => {
+            if (currentShiftId && shift.id === currentShiftId) return;
           const hasWorker = Array.isArray(shift.workers) && shift.workers.some(w => String(w) === String(workerId));
           if (hasWorker) {
               if (direction === 'before' && shift.endTime === time) {
@@ -609,7 +704,15 @@ const ShiftForm = ({
           const totalHours = currentHours + duration;
           
           if (totalHours > worker.max_hours) {
+            // When editing a shift, allow override with warning instead of blocking error
+            if (editingShift && overrideValidation) {
+              warnings.push(`⚠️ ${workerName} exceeds maximum hours: ${totalHours.toFixed(1)}/${worker.max_hours} (Override enabled)`);
+            } else if (editingShift) {
+              warnings.push(`⚠️ ${workerName} would exceed maximum hours: ${totalHours.toFixed(1)}/${worker.max_hours}`);
+            } else {
+              // For new shifts, treat as error
             errors.push(`❌ ${workerName} would exceed maximum hours: ${totalHours.toFixed(1)}/${worker.max_hours}`);
+          }
           }
           // Removed "approaching maximum" warning - only warn when actually exceeding
         }
@@ -900,6 +1003,8 @@ const ShiftForm = ({
     isSplitShift: false
   });
 
+  const [overrideValidation, setOverrideValidation] = useState(false);
+
   // Get available workers - use useMemo to avoid initialization issues
   const availableWorkers = useMemo(() => {
     const filtered = getAvailableWorkers(formData, workers);
@@ -1075,7 +1180,7 @@ const ShiftForm = ({
       }
       
       // Show warnings (allow override)
-      if (validation.warnings.length > 0) {
+      if (validation.warnings.length > 0 && !overrideValidation) {
         validation.warnings.forEach(warning => {
           toast(warning, { duration: 4000 });
         });
@@ -1086,6 +1191,11 @@ const ShiftForm = ({
         if (!proceed) {
           return;
         }
+      } else if (validation.warnings.length > 0 && overrideValidation) {
+        // Override is checked - show warnings but don't block
+        validation.warnings.forEach(warning => {
+          toast(warning, { duration: 3000, icon: '⚠️' });
+        });
       }
 
       console.log('Saving shift data:', shiftData); // Debug log
@@ -1289,7 +1399,7 @@ const ShiftForm = ({
               </option>
             )}
             
-            {availableWorkers.filter(worker => worker.id !== formData.workers[0]).map(worker => (
+          {availableWorkers.filter(worker => worker.id !== formData.workers[0]).map(worker => (
               <option key={worker.id} value={worker.id}>
               {(() => {
                 const hours = calculateWorkerHours(worker.id, weekType);
@@ -1346,10 +1456,10 @@ const ShiftForm = ({
               minWidth: '110px',
               maxWidth: '150px',
               fontSize: '0.9rem',
-              padding: '0.5rem',
-              borderRadius: '6px',
-              background: 'var(--bg-secondary)',
-              color: 'var(--text-primary)',
+            padding: '0.5rem',
+            borderRadius: '6px',
+            background: 'var(--bg-secondary)',
+            color: 'var(--text-primary)',
               border: '1px solid var(--border-color)',
               display: 'flex',
               alignItems: 'center',
@@ -1404,8 +1514,19 @@ const ShiftForm = ({
           }}
         />
 
-        {/* Save and Cancel/Delete buttons */}
+        {/* Override checkbox and Save/Cancel/Delete buttons */}
         <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center', flexShrink: 0 }}>
+          {editingShift && (
+            <label style={{ display: 'flex', alignItems: 'center', gap: '0.3rem', fontSize: '0.85rem', color: 'var(--text-secondary)', marginRight: '0.5rem', whiteSpace: 'nowrap' }}>
+              <input 
+                type="checkbox" 
+                checked={overrideValidation}
+                onChange={(e) => setOverrideValidation(e.target.checked)}
+                style={{ cursor: 'pointer' }}
+              />
+              Override
+            </label>
+          )}
           <button type="submit" className="btn btn-success" style={{ padding: '0.5rem 1rem', fontSize: '0.9rem' }}>
             Save
           </button>

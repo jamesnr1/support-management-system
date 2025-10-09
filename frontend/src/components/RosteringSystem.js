@@ -621,7 +621,7 @@ const RosteringSystem = () => {
         
         {/* Action Buttons (Roster and Staff tabs) */}
         {(activeTab === 'roster' || activeTab === 'staff') && (
-          <div className="action-buttons" style={{ display: 'flex', alignItems: 'center', gap: '1rem', flexWrap: 'wrap', marginLeft: '0' }}>
+          <div className="action-buttons" style={{ display: 'flex', alignItems: 'center', gap: '1rem', flexWrap: 'nowrap', marginLeft: '0' }}>
             {/* Week Selector */}
             <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
               <span style={{ fontSize: '0.9rem', fontWeight: '500', color: 'var(--text-secondary)' }}>Week:</span>
@@ -666,8 +666,8 @@ const RosteringSystem = () => {
               </span>
             </div>
 
-            {/* Week Pattern Selector */}
-            {rosterData.current?.week_type && (
+            {/* Week Pattern Selector - Roster tab only */}
+            {activeTab === 'roster' && rosterData.current?.week_type && (
               <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
                 <span style={{ fontSize: '0.9rem', fontWeight: '500', color: 'var(--text-secondary)' }}>Pattern:</span>
                 <div style={{ display: 'flex', gap: '0.25rem' }}>
@@ -720,19 +720,13 @@ const RosteringSystem = () => {
               </div>
             )}
             
+            {/* Edit Mode button - Roster tab only */}
+            {activeTab === 'roster' && (
               <button 
                 onClick={toggleEditMode}
-              title={editMode ? 'Exit Edit Mode' : 'Enter Edit Mode'}
-            >
-              {editMode ? 'Done' : 'Edit'}
-            </button>
-            {activeTab === 'planner' && (
-              <button
-                onClick={copyToTemplate}
-                disabled={copyTemplateRunning}
-                title="Copy roster from previous week"
+                title={editMode ? 'Exit Edit Mode' : 'Enter Edit Mode'}
               >
-                Copy
+                {editMode ? 'Done' : 'Edit'}
               </button>
             )}
           </div>
@@ -842,7 +836,7 @@ const RosteringSystem = () => {
           )}
           
           {activeTab === 'staff' && (
-            <button
+            <button 
               onClick={() => {
                 // Trigger Add Worker modal in StaffTab
                 document.dispatchEvent(new CustomEvent('openAddWorkerModal'));
