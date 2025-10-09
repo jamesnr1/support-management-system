@@ -33,15 +33,21 @@ const AppointmentForm = ({ isOpen, onClose, participants = [] }) => {
 
   const timeOptions = generateTimeOptions();
 
-  // Fetch available calendars and set default times when modal opens
+  // Fetch available calendars and set default times/date when modal opens
   useEffect(() => {
     if (isOpen) {
       fetchAvailableCalendars();
+      
+      // Set default date to 2 weeks from today
+      const twoWeeksFromNow = new Date();
+      twoWeeksFromNow.setDate(twoWeeksFromNow.getDate() + 14);
+      const defaultDate = twoWeeksFromNow.toISOString().split('T')[0];
       
       // Set default times: 9:00 AM start, 10:00 AM end (1 hour duration)
       if (!formData.startTime) {
         setFormData(prev => ({
           ...prev,
+          date: defaultDate,
           startTime: '09:00',
           endTime: '10:00'
         }));
