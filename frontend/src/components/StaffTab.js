@@ -543,10 +543,13 @@ const StaffTab = ({ workers = [], locations = [], onWorkersUpdate, rosterData, p
                   }
                   setShowWorkerModal(false);
                   setEditingWorker(null);
+                  // Wait for Supabase to commit the transaction
+                  await new Promise(resolve => setTimeout(resolve, 1000));
                   // Force refresh workers list
                   console.log('Invalidating workers query cache...');
-                  await queryClient.invalidateQueries(['workers']);
-                  console.log('Workers query invalidated');
+                  queryClient.invalidateQueries(['workers']);
+                  queryClient.refetchQueries(['workers']);
+                  console.log('Workers query invalidated and refetch triggered');
                   if (onWorkersUpdate) {
                     onWorkersUpdate();
                   }

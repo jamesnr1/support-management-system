@@ -107,7 +107,15 @@ const RosteringSystem = () => {
     queryKey: ['workers'],
     queryFn: async () => {
       try {
-        const response = await axios.get(`${API}/workers`, { timeout: 30000 });
+        console.log('Fetching workers from API...');
+        const response = await axios.get(`${API}/workers?_t=${Date.now()}`, { 
+          timeout: 30000,
+          headers: {
+            'Cache-Control': 'no-cache',
+            'Pragma': 'no-cache'
+          }
+        });
+        console.log(`Fetched ${response.data.length} workers`);
         return response.data;
       } catch (error) {
         console.error('Workers fetch error:', error);
@@ -116,6 +124,7 @@ const RosteringSystem = () => {
     },
     retry: 1,
     staleTime: 0,
+    cacheTime: 0,
     refetchOnMount: true
   });
 

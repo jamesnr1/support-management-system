@@ -49,6 +49,11 @@ const ShiftForm = ({
         
         // Check each shift for this worker
         shifts.forEach(shift => {
+          // Skip the shift being edited to avoid double-counting
+          if (editingShift && shift.id === editingShift.id) {
+            return;
+          }
+          
           const hasWorker = Array.isArray(shift.workers) && shift.workers.some(w => String(w) === String(workerId));
           if (hasWorker) {
             const duration = parseFloat(shift.duration || 0);

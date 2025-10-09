@@ -262,7 +262,7 @@
             "ratio": "2:1",
             "workers": [
               "138",
-              "125"
+              "119"
             ],
             "location": "2",
             "notes": "",
@@ -310,24 +310,6 @@
         ],
         "2025-10-12": [
           {
-            "id": "shift_1759849293810_s2gfs0mho",
-            "date": "2025-10-12",
-            "startTime": "06:00",
-            "endTime": "14:00",
-            "supportType": "Self-Care",
-            "ratio": "2:1",
-            "workers": [
-              "130",
-              "126"
-            ],
-            "location": "2",
-            "notes": "",
-            "shiftNumber": "J2025101212",
-            "duration": 8,
-            "isSplitShift": false,
-            "locked": false
-          },
-          {
             "id": "shift_1759849385436_rc8rhs73u",
             "date": "2025-10-12",
             "startTime": "14:00",
@@ -364,7 +346,27 @@
           }
         ]
       },
-      "LIB001": {},
+      "LIB001": {
+        "2025-10-10": [
+          {
+            "id": "shift_1759985352046_81xcm09ze",
+            "date": "2025-10-10",
+            "startTime": "10:00",
+            "endTime": "20:00",
+            "supportType": "Self-Care",
+            "ratio": "2:1",
+            "workers": [
+              "125",
+              "137"
+            ],
+            "location": "1",
+            "notes": "",
+            "shiftNumber": "L2025101027",
+            "duration": 10,
+            "isSplitShift": false
+          }
+        ]
+      },
       "ACE001": {
         "2025-10-11": [
           {
