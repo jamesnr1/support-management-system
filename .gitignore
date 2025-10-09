@@ -12,3 +12,17 @@ __pycache__/
 
 # Logs
 *.log
+
+# Secrets and credentials
+backend/client_secrets.json
+backend/calendar_credentials.json
+.bash_sessions/
+*.history
+.env
+.env.local
+
+# Python virtual environment
+venv/
+env/
+ENV/
+.venv/
