@@ -208,6 +208,10 @@ class CalendarService:
 
                         cal_events = events_result.get('items', [])
                         print(f"DEBUG: Calendar '{cal_name}' ({cal_id}): {len(cal_events)} events")
+                        # Add calendar info to each event
+                        for event in cal_events:
+                            event['_calendarId'] = cal_id
+                            event['_calendarName'] = cal_name
                         all_events.extend(cal_events)
 
                     except Exception as cal_error:
@@ -242,6 +246,8 @@ class CalendarService:
                     'htmlLink': event.get('htmlLink'),
                     'colorId': event.get('colorId'),
                     'attendees': event.get('attendees', []),
+                    'calendarId': event.get('_calendarId'),
+                    'calendarName': event.get('_calendarName'),
                 }
                 
                 # Handle start/end times - Google Calendar API returns these as strings directly
