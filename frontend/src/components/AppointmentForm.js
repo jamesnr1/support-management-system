@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { toast } from 'react-hot-toast';
 
@@ -6,14 +6,51 @@ const BACKEND_URL = process.env.REACT_APP_BACKEND_URL || 'http://localhost:8001'
 
 const AppointmentForm = ({ isOpen, onClose, participants = [] }) => {
   const [formData, setFormData] = useState({
-    participant: '',
+    calendarId: '',
     title: '',
     date: '',
     startTime: '',
     endTime: '',
     description: ''
   });
+  const [availableCalendars, setAvailableCalendars] = useState([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
+
+  // Generate time options in 15-minute increments
+  const generateTimeOptions = () => {
+    const times = [];
+    for (let hour = 0; hour < 24; hour++) {
+      for (let minute = 0; minute < 60; minute += 15) {
+        const time24 = `${hour.toString().padStart(2, '0')}:${minute.toString().padStart(2, '0')}`;
+        times.push({
+          value: time24,
+          label: time24
+        });
+      }
+    }
+    return times;
+  };
+
+  const timeOptions = generateTimeOptions();
+
+  // Fetch available calendars when modal opens
+  useEffect(() => {
+    if (isOpen) {
+      fetchAvailableCalendars();
+    }
+  }, [isOpen]);
+
+  const fetchAvailableCalendars = async () => {
+    try {
+      const response = await axios.get(`${BACKEND_URL}/api/calendar/list`);
+      if (response.data.success) {
+        setAvailableCalendars(response.data.calendars || []);
+      }
+    } catch (error) {
+      console.error('Error fetching calendars:', error);
+      // Don't show error toast as this is optional
+    }
+  };
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -26,7 +63,7 @@ const AppointmentForm = ({ isOpen, onClose, participants = [] }) => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     
-    if (!formData.participant || !formData.title || !formData.date || !formData.startTime || !formData.endTime) {
+    if (!formData.calendarId || !formData.title || !formData.date || !formData.startTime || !formData.endTime) {
       toast.error('Please fill in all required fields');
       return;
     }
@@ -34,13 +71,14 @@ const AppointmentForm = ({ isOpen, onClose, participants = [] }) => {
     setIsSubmitting(true);
     
     try {
-      // Find participant name
-      const selectedParticipant = participants.find(p => p.id === formData.participant);
+      // Get the calendar name as participant name
+      const selectedCalendar = availableCalendars.find(c => c.id === formData.calendarId);
+      const participantName = selectedCalendar?.name || 'Unknown';
       
       // Create appointment in Google Calendar
       const appointmentData = {
-        participant: formData.participant,
-        participantName: selectedParticipant?.name || formData.participant,
+        calendarId: formData.calendarId,
+        participantName: participantName,
         title: formData.title,
         date: formData.date,
         startTime: formData.startTime,
@@ -54,7 +92,7 @@ const AppointmentForm = ({ isOpen, onClose, participants = [] }) => {
         toast.success('Appointment created successfully!');
         onClose();
         setFormData({
-          participant: '',
+          calendarId: '',
           title: '',
           date: '',
           startTime: '',
@@ -74,7 +112,7 @@ const AppointmentForm = ({ isOpen, onClose, participants = [] }) => {
 
   const handleClose = () => {
     setFormData({
-      participant: '',
+      calendarId: '',
       title: '',
       date: '',
       startTime: '',
@@ -151,8 +189,8 @@ const AppointmentForm = ({ isOpen, onClose, participants = [] }) => {
               Participant *
             </label>
             <select
-              name="participant"
-              value={formData.participant}
+              name="calendarId"
+              value={formData.calendarId}
               onChange={handleInputChange}
               required
               style={{
@@ -166,9 +204,9 @@ const AppointmentForm = ({ isOpen, onClose, participants = [] }) => {
               }}
             >
               <option value="">Select Participant</option>
-              {participants.map(participant => (
-                <option key={participant.id} value={participant.id}>
-                  {participant.name}
+              {availableCalendars.map(calendar => (
+                <option key={calendar.id} value={calendar.id}>
+                  {calendar.name}
                 </option>
               ))}
             </select>
@@ -226,7 +264,8 @@ const AppointmentForm = ({ isOpen, onClose, participants = [] }) => {
                 border: '1px solid var(--border)',
                 background: 'var(--card-bg)',
                 color: 'var(--text-primary)',
-                fontSize: '1rem'
+                fontSize: '1rem',
+                cursor: 'pointer'
               }}
             />
           </div>
@@ -242,8 +281,7 @@ const AppointmentForm = ({ isOpen, onClose, participants = [] }) => {
               }}>
                 Start Time *
               </label>
-              <input
-                type="time"
+              <select
                 name="startTime"
                 value={formData.startTime}
                 onChange={handleInputChange}
@@ -255,9 +293,17 @@ const AppointmentForm = ({ isOpen, onClose, participants = [] }) => {
                   border: '1px solid var(--border)',
                   background: 'var(--card-bg)',
                   color: 'var(--text-primary)',
-                  fontSize: '1rem'
+                  fontSize: '1rem',
+                  cursor: 'pointer'
                 }}
-              />
+              >
+                <option value="">Select Time</option>
+                {timeOptions.map(time => (
+                  <option key={`start-${time.value}`} value={time.value}>
+                    {time.label}
+                  </option>
+                ))}
+              </select>
             </div>
             <div style={{ flex: 1 }}>
               <label style={{
@@ -269,8 +315,7 @@ const AppointmentForm = ({ isOpen, onClose, participants = [] }) => {
               }}>
                 End Time *
               </label>
-              <input
-                type="time"
+              <select
                 name="endTime"
                 value={formData.endTime}
                 onChange={handleInputChange}
@@ -282,9 +327,17 @@ const AppointmentForm = ({ isOpen, onClose, participants = [] }) => {
                   border: '1px solid var(--border)',
                   background: 'var(--card-bg)',
                   color: 'var(--text-primary)',
-                  fontSize: '1rem'
+                  fontSize: '1rem',
+                  cursor: 'pointer'
                 }}
-              />
+              >
+                <option value="">Select Time</option>
+                {timeOptions.map(time => (
+                  <option key={`end-${time.value}`} value={time.value}>
+                    {time.label}
+                  </option>
+                ))}
+              </select>
             </div>
           </div>
 

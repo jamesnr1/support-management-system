@@ -1011,9 +1011,10 @@ async def create_appointment(appointment_data: dict):
             }
         }
         
-        # Use primary calendar for now (can be enhanced to use specific participant calendars)
+        # Use the selected calendar or primary as fallback
+        calendar_id = appointment_data.get('calendarId', 'primary')
         created_event = calendar_service.create_calendar_event(
-            calendar_id='primary',
+            calendar_id=calendar_id,
             event_data=event_data
         )
         
