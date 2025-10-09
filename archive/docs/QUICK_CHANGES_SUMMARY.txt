@@ -1,0 +1,79 @@
+═══════════════════════════════════════════════════════════════
+    ROSTER CORRECTIONS APPLIED - October 6-12, 2025
+═══════════════════════════════════════════════════════════════
+
+✅ BACKEND UPDATED: /backend/roster_data.json
+✅ SERVER RESTARTED: http://localhost:8001
+✅ FRONTEND RUNNING: http://localhost:3000
+
+═══════════════════════════════════════════════════════════════
+
+📋 CHANGES MADE:
+
+1. JAMES SHIFTS - 8 HOURS CONTINUOUS
+   ❌ Before: 6am-8am (2h) + 8am-2pm (6h) = Split
+   ✅ After:  6am-2pm (8h continuous)
+
+2. SANDY MOVED TO GRACE
+   ❌ Before: With James 6am-8am
+   ✅ After:  With Grace 6am-8am (Mon-Fri)
+
+3. CHAYNNE WITH GRACE (8H TOTAL)
+   ✅ Tuesday:  9am-1pm (4h)
+   ✅ Friday:   12pm-4pm (4h)
+   ❌ Removed:  James Thu & Fri shifts
+
+4. PARVINDER WITH GRACE
+   ✅ Already correct: Mon-Fri 8pm-10pm (10h)
+
+5. ACE SUNDAY
+   ❌ Before: Mihir 2pm-8pm
+   ✅ After:  Hamza 2pm-8pm
+
+6. RITA CONFIRMED
+   ✅ Rita NOT in roster (overseas, unavailable)
+
+═══════════════════════════════════════════════════════════════
+
+🔄 TO SEE CHANGES:
+
+1. Go to http://localhost:3000
+2. Refresh the page (Cmd+R or Ctrl+R)
+3. Click on "Roster" tab
+4. Check Grace's card - Should show:
+   • Monday-Friday: Sandy 6am-8am
+   • Tuesday: Chaynne 9am-1pm
+   • Friday: Chaynne 12pm-4pm
+   • Monday-Friday: Parvinder 8pm-10pm
+
+5. Check James's card - Should show:
+   • All days: 8-hour continuous shifts
+   • No 6am-8am splits
+
+6. Check Ace's card - Should show:
+   • Sunday: Hamza 2pm-8pm
+
+═══════════════════════════════════════════════════════════════
+
+📊 GRACE'S FULL WEEK:
+
+MON: Sandy→Arti→Sapana→Parvinder
+TUE: Sandy→Sapana→Chaynne→Arti→Parvinder
+WED: Sandy→Arti→Sapana→Parvinder
+THU: Sandy→Sapana→Arti→Parvinder
+FRI: Sandy→Arti→Chaynne→Sapana→Parvinder
+SAT: Rosie (8h)
+SUN: Rosie (8h)
+
+═══════════════════════════════════════════════════════════════
+
+✅ All mistakes corrected!
+✅ No Rita in roster
+✅ Grace has smaller, distributed shifts
+✅ James has 8-hour continuous shifts
+✅ Chaynne allocated to Grace (8h total)
+✅ Sandy with Grace mornings
+✅ Parvinder with Grace evenings
+
+═══════════════════════════════════════════════════════════════
+

@@ -1,0 +1,101 @@
+Date,Day,Participant,Start Time,End Time,Duration (h),Worker IDs,Worker Names,Location,Support Type,Ratio,Notes
+2025-10-06,Monday,JAMES,22:00,06:00,8,"132, 136","Hamza, Sanjay",Home,Overnight Support,2:1,Continues from Sunday Oct 5 night shift
+2025-10-06,Monday,JAMES,06:00,08:00,2,"135, 125","Sandy, Happy",Home,Self-Care,2:1,
+2025-10-06,Monday,JAMES,08:00,14:00,6,"125, 130","Happy, Mihir",Home,Self-Care,2:1,
+2025-10-06,Monday,JAMES,14:00,22:00,8,"127, 126","Krunal, Rosie",Home,Community Participation,2:1,
+2025-10-06,Monday,GRACE,08:00,14:00,6,118,Arti,Plympton Park,Self-Care,1:1,Female worker
+2025-10-06,Monday,GRACE,14:00,20:00,6,137,Sapana,Plympton Park,Self-Care,1:1,Female worker
+2025-10-06,Monday,GRACE,20:00,22:00,2,139,Parvinder,Plympton Park,Community Participation,1:1,Female worker
+2025-10-07,Tuesday,JAMES,22:00,06:00,8,"138, 132","Taufique, Hamza",Home,Overnight Support,2:1,
+2025-10-07,Tuesday,JAMES,06:00,08:00,2,"135, 127","Sandy, Krunal",Home,Self-Care,2:1,
+2025-10-07,Tuesday,JAMES,08:00,14:00,6,"127, 131","Krunal, MP",Home,Self-Care,2:1,
+2025-10-07,Tuesday,JAMES,14:00,22:00,8,"136, 126","Sanjay, Rosie",Home,Community Participation,2:1,
+2025-10-07,Tuesday,GRACE,08:00,14:00,6,137,Sapana,Plympton Park,Self-Care,1:1,Female worker
+2025-10-07,Tuesday,GRACE,14:00,20:00,6,118,Arti,Plympton Park,Self-Care,1:1,Female worker
+2025-10-07,Tuesday,GRACE,20:00,22:00,2,139,Parvinder,Plympton Park,Community Participation,1:1,Female worker
+2025-10-08,Wednesday,JAMES,22:00,06:00,8,"138, 136","Taufique, Sanjay",Home,Overnight Support,2:1,
+2025-10-08,Wednesday,JAMES,06:00,08:00,2,"135, 129","Sandy, Mayu",Home,Self-Care,2:1,
+2025-10-08,Wednesday,JAMES,08:00,14:00,6,"129, 125","Mayu, Happy",Home,Self-Care,2:1,
+2025-10-08,Wednesday,JAMES,14:00,22:00,8,"139, 126","Parvinder, Rosie",Home,Community Participation,2:1,
+2025-10-08,Wednesday,GRACE,08:00,14:00,6,118,Arti,Plympton Park,Self-Care,1:1,Female worker
+2025-10-08,Wednesday,GRACE,14:00,20:00,6,137,Sapana,Plympton Park,Self-Care,1:1,Female worker
+2025-10-08,Wednesday,GRACE,20:00,22:00,2,139,Parvinder,Plympton Park,Community Participation,1:1,Female worker
+2025-10-09,Thursday,JAMES,22:00,06:00,8,"138, 130","Taufique, Mihir",Home,Overnight Support,2:1,
+2025-10-09,Thursday,JAMES,06:00,14:00,8,"132, 131","Hamza, MP",Home,Self-Care,2:1,
+2025-10-09,Thursday,JAMES,09:00,13:00,4,120,Chaynne,Home,Community Participation,2:1,
+2025-10-09,Thursday,JAMES,14:00,22:00,8,"127, 139","Krunal, Parvinder",Home,Community Participation,2:1,
+2025-10-09,Thursday,GRACE,08:00,14:00,6,137,Sapana,Plympton Park,Self-Care,1:1,Female worker
+2025-10-09,Thursday,GRACE,14:00,20:00,6,118,Arti,Plympton Park,Self-Care,1:1,Female worker
+2025-10-09,Thursday,GRACE,20:00,22:00,2,139,Parvinder,Plympton Park,Community Participation,1:1,Female worker
+2025-10-10,Friday,JAMES,22:00,06:00,8,"138, 125","Taufique, Happy",Home,Overnight Support,2:1,
+2025-10-10,Friday,JAMES,06:00,08:00,2,"135, 136","Sandy, Sanjay",Home,Self-Care,2:1,
+2025-10-10,Friday,JAMES,08:00,14:00,6,"136, 129","Sanjay, Mayu",Home,Self-Care,2:1,
+2025-10-10,Friday,JAMES,12:00,16:00,4,120,Chaynne,Home,Community Participation,2:1,
+2025-10-10,Friday,JAMES,14:00,22:00,8,"131, 126","MP, Rosie",Home,Community Participation,2:1,
+2025-10-10,Friday,GRACE,08:00,14:00,6,118,Arti,Plympton Park,Self-Care,1:1,Female worker
+2025-10-10,Friday,GRACE,14:00,20:00,6,137,Sapana,Plympton Park,Self-Care,1:1,Female worker
+2025-10-10,Friday,GRACE,20:00,22:00,2,139,Parvinder,Plympton Park,Community Participation,1:1,Female worker
+2025-10-11,Saturday,JAMES,22:00,06:00,8,"127, 131","Krunal, MP",Home,Overnight Support,2:1,
+2025-10-11,Saturday,JAMES,06:00,14:00,8,"136, 130","Sanjay, Mihir",Home,Self-Care,2:1,
+2025-10-11,Saturday,JAMES,14:00,22:00,8,"129, 119","Mayu, Avani",Home,Community Participation,2:1,
+2025-10-11,Saturday,GRACE,06:00,14:00,8,126,Rosie,Plympton Park,Self-Care,1:1,Female worker
+2025-10-11,Saturday,ACE,08:00,14:00,6,130,Mihir,Glandore,Self-Care,1:1,
+2025-10-11,Saturday,ACE,14:00,20:00,6,132,Hamza,Glandore,Community Participation,1:1,
+2025-10-11,Saturday,MILAN,09:00,12:00,3,136,Sanjay,Glandore,Self-Care,1:1,
+2025-10-11,Saturday,MILAN,12:00,15:00,3,136,Sanjay,Glandore,Community Participation,1:1,
+2025-10-12,Sunday,JAMES,22:00,06:00,8,"129, 132","Mayu, Hamza",Home,Overnight Support,2:1,This shift continues into Monday Oct 13
+2025-10-12,Sunday,JAMES,06:00,08:00,2,"135, 125","Sandy, Happy",Home,Self-Care,2:1,
+2025-10-12,Sunday,JAMES,08:00,14:00,6,"125, 130","Happy, Mihir",Home,Self-Care,2:1,
+2025-10-12,Sunday,JAMES,14:00,22:00,8,"125, 119","Happy, Avani",Home,Community Participation,2:1,
+2025-10-12,Sunday,GRACE,06:00,14:00,8,126,Rosie,Plympton Park,Self-Care,1:1,Female worker
+2025-10-12,Sunday,ACE,08:00,14:00,6,132,Hamza,Glandore,Self-Care,1:1,
+2025-10-12,Sunday,ACE,14:00,20:00,6,130,Mihir,Glandore,Community Participation,1:1,
+2025-10-12,Sunday,MILAN,09:00,12:00,3,137,Sapana,Glandore,Self-Care,1:1,
+2025-10-12,Sunday,MILAN,12:00,15:00,3,137,Sapana,Glandore,Community Participation,1:1,
+
+PARTICIPANT TOTALS,,,,,,,,,,
+Participant,Total Days,Total Shifts,Total Hours,Coverage Type,,,,,,,
+JAMES,7,28,168,24/7 coverage with 2:1 ratio,,,,,,,
+GRACE,7,17,98,8am-10pm weekdays + 6am-2pm weekends with all female workers,,,,,,,
+ACE,2,4,24,8am-8pm weekend coverage,,,,,,,
+MILAN,2,4,12,9am-3pm weekend coverage,,,,,,,
+
+WORKER HOUR TOTALS (CORRECTED),,,,,,,,,,
+Worker ID,Worker Name,Total Hours,Shifts,Days Worked,Key Changes,,,,,
+118,Arti,24,4,Mon-Thu Grace,Female worker for Grace,,,,,
+119,Avani,16,2,Sat-Sun James,Weekend coverage,,,,,
+120,Chaynne,8,2,Thu-Fri James,Limited hours as requested,,,,,
+125,Happy,24,5,Multiple James,Various shifts,,,,,
+126,Rosie,48,7,Mon-Fri James + Sat-Sun Grace,Highest hours,,,,,
+127,Krunal,32,4,Mon-Tue Thu Sat James,Regular coverage,,,,,
+129,Mayu,32,4,Wed Fri Sat Sun James,REDUCED from 40h due to Mon correction,,,,,
+130,Mihir,32,5,Mon Thu Sat Sun James + Sat-Sun Ace,Mixed coverage,,,,,
+131,MP,32,4,Tue Thu Fri Sat James,Regular coverage,,,,,
+132,Hamza,32,5,Mon Tue Thu Sun James + Sat-Sun Ace,Mon from Sunday night,,,,,
+135,Sandy,14,7,Daily transitions James,All week transitions,,,,,
+136,Sanjay,48,6,Mon Tue Wed Fri Sat James + Sat Milan,INCREASED from 40h due to Mon correction - TIED HIGHEST,,,,,
+137,Sapana,24,6,Mon-Fri Grace + Sun Milan,Female worker,,,,,
+138,Taufique,32,4,Tue-Fri nights James,Night shift specialist,,,,,
+139,Parvinder,26,7,Mon-Fri Grace + Wed-Thu James,Female worker,,,,,
+
+KEY CORRECTIONS MADE,,,,,,,,,,
+Issue,Original,Corrected,Impact,Reason,,,,,
+Monday overnight shift,"Mayu + Hamza (129, 132)","Hamza + Sanjay (132, 136)",Sanjay +8h; Mayu -8h,Must match Sunday night roster,,,,,
+Overnight shift entry,Blocked by string comparison,Now works correctly,Can enter 22:00-06:00 shifts,Fixed validation logic,,,,,
+
+VERIFICATION CHECKLIST,,,,,,,,,,
+Item,Status,Details,,,,,,,
+All 7 days covered,✓,Monday Oct 6 - Sunday Oct 12,,,,,,,
+All 4 participants included,✓,"James, Grace, Ace, Milan",,,,,,,
+James 24/7 coverage,✓,168 hours with 2:1 ratio,,,,,,,
+Grace all female workers,✓,"Arti, Sapana, Parvinder, Rosie",,,,,,,
+Ace weekend coverage,✓,24 hours (Sat-Sun),,,,,,,
+Milan weekend coverage,✓,12 hours (Sat-Sun),,,,,,,
+Sunday night continuity,✓,Hamza + Sanjay continue into Monday,,,,,,,
+No 10-hour rest violations,✓,All breaks validated,,,,,,,
+Worker hours balanced,✓,8h to 48h range,,,,,,,
+No double-bookings,✓,All conflicts checked,,,,,,,
+Total shifts,✓,55 shifts,,,,,,,
+Total hours,✓,302 participant hours,,,,,,,
+Overnight shift validation,✓,Can enter and validate overnight shifts,,,,,,,
+

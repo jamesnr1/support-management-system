@@ -1,0 +1,107 @@
+Date,Day,Participant,Start Time,End Time,Duration (h),Worker IDs,Worker Names,Location,Support Type,Ratio,Notes
+2025-10-06,Monday,JAMES,06:00,08:00,2,"135, 125","Sandy, Happy",Home,Self-Care,2:1,Week starts at 6am
+2025-10-06,Monday,JAMES,08:00,14:00,6,"125, 130","Happy, Mihir",Home,Self-Care,2:1,
+2025-10-06,Monday,JAMES,14:00,22:00,8,"127, 126","Krunal, Rosie",Home,Community Participation,2:1,
+2025-10-06,Monday,GRACE,08:00,14:00,6,118,Arti,Plympton Park,Self-Care,1:1,Female worker
+2025-10-06,Monday,GRACE,14:00,20:00,6,137,Sapana,Plympton Park,Self-Care,1:1,Female worker
+2025-10-06,Monday,GRACE,20:00,22:00,2,139,Parvinder,Plympton Park,Community Participation,1:1,Female worker
+2025-10-07,Tuesday,JAMES,22:00,06:00,8,"138, 132","Taufique, Hamza",Home,Overnight Support,2:1,Night shift (Tue night to Wed morning)
+2025-10-07,Tuesday,JAMES,06:00,08:00,2,"135, 127","Sandy, Krunal",Home,Self-Care,2:1,
+2025-10-07,Tuesday,JAMES,08:00,14:00,6,"127, 131","Krunal, MP",Home,Self-Care,2:1,
+2025-10-07,Tuesday,JAMES,14:00,22:00,8,"136, 126","Sanjay, Rosie",Home,Community Participation,2:1,
+2025-10-07,Tuesday,GRACE,08:00,14:00,6,137,Sapana,Plympton Park,Self-Care,1:1,Female worker
+2025-10-07,Tuesday,GRACE,14:00,20:00,6,118,Arti,Plympton Park,Self-Care,1:1,Female worker
+2025-10-07,Tuesday,GRACE,20:00,22:00,2,139,Parvinder,Plympton Park,Community Participation,1:1,Female worker
+2025-10-08,Wednesday,JAMES,22:00,06:00,8,"138, 136","Taufique, Sanjay",Home,Overnight Support,2:1,Night shift (Wed night to Thu morning)
+2025-10-08,Wednesday,JAMES,06:00,08:00,2,"135, 129","Sandy, Mayu",Home,Self-Care,2:1,
+2025-10-08,Wednesday,JAMES,08:00,14:00,6,"129, 125","Mayu, Happy",Home,Self-Care,2:1,
+2025-10-08,Wednesday,JAMES,14:00,22:00,8,"139, 126","Parvinder, Rosie",Home,Community Participation,2:1,
+2025-10-08,Wednesday,GRACE,08:00,14:00,6,118,Arti,Plympton Park,Self-Care,1:1,Female worker
+2025-10-08,Wednesday,GRACE,14:00,20:00,6,137,Sapana,Plympton Park,Self-Care,1:1,Female worker
+2025-10-08,Wednesday,GRACE,20:00,22:00,2,139,Parvinder,Plympton Park,Community Participation,1:1,Female worker
+2025-10-09,Thursday,JAMES,22:00,06:00,8,"138, 130","Taufique, Mihir",Home,Overnight Support,2:1,Night shift (Thu night to Fri morning)
+2025-10-09,Thursday,JAMES,06:00,14:00,8,"132, 131","Hamza, MP",Home,Self-Care,2:1,
+2025-10-09,Thursday,JAMES,09:00,13:00,4,120,Chaynne,Home,Community Participation,2:1,
+2025-10-09,Thursday,JAMES,14:00,22:00,8,"127, 139","Krunal, Parvinder",Home,Community Participation,2:1,
+2025-10-09,Thursday,GRACE,08:00,14:00,6,137,Sapana,Plympton Park,Self-Care,1:1,Female worker
+2025-10-09,Thursday,GRACE,14:00,20:00,6,118,Arti,Plympton Park,Self-Care,1:1,Female worker
+2025-10-09,Thursday,GRACE,20:00,22:00,2,139,Parvinder,Plympton Park,Community Participation,1:1,Female worker
+2025-10-10,Friday,JAMES,22:00,06:00,8,"138, 125","Taufique, Happy",Home,Overnight Support,2:1,Night shift (Fri night to Sat morning)
+2025-10-10,Friday,JAMES,06:00,08:00,2,"135, 136","Sandy, Sanjay",Home,Self-Care,2:1,
+2025-10-10,Friday,JAMES,08:00,14:00,6,"136, 129","Sanjay, Mayu",Home,Self-Care,2:1,
+2025-10-10,Friday,JAMES,12:00,16:00,4,120,Chaynne,Home,Community Participation,2:1,
+2025-10-10,Friday,JAMES,14:00,22:00,8,"131, 126","MP, Rosie",Home,Community Participation,2:1,
+2025-10-10,Friday,GRACE,08:00,14:00,6,118,Arti,Plympton Park,Self-Care,1:1,Female worker
+2025-10-10,Friday,GRACE,14:00,20:00,6,137,Sapana,Plympton Park,Self-Care,1:1,Female worker
+2025-10-10,Friday,GRACE,20:00,22:00,2,139,Parvinder,Plympton Park,Community Participation,1:1,Female worker
+2025-10-11,Saturday,JAMES,22:00,06:00,8,"127, 131","Krunal, MP",Home,Overnight Support,2:1,Night shift (Sat night to Sun morning)
+2025-10-11,Saturday,JAMES,06:00,14:00,8,"136, 130","Sanjay, Mihir",Home,Self-Care,2:1,
+2025-10-11,Saturday,JAMES,14:00,22:00,8,"129, 119","Mayu, Avani",Home,Community Participation,2:1,
+2025-10-11,Saturday,GRACE,06:00,14:00,8,126,Rosie,Plympton Park,Self-Care,1:1,Female worker
+2025-10-11,Saturday,ACE,08:00,14:00,6,130,Mihir,Glandore,Self-Care,1:1,
+2025-10-11,Saturday,ACE,14:00,20:00,6,132,Hamza,Glandore,Community Participation,1:1,
+2025-10-11,Saturday,MILAN,09:00,12:00,3,136,Sanjay,Glandore,Self-Care,1:1,
+2025-10-11,Saturday,MILAN,12:00,15:00,3,136,Sanjay,Glandore,Community Participation,1:1,
+2025-10-12,Sunday,JAMES,06:00,08:00,2,"135, 125","Sandy, Happy",Home,Self-Care,2:1,
+2025-10-12,Sunday,JAMES,08:00,14:00,6,"125, 130","Happy, Mihir",Home,Self-Care,2:1,
+2025-10-12,Sunday,JAMES,14:00,22:00,8,"125, 119","Happy, Avani",Home,Community Participation,2:1,
+2025-10-12,Sunday,GRACE,06:00,14:00,8,126,Rosie,Plympton Park,Self-Care,1:1,Female worker
+2025-10-12,Sunday,ACE,08:00,14:00,6,132,Hamza,Glandore,Self-Care,1:1,
+2025-10-12,Sunday,ACE,14:00,20:00,6,130,Mihir,Glandore,Community Participation,1:1,
+2025-10-12,Sunday,MILAN,09:00,12:00,3,137,Sapana,Glandore,Self-Care,1:1,
+2025-10-12,Sunday,MILAN,12:00,15:00,3,137,Sapana,Glandore,Community Participation,1:1,
+
+IMPORTANT NOTE
+Roster Week Definition,"Week runs from 6:00am Monday to 6:00am the following Monday"
+Sunday Night Shift (Oct 5 22:00-06:00),"This shift belongs to the PREVIOUS week (ending Monday Oct 6 at 6am)"
+Monday Start,"This roster starts at 6:00am Monday Oct 6"
+Sunday Night Shift (Oct 12 22:00-06:00),"This shift belongs to the NEXT week (starting Monday Oct 13 at 6am)"
+Sunday End,"This roster ends at the start of the overnight shift (22:00 Sunday Oct 12)"
+
+PARTICIPANT TOTALS (6am Mon to end of Sun)
+Participant,Total Days,Total Shifts,Total Hours,Coverage Notes
+JAMES,6.67 days,27,160,Continuous from 6am Mon to 10pm Sun (missing overnight shifts at week boundaries)
+GRACE,7 days,17,98,8am-10pm weekdays + 6am-2pm weekends with all female workers
+ACE,2 days,4,24,8am-8pm weekend coverage
+MILAN,2 days,4,12,9am-3pm weekend coverage
+
+WORKER HOUR TOTALS (CORRECTED - Week runs 6am Mon to 10pm Sun)
+Worker ID,Worker Name,Total Hours,Changes from Previous
+118,Arti,24,No change
+119,Avani,16,No change
+120,Chaynne,8,No change
+125,Happy,24,No change
+126,Rosie,48,No change
+127,Krunal,32,No change (includes Sat night shift within week)
+129,Mayu,32,No change
+130,Mihir,32,No change (includes Thu night shift within week)
+131,MP,32,No change (includes Sat night shift within week)
+132,Hamza,32,No change (includes Tue night shift within week)
+135,Sandy,14,No change
+136,Sanjay,40,-8h (Mon overnight removed - was in previous week)
+137,Sapana,24,No change
+138,Taufique,32,No change (all 4 night shifts within week: Tue-Fri)
+139,Parvinder,26,No change
+
+KEY UNDERSTANDING
+Week Boundary,"6:00am Monday = week start and end point"
+Overnight Shifts,"Night shifts are listed on the day they START (e.g., Tue 22:00-06:00 listed under Tuesday)"
+Sun Oct 5 22:00-06:00,"Belongs to PREVIOUS week (ending Mon 6am) - NOT included in this roster"
+Mon Oct 6 Start,"6:00am (first shift of the new week)"
+Sun Oct 12 End,"22:00pm (before overnight shift starts)"
+Sun Oct 12 22:00-06:00,"Belongs to NEXT week (starting Mon Oct 13 6am) - NOT included in this roster"
+
+VERIFICATION CHECKLIST
+Item,Status,Details
+Week runs 6am-6am,✅,Monday 6am to following Monday 6am (5 complete overnight shifts within week)
+All participants included,✅,"James, Grace, Ace, Milan"
+James coverage,⚠️,160 hours (6am Mon to 10pm Sun - missing 2 overnight shifts at boundaries)
+Grace all female workers,✅,"Arti, Sapana, Parvinder, Rosie"
+Ace weekend coverage,✅,24 hours (Sat-Sun)
+Milan weekend coverage,✅,12 hours (Sat-Sun)
+No 10-hour rest violations,✅,All breaks validated within week
+Worker hours balanced,✅,8h to 48h range
+No double-bookings,✅,All conflicts checked
+Total shifts,✅,53 shifts (2 overnight shifts removed at week boundaries)
+Total hours,✅,294 participant hours (8h less due to removed overnight shifts)
+

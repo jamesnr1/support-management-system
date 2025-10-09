@@ -550,18 +550,100 @@ const StaffTab = ({ workers = [], locations = [], onWorkersUpdate, rosterData, p
                 ×
               </button>
             </div>
-            <div style={{ padding: '2rem', textAlign: 'center' }}>
-              <p style={{ marginBottom: '2rem', color: 'var(--text-primary)', fontSize: '1.1rem' }}>
-                <strong>Worker:</strong> {editingWorker?.full_name}
-              </p>
-              <p style={{ marginBottom: '2rem', color: 'var(--text-secondary)' }}>
-                To edit worker details (name, contact info, etc.), please use the <strong>Profiles</strong> tab.
-                <br />
-                <br />
-                To manage availability (days/hours), click the <strong style={{ color: 'var(--accent)' }}>Availability icon</strong> on the worker card.
-              </p>
-              <div style={{ display: 'flex', gap: '1rem', justifyContent: 'center' }}>
+            <form 
+              onSubmit={async (e) => {
+                e.preventDefault();
+                const formData = new FormData(e.target);
+                const updatedWorker = {
+                  full_name: formData.get('full_name'),
+                  email: formData.get('email'),
+                  phone: formData.get('phone'),
+                  car: formData.get('car'),
+                  sex: formData.get('sex'),
+                  telegram: formData.get('telegram')
+                };
+                
+                try {
+                  await axios.put(`${API}/workers/${editingWorker.id}`, updatedWorker);
+                  toast.success(`Updated ${updatedWorker.full_name}`);
+                  setShowWorkerModal(false);
+                  setEditingWorker(null);
+                  onWorkersUpdate?.();
+                } catch (error) {
+                  console.error('Error updating worker:', error);
+                  toast.error('Failed to update worker');
+                }
+              }}
+              style={{ padding: '1rem' }}
+            >
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem', marginBottom: '1.5rem' }}>
+                <div>
+                  <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: '500' }}>Full Name *</label>
+                  <input
+                    type="text"
+                    name="full_name"
+                    required
+                    defaultValue={editingWorker?.full_name || ''}
+                    style={{ width: '100%', padding: '0.75rem', borderRadius: '4px', border: '1px solid var(--border)', background: 'var(--card-bg)', color: 'var(--text-primary)' }}
+                  />
+                </div>
+                <div>
+                  <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: '500' }}>Email</label>
+                  <input
+                    type="email"
+                    name="email"
+                    defaultValue={editingWorker?.email || ''}
+                    style={{ width: '100%', padding: '0.75rem', borderRadius: '4px', border: '1px solid var(--border)', background: 'var(--card-bg)', color: 'var(--text-primary)' }}
+                  />
+                </div>
+                <div>
+                  <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: '500' }}>Phone</label>
+                  <input
+                    type="tel"
+                    name="phone"
+                    defaultValue={editingWorker?.phone || ''}
+                    style={{ width: '100%', padding: '0.75rem', borderRadius: '4px', border: '1px solid var(--border)', background: 'var(--card-bg)', color: 'var(--text-primary)' }}
+                  />
+                </div>
+                <div>
+                  <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: '500' }}>Has Car</label>
+                  <select 
+                    name="car"
+                    defaultValue={editingWorker?.car || 'No'}
+                    style={{ width: '100%', padding: '0.75rem', borderRadius: '4px', border: '1px solid var(--border)', background: 'var(--card-bg)', color: 'var(--text-primary)' }}
+                  >
+                    <option value="Yes">Yes</option>
+                    <option value="No">No</option>
+                  </select>
+                </div>
+                <div>
+                  <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: '500' }}>Gender</label>
+                  <select 
+                    name="sex"
+                    defaultValue={editingWorker?.sex || ''}
+                    style={{ width: '100%', padding: '0.75rem', borderRadius: '4px', border: '1px solid var(--border)', background: 'var(--card-bg)', color: 'var(--text-primary)' }}
+                  >
+                    <option value="">Select...</option>
+                    <option value="M">Male</option>
+                    <option value="F">Female</option>
+                    <option value="O">Other</option>
+                  </select>
+                </div>
+                <div>
+                  <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: '500' }}>Telegram</label>
+                  <input
+                    type="text"
+                    name="telegram"
+                    placeholder="@username or user ID"
+                    defaultValue={editingWorker?.telegram || ''}
+                    style={{ width: '100%', padding: '0.75rem', borderRadius: '4px', border: '1px solid var(--border)', background: 'var(--card-bg)', color: 'var(--text-primary)' }}
+                  />
+                </div>
+              </div>
+              
+              <div style={{ display: 'flex', gap: '1rem', justifyContent: 'flex-end' }}>
                 <button 
+                  type="button"
                   className="btn btn-secondary" 
                   onClick={() => {
                     setShowWorkerModal(false);
@@ -569,10 +651,17 @@ const StaffTab = ({ workers = [], locations = [], onWorkersUpdate, rosterData, p
                   }}
                   style={{ padding: '0.75rem 1.5rem' }}
                 >
-                  Close
+                  Cancel
+                </button>
+                <button 
+                  type="submit"
+                  className="btn btn-primary" 
+                  style={{ padding: '0.75rem 1.5rem' }}
+                >
+                  Save Changes
                 </button>
               </div>
-            </div>
+            </form>
           </div>
         </div>
       )}

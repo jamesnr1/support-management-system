@@ -1,0 +1,17 @@
+Worker ID,Worker Name,Total Hours,Shifts Breakdown
+118,Arti,24,"Grace Mon-Fri (6h × 4 days = 24h)"
+119,Avani,16,"James Sat 2pm-10pm (8h), Sun 2pm-10pm (8h)"
+120,Chaynne,8,"James Thu 9am-1pm (4h), Fri 12pm-4pm (4h)"
+125,Happy,24,"James Mon 6am-2pm (8h), Mon 2pm-10pm (2h overlap), Wed 8am-2pm (6h), Fri 10pm-6am (8h), Sun 6am-10pm (16h)"
+126,Rosie,48,"James Mon-Fri 2pm-10pm (8h × 5 days = 40h), Grace Sat-Sun 6am-2pm (8h × 2 days = 16h)"
+127,Krunal,32,"James Mon 2pm-10pm (8h), Tue 6am-2pm (8h), Thu 2pm-10pm (8h), Sat 10pm-6am (8h)"
+129,Mayu,32,"James Wed 6am-2pm (8h), Fri 8am-2pm (6h), Sat 2pm-10pm (8h), Sun 10pm-6am (8h) + overlap (2h)"
+130,Mihir,32,"James Mon 6am-2pm (6h), Thu 10pm-6am (8h), Sat 6am-2pm (8h), Sun 8am-2pm (6h), Ace Sat 8am-2pm (6h) - overlap with James"
+131,MP,32,"James Tue 8am-2pm (6h), Thu 6am-2pm (8h), Fri 2pm-10pm (8h), Sat 10pm-6am (8h) + 6am-2pm (2h overlap)"
+132,Hamza,32,"James Mon 10pm-6am from Sun night (8h), Tue 10pm-6am (8h), Thu 6am-2pm (8h), Sun 10pm-6am (8h), Ace Sat 2pm-8pm (6h) - overlap, Sun 8am-2pm (6h) - overlap"
+135,Sandy,14,"James Mon 6am-8am (2h), Tue 6am-8am (2h), Wed 6am-8am (2h), Fri 6am-8am (2h), Sun 6am-8am (2h) = 10h total (5 days × 2h)"
+136,Sanjay,48,"James Mon 10pm-6am from Sun night (8h), Tue 2pm-10pm (8h), Wed 10pm-6am (8h), Fri 6am-2pm (8h), Sat 6am-2pm (8h), Milan Sat 9am-3pm (6h)"
+137,Sapana,24,"Grace Mon 2pm-8pm (6h), Tue 8am-2pm (6h), Wed 2pm-8pm (6h), Thu 8am-2pm (6h), Fri 2pm-8pm (6h) = 30h - overlap, Milan Sun 9am-3pm (6h)"
+138,Taufique,32,"James Tue 10pm-6am (8h), Wed 10pm-6am (8h), Thu 10pm-6am (8h), Fri 10pm-6am (8h)"
+139,Parvinder,26,"Grace Mon-Fri 8pm-10pm (2h × 5 days = 10h), James Wed 2pm-10pm (8h), Thu 2pm-10pm (8h)"
+

@@ -1,0 +1,609 @@
+{
+  "JAM001": {
+    "2025-10-06": [
+      {
+        "id": "jam_mon_morning",
+        "date": "2025-10-06",
+        "startTime": "06:00",
+        "endTime": "14:00",
+        "duration": 8,
+        "workers": [125, 130],
+        "location": "Home",
+        "supportType": "Self-Care",
+        "ratio": "2:1",
+        "notes": "Continuous 8-hour shift"
+      },
+      {
+        "id": "jam_mon_afternoon",
+        "date": "2025-10-06",
+        "startTime": "14:00",
+        "endTime": "22:00",
+        "duration": 8,
+        "workers": [127, 126],
+        "location": "Home",
+        "supportType": "Self-Care",
+        "ratio": "2:1"
+      }
+    ],
+    "2025-10-07": [
+      {
+        "id": "jam_tue_night",
+        "date": "2025-10-07",
+        "startTime": "22:00",
+        "endTime": "06:00",
+        "duration": 8,
+        "workers": [138, 132],
+        "location": "Home",
+        "supportType": "Overnight Support",
+        "ratio": "2:1"
+      },
+      {
+        "id": "jam_tue_morning",
+        "date": "2025-10-07",
+        "startTime": "06:00",
+        "endTime": "14:00",
+        "duration": 8,
+        "workers": [127, 131],
+        "location": "Home",
+        "supportType": "Self-Care",
+        "ratio": "2:1",
+        "notes": "Continuous 8-hour shift"
+      },
+      {
+        "id": "jam_tue_afternoon",
+        "date": "2025-10-07",
+        "startTime": "14:00",
+        "endTime": "22:00",
+        "duration": 8,
+        "workers": [136, 126],
+        "location": "Home",
+        "supportType": "Self-Care",
+        "ratio": "2:1"
+      }
+    ],
+    "2025-10-08": [
+      {
+        "id": "jam_wed_night",
+        "date": "2025-10-08",
+        "startTime": "22:00",
+        "endTime": "06:00",
+        "duration": 8,
+        "workers": [138, 136],
+        "location": "Home",
+        "supportType": "Overnight Support",
+        "ratio": "2:1"
+      },
+      {
+        "id": "jam_wed_morning",
+        "date": "2025-10-08",
+        "startTime": "06:00",
+        "endTime": "14:00",
+        "duration": 8,
+        "workers": [129, 125],
+        "location": "Home",
+        "supportType": "Self-Care",
+        "ratio": "2:1",
+        "notes": "Continuous 8-hour shift"
+      },
+      {
+        "id": "jam_wed_afternoon",
+        "date": "2025-10-08",
+        "startTime": "14:00",
+        "endTime": "22:00",
+        "duration": 8,
+        "workers": [139, 126],
+        "location": "Home",
+        "supportType": "Self-Care",
+        "ratio": "2:1"
+      }
+    ],
+    "2025-10-09": [
+      {
+        "id": "jam_thu_night",
+        "date": "2025-10-09",
+        "startTime": "22:00",
+        "endTime": "06:00",
+        "duration": 8,
+        "workers": [138, 130],
+        "location": "Home",
+        "supportType": "Overnight Support",
+        "ratio": "2:1"
+      },
+      {
+        "id": "jam_thu_morning",
+        "date": "2025-10-09",
+        "startTime": "06:00",
+        "endTime": "14:00",
+        "duration": 8,
+        "workers": [132, 131],
+        "location": "Home",
+        "supportType": "Self-Care",
+        "ratio": "2:1",
+        "notes": "Chaynne removed - was creating 3-worker overlap"
+      },
+      {
+        "id": "jam_thu_afternoon",
+        "date": "2025-10-09",
+        "startTime": "14:00",
+        "endTime": "22:00",
+        "duration": 8,
+        "workers": [127, 139],
+        "location": "Home",
+        "supportType": "Self-Care",
+        "ratio": "2:1"
+      }
+    ],
+    "2025-10-10": [
+      {
+        "id": "jam_fri_night",
+        "date": "2025-10-10",
+        "startTime": "22:00",
+        "endTime": "06:00",
+        "duration": 8,
+        "workers": [138, 125],
+        "location": "Home",
+        "supportType": "Overnight Support",
+        "ratio": "2:1",
+        "notes": "User mentioned Rita/Happy but Rita not in roster - keeping as is"
+      },
+      {
+        "id": "jam_fri_morning",
+        "date": "2025-10-10",
+        "startTime": "06:00",
+        "endTime": "14:00",
+        "duration": 8,
+        "workers": [136, 129],
+        "location": "Home",
+        "supportType": "Self-Care",
+        "ratio": "2:1",
+        "notes": "Chaynne removed - was creating 3-worker overlap. Continuous 8-hour shift"
+      },
+      {
+        "id": "jam_fri_afternoon",
+        "date": "2025-10-10",
+        "startTime": "14:00",
+        "endTime": "22:00",
+        "duration": 8,
+        "workers": [131, 126],
+        "location": "Home",
+        "supportType": "Self-Care",
+        "ratio": "2:1"
+      }
+    ],
+    "2025-10-11": [
+      {
+        "id": "jam_sat_night",
+        "date": "2025-10-11",
+        "startTime": "22:00",
+        "endTime": "06:00",
+        "duration": 8,
+        "workers": [127, 131],
+        "location": "Home",
+        "supportType": "Overnight Support",
+        "ratio": "2:1"
+      },
+      {
+        "id": "jam_sat_morning",
+        "date": "2025-10-11",
+        "startTime": "06:00",
+        "endTime": "14:00",
+        "duration": 8,
+        "workers": [136, 130],
+        "location": "Home",
+        "supportType": "Self-Care",
+        "ratio": "2:1"
+      },
+      {
+        "id": "jam_sat_afternoon",
+        "date": "2025-10-11",
+        "startTime": "14:00",
+        "endTime": "22:00",
+        "duration": 8,
+        "workers": [129, 119],
+        "location": "Home",
+        "supportType": "Self-Care",
+        "ratio": "2:1"
+      }
+    ],
+    "2025-10-12": [
+      {
+        "id": "jam_sun_night",
+        "date": "2025-10-12",
+        "startTime": "22:00",
+        "endTime": "06:00",
+        "duration": 8,
+        "workers": [129, 132],
+        "location": "Home",
+        "supportType": "Overnight Support",
+        "ratio": "2:1"
+      },
+      {
+        "id": "jam_sun_morning",
+        "date": "2025-10-12",
+        "startTime": "06:00",
+        "endTime": "14:00",
+        "duration": 8,
+        "workers": [125, 130],
+        "location": "Home",
+        "supportType": "Self-Care",
+        "ratio": "2:1"
+      },
+      {
+        "id": "jam_sun_afternoon",
+        "date": "2025-10-12",
+        "startTime": "14:00",
+        "endTime": "22:00",
+        "duration": 8,
+        "workers": [125, 119],
+        "location": "Home",
+        "supportType": "Self-Care",
+        "ratio": "2:1"
+      }
+    ]
+  },
+  "GRA001": {
+    "2025-10-06": [
+      {
+        "id": "gra_mon_early",
+        "date": "2025-10-06",
+        "startTime": "06:00",
+        "endTime": "08:00",
+        "duration": 2,
+        "workers": [135],
+        "location": "Plympton Park",
+        "supportType": "Self-Care",
+        "ratio": "1:1",
+        "notes": "Sandy moved from James to Grace"
+      },
+      {
+        "id": "gra_mon_morning",
+        "date": "2025-10-06",
+        "startTime": "08:00",
+        "endTime": "14:00",
+        "duration": 6,
+        "workers": [118],
+        "location": "Plympton Park",
+        "supportType": "Self-Care",
+        "ratio": "1:1"
+      },
+      {
+        "id": "gra_mon_afternoon",
+        "date": "2025-10-06",
+        "startTime": "14:00",
+        "endTime": "20:00",
+        "duration": 6,
+        "workers": [137],
+        "location": "Plympton Park",
+        "supportType": "Self-Care",
+        "ratio": "1:1"
+      },
+      {
+        "id": "gra_mon_evening",
+        "date": "2025-10-06",
+        "startTime": "20:00",
+        "endTime": "22:00",
+        "duration": 2,
+        "workers": [139],
+        "location": "Plympton Park",
+        "supportType": "Self-Care",
+        "ratio": "1:1"
+      }
+    ],
+    "2025-10-07": [
+      {
+        "id": "gra_tue_early",
+        "date": "2025-10-07",
+        "startTime": "06:00",
+        "endTime": "08:00",
+        "duration": 2,
+        "workers": [135],
+        "location": "Plympton Park",
+        "supportType": "Self-Care",
+        "ratio": "1:1",
+        "notes": "Sandy moved from James to Grace"
+      },
+      {
+        "id": "gra_tue_morning",
+        "date": "2025-10-07",
+        "startTime": "08:00",
+        "endTime": "14:00",
+        "duration": 6,
+        "workers": [137],
+        "location": "Plympton Park",
+        "supportType": "Self-Care",
+        "ratio": "1:1"
+      },
+      {
+        "id": "gra_tue_afternoon",
+        "date": "2025-10-07",
+        "startTime": "14:00",
+        "endTime": "20:00",
+        "duration": 6,
+        "workers": [118],
+        "location": "Plympton Park",
+        "supportType": "Self-Care",
+        "ratio": "1:1"
+      },
+      {
+        "id": "gra_tue_evening",
+        "date": "2025-10-07",
+        "startTime": "20:00",
+        "endTime": "22:00",
+        "duration": 2,
+        "workers": [139],
+        "location": "Plympton Park",
+        "supportType": "Self-Care",
+        "ratio": "1:1"
+      }
+    ],
+    "2025-10-08": [
+      {
+        "id": "gra_wed_early",
+        "date": "2025-10-08",
+        "startTime": "06:00",
+        "endTime": "08:00",
+        "duration": 2,
+        "workers": [135],
+        "location": "Plympton Park",
+        "supportType": "Self-Care",
+        "ratio": "1:1",
+        "notes": "Sandy moved from James to Grace"
+      },
+      {
+        "id": "gra_wed_morning",
+        "date": "2025-10-08",
+        "startTime": "08:00",
+        "endTime": "14:00",
+        "duration": 6,
+        "workers": [118],
+        "location": "Plympton Park",
+        "supportType": "Self-Care",
+        "ratio": "1:1"
+      },
+      {
+        "id": "gra_wed_afternoon",
+        "date": "2025-10-08",
+        "startTime": "14:00",
+        "endTime": "20:00",
+        "duration": 6,
+        "workers": [137],
+        "location": "Plympton Park",
+        "supportType": "Self-Care",
+        "ratio": "1:1"
+      },
+      {
+        "id": "gra_wed_evening",
+        "date": "2025-10-08",
+        "startTime": "20:00",
+        "endTime": "22:00",
+        "duration": 2,
+        "workers": [139],
+        "location": "Plympton Park",
+        "supportType": "Self-Care",
+        "ratio": "1:1"
+      }
+    ],
+    "2025-10-09": [
+      {
+        "id": "gra_thu_early",
+        "date": "2025-10-09",
+        "startTime": "06:00",
+        "endTime": "08:00",
+        "duration": 2,
+        "workers": [135],
+        "location": "Plympton Park",
+        "supportType": "Self-Care",
+        "ratio": "1:1",
+        "notes": "Sandy moved from James to Grace"
+      },
+      {
+        "id": "gra_thu_morning",
+        "date": "2025-10-09",
+        "startTime": "08:00",
+        "endTime": "14:00",
+        "duration": 6,
+        "workers": [137],
+        "location": "Plympton Park",
+        "supportType": "Self-Care",
+        "ratio": "1:1"
+      },
+      {
+        "id": "gra_thu_afternoon",
+        "date": "2025-10-09",
+        "startTime": "14:00",
+        "endTime": "20:00",
+        "duration": 6,
+        "workers": [118],
+        "location": "Plympton Park",
+        "supportType": "Self-Care",
+        "ratio": "1:1"
+      },
+      {
+        "id": "gra_thu_evening",
+        "date": "2025-10-09",
+        "startTime": "20:00",
+        "endTime": "22:00",
+        "duration": 2,
+        "workers": [139],
+        "location": "Plympton Park",
+        "supportType": "Self-Care",
+        "ratio": "1:1"
+      }
+    ],
+    "2025-10-10": [
+      {
+        "id": "gra_fri_early",
+        "date": "2025-10-10",
+        "startTime": "06:00",
+        "endTime": "08:00",
+        "duration": 2,
+        "workers": [135],
+        "location": "Plympton Park",
+        "supportType": "Self-Care",
+        "ratio": "1:1",
+        "notes": "Sandy moved from James to Grace"
+      },
+      {
+        "id": "gra_fri_morning",
+        "date": "2025-10-10",
+        "startTime": "08:00",
+        "endTime": "14:00",
+        "duration": 6,
+        "workers": [118],
+        "location": "Plympton Park",
+        "supportType": "Self-Care",
+        "ratio": "1:1"
+      },
+      {
+        "id": "gra_fri_afternoon",
+        "date": "2025-10-10",
+        "startTime": "14:00",
+        "endTime": "20:00",
+        "duration": 6,
+        "workers": [137],
+        "location": "Plympton Park",
+        "supportType": "Self-Care",
+        "ratio": "1:1"
+      },
+      {
+        "id": "gra_fri_evening",
+        "date": "2025-10-10",
+        "startTime": "20:00",
+        "endTime": "22:00",
+        "duration": 2,
+        "workers": [139],
+        "location": "Plympton Park",
+        "supportType": "Self-Care",
+        "ratio": "1:1"
+      }
+    ],
+    "2025-10-11": [
+      {
+        "id": "gra_sat",
+        "date": "2025-10-11",
+        "startTime": "06:00",
+        "endTime": "14:00",
+        "duration": 8,
+        "workers": [126],
+        "location": "Plympton Park",
+        "supportType": "Self-Care",
+        "ratio": "1:1"
+      }
+    ],
+    "2025-10-12": [
+      {
+        "id": "gra_sun",
+        "date": "2025-10-12",
+        "startTime": "06:00",
+        "endTime": "14:00",
+        "duration": 8,
+        "workers": [126],
+        "location": "Plympton Park",
+        "supportType": "Self-Care",
+        "ratio": "1:1"
+      }
+    ]
+  },
+  "ACE001": {
+    "2025-10-11": [
+      {
+        "id": "ace_sat_morning",
+        "date": "2025-10-11",
+        "startTime": "08:00",
+        "endTime": "14:00",
+        "duration": 6,
+        "workers": [130],
+        "location": "Glandore",
+        "supportType": "Self-Care",
+        "ratio": "1:1"
+      },
+      {
+        "id": "ace_sat_afternoon",
+        "date": "2025-10-11",
+        "startTime": "14:00",
+        "endTime": "20:00",
+        "duration": 6,
+        "workers": [132],
+        "location": "Glandore",
+        "supportType": "Self-Care",
+        "ratio": "1:1"
+      }
+    ],
+    "2025-10-12": [
+      {
+        "id": "ace_sun_morning",
+        "date": "2025-10-12",
+        "startTime": "08:00",
+        "endTime": "14:00",
+        "duration": 6,
+        "workers": [132],
+        "location": "Glandore",
+        "supportType": "Self-Care",
+        "ratio": "1:1"
+      },
+      {
+        "id": "ace_sun_afternoon",
+        "date": "2025-10-12",
+        "startTime": "14:00",
+        "endTime": "20:00",
+        "duration": 6,
+        "workers": [132],
+        "location": "Glandore",
+        "supportType": "Self-Care",
+        "ratio": "1:1",
+        "notes": "Changed from Mihir to Hamza per user request"
+      }
+    ]
+  },
+  "MIL001": {
+    "2025-10-11": [
+      {
+        "id": "mil_sat_selfcare",
+        "date": "2025-10-11",
+        "startTime": "09:00",
+        "endTime": "12:00",
+        "duration": 3,
+        "workers": [136],
+        "location": "Glandore",
+        "supportType": "Self-Care",
+        "ratio": "1:1"
+      },
+      {
+        "id": "mil_sat_community",
+        "date": "2025-10-11",
+        "startTime": "12:00",
+        "endTime": "15:00",
+        "duration": 3,
+        "workers": [136],
+        "location": "Glandore",
+        "supportType": "Community Participation",
+        "ratio": "1:1"
+      }
+    ],
+    "2025-10-12": [
+      {
+        "id": "mil_sun_selfcare",
+        "date": "2025-10-12",
+        "startTime": "09:00",
+        "endTime": "12:00",
+        "duration": 3,
+        "workers": [137],
+        "location": "Glandore",
+        "supportType": "Self-Care",
+        "ratio": "1:1"
+      },
+      {
+        "id": "mil_sun_community",
+        "date": "2025-10-12",
+        "startTime": "12:00",
+        "endTime": "15:00",
+        "duration": 3,
+        "workers": [137],
+        "location": "Glandore",
+        "supportType": "Community Participation",
+        "ratio": "1:1"
+      }
+    ]
+  }
+}
+

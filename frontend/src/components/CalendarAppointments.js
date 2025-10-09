@@ -189,21 +189,8 @@ const CalendarAppointments = ({
       Milan: []
     };
 
-    // Filter appointments based on tab
+    // Show all appointments for the week - no date filtering
     let filteredAppointments = appointments;
-    
-    // For Roster tab, only show appointments from today onwards
-    if (weekType === 'roster') {
-      const today = new Date();
-      today.setHours(0, 0, 0, 0);
-      
-      filteredAppointments = appointments.filter(apt => {
-        const aptDate = new Date(apt.start || apt.date);
-        aptDate.setHours(0, 0, 0, 0);
-        return aptDate >= today;
-      });
-    }
-    // For Planner and other tabs, show all appointments
 
     filteredAppointments.forEach((apt) => {
       // 1) Prefer backend-provided participantCode

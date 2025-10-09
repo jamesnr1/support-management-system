@@ -1225,8 +1225,22 @@ const ShiftForm = ({
             border: '1px solid var(--border-color)'
           }}
         >
-          <option value="">SW1</option>
+          <option value="">Select Worker 1</option>
           {!unavailabilityCheckComplete && <option value="" disabled>Loading workers...</option>}
+          
+          {/* Show currently assigned worker even if not in availableWorkers */}
+          {formData.workers[0] && !availableWorkers.find(w => w.id === formData.workers[0]) && 
+            workers.find(w => w.id === formData.workers[0]) && (
+            <option key={formData.workers[0]} value={formData.workers[0]}>
+              {(() => {
+                const worker = workers.find(w => w.id === formData.workers[0]);
+                const hours = calculateWorkerHours(worker.id, weekType);
+                const formatted = formatWorkerHours(hours);
+                return `${getDisplayName(worker.full_name)} (${formatted.hours}h)`;
+              })()}
+            </option>
+          )}
+          
           {availableWorkers.filter(worker => worker.id !== formData.workers[1]).map(worker => (
             <option key={worker.id} value={worker.id}>
               {(() => {
@@ -1256,7 +1270,21 @@ const ShiftForm = ({
           >
             <option value="">Select Worker 2</option>
             {!unavailabilityCheckComplete && <option value="" disabled>Loading workers...</option>}
-          {availableWorkers.filter(worker => worker.id !== formData.workers[0]).map(worker => (
+            
+            {/* Show currently assigned worker even if not in availableWorkers */}
+            {formData.workers[1] && !availableWorkers.find(w => w.id === formData.workers[1]) && 
+              workers.find(w => w.id === formData.workers[1]) && (
+              <option key={formData.workers[1]} value={formData.workers[1]}>
+                {(() => {
+                  const worker = workers.find(w => w.id === formData.workers[1]);
+                  const hours = calculateWorkerHours(worker.id, weekType);
+                  const formatted = formatWorkerHours(hours);
+                  return `${getDisplayName(worker.full_name)} (${formatted.hours}h)`;
+                })()}
+              </option>
+            )}
+            
+            {availableWorkers.filter(worker => worker.id !== formData.workers[0]).map(worker => (
               <option key={worker.id} value={worker.id}>
               {(() => {
                 const hours = calculateWorkerHours(worker.id, weekType);

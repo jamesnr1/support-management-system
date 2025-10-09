@@ -1,0 +1,631 @@
+<!DOCTYPE html>
+<html>
+<head>
+<style>
+body {
+  font-family: -apple-system, system-ui, sans-serif;
+  margin: 0;
+  padding: 20px;
+}
+
+.container {
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+h2 {
+  margin: 40px 0 20px;
+  color: #333;
+}
+
+.preview-section {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 40px;
+  margin-bottom: 60px;
+}
+
+/* OPTION 1: Warm Rose Garden */
+.option1 {
+  background: linear-gradient(135deg, #FAE8E5 0%, #F5DDD9 100%);
+  --primary-bg: #FAE8E5;       /* Warm blush background */
+  --card-bg: #FFF5F3;           /* Cream cards */
+  --accent: #B76E79;            /* Rose Gold */
+  --accent-light: #E4B5C0;      /* Light rose */
+  --secondary: #9BB49B;         /* Mint */
+  --text-primary: #3D2428;      /* Dark warm brown */
+  --text-secondary: #6B4E52;    /* Medium brown */
+  --border: #E8C5BE;            /* Rose border */
+  --hover-bg: #FFEAE5;          /* Peachy hover */
+}
+
+/* OPTION 2: Sunset Glow */
+.option2 {
+  background: linear-gradient(135deg, #FFE5DB 0%, #FFD4C4 100%);
+  --primary-bg: #FFE5DB;        /* Peach background */
+  --card-bg: #FFF8F3;           /* Warm cream cards */
+  --accent: #E07A5F;            /* Terracotta */
+  --accent-light: #F4A688;      /* Light coral */
+  --secondary: #81B29A;         /* Sage green */
+  --text-primary: #3D2922;      /* Dark brown */
+  --text-secondary: #6B4A3D;    /* Medium brown */
+  --border: #F4BCAB;            /* Peachy border */
+  --hover-bg: #FFE0D0;          /* Light peach hover */
+}
+
+/* OPTION 3: Lavender Dreams */
+.option3 {
+  background: linear-gradient(135deg, #E8DFF5 0%, #DFD3ED 100%);
+  --primary-bg: #E8DFF5;        /* Lavender background */
+  --card-bg: #F5F0FA;           /* Light purple cards */
+  --accent: #9B59B6;            /* Rich purple */
+  --accent-light: #C39BD3;      /* Light purple */
+  --secondary: #F4A460;         /* Sandy gold */
+  --text-primary: #2E1F3E;      /* Dark purple */
+  --text-secondary: #5C4570;    /* Medium purple */
+  --border: #D4C1E1;            /* Lavender border */
+  --hover-bg: #EFE5F7;          /* Very light purple hover */
+}
+
+/* OPTION 4: Ocean Breeze */
+.option4 {
+  background: linear-gradient(135deg, #D4F1F4 0%, #C3E9E5 100%);
+  --primary-bg: #D4F1F4;        /* Soft aqua background */
+  --card-bg: #E8F8F5;           /* Mint cream cards */
+  --accent: #05668D;            /* Deep ocean blue */
+  --accent-light: #4FA8C5;      /* Light ocean */
+  --secondary: #F18F01;         /* Warm orange */
+  --text-primary: #0A2E3F;      /* Dark teal */
+  --text-secondary: #2E5E6E;    /* Medium teal */
+  --border: #A8D8E0;            /* Aqua border */
+  --hover-bg: #D0EDE8;          /* Light mint hover */
+}
+
+/* OPTION 5: Warm Meadow */
+.option5 {
+  background: linear-gradient(135deg, #E8E3D0 0%, #DDD5B8 100%);
+  --primary-bg: #E8E3D0;        /* Warm beige background */
+  --card-bg: #F5F1E3;           /* Cream cards */
+  --accent: #8B6F47;            /* Warm brown */
+  --accent-light: #B89968;      /* Light caramel */
+  --secondary: #9CAF88;         /* Sage green */
+  --text-primary: #3A2F1F;      /* Dark brown */
+  --text-secondary: #5C4E3A;    /* Medium brown */
+  --border: #D4C4A0;            /* Beige border */
+  --hover-bg: #F0E9D8;          /* Light cream hover */
+}
+
+/* OPTION 6: Cherry Blossom */
+.option6 {
+  background: linear-gradient(135deg, #FFE0EC 0%, #FFCCD5 100%);
+  --primary-bg: #FFE0EC;        /* Soft pink background */
+  --card-bg: #FFF0F5;           /* Light pink cards */
+  --accent: #C2185B;            /* Deep pink */
+  --accent-light: #F06292;      /* Medium pink */
+  --secondary: #4DB6AC;         /* Teal green */
+  --text-primary: #3E1929;      /* Dark rose */
+  --text-secondary: #6B3E52;    /* Medium rose */
+  --border: #FFB3C1;            /* Pink border */
+  --hover-bg: #FFE4ED;          /* Very light pink hover */
+}
+
+/* Common Styles */
+.preview-box {
+  padding: 30px;
+  border-radius: 16px;
+  min-height: 500px;
+}
+
+.preview-box .header {
+  background: var(--card-bg);
+  padding: 20px 24px;
+  border-radius: 12px;
+  border: 2px solid var(--border);
+  margin-bottom: 24px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+}
+
+.preview-box h3 {
+  margin: 0 0 8px 0;
+  color: var(--accent);
+  font-size: 22px;
+  font-weight: 600;
+}
+
+.preview-box .subtitle {
+  color: var(--text-secondary);
+  font-size: 14px;
+}
+
+.tabs {
+  display: flex;
+  gap: 2px;
+  background: var(--card-bg);
+  padding: 6px;
+  border-radius: 12px;
+  margin-bottom: 24px;
+  border: 1px solid var(--border);
+}
+
+.tab {
+  padding: 10px 18px;
+  background: transparent;
+  border: none;
+  color: var(--text-secondary);
+  cursor: pointer;
+  font-weight: 500;
+  border-radius: 8px;
+  transition: all 0.2s;
+  font-size: 14px;
+}
+
+.tab:hover {
+  background: var(--hover-bg);
+  color: var(--accent);
+}
+
+.tab.active {
+  background: var(--accent-light);
+  color: white;
+}
+
+.buttons {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-bottom: 24px;
+}
+
+.btn {
+  padding: 10px 20px;
+  border-radius: 10px;
+  border: none;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-size: 14px;
+}
+
+.btn-primary {
+  background: var(--accent);
+  color: white;
+}
+
+.btn-primary:hover {
+  filter: brightness(0.9);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+}
+
+.btn-secondary {
+  background: var(--secondary);
+  color: white;
+}
+
+.btn-secondary:hover {
+  filter: brightness(0.9);
+  transform: translateY(-1px);
+}
+
+.btn-outline {
+  background: var(--card-bg);
+  color: var(--accent);
+  border: 2px solid var(--accent);
+}
+
+.card {
+  background: var(--card-bg);
+  border: 2px solid var(--border);
+  border-radius: 12px;
+  padding: 20px;
+  margin-bottom: 16px;
+  transition: all 0.2s;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.04);
+}
+
+.card:hover {
+  background: var(--hover-bg);
+  border-color: var(--accent-light);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+}
+
+.card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.card-title {
+  font-weight: 600;
+  color: var(--text-primary);
+  font-size: 18px;
+}
+
+.badge {
+  background: var(--secondary);
+  color: white;
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.shift {
+  background: linear-gradient(135deg, var(--hover-bg) 0%, var(--card-bg) 100%);
+  padding: 12px;
+  border-radius: 8px;
+  border-left: 3px solid var(--accent);
+  margin-bottom: 8px;
+}
+
+.shift-time {
+  font-weight: 600;
+  color: var(--accent);
+  margin-bottom: 4px;
+}
+
+.shift-details {
+  color: var(--text-secondary);
+  font-size: 14px;
+}
+
+.input {
+  width: 100%;
+  padding: 10px 14px;
+  border: 2px solid var(--border);
+  border-radius: 8px;
+  background: var(--card-bg);
+  color: var(--text-primary);
+  font-size: 14px;
+  transition: all 0.2s;
+  margin-bottom: 12px;
+}
+
+.input:focus {
+  outline: none;
+  border-color: var(--accent);
+  background: var(--hover-bg);
+}
+
+.worker-card {
+  background: var(--card-bg);
+  border: 2px solid var(--accent-light);
+  border-radius: 12px;
+  padding: 18px;
+  margin-top: 16px;
+}
+
+.worker-header-section {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.worker-name {
+  font-weight: 600;
+  color: var(--text-primary);
+  font-size: 18px;
+}
+
+.availability-box {
+  background: linear-gradient(135deg, var(--primary-bg) 0%, var(--hover-bg) 100%);
+  padding: 12px;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+}
+</style>
+</head>
+<body>
+
+<div class="container">
+  <h1 style="text-align: center; margin-bottom: 40px;">Warmer Color Options - More Colorful Backgrounds</h1>
+  
+  <!-- Row 1 -->
+  <div class="preview-section">
+    <!-- OPTION 1: Warm Rose Garden -->
+    <div class="preview-box option1">
+      <div class="header">
+        <h3>Option 1: Warm Rose Garden</h3>
+        <div class="subtitle">Soft blush throughout - feminine & warm</div>
+      </div>
+      
+      <div class="tabs">
+        <button class="tab active">Roster</button>
+        <button class="tab">Planner</button>
+        <button class="tab">Shifts</button>
+        <button class="tab">Profiles</button>
+      </div>
+      
+      <div class="buttons">
+        <button class="btn btn-primary">Edit Mode</button>
+        <button class="btn btn-secondary">Copy</button>
+        <button class="btn btn-outline">Calendar</button>
+      </div>
+      
+      <div class="card">
+        <div class="card-header">
+          <span class="card-title">Grace</span>
+          <span class="badge">Active</span>
+        </div>
+        <div class="shift">
+          <div class="shift-time">Monday 6:00 AM - 2:00 PM</div>
+          <div class="shift-details">Sandy - Self Care Support</div>
+        </div>
+        <div class="shift">
+          <div class="shift-time">Monday 8:00 PM - 10:00 PM</div>
+          <div class="shift-details">Parvinder - Evening Support</div>
+        </div>
+      </div>
+      
+      <div class="worker-card">
+        <div class="worker-header-section">
+          <span class="worker-name">Sandy Tran</span>
+          <span class="badge">Available</span>
+        </div>
+        <div class="availability-box">
+          <strong style="color: var(--accent);">Weekly Availability</strong><br>
+          Mon-Fri: 6:00 AM - 2:00 PM
+        </div>
+      </div>
+    </div>
+
+    <!-- OPTION 2: Sunset Glow -->
+    <div class="preview-box option2">
+      <div class="header">
+        <h3>Option 2: Sunset Glow</h3>
+        <div class="subtitle">Warm peach & terracotta - energizing</div>
+      </div>
+      
+      <div class="tabs">
+        <button class="tab active">Roster</button>
+        <button class="tab">Planner</button>
+        <button class="tab">Shifts</button>
+        <button class="tab">Profiles</button>
+      </div>
+      
+      <div class="buttons">
+        <button class="btn btn-primary">Edit Mode</button>
+        <button class="btn btn-secondary">Copy</button>
+        <button class="btn btn-outline">Calendar</button>
+      </div>
+      
+      <div class="card">
+        <div class="card-header">
+          <span class="card-title">Grace</span>
+          <span class="badge">Active</span>
+        </div>
+        <div class="shift">
+          <div class="shift-time">Monday 6:00 AM - 2:00 PM</div>
+          <div class="shift-details">Sandy - Self Care Support</div>
+        </div>
+        <div class="shift">
+          <div class="shift-time">Monday 8:00 PM - 10:00 PM</div>
+          <div class="shift-details">Parvinder - Evening Support</div>
+        </div>
+      </div>
+      
+      <div class="worker-card">
+        <div class="worker-header-section">
+          <span class="worker-name">Sandy Tran</span>
+          <span class="badge">Available</span>
+        </div>
+        <div class="availability-box">
+          <strong style="color: var(--accent);">Weekly Availability</strong><br>
+          Mon-Fri: 6:00 AM - 2:00 PM
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Row 2 -->
+  <div class="preview-section">
+    <!-- OPTION 3: Lavender Dreams -->
+    <div class="preview-box option3">
+      <div class="header">
+        <h3>Option 3: Lavender Dreams</h3>
+        <div class="subtitle">Soft purple & gold - calming</div>
+      </div>
+      
+      <div class="tabs">
+        <button class="tab active">Roster</button>
+        <button class="tab">Planner</button>
+        <button class="tab">Shifts</button>
+        <button class="tab">Profiles</button>
+      </div>
+      
+      <div class="buttons">
+        <button class="btn btn-primary">Edit Mode</button>
+        <button class="btn btn-secondary">Copy</button>
+        <button class="btn btn-outline">Calendar</button>
+      </div>
+      
+      <div class="card">
+        <div class="card-header">
+          <span class="card-title">Grace</span>
+          <span class="badge">Active</span>
+        </div>
+        <div class="shift">
+          <div class="shift-time">Monday 6:00 AM - 2:00 PM</div>
+          <div class="shift-details">Sandy - Self Care Support</div>
+        </div>
+        <div class="shift">
+          <div class="shift-time">Monday 8:00 PM - 10:00 PM</div>
+          <div class="shift-details">Parvinder - Evening Support</div>
+        </div>
+      </div>
+      
+      <div class="worker-card">
+        <div class="worker-header-section">
+          <span class="worker-name">Sandy Tran</span>
+          <span class="badge">Available</span>
+        </div>
+        <div class="availability-box">
+          <strong style="color: var(--accent);">Weekly Availability</strong><br>
+          Mon-Fri: 6:00 AM - 2:00 PM
+        </div>
+      </div>
+    </div>
+
+    <!-- OPTION 4: Ocean Breeze -->
+    <div class="preview-box option4">
+      <div class="header">
+        <h3>Option 4: Ocean Breeze</h3>
+        <div class="subtitle">Soft aqua & coral - refreshing</div>
+      </div>
+      
+      <div class="tabs">
+        <button class="tab active">Roster</button>
+        <button class="tab">Planner</button>
+        <button class="tab">Shifts</button>
+        <button class="tab">Profiles</button>
+      </div>
+      
+      <div class="buttons">
+        <button class="btn btn-primary">Edit Mode</button>
+        <button class="btn btn-secondary">Copy</button>
+        <button class="btn btn-outline">Calendar</button>
+      </div>
+      
+      <div class="card">
+        <div class="card-header">
+          <span class="card-title">Grace</span>
+          <span class="badge">Active</span>
+        </div>
+        <div class="shift">
+          <div class="shift-time">Monday 6:00 AM - 2:00 PM</div>
+          <div class="shift-details">Sandy - Self Care Support</div>
+        </div>
+        <div class="shift">
+          <div class="shift-time">Monday 8:00 PM - 10:00 PM</div>
+          <div class="shift-details">Parvinder - Evening Support</div>
+        </div>
+      </div>
+      
+      <div class="worker-card">
+        <div class="worker-header-section">
+          <span class="worker-name">Sandy Tran</span>
+          <span class="badge">Available</span>
+        </div>
+        <div class="availability-box">
+          <strong style="color: var(--accent);">Weekly Availability</strong><br>
+          Mon-Fri: 6:00 AM - 2:00 PM
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Row 3 -->
+  <div class="preview-section">
+    <!-- OPTION 5: Warm Meadow -->
+    <div class="preview-box option5">
+      <div class="header">
+        <h3>Option 5: Warm Meadow</h3>
+        <div class="subtitle">Creamy beige & sage - cozy</div>
+      </div>
+      
+      <div class="tabs">
+        <button class="tab active">Roster</button>
+        <button class="tab">Planner</button>
+        <button class="tab">Shifts</button>
+        <button class="tab">Profiles</button>
+      </div>
+      
+      <div class="buttons">
+        <button class="btn btn-primary">Edit Mode</button>
+        <button class="btn btn-secondary">Copy</button>
+        <button class="btn btn-outline">Calendar</button>
+      </div>
+      
+      <div class="card">
+        <div class="card-header">
+          <span class="card-title">Grace</span>
+          <span class="badge">Active</span>
+        </div>
+        <div class="shift">
+          <div class="shift-time">Monday 6:00 AM - 2:00 PM</div>
+          <div class="shift-details">Sandy - Self Care Support</div>
+        </div>
+        <div class="shift">
+          <div class="shift-time">Monday 8:00 PM - 10:00 PM</div>
+          <div class="shift-details">Parvinder - Evening Support</div>
+        </div>
+      </div>
+      
+      <div class="worker-card">
+        <div class="worker-header-section">
+          <span class="worker-name">Sandy Tran</span>
+          <span class="badge">Available</span>
+        </div>
+        <div class="availability-box">
+          <strong style="color: var(--accent);">Weekly Availability</strong><br>
+          Mon-Fri: 6:00 AM - 2:00 PM
+        </div>
+      </div>
+    </div>
+
+    <!-- OPTION 6: Cherry Blossom -->
+    <div class="preview-box option6">
+      <div class="header">
+        <h3>Option 6: Cherry Blossom</h3>
+        <div class="subtitle">Soft pink & teal - cheerful</div>
+      </div>
+      
+      <div class="tabs">
+        <button class="tab active">Roster</button>
+        <button class="tab">Planner</button>
+        <button class="tab">Shifts</button>
+        <button class="tab">Profiles</button>
+      </div>
+      
+      <div class="buttons">
+        <button class="btn btn-primary">Edit Mode</button>
+        <button class="btn btn-secondary">Copy</button>
+        <button class="btn btn-outline">Calendar</button>
+      </div>
+      
+      <div class="card">
+        <div class="card-header">
+          <span class="card-title">Grace</span>
+          <span class="badge">Active</span>
+        </div>
+        <div class="shift">
+          <div class="shift-time">Monday 6:00 AM - 2:00 PM</div>
+          <div class="shift-details">Sandy - Self Care Support</div>
+        </div>
+        <div class="shift">
+          <div class="shift-time">Monday 8:00 PM - 10:00 PM</div>
+          <div class="shift-details">Parvinder - Evening Support</div>
+        </div>
+      </div>
+      
+      <div class="worker-card">
+        <div class="worker-header-section">
+          <span class="worker-name">Sandy Tran</span>
+          <span class="badge">Available</span>
+        </div>
+        <div class="availability-box">
+          <strong style="color: var(--accent);">Weekly Availability</strong><br>
+          Mon-Fri: 6:00 AM - 2:00 PM
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div style="text-align: center; margin-top: 40px; padding: 20px;">
+    <h2>Key Features of These Warmer Options:</h2>
+    <p style="font-size: 18px; line-height: 1.6; max-width: 800px; margin: 0 auto;">
+      • <strong>Colorful backgrounds</strong> - No more stark white<br>
+      • <strong>Cream/tinted cards</strong> - Softer on the eyes<br>
+      • <strong>Gradient effects</strong> - Adds depth and warmth<br>
+      • <strong>Better hover states</strong> - Interactive feedback<br>
+      • <strong>Consistent theming</strong> - Everything matches
+    </p>
+  </div>
+
+</div>
+
+</body>
+</html>

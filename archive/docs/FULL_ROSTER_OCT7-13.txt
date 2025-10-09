@@ -1,0 +1,236 @@
+
+================================================================================
+PARTICIPANT: GRA001
+================================================================================
+
+📅 2025-10-07 (Tue)
+--------------------------------------------------------------------------------
+  ⏰ 08:00 - 14:00 (6h)
+     👥 Workers: ID:118
+     📍 Self-Care | Ratio: 1:1 | Location: Plympton Park
+
+  ⏰ 14:00 - 20:00 (6h)
+     👥 Workers: ID:137
+     📍 Self-Care | Ratio: 1:1 | Location: Plympton Park
+
+
+📅 2025-10-08 (Wed)
+--------------------------------------------------------------------------------
+  ⏰ 08:00 - 14:00 (6h)
+     👥 Workers: ID:137
+     📍 Self-Care | Ratio: 1:1 | Location: Plympton Park
+
+  ⏰ 14:00 - 20:00 (6h)
+     👥 Workers: ID:118
+     📍 Self-Care | Ratio: 1:1 | Location: Plympton Park
+
+
+📅 2025-10-09 (Thu)
+--------------------------------------------------------------------------------
+  ⏰ 08:00 - 14:00 (6h)
+     👥 Workers: ID:118
+     📍 Self-Care | Ratio: 1:1 | Location: Plympton Park
+
+  ⏰ 14:00 - 20:00 (6h)
+     👥 Workers: ID:137
+     📍 Self-Care | Ratio: 1:1 | Location: Plympton Park
+
+
+📅 2025-10-10 (Fri)
+--------------------------------------------------------------------------------
+  ⏰ 08:00 - 14:00 (6h)
+     👥 Workers: ID:137
+     📍 Self-Care | Ratio: 1:1 | Location: Plympton Park
+
+  ⏰ 14:00 - 20:00 (6h)
+     👥 Workers: ID:118
+     📍 Self-Care | Ratio: 1:1 | Location: Plympton Park
+
+
+📅 2025-10-11 (Sat)
+--------------------------------------------------------------------------------
+  ⏰ 08:00 - 14:00 (6h)
+     👥 Workers: ID:118
+     📍 Self-Care | Ratio: 1:1 | Location: Plympton Park
+
+  ⏰ 14:00 - 20:00 (6h)
+     👥 Workers: ID:137
+     📍 Self-Care | Ratio: 1:1 | Location: Plympton Park
+
+
+📅 2025-10-12 (Sun)
+--------------------------------------------------------------------------------
+  ⏰ 06:00 - 14:00 (8h)
+     👥 Workers: ID:126
+     📍 Self-Care | Ratio: 1:1 | Location: Plympton Park
+
+
+📅 2025-10-13 (Mon)
+--------------------------------------------------------------------------------
+  ⏰ 09:00 - 15:00 (6h)
+     👥 Workers: ID:139
+     📍 Self-Care | Ratio: 1:1 | Location: Plympton Park
+
+
+================================================================================
+PARTICIPANT: JAM001
+================================================================================
+
+📅 2025-10-07 (Tue)
+--------------------------------------------------------------------------------
+  ⏰ 22:00 - 06:00 (8h)
+     👥 Workers: ID:132, ID:129
+     📍 Overnight Support | Ratio: 2:1 | Location: Home
+
+  ⏰ 06:00 - 08:00 (2h)
+     👥 Workers: ID:135, ID:130
+     📍 Self-Care | Ratio: 2:1 | Location: Home
+
+  ⏰ 08:00 - 14:00 (6h)
+     👥 Workers: ID:130, ID:125
+     📍 Self-Care | Ratio: 2:1 | Location: Home
+
+  ⏰ 14:00 - 22:00 (8h)
+     👥 Workers: ID:127, ID:126
+     📍 Community Participation | Ratio: 2:1 | Location: Home
+
+
+📅 2025-10-08 (Wed)
+--------------------------------------------------------------------------------
+  ⏰ 22:00 - 06:00 (8h)
+     👥 Workers: ID:138, ID:132
+     📍 Overnight Support | Ratio: 2:1 | Location: Home
+
+  ⏰ 06:00 - 08:00 (2h)
+     👥 Workers: ID:135, ID:127
+     📍 Self-Care | Ratio: 2:1 | Location: Home
+
+  ⏰ 08:00 - 14:00 (6h)
+     👥 Workers: ID:127, ID:131
+     📍 Self-Care | Ratio: 2:1 | Location: Home
+
+  ⏰ 14:00 - 22:00 (8h)
+     👥 Workers: ID:136, ID:126
+     📍 Community Participation | Ratio: 2:1 | Location: Home
+
+
+📅 2025-10-09 (Thu)
+--------------------------------------------------------------------------------
+  ⏰ 22:00 - 06:00 (8h)
+     👥 Workers: ID:138, ID:136
+     📍 Overnight Support | Ratio: 2:1 | Location: Home
+
+  ⏰ 06:00 - 08:00 (2h)
+     👥 Workers: ID:135, ID:129
+     📍 Self-Care | Ratio: 2:1 | Location: Home
+
+  ⏰ 08:00 - 14:00 (6h)
+     👥 Workers: ID:129, ID:125
+     📍 Self-Care | Ratio: 2:1 | Location: Home
+
+  ⏰ 14:00 - 22:00 (8h)
+     👥 Workers: ID:139, ID:126
+     📍 Community Participation | Ratio: 2:1 | Location: Home
+
+
+📅 2025-10-10 (Fri)
+--------------------------------------------------------------------------------
+  ⏰ 22:00 - 06:00 (8h)
+     👥 Workers: ID:138, ID:130
+     📍 Overnight Support | Ratio: 2:1 | Location: Home
+
+  ⏰ 06:00 - 14:00 (8h)
+     👥 Workers: ID:132, ID:131
+     📍 Self-Care | Ratio: 2:1 | Location: Home
+
+  ⏰ 09:00 - 13:00 (4h)
+     👥 Workers: ID:120
+     📍 Community Participation | Ratio: 2:1 | Location: Home
+
+  ⏰ 14:00 - 22:00 (8h)
+     👥 Workers: ID:127, ID:139
+     📍 Community Participation | Ratio: 2:1 | Location: Home
+
+
+📅 2025-10-11 (Sat)
+--------------------------------------------------------------------------------
+  ⏰ 22:00 - 06:00 (8h)
+     👥 Workers: ID:138, ID:125
+     📍 Overnight Support | Ratio: 2:1 | Location: Home
+
+  ⏰ 06:00 - 08:00 (2h)
+     👥 Workers: ID:135, ID:136
+     📍 Self-Care | Ratio: 2:1 | Location: Home
+
+  ⏰ 08:00 - 14:00 (6h)
+     👥 Workers: ID:136, ID:129
+     📍 Self-Care | Ratio: 2:1 | Location: Home
+
+  ⏰ 12:00 - 16:00 (4h)
+     👥 Workers: ID:120
+     📍 Community Participation | Ratio: 2:1 | Location: Home
+
+  ⏰ 14:00 - 22:00 (8h)
+     👥 Workers: ID:131, ID:126
+     📍 Community Participation | Ratio: 2:1 | Location: Home
+
+
+📅 2025-10-12 (Sun)
+--------------------------------------------------------------------------------
+  ⏰ 22:00 - 06:00 (8h)
+     👥 Workers: ID:127, ID:131
+     📍 Overnight Support | Ratio: 2:1 | Location: Home
+
+  ⏰ 06:00 - 14:00 (8h)
+     👥 Workers: ID:136, ID:130
+     📍 Self-Care | Ratio: 2:1 | Location: Home
+
+  ⏰ 14:00 - 22:00 (8h)
+     👥 Workers: ID:129, ID:119
+     📍 Community Participation | Ratio: 2:1 | Location: Home
+
+
+📅 2025-10-13 (Mon)
+--------------------------------------------------------------------------------
+  ⏰ 22:00 - 06:00 (8h)
+     👥 Workers: ID:129, ID:132
+     📍 Overnight Support | Ratio: 2:1 | Location: Home
+
+  ⏰ 06:00 - 08:00 (2h)
+     👥 Workers: ID:135, ID:125
+     📍 Self-Care | Ratio: 2:1 | Location: Home
+
+  ⏰ 08:00 - 14:00 (6h)
+     👥 Workers: ID:125, ID:130
+     📍 Self-Care | Ratio: 2:1 | Location: Home
+
+  ⏰ 14:00 - 22:00 (8h)
+     👥 Workers: ID:125, ID:119
+     📍 Community Participation | Ratio: 2:1 | Location: Home
+
+
+================================================================================
+PARTICIPANT: MIL001
+================================================================================
+
+📅 2025-10-12 (Sun)
+--------------------------------------------------------------------------------
+  ⏰ 09:00 - 12:00 (3h)
+     👥 Workers: ID:136
+     📍 Self-Care | Ratio: 1:1 | Location: Glandore
+
+  ⏰ 12:00 - 15:00 (3h)
+     👥 Workers: ID:136
+     📍 Community Participation | Ratio: 1:1 | Location: Glandore
+
+
+📅 2025-10-13 (Mon)
+--------------------------------------------------------------------------------
+  ⏰ 09:00 - 12:00 (3h)
+     👥 Workers: ID:137
+     📍 Self-Care | Ratio: 1:1 | Location: Glandore
+
+  ⏰ 12:00 - 15:00 (3h)
+     👥 Workers: ID:137
+     📍 Community Participation | Ratio: 1:1 | Location: Glandore
+

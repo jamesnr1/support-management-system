@@ -1,0 +1,20 @@
+Status,Date,Day,Time,Workers,Worker IDs,Duration,Location,Support Type,Ratio,Notes
+SUNDAY (correct),2025-10-05,Sunday,22:00-06:00,"Hamza, Sanjay","132, 136",8h,Home,Overnight Support,2:1,This shift crosses into Monday morning
+❌ BEFORE (wrong),2025-10-06,Monday,22:00-06:00,"Mayu, Hamza","129, 132",8h,Home,Overnight Support,2:1,WRONG - Different workers than Sunday night
+✅ AFTER (fixed),2025-10-06,Monday,22:00-06:00,"Hamza, Sanjay","132, 136",8h,Home,Overnight Support,2:1,CORRECT - Matches Sunday night roster
+
+WORKER HOURS IMPACT
+Worker,ID,Hours Before,Hours After,Change,Explanation
+Sanjay,136,40h,48h,+8h,Now includes Monday overnight (from Sunday night)
+Mayu,129,40h,32h,-8h,No longer works Monday overnight
+Hamza,132,32h,32h,No change,Was already working both shifts
+
+VALIDATION CHECKLIST
+Item,Status,Details
+Overnight shift logic,✅,calculateDuration() correctly adds 24h when end < start
+Time overlap detection,✅,timeRangesOverlap() handles overnight shifts by adding 1440 minutes
+Form validation,✅,Uses calculateDuration() instead of string comparison
+Shift entry,✅,Can now enter 22:00-06:00 shifts without errors
+Worker continuity,✅,Sunday night workers now continue until Monday 6am
+Total weekly hours,✅,Still 302 hours across all participants
+

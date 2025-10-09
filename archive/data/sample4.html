@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Professional Color Comparison</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            margin: 0;
+            padding: 30px;
+            background-color: #F7F5F0; /* Light universal background */
+        }
+
+        .comparison-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 40px;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        h1 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 40px;
+        }
+
+        .option-box {
+            padding: 30px;
+            border-radius: 20px;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.08);
+            min-height: 800px;
+        }
+
+        /* --- OPTION 4: Warm Gray & Terracotta (Highly Professional) --- */
+        .option4-styles {
+            --primary-bg: #D5CFC4;       /* Warm gray background */
+            --card-bg: #E0DAD0;          /* Light warm gray cards */
+            --accent: #A0522D;           /* Terracotta */
+            --accent-light: #CD853F;     /* Light terracotta */
+            --secondary: #708B75;        /* Dusty green */
+            --text-primary: #1C1915;     /* Very dark for high contrast */
+            --text-secondary: #3D3630;   /* Dark warm gray */
+            --border: #C2BAAC;           /* Warm gray border */
+            --hover-bg: #DAD3C6;         /* Light warm gray hover */
+            --shadow: rgba(160, 82, 45, 0.08);
+
+            background-color: var(--primary-bg);
+        }
+
+        /* --- OPTION 6: Warm and Sandstone (Elegant Bridge) --- */
+        .option6-styles { 
+            --primary-bg: #E8DDD0;       /* Warm sand background */
+            --card-bg: #F5EFE7;          /* Light sand cards */
+            --accent: #8B6F47;           /* Warm brown (Accent) */
+            --accent-light: #B89968;     /* Light caramel */
+            --secondary: #7A9A65;        /* Olive green (Status) */
+            --text-primary: #2C2416;     /* Very dark brown - excellent readability */
+            --text-secondary: #4A3F30;   /* Dark brown */
+            --border: #D4C4A0;           /* Sand border */
+            --hover-bg: #F0E6D8;         /* Light sand hover */
+            --shadow: rgba(139, 111, 71, 0.08); /* Warm Brown shadow */
+            
+            background-color: var(--primary-bg);
+        }
+
+        /* --- Common Component Styles (From Sample.html) --- */
+        
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background-color: var(--card-bg);
+            padding: 10px 20px;
+            border-radius: 15px;
+            margin-bottom: 20px;
+            border: 1px solid var(--border);
+            color: var(--text-primary);
+        }
+
+        .logout {
+            background-color: var(--accent);
+            color: white;
+            border: none;
+            padding: 8px 18px;
+            border-radius: 25px; 
+            cursor: pointer;
+            font-weight: 500;
+            transition: background-color 0.2s, transform 0.2s;
+        }
+        .logout:hover {
+            background-color: var(--accent-light);
+            transform: translateY(-1px);
+        }
+
+        .tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .tab {
+            background-color: var(--card-bg);
+            border: 1px solid var(--border);
+            padding: 10px 20px;
+            border-radius: 25px;
+            cursor: pointer;
+            color: var(--text-secondary);
+            transition: all 0.2s;
+        }
+
+        .tab.active {
+            background-color: var(--accent);
+            color: white;
+            border-color: var(--accent);
+        }
+        .tab:hover:not(.active) {
+            background-color: var(--hover-bg);
+            color: var(--accent);
+        }
+
+        h2 {
+            color: var(--accent);
+            margin-bottom: 20px;
+            font-size: 24px;
+        }
+
+        .worker-card, .client-card {
+            background-color: var(--card-bg);
+            border-radius: 20px;
+            padding: 20px;
+            box-shadow: 0 4px 10px var(--shadow);
+            border: 1px solid var(--border);
+            margin-bottom: 20px;
+            color: var(--text-primary);
+        }
+
+        .worker-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .worker-name {
+            font-size: 18px;
+            font-weight: 600;
+        }
+
+        .worker-status {
+            background-color: var(--secondary);
+            color: white;
+            padding: 4px 10px;
+            border-radius: 15px;
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        .worker-icons {
+            display: flex;
+            gap: 8px;
+        }
+        .worker-icons svg {
+            stroke: var(--accent); 
+            stroke-width: 1.5;
+            width: 18px;
+            height: 18px;
+        }
+
+        .card-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .card-actions button {
+            background-color: var(--accent);
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 25px; 
+            cursor: pointer;
+            flex: 1;
+            transition: all 0.2s;
+        }
+        .card-actions button:hover {
+            filter: brightness(1.1);
+            transform: translateY(-1px);
+        }
+
+        .availability ul {
+            list-style: none;
+            padding: 0;
+            margin: 0 0 10px 0;
+        }
+        .availability li {
+            margin-bottom: 4px;
+            color: var(--text-secondary);
+            font-size: 14px;
+        }
+        .availability h3 {
+            color: var(--accent);
+            margin: 0 0 8px 0;
+            font-size: 16px;
+        }
+
+        .client-card h3 {
+            margin: 0 0 10px 0;
+            color: var(--accent);
+        }
+        .client-card p {
+            margin: 0;
+            color: var(--text-secondary);
+            font-size: 14px;
+        }
+        .client-card span {
+            font-size: 14px;
+            opacity: 0.8;
+            color: var(--text-secondary);
+        }
+
+    </style>
+</head>
+<body>
+
+    <h1>Side-by-Side Professional Color Comparison</h1>
+
+    <div class="comparison-container">
+        
+        <div class="option-box option4-styles">
+            <header class="header">
+                <h2>Option 4: Terracotta</h2>
+                <button class="logout">Logout</button>
+            </header>
+
+            <nav class="tabs">
+                <button class="tab active">Roster</button>
+                <button class="tab">Planner</button>
+                <button class="tab">Shifts</button>
+                <button class="tab">Profiles</button>
+            </nav>
+
+            <div class="worker-card">
+                <div class="worker-header">
+                    <span class="worker-name">Arti</span>
+                    <span class="worker-status">48h</span>
+                    <div class="worker-icons">
+                        <svg viewBox="0 0 24 24" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M5 18H3a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h3a1 1 0 0 1 1 1v11a1 1 0 0 0-1 1zM21 18h-2a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h3a1 1 0 0 1 1 1v11a1 1 0 0 0-1 1z"></path><path d="M12 18V5a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v13"></path><circle cx="7" cy="9" r="1"></circle><circle cx="17" cy="9" r="1"></circle></svg>
+                        <svg viewBox="0 0 24 24" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M22 2H2a1 1 0 0 0-1 1v18a1 1 0 0 0 1 1h20a1 1 0 0 0 1-1V3a1 1 0 0 0-1-1z"></path><polyline points="22,7 12,14 2,7"></polyline></svg>
+                        <svg viewBox="0 0 24 24" fill="none" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="6" r="3"></circle><path d="M18 8v6a3 3 0 0 1-3 3H9a3 3 0 0 1-3-3V8"></path><line x1="6" y1="21" x2="18" y2="21"></line><line x1="12" y1="17" x2="12" y2="21"></line></svg>
+                    </div>
+                </div>
+                <div class="availability">
+                    <h3>Weekly Availability</h3>
+                    <ul>
+                        <li>Monday: 6:00 AM - 11:00 PM</li>
+                        <li>Tuesday: 6:00 AM - 11:00 PM</li>
+                        <li>Unavailable: 03/10/2025 - 13/10/2025</li>
+                    </ul>
+                </div>
+                <div class="card-actions">
+                    <button>Edit</button>
+                    <button>Availability</button>
+                </div>
+            </div>
+
+            <div class="client-card">
+                <h3>Libby <span>Sep 29 - Oct 5</span></h3>
+                <p>Oct 1, 09:00 - Speech Therapist<br>Oct 3, 14:30 - Uni</p>
+            </div>
+            
+        </div>
+
+        <div class="option-box option6-styles">
+            <header class="header">
+                <h2>Option 6: Warm and Sandstone</h2>
+                <button class="logout">Logout</button>
+            </header>
+
+            <nav class="tabs">
+                <button class="tab active">Roster</button>
+                <button class="tab">Planner</button>
+                <button class="tab">Shifts</button>
+                <button class="tab">Profiles</button>
+            </nav>
+
+            <div class="worker-card">
+                <div class="worker-header">
+                    <span class="worker-name">Arti</span>
+                    <span class="worker-status">48h</span>
+                    <div class="worker-icons">
+                        <svg viewBox="0 0 24 24" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M5 18H3a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h3a1 1 0 0 1 1 1v11a1 1 0 0 0-1 1zM21 18h-2a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h3a1 1 0 0 1 1 1v11a1 1 0 0 0-1 1z"></path><path d="M12 18V5a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v13"></path><circle cx="7" cy="9" r="1"></circle><circle cx="17" cy="9" r="1"></circle></svg>
+                        <svg viewBox="0 0 24 24" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M22 2H2a1 1 0 0 0-1 1v18a1 1 0 0 0 1 1h20a1 1 0 0 0 1-1V3a1 1 0 0 0-1-1z"></path><polyline points="22,7 12,14 2,7"></polyline></svg>
+                        <svg viewBox="0 0 24 24" fill="none" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="6" r="3"></circle><path d="M18 8v6a3 3 0 0 1-3 3H9a3 3 0 0 1-3-3V8"></path><line x1="6" y1="21" x2="18" y2="21"></line><line x1="12" y1="17" x2="12" y2="21"></line></svg>
+                    </div>
+                </div>
+                <div class="availability">
+                    <h3>Weekly Availability</h3>
+                    <ul>
+                        <li>Monday: 6:00 AM - 11:00 PM</li>
+                        <li>Tuesday: 6:00 AM - 11:00 PM</li>
+                        <li>Unavailable: 03/10/2025 - 13/10/2025</li>
+                    </ul>
+                </div>
+                <div class="card-actions">
+                    <button>Edit</button>
+                    <button>Availability</button>
+                </div>
+            </div>
+
+            <div class="client-card">
+                <h3>Libby <span>Sep 29 - Oct 5</span></h3>
+                <p>Oct 1, 09:00 - Speech Therapist<br>Oct 3, 14:30 - Uni</p>
+            </div>
+
+        </div>
+    </div>
+
+</body>
+</html>

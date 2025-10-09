@@ -1,0 +1,47 @@
+Day,Date,Participant,Start,End,Hours,Workers
+Monday,2025-10-06,Grace,06:00,08:00,2,Sandy
+Monday,2025-10-06,Grace,08:00,12:00,4,Arti
+Monday,2025-10-06,Grace,20:00,22:00,2,Parvinder
+Monday,2025-10-06,James,06:00,14:00,8,Happy + Mihir
+Monday,2025-10-06,James,14:00,22:00,8,Krunal + Rosie
+Monday,2025-10-06,James,22:00,06:00,8,Hamza + Sanjay
+Tuesday,2025-10-07,Grace,06:00,08:00,2,Sandy
+Tuesday,2025-10-07,Grace,09:00,13:00,4,Chaynne
+Tuesday,2025-10-07,Grace,20:00,22:00,2,Parvinder
+Tuesday,2025-10-07,James,06:00,14:00,8,Krunal + MP
+Tuesday,2025-10-07,James,14:00,22:00,8,Sanjay + Rosie
+Tuesday,2025-10-07,James,22:00,06:00,8,Taufique + Hamza
+Wednesday,2025-10-08,Grace,06:00,08:00,2,Sandy
+Wednesday,2025-10-08,Grace,08:00,12:00,4,Arti
+Wednesday,2025-10-08,Grace,20:00,22:00,2,Parvinder
+Wednesday,2025-10-08,James,06:00,14:00,8,Mayu + Happy
+Wednesday,2025-10-08,James,14:00,22:00,8,Parvinder + Rosie
+Wednesday,2025-10-08,James,22:00,06:00,8,Taufique + Sanjay
+Thursday,2025-10-09,Grace,06:00,08:00,2,Sandy
+Thursday,2025-10-09,Grace,08:00,12:00,4,Sapana
+Thursday,2025-10-09,Grace,20:00,22:00,2,Parvinder
+Thursday,2025-10-09,James,06:00,14:00,8,Hamza + MP
+Thursday,2025-10-09,James,14:00,22:00,8,Krunal + Parvinder
+Thursday,2025-10-09,James,22:00,06:00,8,Taufique + Mihir
+Friday,2025-10-10,Grace,06:00,08:00,2,Sandy
+Friday,2025-10-10,Grace,12:00,16:00,4,Chaynne
+Friday,2025-10-10,Grace,20:00,22:00,2,Parvinder
+Friday,2025-10-10,James,06:00,14:00,8,Sanjay + Mayu
+Friday,2025-10-10,James,14:00,22:00,8,MP + Rosie
+Friday,2025-10-10,James,22:00,06:00,8,Taufique + Happy
+Saturday,2025-10-11,Ace,08:00,14:00,6,Mihir
+Saturday,2025-10-11,Ace,14:00,20:00,6,Hamza
+Saturday,2025-10-11,Grace,06:00,22:00,16,Rosie
+Saturday,2025-10-11,James,06:00,14:00,8,Sanjay + Mihir
+Saturday,2025-10-11,James,14:00,22:00,8,Mayu + Avani
+Saturday,2025-10-11,James,22:00,06:00,8,Krunal + MP
+Saturday,2025-10-11,Milan,09:00,12:00,3,Sanjay
+Saturday,2025-10-11,Milan,12:00,15:00,3,Sanjay
+Sunday,2025-10-12,Ace,08:00,14:00,6,Hamza
+Sunday,2025-10-12,Ace,14:00,20:00,6,Hamza
+Sunday,2025-10-12,Grace,06:00,22:00,16,Rosie
+Sunday,2025-10-12,James,06:00,14:00,8,Happy + Mihir
+Sunday,2025-10-12,James,14:00,22:00,8,Happy + Avani
+Sunday,2025-10-12,James,22:00,06:00,8,Mayu + Hamza
+Sunday,2025-10-12,Milan,09:00,12:00,3,Sapana
+Sunday,2025-10-12,Milan,12:00,15:00,3,Sapana

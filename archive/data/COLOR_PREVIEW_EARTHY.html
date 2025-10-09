@@ -1,0 +1,639 @@
+<!DOCTYPE html>
+<html>
+<head>
+<style>
+body {
+  font-family: -apple-system, system-ui, sans-serif;
+  margin: 0;
+  padding: 20px;
+}
+
+.container {
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+h2 {
+  margin: 40px 0 20px;
+  color: #2C2416;
+}
+
+.preview-section {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 40px;
+  margin-bottom: 60px;
+}
+
+/* OPTION 1: Warm Sand & Stone */
+.option1 {
+  background: linear-gradient(135deg, #E8DDD0 0%, #DFD3C3 100%);
+  --primary-bg: #E8DDD0;       /* Warm sand background */
+  --card-bg: #F5EFE7;          /* Light sand cards */
+  --accent: #8B6F47;           /* Warm brown */
+  --accent-light: #B89968;     /* Light caramel */
+  --secondary: #7A9A65;        /* Olive green */
+  --text-primary: #2C2416;     /* Very dark brown - excellent readability */
+  --text-secondary: #4A3F30;   /* Dark brown */
+  --border: #D4C4A0;           /* Sand border */
+  --hover-bg: #F0E6D8;         /* Light cream hover */
+  --shadow: rgba(139, 111, 71, 0.08);
+}
+
+/* OPTION 2: Sage & Clay */
+.option2 {
+  background: linear-gradient(135deg, #D9D7CE 0%, #CCC9BB 100%);
+  --primary-bg: #D9D7CE;       /* Sage gray background */
+  --card-bg: #E8E6DD;          /* Light sage cards */
+  --accent: #6B5D54;           /* Clay brown */
+  --accent-light: #9B8B7E;     /* Light clay */
+  --secondary: #8FAA7B;        /* Sage green */
+  --text-primary: #1F1E1A;     /* Almost black - perfect contrast */
+  --text-secondary: #3E3B33;   /* Dark gray-brown */
+  --border: #C5C2B3;           /* Sage border */
+  --hover-bg: #E0DED2;         /* Light sage hover */
+  --shadow: rgba(107, 93, 84, 0.08);
+}
+
+/* OPTION 3: Mushroom & Moss */
+.option3 {
+  background: linear-gradient(135deg, #D6CFC4 0%, #C8BFAF 100%);
+  --primary-bg: #D6CFC4;       /* Mushroom background */
+  --card-bg: #E2DBD1;          /* Light mushroom cards */
+  --accent: #785E4D;           /* Dark mushroom */
+  --accent-light: #9D8575;     /* Light mushroom */
+  --secondary: #829B75;        /* Moss green */
+  --text-primary: #1A1612;     /* Near black - high contrast */
+  --text-secondary: #3A332B;   /* Dark brown */
+  --border: #C0B5A3;           /* Mushroom border */
+  --hover-bg: #DDD5C8;         /* Light mushroom hover */
+  --shadow: rgba(120, 94, 77, 0.08);
+}
+
+/* OPTION 4: Warm Gray & Terracotta */
+.option4 {
+  background: linear-gradient(135deg, #D5CFC4 0%, #C7BFB2 100%);
+  --primary-bg: #D5CFC4;       /* Warm gray background */
+  --card-bg: #E0DAD0;          /* Light warm gray cards */
+  --accent: #A0522D;           /* Terracotta */
+  --accent-light: #CD853F;     /* Light terracotta */
+  --secondary: #708B75;        /* Dusty green */
+  --text-primary: #1C1915;     /* Very dark - excellent readability */
+  --text-secondary: #3D3630;   /* Dark warm gray */
+  --border: #C2BAAC;           /* Warm gray border */
+  --hover-bg: #DAD3C6;         /* Light warm gray hover */
+  --shadow: rgba(160, 82, 45, 0.08);
+}
+
+/* OPTION 5: Pebble & Sky */
+.option5 {
+  background: linear-gradient(135deg, #D8D3CC 0%, #CCC6BC 100%);
+  --primary-bg: #D8D3CC;       /* Pebble gray background */
+  --card-bg: #E3DED7;          /* Light pebble cards */
+  --accent: #5C6B7B;           /* Storm blue */
+  --accent-light: #8B9AAB;     /* Sky blue */
+  --secondary: #9B8C71;        /* Warm sand */
+  --text-primary: #191817;     /* Almost black */
+  --text-secondary: #35312D;   /* Dark gray */
+  --border: #C4BEB4;           /* Pebble border */
+  --hover-bg: #DDD8D0;         /* Light pebble hover */
+  --shadow: rgba(92, 107, 123, 0.08);
+}
+
+/* OPTION 6: Earth & Rose Gold (Your original colors in earthy setting) */
+.option6 {
+  background: linear-gradient(135deg, #DDD0C8 0%, #D0C0B5 100%);
+  --primary-bg: #DDD0C8;       /* Earthy rose background */
+  --card-bg: #E8DCD4;          /* Light earthy rose cards */
+  --accent: #B76E79;           /* Rose gold */
+  --accent-light: #D4A5B5;     /* Light rose */
+  --secondary: #9BB49B;        /* Mint green */
+  --text-primary: #1F1A18;     /* Very dark brown-black */
+  --text-secondary: #3D3330;   /* Dark brown */
+  --border: #C8B5AB;           /* Earthy rose border */
+  --hover-bg: #E0D3CA;         /* Light earthy rose hover */
+  --shadow: rgba(183, 110, 121, 0.08);
+}
+
+/* Common Styles - Optimized for readability */
+.preview-box {
+  padding: 30px;
+  border-radius: 16px;
+  min-height: 500px;
+}
+
+.preview-box .header {
+  background: var(--card-bg);
+  padding: 20px 24px;
+  border-radius: 12px;
+  border: 2px solid var(--border);
+  margin-bottom: 24px;
+  box-shadow: 0 2px 8px var(--shadow);
+}
+
+.preview-box h3 {
+  margin: 0 0 8px 0;
+  color: var(--accent);
+  font-size: 22px;
+  font-weight: 600;
+  letter-spacing: -0.5px;
+}
+
+.preview-box .subtitle {
+  color: var(--text-secondary);
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+.tabs {
+  display: flex;
+  gap: 2px;
+  background: var(--card-bg);
+  padding: 6px;
+  border-radius: 12px;
+  margin-bottom: 24px;
+  border: 1px solid var(--border);
+}
+
+.tab {
+  padding: 10px 18px;
+  background: transparent;
+  border: none;
+  color: var(--text-secondary);
+  cursor: pointer;
+  font-weight: 500;
+  border-radius: 8px;
+  transition: all 0.2s;
+  font-size: 14px;
+}
+
+.tab:hover {
+  background: var(--hover-bg);
+  color: var(--accent);
+}
+
+.tab.active {
+  background: var(--accent);
+  color: white;
+}
+
+.buttons {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-bottom: 24px;
+}
+
+.btn {
+  padding: 11px 22px;
+  border-radius: 10px;
+  border: none;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-size: 14px;
+}
+
+.btn-primary {
+  background: var(--accent);
+  color: white;
+}
+
+.btn-primary:hover {
+  filter: brightness(0.9);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px var(--shadow);
+}
+
+.btn-secondary {
+  background: var(--secondary);
+  color: white;
+}
+
+.btn-secondary:hover {
+  filter: brightness(0.9);
+  transform: translateY(-1px);
+}
+
+.btn-outline {
+  background: var(--card-bg);
+  color: var(--accent);
+  border: 2px solid var(--accent);
+}
+
+.card {
+  background: var(--card-bg);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 20px;
+  margin-bottom: 16px;
+  transition: all 0.2s;
+  box-shadow: 0 2px 4px var(--shadow);
+}
+
+.card:hover {
+  background: var(--hover-bg);
+  border-color: var(--accent-light);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px var(--shadow);
+}
+
+.card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.card-title {
+  font-weight: 600;
+  color: var(--text-primary);
+  font-size: 18px;
+  letter-spacing: -0.3px;
+}
+
+.badge {
+  background: var(--secondary);
+  color: white;
+  padding: 5px 14px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.3px;
+}
+
+.shift {
+  background: linear-gradient(90deg, var(--hover-bg) 0%, var(--card-bg) 100%);
+  padding: 14px;
+  border-radius: 10px;
+  border-left: 3px solid var(--accent);
+  margin-bottom: 10px;
+}
+
+.shift-time {
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: 4px;
+  font-size: 15px;
+}
+
+.shift-details {
+  color: var(--text-secondary);
+  font-size: 14px;
+  line-height: 1.4;
+}
+
+.input {
+  width: 100%;
+  padding: 11px 16px;
+  border: 2px solid var(--border);
+  border-radius: 10px;
+  background: var(--card-bg);
+  color: var(--text-primary);
+  font-size: 14px;
+  transition: all 0.2s;
+  margin-bottom: 12px;
+}
+
+.input:focus {
+  outline: none;
+  border-color: var(--accent);
+  background: var(--hover-bg);
+  box-shadow: 0 0 0 3px var(--shadow);
+}
+
+.worker-card {
+  background: var(--card-bg);
+  border: 2px solid var(--accent-light);
+  border-radius: 12px;
+  padding: 18px;
+  margin-top: 16px;
+  box-shadow: 0 2px 6px var(--shadow);
+}
+
+.worker-header-section {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.worker-name {
+  font-weight: 600;
+  color: var(--text-primary);
+  font-size: 18px;
+  letter-spacing: -0.3px;
+}
+
+.availability-box {
+  background: var(--hover-bg);
+  padding: 14px;
+  border-radius: 10px;
+  border: 1px solid var(--border);
+}
+
+.text-sample {
+  padding: 20px;
+  margin-top: 16px;
+  background: var(--card-bg);
+  border-radius: 10px;
+  border: 1px solid var(--border);
+}
+
+.text-sample p {
+  color: var(--text-primary);
+  line-height: 1.6;
+  margin: 0 0 12px 0;
+}
+
+.text-sample .secondary {
+  color: var(--text-secondary);
+}
+</style>
+</head>
+<body>
+
+<div class="container">
+  <h1 style="text-align: center; margin-bottom: 40px; color: #2C2416;">Earthy Color Options - Gentle on Eyes, High Readability</h1>
+  
+  <!-- Row 1 -->
+  <div class="preview-section">
+    <!-- OPTION 1: Warm Sand & Stone -->
+    <div class="preview-box option1">
+      <div class="header">
+        <h3>Option 1: Warm Sand & Stone</h3>
+        <div class="subtitle">Natural sand tones with olive green accents</div>
+      </div>
+      
+      <div class="tabs">
+        <button class="tab active">Roster</button>
+        <button class="tab">Planner</button>
+        <button class="tab">Shifts</button>
+        <button class="tab">Profiles</button>
+      </div>
+      
+      <div class="buttons">
+        <button class="btn btn-primary">Edit Mode</button>
+        <button class="btn btn-secondary">Copy to Planner</button>
+        <button class="btn btn-outline">Calendar</button>
+      </div>
+      
+      <div class="card">
+        <div class="card-header">
+          <span class="card-title">Grace</span>
+          <span class="badge">1:1 Support</span>
+        </div>
+        <div class="shift">
+          <div class="shift-time">Monday 6:00 AM - 2:00 PM</div>
+          <div class="shift-details">Sandy - Self Care Support</div>
+        </div>
+        <div class="shift">
+          <div class="shift-time">Monday 8:00 PM - 10:00 PM</div>
+          <div class="shift-details">Parvinder - Evening Support</div>
+        </div>
+      </div>
+      
+      <div class="text-sample">
+        <p><strong>Text Readability Test:</strong> This is primary text in very dark brown (#2C2416) for excellent readability on the warm sand background.</p>
+        <p class="secondary">This is secondary text (#4A3F30) - still highly readable but slightly lighter.</p>
+      </div>
+    </div>
+
+    <!-- OPTION 2: Sage & Clay -->
+    <div class="preview-box option2">
+      <div class="header">
+        <h3>Option 2: Sage & Clay</h3>
+        <div class="subtitle">Calming sage gray with clay brown accents</div>
+      </div>
+      
+      <div class="tabs">
+        <button class="tab active">Roster</button>
+        <button class="tab">Planner</button>
+        <button class="tab">Shifts</button>
+        <button class="tab">Profiles</button>
+      </div>
+      
+      <div class="buttons">
+        <button class="btn btn-primary">Edit Mode</button>
+        <button class="btn btn-secondary">Copy to Planner</button>
+        <button class="btn btn-outline">Calendar</button>
+      </div>
+      
+      <div class="card">
+        <div class="card-header">
+          <span class="card-title">Grace</span>
+          <span class="badge">1:1 Support</span>
+        </div>
+        <div class="shift">
+          <div class="shift-time">Monday 6:00 AM - 2:00 PM</div>
+          <div class="shift-details">Sandy - Self Care Support</div>
+        </div>
+        <div class="shift">
+          <div class="shift-time">Monday 8:00 PM - 10:00 PM</div>
+          <div class="shift-details">Parvinder - Evening Support</div>
+        </div>
+      </div>
+      
+      <div class="text-sample">
+        <p><strong>Text Readability Test:</strong> This is primary text in almost black (#1F1E1A) for perfect contrast on sage background.</p>
+        <p class="secondary">This is secondary text (#3E3B33) - excellent readability maintained.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Row 2 -->
+  <div class="preview-section">
+    <!-- OPTION 3: Mushroom & Moss -->
+    <div class="preview-box option3">
+      <div class="header">
+        <h3>Option 3: Mushroom & Moss</h3>
+        <div class="subtitle">Soft mushroom tones with moss green highlights</div>
+      </div>
+      
+      <div class="tabs">
+        <button class="tab active">Roster</button>
+        <button class="tab">Planner</button>
+        <button class="tab">Shifts</button>
+        <button class="tab">Profiles</button>
+      </div>
+      
+      <div class="buttons">
+        <button class="btn btn-primary">Edit Mode</button>
+        <button class="btn btn-secondary">Copy to Planner</button>
+        <button class="btn btn-outline">Calendar</button>
+      </div>
+      
+      <div class="card">
+        <div class="card-header">
+          <span class="card-title">Grace</span>
+          <span class="badge">1:1 Support</span>
+        </div>
+        <div class="shift">
+          <div class="shift-time">Monday 6:00 AM - 2:00 PM</div>
+          <div class="shift-details">Sandy - Self Care Support</div>
+        </div>
+        <div class="shift">
+          <div class="shift-time">Monday 8:00 PM - 10:00 PM</div>
+          <div class="shift-details">Parvinder - Evening Support</div>
+        </div>
+      </div>
+      
+      <div class="text-sample">
+        <p><strong>Text Readability Test:</strong> This is primary text in near black (#1A1612) for high contrast on mushroom background.</p>
+        <p class="secondary">This is secondary text (#3A332B) - still very readable.</p>
+      </div>
+    </div>
+
+    <!-- OPTION 4: Warm Gray & Terracotta -->
+    <div class="preview-box option4">
+      <div class="header">
+        <h3>Option 4: Warm Gray & Terracotta</h3>
+        <div class="subtitle">Sophisticated gray with terracotta warmth</div>
+      </div>
+      
+      <div class="tabs">
+        <button class="tab active">Roster</button>
+        <button class="tab">Planner</button>
+        <button class="tab">Shifts</button>
+        <button class="tab">Profiles</button>
+      </div>
+      
+      <div class="buttons">
+        <button class="btn btn-primary">Edit Mode</button>
+        <button class="btn btn-secondary">Copy to Planner</button>
+        <button class="btn btn-outline">Calendar</button>
+      </div>
+      
+      <div class="card">
+        <div class="card-header">
+          <span class="card-title">Grace</span>
+          <span class="badge">1:1 Support</span>
+        </div>
+        <div class="shift">
+          <div class="shift-time">Monday 6:00 AM - 2:00 PM</div>
+          <div class="shift-details">Sandy - Self Care Support</div>
+        </div>
+        <div class="shift">
+          <div class="shift-time">Monday 8:00 PM - 10:00 PM</div>
+          <div class="shift-details">Parvinder - Evening Support</div>
+        </div>
+      </div>
+      
+      <div class="text-sample">
+        <p><strong>Text Readability Test:</strong> This is primary text in very dark (#1C1915) for excellent readability.</p>
+        <p class="secondary">This is secondary text (#3D3630) - warm but readable.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Row 3 -->
+  <div class="preview-section">
+    <!-- OPTION 5: Pebble & Sky -->
+    <div class="preview-box option5">
+      <div class="header">
+        <h3>Option 5: Pebble & Sky</h3>
+        <div class="subtitle">Cool pebble gray with storm blue accents</div>
+      </div>
+      
+      <div class="tabs">
+        <button class="tab active">Roster</button>
+        <button class="tab">Planner</button>
+        <button class="tab">Shifts</button>
+        <button class="tab">Profiles</button>
+      </div>
+      
+      <div class="buttons">
+        <button class="btn btn-primary">Edit Mode</button>
+        <button class="btn btn-secondary">Copy to Planner</button>
+        <button class="btn btn-outline">Calendar</button>
+      </div>
+      
+      <div class="card">
+        <div class="card-header">
+          <span class="card-title">Grace</span>
+          <span class="badge">1:1 Support</span>
+        </div>
+        <div class="shift">
+          <div class="shift-time">Monday 6:00 AM - 2:00 PM</div>
+          <div class="shift-details">Sandy - Self Care Support</div>
+        </div>
+        <div class="shift">
+          <div class="shift-time">Monday 8:00 PM - 10:00 PM</div>
+          <div class="shift-details">Parvinder - Evening Support</div>
+        </div>
+      </div>
+      
+      <div class="text-sample">
+        <p><strong>Text Readability Test:</strong> This is primary text in almost black (#191817) on pebble gray background.</p>
+        <p class="secondary">This is secondary text (#35312D) - neutral and clear.</p>
+      </div>
+    </div>
+
+    <!-- OPTION 6: Earth & Rose Gold -->
+    <div class="preview-box option6">
+      <div class="header">
+        <h3>Option 6: Earth & Rose Gold</h3>
+        <div class="subtitle">Your rose gold colors in an earthy setting</div>
+      </div>
+      
+      <div class="tabs">
+        <button class="tab active">Roster</button>
+        <button class="tab">Planner</button>
+        <button class="tab">Shifts</button>
+        <button class="tab">Profiles</button>
+      </div>
+      
+      <div class="buttons">
+        <button class="btn btn-primary">Edit Mode</button>
+        <button class="btn btn-secondary">Copy to Planner</button>
+        <button class="btn btn-outline">Calendar</button>
+      </div>
+      
+      <div class="card">
+        <div class="card-header">
+          <span class="card-title">Grace</span>
+          <span class="badge">1:1 Support</span>
+        </div>
+        <div class="shift">
+          <div class="shift-time">Monday 6:00 AM - 2:00 PM</div>
+          <div class="shift-details">Sandy - Self Care Support</div>
+        </div>
+        <div class="shift">
+          <div class="shift-time">Monday 8:00 PM - 10:00 PM</div>
+          <div class="shift-details">Parvinder - Evening Support</div>
+        </div>
+      </div>
+      
+      <div class="text-sample">
+        <p><strong>Text Readability Test:</strong> This is primary text in very dark brown-black (#1F1A18) on earthy rose background.</p>
+        <p class="secondary">This is secondary text (#3D3330) - warm and readable.</p>
+      </div>
+    </div>
+  </div>
+
+  <div style="text-align: center; margin-top: 40px; padding: 30px; background: #F5F0E8; border-radius: 12px;">
+    <h2 style="color: #2C2416;">Why These Earthy Tones Work:</h2>
+    <p style="font-size: 18px; line-height: 1.8; max-width: 800px; margin: 20px auto; color: #3D3630;">
+      ✓ <strong>Gentle on eyes</strong> - No harsh white backgrounds<br>
+      ✓ <strong>Excellent readability</strong> - Very dark text on medium backgrounds<br>
+      ✓ <strong>Natural & calming</strong> - Earth tones are inherently soothing<br>
+      ✓ <strong>Professional</strong> - Sophisticated without being cold<br>
+      ✓ <strong>Reduces eye strain</strong> - Perfect for extended use<br>
+      ✓ <strong>WCAG AAA contrast</strong> - Exceeds accessibility standards
+    </p>
+    
+    <div style="margin-top: 30px;">
+      <h3 style="color: #2C2416;">All options feature:</h3>
+      <p style="font-size: 16px; color: #4A3F30;">
+        • Dark text (#1A-2C range) for maximum readability<br>
+        • Warm/neutral backgrounds to reduce glare<br>
+        • Natural accent colors that don't overwhelm<br>
+        • Consistent contrast ratios above 7:1
+      </p>
+    </div>
+  </div>
+
+</div>
+
+</body>
+</html>

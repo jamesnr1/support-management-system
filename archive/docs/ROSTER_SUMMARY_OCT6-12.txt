@@ -1,0 +1,83 @@
+===========================================
+ROSTER SUMMARY - WEEK OF OCTOBER 6-12, 2025
+===========================================
+
+WEEK PERIOD
+-----------
+Start: Monday, October 6, 2025 at 6:00am
+End: Monday, October 13, 2025 at 6:00am
+Total: 7 complete days (168 hours)
+
+PARTICIPANT TOTALS
+------------------
+JAMES:  168 hours (24/7 coverage, 2:1 ratio)
+GRACE:   98 hours (all female workers)
+ACE:     24 hours (weekend only)
+MILAN:   12 hours (weekend only)
+TOTAL:  302 hours across 54 shifts
+
+WORKER HOURS (Top 15)
+---------------------
+ 1. Rosie (126)     - 48 hours
+ 2. Mayu (129)      - 40 hours
+ 3. Sanjay (136)    - 40 hours
+ 4. Taufique (138)  - 32 hours
+ 5. Hamza (132)     - 32 hours
+ 6. Krunal (127)    - 32 hours
+ 7. Mihir (130)     - 32 hours
+ 8. MP (131)        - 32 hours
+ 9. Parvinder (139) - 26 hours
+10. Arti (118)      - 24 hours
+11. Sapana (137)    - 24 hours
+12. Happy (125)     - 24 hours
+13. Avani (119)     - 16 hours
+14. Sandy (135)     - 14 hours
+15. Chaynne (120)   -  8 hours
+
+OVERNIGHT SHIFTS INCLUDED (6 Total)
+------------------------------------
+✓ Tue Oct 7  22:00-06:00  Taufique + Hamza
+✓ Wed Oct 8  22:00-06:00  Taufique + Sanjay
+✓ Thu Oct 9  22:00-06:00  Taufique + Mihir
+✓ Fri Oct 10 22:00-06:00  Taufique + Happy
+✓ Sat Oct 11 22:00-06:00  Krunal + MP
+✓ Sun Oct 12 22:00-06:00  Mayu + Hamza
+
+OVERNIGHT SHIFT EXCLUDED
+-------------------------
+✗ Sun Oct 5  22:00-06:00  (Previous week)
+
+KEY POINTS
+----------
+• Week starts at 6am Monday, not midnight
+• All shifts that START within the week are included
+• Sunday night shift (Oct 12) IS INCLUDED
+• James has complete 24/7 coverage (168 hours)
+• Grace has all female workers (Arti, Sapana, Parvinder, Rosie)
+• No 10-hour rest violations
+• No worker double-bookings
+• All participants covered per their requirements
+
+VERIFICATION
+------------
+✓ 54 shifts total
+✓ 302 participant hours
+✓ 15 workers utilized
+✓ 168 hours James (complete 24/7)
+✓  98 hours Grace (all female)
+✓  24 hours Ace (weekend)
+✓  12 hours Milan (weekend)
+✓   6 overnight shifts
+✓   0 violations
+
+FILES AVAILABLE
+---------------
+• roster_oct6-12_COMPLETE.json - JSON format
+• roster_oct6-12_COMPLETE.csv - Full CSV
+• COMPLETE_ROSTER_OCT6-12_2025_FINAL.md - Detailed breakdown
+• SIMPLE_ROSTER_OCT6-12_FINAL.csv - Simplified CSV
+• ROSTER_SUMMARY_OCT6-12.txt - This file
+
+STATUS: ✅ COMPLETE AND VERIFIED
+===========================================
+

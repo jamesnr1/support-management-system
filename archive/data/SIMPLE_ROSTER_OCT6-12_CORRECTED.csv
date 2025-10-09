@@ -1,0 +1,83 @@
+Day,Date,Participant,Time,Duration,Workers,Location,Support Type
+Monday,6-Oct,JAMES,22:00-06:00,8h,Hamza + Sanjay (from Sun night),Home,Overnight
+Monday,6-Oct,JAMES,06:00-08:00,2h,Sandy + Happy,Home,Self-Care
+Monday,6-Oct,JAMES,08:00-14:00,6h,Happy + Mihir,Home,Self-Care
+Monday,6-Oct,JAMES,14:00-22:00,8h,Krunal + Rosie,Home,Community
+Monday,6-Oct,GRACE,08:00-14:00,6h,Arti (F),Plympton Park,Self-Care
+Monday,6-Oct,GRACE,14:00-20:00,6h,Sapana (F),Plympton Park,Self-Care
+Monday,6-Oct,GRACE,20:00-22:00,2h,Parvinder (F),Plympton Park,Community
+,,,,,,,
+Tuesday,7-Oct,JAMES,22:00-06:00,8h,Taufique + Hamza,Home,Overnight
+Tuesday,7-Oct,JAMES,06:00-08:00,2h,Sandy + Krunal,Home,Self-Care
+Tuesday,7-Oct,JAMES,08:00-14:00,6h,Krunal + MP,Home,Self-Care
+Tuesday,7-Oct,JAMES,14:00-22:00,8h,Sanjay + Rosie,Home,Community
+Tuesday,7-Oct,GRACE,08:00-14:00,6h,Sapana (F),Plympton Park,Self-Care
+Tuesday,7-Oct,GRACE,14:00-20:00,6h,Arti (F),Plympton Park,Self-Care
+Tuesday,7-Oct,GRACE,20:00-22:00,2h,Parvinder (F),Plympton Park,Community
+,,,,,,,
+Wednesday,8-Oct,JAMES,22:00-06:00,8h,Taufique + Sanjay,Home,Overnight
+Wednesday,8-Oct,JAMES,06:00-08:00,2h,Sandy + Mayu,Home,Self-Care
+Wednesday,8-Oct,JAMES,08:00-14:00,6h,Mayu + Happy,Home,Self-Care
+Wednesday,8-Oct,JAMES,14:00-22:00,8h,Parvinder + Rosie,Home,Community
+Wednesday,8-Oct,GRACE,08:00-14:00,6h,Arti (F),Plympton Park,Self-Care
+Wednesday,8-Oct,GRACE,14:00-20:00,6h,Sapana (F),Plympton Park,Self-Care
+Wednesday,8-Oct,GRACE,20:00-22:00,2h,Parvinder (F),Plympton Park,Community
+,,,,,,,
+Thursday,9-Oct,JAMES,22:00-06:00,8h,Taufique + Mihir,Home,Overnight
+Thursday,9-Oct,JAMES,06:00-14:00,8h,Hamza + MP,Home,Self-Care
+Thursday,9-Oct,JAMES,09:00-13:00,4h,Chaynne,Home,Community
+Thursday,9-Oct,JAMES,14:00-22:00,8h,Krunal + Parvinder,Home,Community
+Thursday,9-Oct,GRACE,08:00-14:00,6h,Sapana (F),Plympton Park,Self-Care
+Thursday,9-Oct,GRACE,14:00-20:00,6h,Arti (F),Plympton Park,Self-Care
+Thursday,9-Oct,GRACE,20:00-22:00,2h,Parvinder (F),Plympton Park,Community
+,,,,,,,
+Friday,10-Oct,JAMES,22:00-06:00,8h,Taufique + Happy,Home,Overnight
+Friday,10-Oct,JAMES,06:00-08:00,2h,Sandy + Sanjay,Home,Self-Care
+Friday,10-Oct,JAMES,08:00-14:00,6h,Sanjay + Mayu,Home,Self-Care
+Friday,10-Oct,JAMES,12:00-16:00,4h,Chaynne,Home,Community
+Friday,10-Oct,JAMES,14:00-22:00,8h,MP + Rosie,Home,Community
+Friday,10-Oct,GRACE,08:00-14:00,6h,Arti (F),Plympton Park,Self-Care
+Friday,10-Oct,GRACE,14:00-20:00,6h,Sapana (F),Plympton Park,Self-Care
+Friday,10-Oct,GRACE,20:00-22:00,2h,Parvinder (F),Plympton Park,Community
+,,,,,,,
+Saturday,11-Oct,JAMES,22:00-06:00,8h,Krunal + MP,Home,Overnight
+Saturday,11-Oct,JAMES,06:00-14:00,8h,Sanjay + Mihir,Home,Self-Care
+Saturday,11-Oct,JAMES,14:00-22:00,8h,Mayu + Avani,Home,Community
+Saturday,11-Oct,GRACE,06:00-14:00,8h,Rosie (F),Plympton Park,Self-Care
+Saturday,11-Oct,ACE,08:00-14:00,6h,Mihir,Glandore,Self-Care
+Saturday,11-Oct,ACE,14:00-20:00,6h,Hamza,Glandore,Community
+Saturday,11-Oct,MILAN,09:00-12:00,3h,Sanjay,Glandore,Self-Care
+Saturday,11-Oct,MILAN,12:00-15:00,3h,Sanjay,Glandore,Community
+,,,,,,,
+Sunday,12-Oct,JAMES,22:00-06:00,8h,Mayu + Hamza (continues to Mon),Home,Overnight
+Sunday,12-Oct,JAMES,06:00-08:00,2h,Sandy + Happy,Home,Self-Care
+Sunday,12-Oct,JAMES,08:00-14:00,6h,Happy + Mihir,Home,Self-Care
+Sunday,12-Oct,JAMES,14:00-22:00,8h,Happy + Avani,Home,Community
+Sunday,12-Oct,GRACE,06:00-14:00,8h,Rosie (F),Plympton Park,Self-Care
+Sunday,12-Oct,ACE,08:00-14:00,6h,Hamza,Glandore,Self-Care
+Sunday,12-Oct,ACE,14:00-20:00,6h,Mihir,Glandore,Community
+Sunday,12-Oct,MILAN,09:00-12:00,3h,Sapana (F),Glandore,Self-Care
+Sunday,12-Oct,MILAN,12:00-15:00,3h,Sapana (F),Glandore,Community
+,,,,,,,
+WEEKLY TOTALS,,,,,,,
+Worker,Hours,Days,,,,,
+Rosie,48h,Mon-Fri + Sat-Sun,,,,,
+Sanjay,48h,6 days (CORRECTED +8h),,,,,
+Mayu,32h,4 days (CORRECTED -8h),,,,,
+Taufique,32h,Tue-Fri nights,,,,,
+Hamza,32h,5 days,,,,,
+Krunal,32h,4 days,,,,,
+Mihir,32h,5 days,,,,,
+MP,32h,4 days,,,,,
+Parvinder,26h,5 days,,,,,
+Arti,24h,Mon-Thu,,,,,
+Sapana,24h,Mon-Fri + Sun,,,,,
+Happy,24h,5 days,,,,,
+Sandy,14h,7 days,,,,,
+Avani,16h,Sat-Sun,,,,,
+Chaynne,8h,Thu-Fri,,,,,
+,,,,,,,
+KEY CHANGE,,,,,,,
+Monday 22:00-06:00 = Hamza + Sanjay (continues from Sunday night),,,,,,,
+Was incorrectly: Mayu + Hamza,,,,,,,
+Impact: Sanjay +8h (40→48h); Mayu -8h (40→32h),,,,,,,

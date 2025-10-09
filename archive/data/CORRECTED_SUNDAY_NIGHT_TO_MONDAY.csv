@@ -1,0 +1,13 @@
+Date,Day,Participant,Shift Start,Shift End,Duration,Workers,Worker IDs,Location,Support Type,Ratio,Notes
+2025-10-05,Sunday,JAMES,22:00,06:00,8h,"Hamza, Sanjay","132, 136",Home,Overnight Support,2:1,Sunday night shift
+2025-10-06,Monday,JAMES,22:00,06:00,8h,"Hamza, Sanjay","132, 136",Home,Overnight Support,2:1,"Continues from Sunday night - SAME WORKERS"
+2025-10-06,Monday,JAMES,06:00,08:00,2h,"Sandy, Happy","135, 125",Home,Self-Care,2:1,
+2025-10-06,Monday,JAMES,08:00,14:00,6h,"Happy, Mihir","125, 130",Home,Self-Care,2:1,
+2025-10-06,Monday,JAMES,14:00,22:00,8h,"Krunal, Rosie","127, 126",Home,Community Participation,2:1,
+
+CORRECTION SUMMARY
+Issue,Sunday night shift crosses into Monday morning but had different workers listed
+Original Monday Overnight,"Mayu, Hamza (129, 132)"
+Corrected Monday Overnight,"Hamza, Sanjay (132, 136) - matches Sunday night roster"
+Impact,Sanjay +8h (40h → 48h); Mayu -8h (40h → 32h)
+

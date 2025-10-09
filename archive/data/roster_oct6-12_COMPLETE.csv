@@ -1,0 +1,54 @@
+Participant,Date,Day,Start Time,End Time,Duration (h),Worker IDs,Worker Names,Location,Support Type,Ratio
+JAMES,2025-10-06,Monday,06:00,08:00,2,"135, 125","Sandy, Happy",Home,Self-Care,2:1
+JAMES,2025-10-06,Monday,08:00,14:00,6,"125, 130","Happy, Mihir",Home,Self-Care,2:1
+JAMES,2025-10-06,Monday,14:00,22:00,8,"127, 126","Krunal, Rosie",Home,Self-Care,2:1
+JAMES,2025-10-07,Tuesday,22:00,06:00,8,"138, 132","Taufique, Hamza",Home,Overnight Support,2:1
+JAMES,2025-10-07,Tuesday,06:00,08:00,2,"135, 127","Sandy, Krunal",Home,Self-Care,2:1
+JAMES,2025-10-07,Tuesday,08:00,14:00,6,"127, 131","Krunal, MP",Home,Self-Care,2:1
+JAMES,2025-10-07,Tuesday,14:00,22:00,8,"136, 126","Sanjay, Rosie",Home,Self-Care,2:1
+JAMES,2025-10-08,Wednesday,22:00,06:00,8,"138, 136","Taufique, Sanjay",Home,Overnight Support,2:1
+JAMES,2025-10-08,Wednesday,06:00,08:00,2,"135, 129","Sandy, Mayu",Home,Self-Care,2:1
+JAMES,2025-10-08,Wednesday,08:00,14:00,6,"129, 125","Mayu, Happy",Home,Self-Care,2:1
+JAMES,2025-10-08,Wednesday,14:00,22:00,8,"139, 126","Parvinder, Rosie",Home,Self-Care,2:1
+JAMES,2025-10-09,Thursday,22:00,06:00,8,"138, 130","Taufique, Mihir",Home,Overnight Support,2:1
+JAMES,2025-10-09,Thursday,06:00,14:00,8,"132, 131","Hamza, MP",Home,Self-Care,2:1
+JAMES,2025-10-09,Thursday,09:00,13:00,4,120,Chaynne,Home,Self-Care,2:1
+JAMES,2025-10-09,Thursday,14:00,22:00,8,"127, 139","Krunal, Parvinder",Home,Self-Care,2:1
+JAMES,2025-10-10,Friday,22:00,06:00,8,"138, 125","Taufique, Happy",Home,Overnight Support,2:1
+JAMES,2025-10-10,Friday,06:00,08:00,2,"135, 136","Sandy, Sanjay",Home,Self-Care,2:1
+JAMES,2025-10-10,Friday,08:00,14:00,6,"136, 129","Sanjay, Mayu",Home,Self-Care,2:1
+JAMES,2025-10-10,Friday,12:00,16:00,4,120,Chaynne,Home,Self-Care,2:1
+JAMES,2025-10-10,Friday,14:00,22:00,8,"131, 126","MP, Rosie",Home,Self-Care,2:1
+JAMES,2025-10-11,Saturday,22:00,06:00,8,"127, 131","Krunal, MP",Home,Overnight Support,2:1
+JAMES,2025-10-11,Saturday,06:00,14:00,8,"136, 130","Sanjay, Mihir",Home,Self-Care,2:1
+JAMES,2025-10-11,Saturday,14:00,22:00,8,"129, 119","Mayu, Avani",Home,Self-Care,2:1
+JAMES,2025-10-12,Sunday,22:00,06:00,8,"129, 132","Mayu, Hamza",Home,Overnight Support,2:1
+JAMES,2025-10-12,Sunday,06:00,08:00,2,"135, 125","Sandy, Happy",Home,Self-Care,2:1
+JAMES,2025-10-12,Sunday,08:00,14:00,6,"125, 130","Happy, Mihir",Home,Self-Care,2:1
+JAMES,2025-10-12,Sunday,14:00,22:00,8,"125, 119","Happy, Avani",Home,Self-Care,2:1
+GRACE,2025-10-06,Monday,08:00,14:00,6,118,Arti,Plympton Park,Self-Care,1:1
+GRACE,2025-10-06,Monday,14:00,20:00,6,137,Sapana,Plympton Park,Self-Care,1:1
+GRACE,2025-10-06,Monday,20:00,22:00,2,139,Parvinder,Plympton Park,Self-Care,1:1
+GRACE,2025-10-07,Tuesday,08:00,14:00,6,137,Sapana,Plympton Park,Self-Care,1:1
+GRACE,2025-10-07,Tuesday,14:00,20:00,6,118,Arti,Plympton Park,Self-Care,1:1
+GRACE,2025-10-07,Tuesday,20:00,22:00,2,139,Parvinder,Plympton Park,Self-Care,1:1
+GRACE,2025-10-08,Wednesday,08:00,14:00,6,118,Arti,Plympton Park,Self-Care,1:1
+GRACE,2025-10-08,Wednesday,14:00,20:00,6,137,Sapana,Plympton Park,Self-Care,1:1
+GRACE,2025-10-08,Wednesday,20:00,22:00,2,139,Parvinder,Plympton Park,Self-Care,1:1
+GRACE,2025-10-09,Thursday,08:00,14:00,6,137,Sapana,Plympton Park,Self-Care,1:1
+GRACE,2025-10-09,Thursday,14:00,20:00,6,118,Arti,Plympton Park,Self-Care,1:1
+GRACE,2025-10-09,Thursday,20:00,22:00,2,139,Parvinder,Plympton Park,Self-Care,1:1
+GRACE,2025-10-10,Friday,08:00,14:00,6,118,Arti,Plympton Park,Self-Care,1:1
+GRACE,2025-10-10,Friday,14:00,20:00,6,137,Sapana,Plympton Park,Self-Care,1:1
+GRACE,2025-10-10,Friday,20:00,22:00,2,139,Parvinder,Plympton Park,Self-Care,1:1
+GRACE,2025-10-11,Saturday,06:00,14:00,8,126,Rosie,Plympton Park,Self-Care,1:1
+GRACE,2025-10-12,Sunday,06:00,14:00,8,126,Rosie,Plympton Park,Self-Care,1:1
+ACE,2025-10-11,Saturday,08:00,14:00,6,130,Mihir,Glandore,Self-Care,1:1
+ACE,2025-10-11,Saturday,14:00,20:00,6,132,Hamza,Glandore,Self-Care,1:1
+ACE,2025-10-12,Sunday,08:00,14:00,6,132,Hamza,Glandore,Self-Care,1:1
+ACE,2025-10-12,Sunday,14:00,20:00,6,130,Mihir,Glandore,Self-Care,1:1
+MILAN,2025-10-11,Saturday,09:00,12:00,3,136,Sanjay,Glandore,Self-Care,1:1
+MILAN,2025-10-11,Saturday,12:00,15:00,3,136,Sanjay,Glandore,Community Participation,1:1
+MILAN,2025-10-12,Sunday,09:00,12:00,3,137,Sapana,Glandore,Self-Care,1:1
+MILAN,2025-10-12,Sunday,12:00,15:00,3,137,Sapana,Glandore,Community Participation,1:1
+
