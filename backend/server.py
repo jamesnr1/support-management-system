@@ -1000,14 +1000,8 @@ async def create_appointment(appointment_data: dict):
         event_data = {
             'summary': f"{participant_name} - {appointment_data['title']}",
             'description': appointment_data.get('description', ''),
-            'start': {
-                'dateTime': start_datetime,
-                'timeZone': 'Australia/Sydney'
-            },
-            'end': {
-                'dateTime': end_datetime,
-                'timeZone': 'Australia/Sydney'
-            }
+            'start': start_datetime,
+            'end': end_datetime
         }
         
         # Use the selected calendar or primary as fallback
