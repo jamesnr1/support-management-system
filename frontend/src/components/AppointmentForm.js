@@ -33,6 +33,30 @@ const AppointmentForm = ({ isOpen, onClose, participants = [] }) => {
 
   const timeOptions = generateTimeOptions();
 
+  // Generate date options for the next 90 days
+  const generateDateOptions = () => {
+    const dates = [];
+    const today = new Date();
+    
+    for (let i = 0; i < 90; i++) {
+      const date = new Date(today);
+      date.setDate(today.getDate() + i);
+      
+      const dateString = date.toISOString().split('T')[0];
+      const dayName = date.toLocaleDateString('en-AU', { weekday: 'short' });
+      const dayMonth = date.toLocaleDateString('en-AU', { day: 'numeric', month: 'short', year: 'numeric' });
+      
+      dates.push({
+        value: dateString,
+        label: `${dayName}, ${dayMonth}`
+      });
+    }
+    
+    return dates;
+  };
+
+  const dateOptions = generateDateOptions();
+
   // Fetch available calendars and set default times/date when modal opens
   useEffect(() => {
     if (isOpen) {
@@ -280,8 +304,7 @@ const AppointmentForm = ({ isOpen, onClose, participants = [] }) => {
             }}>
               Date *
             </label>
-            <input
-              type="date"
+            <select
               name="date"
               value={formData.date}
               onChange={handleInputChange}
@@ -296,7 +319,14 @@ const AppointmentForm = ({ isOpen, onClose, participants = [] }) => {
                 fontSize: '1rem',
                 cursor: 'pointer'
               }}
-            />
+            >
+              <option value="">Select Date</option>
+              {dateOptions.map(date => (
+                <option key={date.value} value={date.value}>
+                  {date.label}
+                </option>
+              ))}
+            </select>
           </div>
 
           <div style={{ display: 'flex', gap: '1rem', marginBottom: '1.5rem' }}>
