@@ -33,10 +33,19 @@ const AppointmentForm = ({ isOpen, onClose, participants = [] }) => {
 
   const timeOptions = generateTimeOptions();
 
-  // Fetch available calendars when modal opens
+  // Fetch available calendars and set default times when modal opens
   useEffect(() => {
     if (isOpen) {
       fetchAvailableCalendars();
+      
+      // Set default times: 9:00 AM start, 10:00 AM end (1 hour duration)
+      if (!formData.startTime) {
+        setFormData(prev => ({
+          ...prev,
+          startTime: '09:00',
+          endTime: '10:00'
+        }));
+      }
     }
   }, [isOpen]);
 
@@ -54,10 +63,24 @@ const AppointmentForm = ({ isOpen, onClose, participants = [] }) => {
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-    setFormData(prev => ({
-      ...prev,
-      [name]: value
-    }));
+    
+    // If start time is changed, automatically set end time to 1 hour later
+    if (name === 'startTime' && value) {
+      const [hours, minutes] = value.split(':').map(Number);
+      const endHour = (hours + 1) % 24; // Add 1 hour, wrap at midnight
+      const endTime = `${endHour.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}`;
+      
+      setFormData(prev => ({
+        ...prev,
+        startTime: value,
+        endTime: endTime
+      }));
+    } else {
+      setFormData(prev => ({
+        ...prev,
+        [name]: value
+      }));
+    }
   };
 
   const handleSubmit = async (e) => {
