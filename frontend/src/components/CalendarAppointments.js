@@ -204,10 +204,10 @@ const CalendarAppointments = ({
         }
       }
 
-      // 2) Fallback: calendarName contains participant display name
+      // 2) Fallback: calendarName matches participant display name (exact match)
       const calendarName = apt.calendarName || '';
       for (const name of Object.keys(groups)) {
-        if (calendarName.toLowerCase().includes(name.toLowerCase())) {
+        if (calendarName.toLowerCase() === name.toLowerCase()) {
           groups[name].push(apt);
           return;
         }
@@ -306,9 +306,9 @@ const CalendarAppointments = ({
     return parts[0] || fullName;
   };
 
-  // Format appointment date like: M 6 October
+  // Format appointment date like: Mon 6 October
   const formatShortDayDate = (dateObj) => {
-    const dayAbbrevMap = ['Su', 'M', 'T', 'W', 'Th', 'F', 'Sa'];
+    const dayAbbrevMap = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
     const dayLabel = dayAbbrevMap[dateObj.getDay()] || '';
     const day = dateObj.getDate();
     const month = dateObj.toLocaleDateString('en-AU', { month: 'long' });
@@ -415,7 +415,7 @@ const CalendarAppointments = ({
                       const appointmentTitle = apt.summary?.replace(`${person.name} - `, '').replace(`${person.name}`, '').trim();
                       const timeLabel = formatTimeRange(startObj, endObj);
                       const description = appointmentTitle || '';
-                      const dayAbbrevMap = ['Su', 'M', 'T', 'W', 'Th', 'F', 'Sa'];
+                      const dayAbbrevMap = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
                       const dayAbbrev = dayAbbrevMap[startObj.getDay()] || '';
                       const dayNumber = startObj.getDate();
                       const monthShort = startObj.toLocaleDateString('en-AU', { month: 'short' });
@@ -428,7 +428,7 @@ const CalendarAppointments = ({
                           style={{
                             marginBottom: '4px',
                             display: 'grid',
-                            gridTemplateColumns: '1.5rem 1fr',
+                            gridTemplateColumns: '2.5rem 1fr',
                             columnGap: '0.5rem',
                             alignItems: 'baseline',
                           }}

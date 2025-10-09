@@ -27,16 +27,16 @@ const WorkerCard = React.memo(({ worker, onEdit, onManageAvailability, onDelete,
     availabilityByDay[rule.weekday].push(rule);
   }
 
-  // Day abbreviations starting from Monday (1) to match backend weekday numbers
-  const days = ['M', 'T', 'W', 'Th', 'F', 'Sa', 'Su'];
+  // Day abbreviations starting from Monday (1) to match backend weekday numbers - Updated v2
+  const days = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
   const dayIndexMap = {
-    M: 1,
-    T: 2,
-    W: 3,
-    Th: 4,
-    F: 5,
-    Sa: 6,
-    Su: 0,
+    Mon: 1,
+    Tue: 2,
+    Wed: 3,
+    Thu: 4,
+    Fri: 5,
+    Sat: 6,
+    Sun: 0,
   };
 
   // Extract display name (preferred name in brackets or first name)
@@ -168,7 +168,10 @@ const WorkerCard = React.memo(({ worker, onEdit, onManageAvailability, onDelete,
       <div 
         className="availability" 
         style={{ 
-          padding: '12px'
+          padding: '12px',
+          minHeight: '180px',
+          maxHeight: '180px',
+          overflow: 'auto'
         }}
       >
         {isLoading ? (

@@ -385,11 +385,18 @@ const StaffTab = ({ workers = [], locations = [], onWorkersUpdate, rosterData, p
                     // Override availability display with shift info only when there are shifts
                     customAvailabilityDisplay={shiftSummary && shiftSummary.shifts.length > 0 ? 
                       shiftSummary.shifts.map(shift => {
+                        // Map day names to standard 3-letter abbreviations
+                        const dayAbbrevMap = {
+                          'Monday': 'Mon', 'Tuesday': 'Tue', 'Wednesday': 'Wed', 
+                          'Thursday': 'Thu', 'Friday': 'Fri', 'Saturday': 'Sat', 'Sunday': 'Sun'
+                        };
+                        const dayAbbrev = dayAbbrevMap[shift.day] || shift.day?.substring(0, 3) || shift.day?.charAt(0);
+                        
                         const participant = participants.find(p => p.code === shift.participant);
                         const participantName = participant ? 
                           (participant.full_name.match(/\(([^)]+)\)/)?.[1] || participant.full_name.split(' ')[0]) : 
                           shift.participant;
-                        return `${shift.day?.charAt(0)} - ${participantName} - ${shift.startTime}-${shift.endTime}`;
+                        return `${dayAbbrev} - ${participantName} - ${shift.startTime}-${shift.endTime}`;
                       }) : 
                       null
                     }
