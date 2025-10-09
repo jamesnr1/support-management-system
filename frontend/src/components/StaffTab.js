@@ -9,6 +9,8 @@ const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 const API = `${BACKEND_URL}/api`;
 
 const StaffTab = ({ workers = [], locations = [], onWorkersUpdate, rosterData, participants = [], selectedWeek = 'current' }) => {
+  const queryClient = useQueryClient();
+  
   // Batch availability data - fetch once for all workers to avoid 48 sequential API calls
   const [allAvailabilityData, setAllAvailabilityData] = useState({});
   const [availabilityLoading, setAvailabilityLoading] = useState(true);
@@ -516,29 +518,47 @@ const StaffTab = ({ workers = [], locations = [], onWorkersUpdate, rosterData, p
               onSubmit={async (e) => {
                 e.preventDefault();
                 const formData = new FormData(e.target);
-                const updatedWorker = {
+                const workerData = {
                   full_name: formData.get('full_name'),
                   email: formData.get('email'),
                   phone: formData.get('phone'),
                   car: formData.get('car'),
                   sex: formData.get('sex'),
-                  telegram: formData.get('telegram')
+                  telegram: formData.get('telegram'),
+                  max_hours: formData.get('max_hours') || '38'
                 };
                 
                 try {
-                  await axios.put(`${API}/workers/${editingWorker.id}`, updatedWorker);
-                  toast.success(`Updated ${updatedWorker.full_name}`);
+                  if (editingWorker) {
+                    // Update existing worker
+                    console.log('Updating worker:', editingWorker.id, workerData);
+                    await axios.put(`${API}/workers/${editingWorker.id}`, workerData);
+                    toast.success(`Updated ${workerData.full_name}`);
+                  } else {
+                    // Create new worker
+                    console.log('Creating new worker:', workerData);
+                    const response = await axios.post(`${API}/workers`, workerData);
+                    console.log('Worker created, response:', response.data);
+                    toast.success(`Added ${workerData.full_name}`);
+                  }
                   setShowWorkerModal(false);
                   setEditingWorker(null);
-                  onWorkersUpdate?.();
+                  // Force refresh workers list
+                  console.log('Invalidating workers query cache...');
+                  await queryClient.invalidateQueries(['workers']);
+                  console.log('Workers query invalidated');
+                  if (onWorkersUpdate) {
+                    onWorkersUpdate();
+                  }
                 } catch (error) {
-                  console.error('Error updating worker:', error);
-                  toast.error('Failed to update worker');
+                  console.error('Error saving worker:', error);
+                  console.error('Error details:', error.response?.data);
+                  toast.error(`Failed to ${editingWorker ? 'update' : 'add'} worker: ` + (error.response?.data?.detail || error.message));
                 }
               }}
               style={{ padding: '1rem' }}
             >
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem', marginBottom: '1.5rem' }}>
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem', marginBottom: '1rem' }}>
                 <div>
                   <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: '500' }}>Full Name *</label>
                   <input
@@ -598,6 +618,17 @@ const StaffTab = ({ workers = [], locations = [], onWorkersUpdate, rosterData, p
                     name="telegram"
                     placeholder="@username or user ID"
                     defaultValue={editingWorker?.telegram || ''}
+                    style={{ width: '100%', padding: '0.75rem', borderRadius: '4px', border: '1px solid var(--border)', background: 'var(--card-bg)', color: 'var(--text-primary)' }}
+                  />
+                </div>
+                <div>
+                  <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: '500' }}>Max Hours/Week</label>
+                  <input
+                    type="number"
+                    name="max_hours"
+                    min="0"
+                    max="168"
+                    defaultValue={editingWorker?.max_hours || '38'}
                     style={{ width: '100%', padding: '0.75rem', borderRadius: '4px', border: '1px solid var(--border)', background: 'var(--card-bg)', color: 'var(--text-primary)' }}
                   />
                 </div>
