@@ -516,10 +516,15 @@ const ShiftForm = ({
       const participantShifts = rosterData[participantCode];
       if (participantShifts && participantShifts[shiftDate]) {
         participantShifts[shiftDate].forEach(existingShift => {
-          if (currentShiftId && existingShift.id === currentShiftId) return;
+          // Skip the shift being edited
+          if (currentShiftId && existingShift.id === currentShiftId) {
+            console.log(`⏭️ Skipping shift ${existingShift.id} - this is the shift being edited`);
+            return;
+          }
           const hasWorker = Array.isArray(existingShift.workers) && existingShift.workers.some(w => String(w) === String(workerId));
           if (hasWorker) {
             if (timeRangesOverlap(startTime, endTime, existingShift.startTime, existingShift.endTime)) {
+              console.log(`🔴 Conflict found: Worker ${workerId} in ${participantCode} at ${existingShift.startTime}-${existingShift.endTime} (shift ID: ${existingShift.id}, editing: ${currentShiftId})`);
               conflicts.push({
                 participant: participantCode,
                 time: `${existingShift.startTime}-${existingShift.endTime}`,

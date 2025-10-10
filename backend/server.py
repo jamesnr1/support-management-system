@@ -281,7 +281,7 @@ async def get_roster(week_type: str):
                     # Copy and shift dates forward
                     roster_section = copy.deepcopy(source_roster)
                     
-                    # Shift all dates forward by the appropriate number of days
+                    # Shift all dates forward and CLEAR worker assignments
                     new_data = {}
                     for participant_code, dates_dict in roster_section.get('data', {}).items():
                         new_data[participant_code] = {}
@@ -301,11 +301,12 @@ async def get_roster(week_type: str):
                                 new_date = old_date + timedelta(days=days_to_shift)
                                 new_date_str = new_date.strftime('%Y-%m-%d')
                                 
-                                # Update shift dates too
+                                # Copy shift structure INCLUDING worker assignments
                                 updated_shifts = []
                                 for shift in shifts:
                                     shift_copy = shift.copy()
                                     shift_copy['date'] = new_date_str
+                                    # Keep worker assignments from template
                                     updated_shifts.append(shift_copy)
                                 
                                 new_data[participant_code][new_date_str] = updated_shifts

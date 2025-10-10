@@ -386,25 +386,7 @@
       },
       "LIB001": {
         "2025-10-10": [],
-        "2025-10-11": [
-          {
-            "id": "shift_1759987187127_hvu186xte",
-            "date": "2025-10-11",
-            "startTime": "10:00",
-            "endTime": "20:00",
-            "supportType": "Self-Care",
-            "ratio": "2:1",
-            "workers": [
-              "125",
-              "126"
-            ],
-            "location": "1",
-            "notes": "",
-            "shiftNumber": "L2025101102",
-            "duration": 10,
-            "isSplitShift": false
-          }
-        ]
+        "2025-10-11": []
       },
       "ACE001": {
         "2025-10-11": [
@@ -933,5 +915,7 @@
       "GRA001": {},
       "MIL001": {}
     }
-  }
+  },
+  "roster_next": {},
+  "roster_after": {}
 }
