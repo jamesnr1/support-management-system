@@ -257,6 +257,8 @@ async def get_roster(week_type: str):
             if week_type in ['roster_next', 'roster_after'] and not has_shifts:
                 # For roster_after, prefer roster_next if it has data, otherwise use roster
                 template_source = 'roster'
+                days_to_shift = 7 if week_type == 'roster_next' else 14  # Default shift amount
+                
                 if week_type == 'roster_after':
                     roster_next = ROSTER_DATA.get('roster_next', {})
                     # Check if roster_next has shifts
@@ -272,12 +274,48 @@ async def get_roster(week_type: str):
                                 break
                     if next_has_shifts:
                         template_source = 'roster_next'
+                        days_to_shift = 7  # Only shift 7 days if copying from roster_next
                 
                 source_roster = ROSTER_DATA.get(template_source, {})
                 if source_roster.get('data'):
-                    # Copy the roster data structure
+                    # Copy and shift dates forward
                     roster_section = copy.deepcopy(source_roster)
-                    logger.info(f"Auto-populated {week_type} from {template_source} as template")
+                    
+                    # Shift all dates forward by the appropriate number of days
+                    new_data = {}
+                    for participant_code, dates_dict in roster_section.get('data', {}).items():
+                        new_data[participant_code] = {}
+                        
+                        # Handle both dict and list formats
+                        if not isinstance(dates_dict, dict):
+                            new_data[participant_code] = dates_dict
+                            continue
+                            
+                        for date_str, shifts in dates_dict.items():
+                            if not isinstance(shifts, list):
+                                new_data[participant_code][date_str] = shifts
+                                continue
+                                
+                            try:
+                                old_date = datetime.strptime(date_str, '%Y-%m-%d')
+                                new_date = old_date + timedelta(days=days_to_shift)
+                                new_date_str = new_date.strftime('%Y-%m-%d')
+                                
+                                # Update shift dates too
+                                updated_shifts = []
+                                for shift in shifts:
+                                    shift_copy = shift.copy()
+                                    shift_copy['date'] = new_date_str
+                                    updated_shifts.append(shift_copy)
+                                
+                                new_data[participant_code][new_date_str] = updated_shifts
+                            except Exception as e:
+                                # If date parsing fails, keep original
+                                logger.warning(f"Error shifting date {date_str}: {e}")
+                                new_data[participant_code][date_str] = shifts
+                    
+                    roster_section['data'] = new_data
+                    logger.info(f"Auto-populated {week_type} from {template_source}, shifted dates by {days_to_shift} days")
                     # Don't save it yet - user can modify and save themselves
             
             # Always calculate dates dynamically based on current time
