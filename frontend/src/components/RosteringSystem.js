@@ -983,7 +983,11 @@ const RosteringSystem = () => {
                       weekStartDate={rosterData.current?.start_date || null}  // Use actual start date from backend
                       weekEndDate={rosterData.current?.end_date || null}      // Use actual end date from backend
                       rosterData={rosterData.current?.data?.[participant.code] || {}}
-                      fullRosterData={rosterData.current?.data || {}}  // Full roster for ShiftForm hours calculation
+                      fullRosterData={(() => {
+                        const data = rosterData.current?.data || {};
+                        console.log(`📊 Passing roster data to ShiftForm - Week: ${selectedRosterWeek}, Endpoint: ${rosterData.weekEndpoint}, Participants: ${Object.keys(data).length}`);
+                        return data;
+                      })()}  // Full roster for ShiftForm hours calculation
                     workers={workers || []} // Ensure it's always an array
                     locations={locations || []} // Ensure it's always an array
                     editMode={editMode}

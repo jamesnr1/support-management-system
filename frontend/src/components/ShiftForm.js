@@ -428,18 +428,39 @@ const ShiftForm = ({
         return false;
       }
       
-      // Check for max hours (unless override is enabled)
+      // Check for daily 12+ hour limit first
+      const timeToMins = (t) => {
+        const [h, m] = t.split(':').map(Number);
+        return h * 60 + (m || 0);
+      };
+      let shiftDuration = (timeToMins(endTime) - timeToMins(startTime)) / 60;
+      if (shiftDuration <= 0) shiftDuration += 24; // Handle overnight
+      
+      // Calculate hours for this worker on THIS DATE only
+      let dailyHours = shiftDuration;
+      for (const participantCode in rosterData) {
+        const participantShifts = rosterData[participantCode];
+        if (participantShifts && participantShifts[date]) {
+          for (const existingShift of participantShifts[date]) {
+            // Skip the shift being edited
+            if (editingShift?.id && existingShift.id === editingShift.id) continue;
+            
+            const hasWorker = Array.isArray(existingShift.workers) && existingShift.workers.some(w => String(w) === String(worker.id));
+            if (hasWorker) {
+              dailyHours += parseFloat(existingShift.duration || 0);
+            }
+          }
+        }
+      }
+      
+      if (dailyHours >= 12) {
+        console.log(`🚫 ${worker.full_name} filtered out: would exceed 12h daily limit (${dailyHours.toFixed(1)}h on this day)`);
+        return false;
+      }
+      
+      // Check for weekly max hours (unless override is enabled)
       if (worker.max_hours && !overrideValidation) {
         const currentHours = calculateWorkerHours(worker.id, weekType);
-        
-        // Calculate duration inline to avoid hoisting issues
-        const timeToMins = (t) => {
-          const [h, m] = t.split(':').map(Number);
-          return h * 60 + (m || 0);
-        };
-        let shiftDuration = (timeToMins(endTime) - timeToMins(startTime)) / 60;
-        if (shiftDuration <= 0) shiftDuration += 24; // Handle overnight
-        
         const totalHours = currentHours + shiftDuration;
         
         if (totalHours > worker.max_hours) {
