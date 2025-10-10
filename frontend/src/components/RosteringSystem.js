@@ -155,8 +155,8 @@ const RosteringSystem = () => {
       // Map week selection to backend endpoint
       const weekEndpoint = {
         'current': 'roster',         // Current week
-        'next': 'planner_next',      // Next week  
-        'after': 'planner_after'     // Week after
+        'next': 'roster_next',       // Next week  
+        'after': 'roster_after'      // Week after
       }[selectedRosterWeek] || 'roster';
 
       try {
@@ -176,8 +176,8 @@ const RosteringSystem = () => {
           console.log(`No shift data found for ${selectedRosterWeek} week, trying to get previous week's data as fallback`);
           
           // For next week, fallback to current week (roster)
-          // For week after, fallback to next week (planner_next)
-          const fallbackEndpoint = selectedRosterWeek === 'next' ? 'roster' : 'planner_next';
+          // For week after, fallback to next week (roster_next)
+          const fallbackEndpoint = selectedRosterWeek === 'next' ? 'roster' : 'roster_next';
           
           try {
             const fallbackResponse = await axios.get(`${API}/roster/${fallbackEndpoint}`);

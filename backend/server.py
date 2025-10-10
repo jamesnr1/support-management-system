@@ -237,17 +237,47 @@ async def get_participants():
 async def get_roster(week_type: str):
     """Get roster for specific week type from database"""
     try:
-        # Handle new roster/planner structure (including planner_next, planner_after)
-        if week_type in ['roster', 'planner', 'planner_next', 'planner_after']:
+        # Handle roster structure (current, next, week after)
+        if week_type in ['roster', 'roster_next', 'roster_after']:
             roster_section = ROSTER_DATA.get(week_type, {})
             
-            # If planner_next or planner_after is empty, copy from current roster as template
-            if week_type in ['planner_next', 'planner_after'] and not roster_section.get('data'):
-                current_roster = ROSTER_DATA.get('roster', {})
-                if current_roster.get('data'):
+            # If roster_next or roster_after is empty, copy from current roster as template
+            # Check if data has actual shifts, not just empty participant objects
+            has_shifts = False
+            if roster_section.get('data'):
+                for participant_code, dates in roster_section['data'].items():
+                    if isinstance(dates, dict):
+                        for date_key, shifts in dates.items():
+                            if isinstance(shifts, list) and len(shifts) > 0:
+                                has_shifts = True
+                                break
+                    if has_shifts:
+                        break
+            
+            if week_type in ['roster_next', 'roster_after'] and not has_shifts:
+                # For roster_after, prefer roster_next if it has data, otherwise use roster
+                template_source = 'roster'
+                if week_type == 'roster_after':
+                    roster_next = ROSTER_DATA.get('roster_next', {})
+                    # Check if roster_next has shifts
+                    next_has_shifts = False
+                    if roster_next.get('data'):
+                        for pc, dates in roster_next['data'].items():
+                            if isinstance(dates, dict):
+                                for dk, shifts in dates.items():
+                                    if isinstance(shifts, list) and len(shifts) > 0:
+                                        next_has_shifts = True
+                                        break
+                            if next_has_shifts:
+                                break
+                    if next_has_shifts:
+                        template_source = 'roster_next'
+                
+                source_roster = ROSTER_DATA.get(template_source, {})
+                if source_roster.get('data'):
                     # Copy the roster data structure
-                    roster_section = copy.deepcopy(current_roster)
-                    logger.info(f"Auto-populated {week_type} with current roster as template")
+                    roster_section = copy.deepcopy(source_roster)
+                    logger.info(f"Auto-populated {week_type} from {template_source} as template")
                     # Don't save it yet - user can modify and save themselves
             
             # Always calculate dates dynamically based on current time
@@ -255,11 +285,11 @@ async def get_roster(week_type: str):
                 start_date, end_date = get_current_week_dates()
                 roster_section["start_date"] = start_date
                 roster_section["end_date"] = end_date
-            elif week_type == 'planner_after':
+            elif week_type == 'roster_after':
                 start_date, end_date = get_week_after_next_dates()
                 roster_section["start_date"] = start_date
                 roster_section["end_date"] = end_date
-            elif week_type in ['planner', 'planner_next']:
+            elif week_type == 'roster_next':
                 start_date, end_date = get_next_week_dates()
                 roster_section["start_date"] = start_date
                 roster_section["end_date"] = end_date
@@ -319,8 +349,8 @@ async def get_roster(week_type: str):
 async def update_roster(week_type: str, roster_data: Dict[str, Any]):
     """Robust roster update with comprehensive validation"""
     try:
-        # Handle new roster/planner structure (including planner_next, planner_after)
-        if week_type in ['roster', 'planner', 'planner_next', 'planner_after']:
+        # Handle roster structure (current, next, week after)
+        if week_type in ['roster', 'roster_next', 'roster_after']:
             if not roster_data:
                 raise HTTPException(status_code=400, detail="No roster data provided")
             
