@@ -10,6 +10,7 @@ from typing import List, Dict, Any, Optional
 from datetime import datetime, timedelta, date
 import uuid
 import json
+import copy
 from collections import defaultdict
 
 # Import database
@@ -239,6 +240,15 @@ async def get_roster(week_type: str):
         # Handle new roster/planner structure (including planner_next, planner_after)
         if week_type in ['roster', 'planner', 'planner_next', 'planner_after']:
             roster_section = ROSTER_DATA.get(week_type, {})
+            
+            # If planner_next or planner_after is empty, copy from current roster as template
+            if week_type in ['planner_next', 'planner_after'] and not roster_section.get('data'):
+                current_roster = ROSTER_DATA.get('roster', {})
+                if current_roster.get('data'):
+                    # Copy the roster data structure
+                    roster_section = copy.deepcopy(current_roster)
+                    logger.info(f"Auto-populated {week_type} with current roster as template")
+                    # Don't save it yet - user can modify and save themselves
             
             # Always calculate dates dynamically based on current time
             if week_type == 'roster':
