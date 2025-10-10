@@ -353,7 +353,9 @@ const StaffTab = ({ workers = [], locations = [], onWorkersUpdate, rosterData, p
                     availabilityLoading={availabilityLoading}
                     // Override availability display with shift info only when there are shifts
                     customAvailabilityDisplay={shiftSummary && shiftSummary.shifts.length > 0 ? 
-                      shiftSummary.shifts.map(shift => {
+                      shiftSummary.shifts
+                        .sort((a, b) => new Date(a.date) - new Date(b.date))  // Sort by date first
+                        .map(shift => {
                         // Map day names to standard 3-letter abbreviations
                         const dayAbbrevMap = {
                           'Monday': 'Mon', 'Tuesday': 'Tue', 'Wednesday': 'Wed', 
