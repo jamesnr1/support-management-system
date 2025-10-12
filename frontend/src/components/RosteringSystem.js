@@ -371,7 +371,15 @@ const RosteringSystem = () => {
       if (type === 'payroll') {
         // PAYROLL EXPORT - Organized by date for payroll processing
         csvContent = "Day,Date,Participant Name,Start Time,End Time,Hours,Workers,Location,Funding Code\n";
-        filename = `payroll_${selectedRosterWeek}_${new Date().toISOString().split('T')[0]}.csv`;
+        
+        // Create descriptive filename based on week selection
+        const weekLabels = {
+          'current': 'current_week',
+          'next': 'next_week', 
+          'after': 'week_after'
+        };
+        const weekLabel = weekLabels[selectedRosterWeek] || selectedRosterWeek;
+        filename = `payroll_${weekLabel}_${new Date().toISOString().split('T')[0]}.csv`;
         
         // Collect all shifts with grouped workers
         const allShifts = [];
@@ -449,7 +457,15 @@ const RosteringSystem = () => {
       } else {
         // SHIFT REPORT EXPORT - Organized by participant (matches import format)
         csvContent = "Shift Number,Day,Date,Participant,Start Time,End Time,Ratio,Workers,Support Type,Location\n";
-        filename = `shift_report_${selectedRosterWeek}_${new Date().toISOString().split('T')[0]}.csv`;
+        
+        // Create descriptive filename based on week selection
+        const weekLabels = {
+          'current': 'current_week',
+          'next': 'next_week', 
+          'after': 'week_after'
+        };
+        const weekLabel = weekLabels[selectedRosterWeek] || selectedRosterWeek;
+        filename = `shift_report_${weekLabel}_${new Date().toISOString().split('T')[0]}.csv`;
         
         participantOrder.forEach(participantCode => {
           if (!tabData[participantCode]) return;
