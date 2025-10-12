@@ -354,8 +354,15 @@ const RosteringSystem = () => {
       let csvContent = '';
       let filename = '';
       
-      // Fetch roster data for active tab only
-      const response = await axios.get(`${API}/roster/${activeTab}`);
+      // Map selectedRosterWeek to correct API endpoint
+      const weekEndpoint = {
+        'current': 'roster',         // Current week
+        'next': 'roster_next',       // Next week  
+        'after': 'roster_after'      // Week after
+      }[selectedRosterWeek] || 'roster';
+      
+      // Fetch roster data for selected week
+      const response = await axios.get(`${API}/roster/${weekEndpoint}`);
       const tabData = response.data.data || response.data; // Handle nested data structure
       
       // Participant order (James → Libby → Ace → Grace → Milan)
@@ -364,7 +371,7 @@ const RosteringSystem = () => {
       if (type === 'payroll') {
         // PAYROLL EXPORT - Organized by date for payroll processing
         csvContent = "Day,Date,Participant Name,Start Time,End Time,Hours,Workers,Location,Funding Code\n";
-        filename = `payroll_${activeTab}_${new Date().toISOString().split('T')[0]}.csv`;
+        filename = `payroll_${selectedRosterWeek}_${new Date().toISOString().split('T')[0]}.csv`;
         
         // Collect all shifts with grouped workers
         const allShifts = [];
@@ -442,7 +449,7 @@ const RosteringSystem = () => {
       } else {
         // SHIFT REPORT EXPORT - Organized by participant (matches import format)
         csvContent = "Shift Number,Day,Date,Participant,Start Time,End Time,Ratio,Workers,Support Type,Location\n";
-        filename = `shift_report_${activeTab}_${new Date().toISOString().split('T')[0]}.csv`;
+        filename = `shift_report_${selectedRosterWeek}_${new Date().toISOString().split('T')[0]}.csv`;
         
         participantOrder.forEach(participantCode => {
           if (!tabData[participantCode]) return;
