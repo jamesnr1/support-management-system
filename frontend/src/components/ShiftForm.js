@@ -1437,65 +1437,72 @@ const ShiftForm = ({
           </select>
         )}
 
-        {/* Location - Auto-assigned based on participant and week type */}
+        {/* Location - Editable dropdown with smart defaults */}
         {(() => {
-          // Get the assigned location based on participant and week rules
-          const getAssignedLocation = () => {
+          // Get the suggested location based on participant and week rules
+          const getSuggestedLocation = () => {
             const participantCode = participant?.code;
             
-            // James (JAM001) - always at Plympton Park (his suburb)
+            // James (JAM001) - default to Plympton Park (his suburb)
             if (participantCode === 'JAM001') {
               return locations.find(loc => loc.name.toLowerCase().includes('plympton park')) || locations[0];
             }
             
-            // Libby (LIB001) - always at Glandore (her suburb)
+            // Libby (LIB001) - default to Glandore (her suburb)
             if (participantCode === 'LIB001') {
               return locations.find(loc => loc.name.toLowerCase().includes('glandore')) || locations[0];
             }
             
-            
             // Ace & Grace - Week-based logic
             if (participantCode === 'ACE001' || participantCode === 'GRA001') {
               if (weekType === 'weekA') {
-                // Week A: Share with Libby at Glandore
+                // Week A: Default to Glandore
                 return locations.find(loc => loc.name.toLowerCase().includes('glandore')) || locations[0];
               } else {
-                // Week B: Share with James at Plympton Park
+                // Week B: Default to Plympton Park
                 return locations.find(loc => loc.name.toLowerCase().includes('plympton park')) || locations[0];
               }
+            }
+            
+            // Milan and others - default to Glandore
+            if (participantCode === 'MIL001') {
+              return locations.find(loc => loc.name.toLowerCase().includes('glandore')) || locations[0];
             }
             
             // Default fallback
             return locations[0];
           };
           
-          const assignedLocation = getAssignedLocation();
-          const locationName = assignedLocation?.name || 'Auto-assigned';
+          const suggestedLocation = getSuggestedLocation();
           
           // Auto-set the location in form data if not already set
-          if (!formData.location && assignedLocation) {
-            handleInputChange('location', assignedLocation.id);
+          if (!formData.location && suggestedLocation) {
+            handleInputChange('location', suggestedLocation.id);
           }
           
           return (
-            <div style={{ 
-              minWidth: '110px',
-              maxWidth: '150px',
-              fontSize: '0.9rem',
-            padding: '0.5rem',
-            borderRadius: '6px',
-            background: 'var(--bg-secondary)',
-            color: 'var(--text-primary)',
-              border: '1px solid var(--border-color)',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              whiteSpace: 'nowrap',
-              overflow: 'hidden',
-              textOverflow: 'ellipsis'
-            }}>
-              {locationName}
-            </div>
+            <select
+              value={formData.location || ''}
+              onChange={(e) => handleInputChange('location', e.target.value)}
+              style={{
+                minWidth: '110px',
+                maxWidth: '150px',
+                fontSize: '0.9rem',
+                padding: '0.5rem',
+                borderRadius: '6px',
+                background: 'var(--bg-secondary)',
+                color: 'var(--text-primary)',
+                border: '1px solid var(--border-color)',
+                cursor: 'pointer'
+              }}
+            >
+              <option value="">Select Location</option>
+              {locations.map(location => (
+                <option key={location.id} value={location.id}>
+                  {location.name}
+                </option>
+              ))}
+            </select>
           );
         })()}
 
