@@ -501,47 +501,46 @@ const ParticipantSchedule = React.memo(({
                               <div className="shift-time">{`${formatTime(shift.startTime || shift.start_time)} - ${formatTime(shift.endTime || shift.end_time)}`}</div>
                               <div className="worker-name">{getWorkerDisplayName(shift.workers || shift.worker_id)}</div>
                             </div>
-                            <div className="shift-hours">{shift.duration || shift.hours}h</div>
-                            {editMode && (
-                              <button
-                                className="lock-button"
-                                onClick={(e) => {
-                                  e.stopPropagation();
-                                  handleToggleLock(index, date);
-                                }}
-                                style={{
-                                  position: 'absolute',
-                                  top: '8px',
-                                  right: '-50px',
-                                  background: shift.locked ? 'var(--accent)' : 'var(--bg-secondary)',
-                                  border: `2px solid ${shift.locked ? 'var(--accent)' : 'var(--border-color)'}`,
-                                  fontSize: '1.2rem',
-                                  cursor: 'pointer',
-                                  padding: '8px 12px',
-                                  borderRadius: '6px',
-                                  fontWeight: 'bold',
-                                  color: shift.locked ? 'white' : 'var(--text-primary)',
-                                  minWidth: '40px',
-                                  minHeight: '40px',
-                                  display: 'flex',
-                                  alignItems: 'center',
-                                  justifyContent: 'center',
-                                  boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
-                                  transition: 'all 0.2s ease'
-                                }}
-                                title={shift.locked ? 'Unlock shift' : 'Lock shift'}
-                                onMouseEnter={(e) => {
-                                  e.target.style.transform = 'scale(1.05)';
-                                  e.target.style.boxShadow = '0 4px 8px rgba(0,0,0,0.2)';
-                                }}
-                                onMouseLeave={(e) => {
-                                  e.target.style.transform = 'scale(1)';
-                                  e.target.style.boxShadow = '0 2px 4px rgba(0,0,0,0.1)';
-                                }}
-                              >
-                                {shift.locked ? 'LOCK' : 'OPEN'}
-                              </button>
-                            )}
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                              <div className="shift-hours">{shift.duration || shift.hours}h</div>
+                              {editMode && (
+                                <button
+                                  className="lock-button"
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    handleToggleLock(index, date);
+                                  }}
+                                  style={{
+                                    background: shift.locked ? 'var(--accent)' : 'var(--bg-secondary)',
+                                    border: `2px solid ${shift.locked ? 'var(--accent)' : 'var(--border-color)'}`,
+                                    fontSize: '1rem',
+                                    cursor: 'pointer',
+                                    padding: '4px 8px',
+                                    borderRadius: '4px',
+                                    fontWeight: 'bold',
+                                    color: shift.locked ? 'white' : 'var(--text-primary)',
+                                    minWidth: '32px',
+                                    minHeight: '32px',
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    justifyContent: 'center',
+                                    boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
+                                    transition: 'all 0.2s ease'
+                                  }}
+                                  title={shift.locked ? 'Unlock shift' : 'Lock shift'}
+                                  onMouseEnter={(e) => {
+                                    e.target.style.transform = 'scale(1.05)';
+                                    e.target.style.boxShadow = '0 4px 8px rgba(0,0,0,0.2)';
+                                  }}
+                                  onMouseLeave={(e) => {
+                                    e.target.style.transform = 'scale(1)';
+                                    e.target.style.boxShadow = '0 2px 4px rgba(0,0,0,0.1)';
+                                  }}
+                                >
+                                  {shift.locked ? '●' : '○'}
+                                </button>
+                              )}
+                            </div>
                           </div>
                         </div>
                       )}
