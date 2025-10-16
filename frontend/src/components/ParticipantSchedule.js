@@ -512,7 +512,7 @@ const ParticipantSchedule = React.memo(({
                                 style={{
                                   position: 'absolute',
                                   top: '8px',
-                                  left: '8px',
+                                  right: '8px',
                                   background: shift.locked ? 'var(--accent)' : 'var(--bg-secondary)',
                                   border: `2px solid ${shift.locked ? 'var(--accent)' : 'var(--border-color)'}`,
                                   fontSize: '1.2rem',
@@ -539,7 +539,7 @@ const ParticipantSchedule = React.memo(({
                                   e.target.style.boxShadow = '0 2px 4px rgba(0,0,0,0.1)';
                                 }}
                               >
-                                {shift.locked ? '●' : '○'}
+                                {shift.locked ? '🔒' : '🔓'}
                               </button>
                             )}
                           </div>
