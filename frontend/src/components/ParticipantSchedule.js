@@ -150,6 +150,12 @@ const ParticipantSchedule = React.memo(({
     return worker ? getDisplayName(worker.full_name) : 'Unassigned';
   };
 
+  const getLocationName = (locationId) => {
+    if (!locationId) return '';
+    const location = locations.find(l => String(l.id) === String(locationId));
+    return location ? location.name : '';
+  };
+
   const getShiftCardClass = (shift) => {
     // Example logic to style cards based on shift properties
     if (shift.locked) return 'locked';
@@ -382,18 +388,6 @@ const ParticipantSchedule = React.memo(({
     }).join(', ');
   };
 
-  const getLocationName = (locationId) => {
-    if (!locationId) return 'No location';
-    
-    // Try both string and number matching since IDs might be different types
-    const location = locations.find(l => 
-      l.id === locationId || 
-      l.id === parseInt(locationId) || 
-      l.id === locationId.toString()
-    );
-    
-    return location ? location.name : `Unknown Location (ID: ${locationId})`;
-  };
 
   return (
     <div>
@@ -498,11 +492,19 @@ const ParticipantSchedule = React.memo(({
                             style={{ position: 'relative' }}
                           >
                             <div className="shift-card-content">
-                              <div className="shift-time">{`${formatTime(shift.startTime || shift.start_time)} - ${formatTime(shift.endTime || shift.end_time)}`}</div>
-                              <div className="worker-name">{getWorkerDisplayName(shift.workers || shift.worker_id)}</div>
+                              <div className="shift-row" style={{ display: 'grid', gridTemplateColumns: '120px minmax(160px, 1fr) 140px 200px 60px', alignItems: 'baseline', columnGap: '16px', fontSize: '14px', lineHeight: '1.2' }}>
+                                <div className="shift-time">{`${formatTime(shift.startTime || shift.start_time)} - ${formatTime(shift.endTime || shift.end_time)}`}</div>
+                                <div className="worker-name" style={{ whiteSpace: 'nowrap' }}>{getWorkerDisplayName(shift.workers || shift.worker_id)}</div>
+                                <div className="shift-type" style={{ whiteSpace: 'nowrap' }}>{(() => {
+                                  const t = (shift.supportType || shift.support_type || '').trim();
+                                  if (!t) return '';
+                                  return t.toLowerCase().includes('community') ? 'Community' : 'Self-Care';
+                                })()}</div>
+                                <div className="shift-location" style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{getLocationName(shift.location)}</div>
+                                <div className="shift-hours" style={{ whiteSpace: 'nowrap' }}>{shift.duration || shift.hours}h</div>
+                              </div>
                             </div>
                             <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                              <div className="shift-hours">{shift.duration || shift.hours}h</div>
                               {editMode && (
                                 <button
                                   className="lock-button"

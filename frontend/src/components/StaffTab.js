@@ -8,8 +8,19 @@ import { useQuery } from '@tanstack/react-query';
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 const API = `${BACKEND_URL}/api`;
 
-const StaffTab = ({ workers = [], locations = [], onWorkersUpdate, rosterData, participants = [], selectedWeek = 'current' }) => {
+const StaffTab = ({ locations = [], onWorkersUpdate, rosterData, participants = [], selectedWeek = 'current' }) => {
   const queryClient = useQueryClient();
+
+  // Fetch workers data using React Query
+  const { data: workers = [], isLoading: isLoadingWorkers, error: workersError } = useQuery({
+    queryKey: ['workers'],
+    queryFn: async () => {
+      const response = await axios.get(`${API}/workers`);
+      return response.data;
+    },
+    staleTime: 1000 * 60 * 5, // 5 minutes
+    cacheTime: 1000 * 60 * 30, // 30 minutes
+  });
   
   // Batch availability data - fetch once for all workers to avoid 48 sequential API calls
   const [allAvailabilityData, setAllAvailabilityData] = useState({});
@@ -310,6 +321,14 @@ const StaffTab = ({ workers = [], locations = [], onWorkersUpdate, rosterData, p
     return () => document.removeEventListener('openAddWorkerModal', handleOpenAddWorker);
   }, []);
 
+  if (isLoadingWorkers) {
+    return <div style={{ padding: '1rem' }}>Loading workers...</div>;
+  }
+
+  if (workersError) {
+    return <div style={{ padding: '1rem', color: 'red' }}>Error loading workers: {workersError.message}</div>;
+  }
+
   return (
     <div style={{ padding: '1rem' }}>
       {/* Main layout: Worker cards on left, Telegram panel on right */}
@@ -367,7 +386,10 @@ const StaffTab = ({ workers = [], locations = [], onWorkersUpdate, rosterData, p
                         const participantName = participant ? 
                           (participant.full_name.match(/\(([^)]+)\)/)?.[1] || participant.full_name.split(' ')[0]) : 
                           shift.participant;
-                        return `${dayAbbrev} - ${participantName} - ${shift.startTime}-${shift.endTime}`;
+                        const locationName = shift.location ? 
+                          (locations.find(l => String(l.id) === String(shift.location))?.name || '') : 
+                          '';
+                        return `${dayAbbrev} - ${participantName} - ${shift.startTime}-${shift.endTime}${locationName ? ` - ${locationName}` : ''}`;
                       }) : 
                       null
                     }

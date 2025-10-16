@@ -21,7 +21,7 @@ const ShiftForm = ({
   // ===== ALL HOOKS MUST BE AT THE TOP - React Rules =====
   const [workers, setWorkers] = useState(allWorkers || []);
   const [isFormReady, setIsFormReady] = useState(false);
-  const [unavailableWorkers, setUnavailableWorkers] = React.useState(new Set());
+  const [unavailableWorkerPeriods, setUnavailableWorkerPeriods] = React.useState(new Map());
   const [unavailabilityCheckComplete, setUnavailabilityCheckComplete] = useState(false);
   const [workerAvailabilityRules, setWorkerAvailabilityRules] = React.useState({}); // Store availability rules for each worker
 
@@ -143,37 +143,29 @@ const ShiftForm = ({
   React.useEffect(() => {
     // CRITICAL: Reset state immediately when date changes
     setUnavailabilityCheckComplete(false);
-    setUnavailableWorkers(new Set());
+    setUnavailableWorkerPeriods(new Map()); // Reset unavailability
     setWorkerAvailabilityRules({}); // Reset rules as well
     
     const fetchAvailabilityData = async () => {
       if (!workers || workers.length === 0 || !date) {
-        console.log('⏭️ Skipping availability fetch:', { workersCount: workers?.length, date });
-        setUnavailabilityCheckComplete(true); // Mark as complete even if skipping
+        // If no workers or date, no need to fetch
+        setUnavailabilityCheckComplete(true);
         return;
       }
-      
-      console.log('🔄 Starting availability fetch for', workers.length, 'workers on', date);
-      
+
       try {
         const shiftDate = new Date(date);
-        shiftDate.setHours(0, 0, 0, 0);
         const dayOfWeek = shiftDate.getDay();
-        
-        const unavailableIds = new Set();
-        
-        // Fetch unavailability periods in a SINGLE batch query (much faster)
+
+        // Fetch all unavailability periods that cover the selected date in ONE batch query
+        let unavailablePeriodsMap = new Map();
         try {
           const unavailabilityResponse = await axios.get(`${BACKEND_URL}/api/unavailability-periods`, {
             params: { check_date: date }
           });
-          
-          const unavailableWorkers = unavailabilityResponse.data || [];
-          unavailableWorkers.forEach(period => {
-            unavailableIds.add(String(period.worker_id));
+          (unavailabilityResponse.data || []).forEach(period => {
+            unavailablePeriodsMap.set(String(period.worker_id), period);
           });
-          
-          console.log(`🚫 Found ${unavailableIds.size} unavailable workers on ${date}`);
         } catch (error) {
           console.error('Error fetching unavailability periods:', error);
           // Continue without unavailability check - allow all workers
@@ -209,8 +201,8 @@ const ShiftForm = ({
           setWorkerAvailabilityRules({});
         }
         
-        console.log('✅ Availability fetch complete. Unavailable workers:', Array.from(unavailableIds));
-        setUnavailableWorkers(unavailableIds);
+        console.log('✅ Availability fetch complete. Unavailable workers:', Array.from(unavailablePeriodsMap.keys()));
+        setUnavailableWorkerPeriods(unavailablePeriodsMap);
         setUnavailabilityCheckComplete(true);
       } catch (error) {
         console.error('Error fetching availability:', error);
@@ -327,11 +319,7 @@ const ShiftForm = ({
     return (workersList || []).filter(worker => {
       console.log(`\n--- Checking ${worker.full_name} (ID: ${worker.id}) ---`);
       
-      // Exclude workers who are unavailable on this date
-      if (unavailableWorkers.has(String(worker.id))) { // Ensure ID is compared as string
-        console.log(`❌ ${worker.full_name}: Unavailable on this date`);
-        return false;
-      }
+      // NOTE: Unavailability is now handled in the dropdown rendering, not by filtering here.
       
       // Check availability rules for this worker (ensure string ID comparison)
       const rules = workerAvailabilityRules[String(worker.id)] || [];
@@ -508,7 +496,7 @@ const ShiftForm = ({
       // Worker is available
       return true;
     });
-  }, [unavailableWorkers, date, existingShifts, unavailabilityCheckComplete, rosterData, editingShift, workerAvailabilityRules]);
+  }, [unavailabilityCheckComplete, date, existingShifts, unavailableWorkerPeriods, rosterData, editingShift, workerAvailabilityRules]);
 
   // Helper: Check if worker is assigned to another participant at the same time
   const checkCrossParticipantConflicts = (workerId, shiftDate, startTime, endTime, currentShiftId) => {
@@ -1013,7 +1001,11 @@ const ShiftForm = ({
       const plympton = locations.find(l => l.name === 'Plympton Park');
       return plympton ? plympton.id : '';
     }
-    // For Ace, Grace, Milan - default to first location
+    // Ace & Grace - let week-based logic set this (return empty so suggestedLocation applies)
+    if (participant.code === 'ACE001' || participant.code === 'GRA001') {
+      return '';
+    }
+    // For others - default to first location
     return locations.length > 0 ? locations[0].id : '';
   };
 

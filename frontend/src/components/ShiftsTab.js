@@ -386,13 +386,19 @@ const CalendarAppointmentForm = () => {
   );
 };
 
-const ShiftsTab = ({ workers, participants = [], rosterData }) => {
+const ShiftsTab = ({ workers, participants = [], rosterData, locations = [] }) => {
   const getDisplayName = (fullName = '') => {
     if (!fullName) return '';
     const match = fullName.match(/\(([^)]+)\)/);
     if (match && match[1]) return match[1];
     const parts = fullName.trim().split(/\s+/);
     return parts[0] || fullName;
+  };
+
+  const getLocationName = (locationId) => {
+    if (!locationId) return 'No Location';
+    const location = locations.find(l => String(l.id) === String(locationId));
+    return location ? location.name : `Location ${locationId}`;
   };
   const [selectedWeek, setSelectedWeek] = useState('current');
   const [telegramMessage, setTelegramMessage] = useState('');
@@ -699,7 +705,7 @@ const ShiftsTab = ({ workers, participants = [], rosterData }) => {
                             fontSize: '14px',
                             display: 'block'
                           }}>
-                            {dayAbbrev} - {participantName} - {shift.startTime}-{shift.endTime}
+                            {dayAbbrev} - {participantName} - {shift.startTime}-{shift.endTime} - {getLocationName(shift.location)}
                           </div>
                         );
                       }) : <div style={{ color: 'var(--text-secondary)', fontSize: '14px' }}>No shifts</div>}

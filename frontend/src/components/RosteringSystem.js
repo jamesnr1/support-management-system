@@ -976,7 +976,6 @@ const RosteringSystem = () => {
         <div id="main-content" className="tab-content" role="main" aria-label="Main content area">
           {activeTab === 'staff' ? (
             <StaffTab 
-            workers={workers}
             locations={locations}
               onWorkersUpdate={handleForceRefetchWorkers}
               rosterData={rosterData}
