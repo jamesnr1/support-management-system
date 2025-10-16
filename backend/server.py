@@ -103,6 +103,23 @@ def get_next_week_dates():
     
     return next_monday.strftime('%Y-%m-%d'), next_sunday.strftime('%Y-%m-%d')
 
+def get_last_week_dates():
+    """Calculate last week start and end dates (Monday to Sunday)"""
+    now = datetime.now()
+    # Get Monday of current week
+    days_since_monday = now.weekday()  # Monday is 0, Sunday is 6
+    monday = now - timedelta(days=days_since_monday)
+    monday = monday.replace(hour=0, minute=0, second=0, microsecond=0)
+    
+    # Get Monday of last week
+    last_monday = monday - timedelta(days=7)
+    
+    # Get Sunday of last week
+    last_sunday = last_monday + timedelta(days=6)
+    last_sunday = last_sunday.replace(hour=23, minute=59, second=59, microsecond=999999)
+    
+    return last_monday.strftime('%Y-%m-%d'), last_sunday.strftime('%Y-%m-%d')
+
 def get_week_after_next_dates():
     """Calculate week after next start and end dates (Monday to Sunday)"""
     now = datetime.now()
@@ -287,8 +304,8 @@ async def get_roster(week_type: str):
         # Check and perform week transition if needed
         check_and_transition_weeks()
         
-        # Handle roster structure (current, next, week after)
-        if week_type in ['roster', 'roster_next', 'roster_after']:
+        # Handle roster structure (last, current, next, week after)
+        if week_type in ['roster_last', 'roster', 'roster_next', 'roster_after']:
             roster_section = ROSTER_DATA.get(week_type, {})
             
             # If roster_next or roster_after is empty, copy from current roster as template
@@ -370,7 +387,11 @@ async def get_roster(week_type: str):
                     # Don't save it yet - user can modify and save themselves
             
             # Always calculate dates dynamically based on current time
-            if week_type == 'roster':
+            if week_type == 'roster_last':
+                start_date, end_date = get_last_week_dates()
+                roster_section["start_date"] = start_date
+                roster_section["end_date"] = end_date
+            elif week_type == 'roster':
                 start_date, end_date = get_current_week_dates()
                 roster_section["start_date"] = start_date
                 roster_section["end_date"] = end_date
