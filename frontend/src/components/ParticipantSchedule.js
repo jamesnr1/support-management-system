@@ -439,7 +439,14 @@ const ParticipantSchedule = React.memo(({
             const dayShifts = (participantShifts[date] || []).sort((a, b) => {
               const timeA = a.startTime || a.start_time || '00:00';
               const timeB = b.startTime || b.start_time || '00:00';
-              return timeA.localeCompare(timeB);
+              
+              // Convert time strings to minutes for proper comparison
+              const timeToMinutes = (timeStr) => {
+                const [hours, minutes] = timeStr.split(':').map(Number);
+                return hours * 60 + minutes;
+              };
+              
+              return timeToMinutes(timeA) - timeToMinutes(timeB);
             });
             
             return (
