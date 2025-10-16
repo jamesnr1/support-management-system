@@ -232,11 +232,61 @@ async def get_participants():
         logger.error(f"Error fetching participants: {e}")
         raise HTTPException(status_code=500, detail="Failed to fetch participants")
 
+def check_and_transition_weeks():
+    """Check if current week data is outdated and transition if needed"""
+    try:
+        current_start, current_end = get_current_week_dates()
+        current_roster = ROSTER_DATA.get('roster', {})
+        
+        # Check if current roster dates match current week
+        if current_roster.get('start_date') != current_start:
+            logger.info(f"Week transition needed: current roster shows {current_roster.get('start_date')}, should be {current_start}")
+            
+            # Move next week data to current week
+            next_roster = ROSTER_DATA.get('roster_next', {})
+            if next_roster.get('data'):
+                logger.info("Transitioning next week data to current week")
+                ROSTER_DATA['roster'] = {
+                    'week_type': next_roster.get('week_type', 'weekA'),
+                    'start_date': current_start,
+                    'end_date': current_end,
+                    'data': next_roster.get('data', {})
+                }
+                
+                # Move week after data to next week
+                after_roster = ROSTER_DATA.get('roster_after', {})
+                next_start, next_end = get_next_week_dates()
+                ROSTER_DATA['roster_next'] = {
+                    'week_type': after_roster.get('week_type', 'weekA'),
+                    'start_date': next_start,
+                    'end_date': next_end,
+                    'data': after_roster.get('data', {})
+                }
+                
+                # Clear week after
+                ROSTER_DATA['roster_after'] = {
+                    'week_type': 'weekA',
+                    'start_date': '',
+                    'end_date': '',
+                    'data': {}
+                }
+                
+                # Save the transitioned data
+                save_roster_data()
+                logger.info("Week transition completed successfully")
+            else:
+                logger.warning("No next week data available for transition")
+    except Exception as e:
+        logger.error(f"Error during week transition: {e}")
+
 # Roster Management Routes
 @api_router.get("/roster/{week_type}")
 async def get_roster(week_type: str):
     """Get roster for specific week type from database"""
     try:
+        # Check and perform week transition if needed
+        check_and_transition_weeks()
+        
         # Handle roster structure (current, next, week after)
         if week_type in ['roster', 'roster_next', 'roster_after']:
             roster_section = ROSTER_DATA.get(week_type, {})
@@ -523,6 +573,17 @@ async def transition_to_roster():
     except Exception as e:
         logger.error(f"Error transitioning planner: {e}")
         raise HTTPException(status_code=500, detail=str(e))
+
+@api_router.post("/roster/force_transition")
+async def force_week_transition():
+    """Manually trigger week transition (for immediate fixes)"""
+    try:
+        logger.info("🔄 Manual week transition triggered")
+        check_and_transition_weeks()
+        return {"message": "Week transition completed successfully"}
+    except Exception as e:
+        logger.error(f"Error in manual week transition: {e}")
+        raise HTTPException(status_code=500, detail=f"Failed to transition weeks: {str(e)}")
 
 @api_router.post("/roster/{week_type}/validate")
 async def validate_roster(week_type: str, roster_data: Optional[Dict[str, Any]] = None):
