@@ -986,7 +986,7 @@ const AvailabilityModal = ({ worker, onClose, initialAvailabilityData }) => {
                   minHeight: '40px'
                 }}>
                   {/* Day checkbox - fixed width */}
-                  <label style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', fontWeight: '500', width: '80px', flexShrink: 0 }}>
+                  <label style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', fontWeight: '500', width: '140px', minWidth: '140px', flexShrink: 0, whiteSpace: 'nowrap' }}>
                     <input
                       type="checkbox"
                       checked={availabilityRules[index]?.available || false}
@@ -997,8 +997,8 @@ const AvailabilityModal = ({ worker, onClose, initialAvailabilityData }) => {
                   </label>
                   
                   {/* Full day option - fixed width */}
-                  {availabilityRules[index]?.available && (
-                    <label style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', width: '80px', flexShrink: 0 }}>
+                   {availabilityRules[index]?.available && (
+                    <label style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', width: '120px', minWidth: '120px', flexShrink: 0, whiteSpace: 'nowrap', lineHeight: 1.2 }}>
                       <input
                         type="checkbox"
                         checked={availabilityRules[index]?.isFullDay || false}
@@ -1006,9 +1006,9 @@ const AvailabilityModal = ({ worker, onClose, initialAvailabilityData }) => {
                           const isFullDay = e.target.checked;
                           handleAvailabilityChange(index, 'isFullDay', isFullDay);
                         }}
-                        style={{ transform: 'scale(1.1)' }}
+                        style={{ transform: 'scale(1.1)', flex: '0 0 auto', marginRight: '6px' }}
                       />
-                      <span style={{ fontSize: '0.85rem' }}>Full</span>
+                      <span style={{ fontSize: '0.85rem', display: 'inline-block' }}>Full</span>
                     </label>
                   )}
                   
