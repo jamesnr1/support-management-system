@@ -511,14 +511,14 @@ const ParticipantSchedule = React.memo(({
                                     handleToggleLock(index, date);
                                   }}
                                   style={{
-                                    background: shift.locked ? 'var(--accent)' : 'var(--bg-secondary)',
-                                    border: `2px solid ${shift.locked ? 'var(--accent)' : 'var(--border-color)'}`,
+                                    background: 'var(--bg-secondary)',
+                                    border: '2px solid var(--border-color)',
                                     fontSize: '1rem',
                                     cursor: 'pointer',
                                     padding: '4px 8px',
                                     borderRadius: '4px',
                                     fontWeight: 'bold',
-                                    color: shift.locked ? 'white' : 'var(--text-primary)',
+                                    color: shift.locked ? 'var(--accent)' : 'var(--text-primary)',
                                     minWidth: '32px',
                                     minHeight: '32px',
                                     display: 'flex',
