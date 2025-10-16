@@ -16,6 +16,9 @@ from collections import defaultdict
 # Import database
 from database import db
 
+# Import validation
+from validation_rules import validate_roster_data
+
 # Import our models
 from models import (
     Worker, WorkerCreate, AvailabilityRule, UnavailabilityPeriod, 
@@ -404,11 +407,35 @@ async def get_roster(week_type: str):
                 roster_section["start_date"] = start_date
                 roster_section["end_date"] = end_date
             
+            # VALIDATE DATA BEFORE RETURNING - This is the critical fix!
+            data_to_return = roster_section.get("data", {})
+            if data_to_return:
+                try:
+                    # Get workers for validation
+                    workers_list = db.get_support_workers()
+                    workers_dict = {str(w['id']): w for w in workers_list}
+                    
+                    # Run validation
+                    validation_result = validate_roster_data(data_to_return, workers_dict)
+                    
+                    if not validation_result['valid']:
+                        logger.warning(f"⚠️ Roster {week_type} has validation errors: {validation_result['errors']}")
+                        # Don't return invalid data - return empty instead
+                        data_to_return = {}
+                        logger.error(f"❌ BLOCKED INVALID DATA: {validation_result['errors']}")
+                    elif validation_result['warnings']:
+                        logger.info(f"ℹ️ Roster {week_type} has warnings: {validation_result['warnings']}")
+                        
+                except Exception as validation_error:
+                    logger.error(f"❌ Validation failed for {week_type}: {validation_error}")
+                    # Return empty data if validation fails
+                    data_to_return = {}
+            
             return {
                 "week_type": roster_section.get("week_type", "weekA"),
                 "start_date": roster_section.get("start_date", ""),
                 "end_date": roster_section.get("end_date", ""),
-                "data": roster_section.get("data", {})
+                "data": data_to_return
             }
         
         # Backward compatibility for old structure
