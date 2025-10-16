@@ -539,7 +539,7 @@ const ParticipantSchedule = React.memo(({
                                   e.target.style.boxShadow = '0 2px 4px rgba(0,0,0,0.1)';
                                 }}
                               >
-                                {shift.locked ? '🔒' : '🔓'}
+                                {shift.locked ? '●' : '○'}
                               </button>
                             )}
                           </div>
