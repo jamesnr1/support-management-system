@@ -511,8 +511,8 @@ const ParticipantSchedule = React.memo(({
                                 }}
                                 style={{
                                   position: 'absolute',
-                                  bottom: '8px',
-                                  right: '8px',
+                                  top: '8px',
+                                  left: '8px',
                                   background: shift.locked ? 'var(--accent)' : 'var(--bg-secondary)',
                                   border: `2px solid ${shift.locked ? 'var(--accent)' : 'var(--border-color)'}`,
                                   fontSize: '1.2rem',
