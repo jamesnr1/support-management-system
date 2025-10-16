@@ -458,7 +458,9 @@ class SupabaseDatabase:
     def update_support_worker(self, worker_id: str, worker_data: Dict) -> Optional[Dict]:
         """Update a support worker in Supabase"""
         try:
-            response = self.client.table('support_workers').update(worker_data).eq('id', worker_id).execute()
+            # Convert worker_id to int for database lookup
+            worker_id_int = int(worker_id)
+            response = self.client.table('support_workers').update(worker_data).eq('id', worker_id_int).execute()
             if response.data:
                 worker = response.data[0]
                 return {

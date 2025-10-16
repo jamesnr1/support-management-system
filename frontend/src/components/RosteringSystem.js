@@ -35,13 +35,20 @@ const RosteringSystem = () => {
   const [calendarVisible, setCalendarVisible] = useState(true);
   const [calendarRefreshTrigger, setCalendarRefreshTrigger] = useState(0);
   const [lastCalendarUpdate, setLastCalendarUpdate] = useState(null);
-  const [selectedRosterWeek, setSelectedRosterWeek] = useState('current'); // 'current', 'next', 'after'
+  const [selectedRosterWeek, setSelectedRosterWeek] = useState(() => {
+    return localStorage.getItem('selectedRosterWeek') || 'current';
+  }); // 'current', 'next', 'after', 'last'
   const queryClient = useQueryClient();
 
   // Save activeTab to localStorage whenever it changes
   useEffect(() => {
     localStorage.setItem('activeTab', activeTab);
   }, [activeTab]);
+
+  // Save selectedRosterWeek to localStorage whenever it changes
+  useEffect(() => {
+    localStorage.setItem('selectedRosterWeek', selectedRosterWeek);
+  }, [selectedRosterWeek]);
 
 
   // Week transition logic - every week at 3am on Sunday
@@ -154,6 +161,7 @@ const RosteringSystem = () => {
     queryFn: async () => {
       // Map week selection to backend endpoint
       const weekEndpoint = {
+        'last': 'roster_last',       // Last week
         'current': 'roster',         // Current week
         'next': 'roster_next',       // Next week  
         'after': 'roster_after'      // Week after
@@ -265,6 +273,9 @@ const RosteringSystem = () => {
     currentMonday.setDate(today.getDate() - daysFromMonday);
     currentMonday.setHours(0, 0, 0, 0);
     
+    const lastMonday = new Date(currentMonday);
+    lastMonday.setDate(currentMonday.getDate() - 7);
+    
     const nextMonday = new Date(currentMonday);
     nextMonday.setDate(currentMonday.getDate() + 7);
     
@@ -272,6 +283,7 @@ const RosteringSystem = () => {
     afterMonday.setDate(currentMonday.getDate() + 14);
 
     return {
+      last: { label: formatDateRange(lastMonday), startDate: lastMonday },
       current: { label: formatDateRange(currentMonday), startDate: currentMonday },
       next: { label: formatDateRange(nextMonday), startDate: nextMonday },
       after: { label: formatDateRange(afterMonday), startDate: afterMonday }
@@ -374,6 +386,7 @@ const RosteringSystem = () => {
         
         // Create descriptive filename based on week selection with actual week date
         const weekLabels = {
+          'last': 'last_week',
           'current': 'current_week',
           'next': 'next_week', 
           'after': 'week_after'
@@ -463,6 +476,7 @@ const RosteringSystem = () => {
         
         // Create descriptive filename based on week selection with actual week date
         const weekLabels = {
+          'last': 'last_week',
           'current': 'current_week',
           'next': 'next_week', 
           'after': 'week_after'
@@ -720,6 +734,7 @@ const RosteringSystem = () => {
                     fontWeight: '500'
                   }}
                 >
+                  <option value="last">Last</option>
                   <option value="current">Current</option>
                   <option value="next">Next</option>
                   <option value="after">After</option>

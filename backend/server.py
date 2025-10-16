@@ -214,13 +214,16 @@ async def create_worker(worker: WorkerCreate):
 async def update_worker(worker_id: str, worker: WorkerCreate):
     """Update a worker in Supabase"""
     try:
-        worker_data = worker.dict()
+        # Only include fields that are not None
+        worker_data = worker.dict(exclude_none=True)
         
         updated_worker = db.update_support_worker(worker_id, worker_data)
         if updated_worker:
             return Worker(**updated_worker)
         else:
             raise HTTPException(status_code=404, detail="Worker not found")
+    except HTTPException:
+        raise
     except Exception as e:
         logger.error(f"Error updating worker: {e}")
         raise HTTPException(status_code=400, detail=str(e))
