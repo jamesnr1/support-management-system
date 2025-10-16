@@ -95,12 +95,7 @@ const ParticipantSchedule = React.memo(({
   };
 
   const handleEditShift = (shift, date) => {
-    // Check if shift is locked
-    if (shift.locked) {
-      alert('⚠️ This shift is locked. Please unlock it before editing.');
-      return;
-    }
-    
+    // Allow editing even if locked; non-location fields will be preserved on save
     console.log('handleEditShift called with:', { shift, date });
     console.log('Shift object details:', { id: shift.id, startTime: shift.startTime, endTime: shift.endTime });
     
@@ -199,8 +194,17 @@ const ParticipantSchedule = React.memo(({
         const shifts = updatedRosterData[participant.code][shiftData.date];
         const shiftIndex = shifts.findIndex(s => s.id === editingShift.id);
         if (shiftIndex >= 0) {
-          // Preserve id and locked flag on edit
-          shifts[shiftIndex] = { ...shiftData, id: editingShift.id, locked: editingShift.locked ?? false };
+          const originalShift = shifts[shiftIndex];
+          let nextShift = { ...shiftData, id: editingShift.id, locked: editingShift.locked ?? false };
+          // If locked, preserve worker/time/type/ratio; allow location and notes to change
+          if (editingShift.locked) {
+            nextShift.startTime = originalShift.startTime;
+            nextShift.endTime = originalShift.endTime;
+            nextShift.workers = originalShift.workers;
+            nextShift.supportType = originalShift.supportType;
+            nextShift.ratio = originalShift.ratio;
+          }
+          shifts[shiftIndex] = nextShift;
         } else {
           throw new Error('Shift not found for editing');
         }
