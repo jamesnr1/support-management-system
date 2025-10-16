@@ -215,7 +215,7 @@ const ShiftForm = ({
 
   // Filter available workers based on time and date
   const getAvailableWorkers = useCallback((currentFormData, workersList = []) => {
-    console.log('🔄 getAvailableWorkers called with:', {
+    console.log('\uD83D\uDD04 getAvailableWorkers called with:', {
       formData: currentFormData,
       workersCount: workersList?.length,
       date,
@@ -223,277 +223,143 @@ const ShiftForm = ({
       rulesLoaded: Object.keys(workerAvailabilityRules).length
     });
     
-    if (!currentFormData?.startTime || !currentFormData?.endTime || !date) return workersList || [];
-    
-    // Wait for unavailability check to complete before showing any workers
-    // This prevents showing unavailable workers on first click
-    if (!unavailabilityCheckComplete) {
-      console.log('⏳ Waiting for unavailability check to complete');
-      return [];
+    if (!unavailabilityCheckComplete) return [];
+
+    const { startTime, endTime } = currentFormData || {};
+    if (!date || !startTime || !endTime) {
+      return workersList || [];
     }
-    
-    const startTime = currentFormData.startTime;
-    const endTime = currentFormData.endTime;
-    const shiftDate = new Date(date);
-    const dayOfWeek = shiftDate.getDay();
-    
-    // Helper function to convert time to minutes for comparison
+
     const timeToMinutes = (timeStr) => {
-      const [hours, minutes] = timeStr.split(':').map(Number);
-      return hours * 60 + minutes;
+      const [h, m] = String(timeStr).split(':').map(Number);
+      return h * 60 + m;
     };
+
+    const startMin = timeToMinutes(startTime);
+    const endMin = timeToMinutes(endTime);
     
-    // Helper function to check if two time ranges overlap
-    const timeRangesOverlap = (start1, end1, start2, end2) => {
-      const start1Min = timeToMinutes(start1);
-      const end1Min = timeToMinutes(end1);
-      const start2Min = timeToMinutes(start2);
-      const end2Min = timeToMinutes(end2);
-      
-      // Handle overnight shifts
-      const isOvernight1 = end1Min < start1Min;
-      const isOvernight2 = end2Min < start2Min;
-      
-      if (isOvernight1 && isOvernight2) {
-        // Both overnight - check if they overlap
-        return !(end1Min >= start2Min && end2Min >= start1Min);
-      } else if (isOvernight1) {
-        // First is overnight, second is not
-        return !(end1Min >= start2Min && end2Min >= start1Min);
-      } else if (isOvernight2) {
-        // Second is overnight, first is not
-        return !(end2Min >= start1Min && end1Min >= start2Min);
-      } else {
-        // Neither is overnight
-        return start1Min < end2Min && start2Min < end1Min;
-      }
-    };
-    
-    // Helper function to check insufficient rest time with previous day's shifts
-    const hasInsufficientRest = (worker) => {
-      // Calculate previous date
-      const currentDate = new Date(date);
-      const previousDate = new Date(currentDate);
-      previousDate.setDate(previousDate.getDate() - 1);
-      const prevDateStr = previousDate.toISOString().split('T')[0];
-      
-      // Check all participants for this worker on previous day
-      for (const participantCode in rosterData) {
-        const participantShifts = rosterData[participantCode];
-        if (participantShifts && participantShifts[prevDateStr]) {
-          for (const prevShift of participantShifts[prevDateStr]) {
-            const hasWorker = Array.isArray(prevShift.workers) 
-              ? prevShift.workers.some(w => String(w) === String(worker.id))
-              : String(prevShift.workers) === String(worker.id) || String(prevShift.worker_id) === String(worker.id);
-            
-            if (hasWorker) {
-              // Get previous shift end time and current shift start time
-              const prevEndTime = prevShift.endTime || prevShift.end_time;
-              const currentStartTime = startTime;
-              
-              // Calculate hours between shifts (cross-day rest period)
-              const prevEndMin = timeToMinutes(prevEndTime);
-              const currentStartMin = timeToMinutes(currentStartTime);
-              
-              // For cross-day rest: previous day end to next day start
-              // This is always a full day minus the time from midnight to current start
-              const hoursFromMidnightToCurrentStart = currentStartMin / 60;
-              const hoursFromPrevEndToMidnight = (1440 - prevEndMin) / 60;
-              const totalRestHours = hoursFromPrevEndToMidnight + hoursFromMidnightToCurrentStart;
-              
-              // Require at least 8 hours rest between shifts
-              const minRestHours = 8;
-              if (totalRestHours < minRestHours) {
-                console.log(`⚠️ Worker ${worker.id} has insufficient rest: ${totalRestHours.toFixed(1)}h between ${prevEndTime} (${prevDateStr}) and ${currentStartTime} (${date})`);
-                return true;
-              }
-            }
-          }
-        }
-      }
-      return false;
-    };
-    
-    console.log(`🔍 Filtering workers for shift ${startTime}-${endTime} on ${date}`);
+    console.log(`\uD83D\uDD0D Filtering workers for shift ${startTime}-${endTime} on ${date}`);
     
     return (workersList || []).filter(worker => {
       console.log(`\n--- Checking ${worker.full_name} (ID: ${worker.id}) ---`);
       
-      // NOTE: Unavailability is now handled in the dropdown rendering, not by filtering here.
+      // EXCLUDE workers who are unavailable on this date
+      if (unavailableWorkerPeriods.has(String(worker.id))) {
+        console.log(`\u274C ${worker.full_name}: Unavailable on ${date}`);
+        return false;
+      }
       
       // Check availability rules for this worker (ensure string ID comparison)
       const rules = workerAvailabilityRules[String(worker.id)] || [];
-      
-      // If worker has rules for this day, check them
-      if (rules.length > 0) {
-        const dayOfWeekRule = rules[0]; // We already filtered by weekday in the fetch
-        
-        console.log(`🔍 Checking ${worker.full_name} (ID: ${worker.id}):`, {
-          rule: dayOfWeekRule,
-          shift: `${startTime}-${endTime}`
-        });
-        
-        // Check if worker is available during the shift time
-        if (dayOfWeekRule.is_full_day || dayOfWeekRule.wraps_midnight) {
-          // Worker is available 24/7 on this day
-          console.log(`✅ ${worker.full_name} is available (full day or wraps midnight)`);
-          // Continue to other checks
-        } else {
-          // Check if shift time falls within worker's available hours
-          const shiftStartMin = timeToMinutes(startTime);
-          const shiftEndMin = timeToMinutes(endTime);
-          const ruleStartMin = timeToMinutes(dayOfWeekRule.from_time);
-          const ruleEndMin = timeToMinutes(dayOfWeekRule.to_time);
-          
-          // Handle overnight shifts
-          const isShiftOvernight = shiftEndMin < shiftStartMin;
-          const isRuleOvernight = ruleEndMin < ruleStartMin;
-          
-          if (isShiftOvernight || isRuleOvernight) {
-            // Complex overnight logic - for now, allow if worker has any availability
-            console.log(`✅ ${worker.full_name} allowed (overnight shift logic)`);
-            // This can be refined later
+      if (!Array.isArray(rules) || rules.length === 0) {
+        console.log(`\u274C ${worker.full_name}: No availability rules for this weekday`);
+        return false;
+      }
+
+      // Determine if any rule allows this time window (handle full-day and wrapping)
+      let isAllowedByRules = false;
+      // If any rule marks full-day (or wraps), it's allowed
+      if (rules.some(r => {
+        const f = r.from_time || '00:00';
+        const t = r.to_time || '23:59';
+        return r.is_full_day || r.wraps_midnight || (f === '00:00' && (t === '23:59' || t === '24:00'));
+      })) {
+        isAllowedByRules = true;
+      } else {
+        // Build availability intervals for the day, handling wrap past midnight
+        const intervals = [];
+        for (const r of rules) {
+          const f = r.from_time || '00:00';
+          const t = r.to_time || '23:59';
+          let fMin = timeToMinutes(f);
+          let tMin = timeToMinutes(t);
+          if (tMin <= fMin) {
+            // Wraps midnight: split into [f, 24:00] and [0, t]
+            intervals.push([fMin, 1440]);
+            intervals.push([0, tMin]);
           } else {
-            // Normal (same-day) shift and rule
-            // Shift must be entirely within worker's available hours
-            if (shiftStartMin < ruleStartMin || shiftEndMin > ruleEndMin) {
-              console.log(`❌ ${worker.full_name} filtered out: shift ${startTime}-${endTime} outside rule ${dayOfWeekRule.from_time}-${dayOfWeekRule.to_time}`);
-              return false; // Shift is outside worker's available hours
-            }
-            console.log(`✅ ${worker.full_name} is available (within hours)`);
+            intervals.push([fMin, tMin]);
           }
         }
-      } else {
-        console.log(`❌ ${worker.full_name} (ID: ${worker.id}) has no availability rules - not available`);
-        return false; // No rules = not available
-      }
-      
-      // Check for cross-participant conflicts (double-booking)
-      const conflicts = checkCrossParticipantConflicts(worker.id, date, startTime, endTime, editingShift?.id);
-      if (conflicts.length > 0) {
-        console.log(`🚫 ${worker.full_name} filtered out: double-booked with ${conflicts[0].participant} at ${conflicts[0].time}`);
-        return false;
-      } else {
-        console.log(`✅ ${worker.full_name} - no conflicts found`);
-      }
-      
-      // Check for back-to-back shifts (but allow if it's a valid split shift with same participant/location)
-      const backToBack = checkBackToBackShifts(worker.id, date, startTime, endTime, editingShift?.id);
-      if (backToBack.length > 0) {
-        // Check if this is a split shift scenario (same participant, same location)
-        const existingShift = backToBack[0].existingShift;
-        const existingParticipant = backToBack[0].participantCode;
-        
-        console.log(`🔍 Back-to-back check for ${worker.full_name}:`, {
-          existingParticipant,
-          currentParticipant: participant?.code,
-          existingLocation: existingShift?.location,
-          currentLocation: formData.location,
-          isSameParticipant: existingParticipant === participant?.code,
-          isSameLocation: existingShift?.location === formData.location
-        });
-        
-        if (existingParticipant === participant?.code && 
-            existingShift?.location === formData.location) {
-          console.log(`✅ ${worker.full_name} - back-to-back allowed (valid split shift with ${participant?.code})`);
-          // Allow it - it's a split shift
-        } else {
-          console.log(`🚫 ${worker.full_name} filtered out: back-to-back shift at ${backToBack[0].prevEnd}`);
-          return false;
+        // Merge intervals
+        intervals.sort((a, b) => a[0] - b[0]);
+        const merged = [];
+        for (const iv of intervals) {
+          if (merged.length === 0 || iv[0] > merged[merged.length - 1][1]) {
+            merged.push([iv[0], iv[1]]);
+          } else {
+            merged[merged.length - 1][1] = Math.max(merged[merged.length - 1][1], iv[1]);
+          }
         }
-      }
-      
-      // Check for insufficient rest on SAME DAY (not just cross-day)
-      const sameDayRest = checkSameDayRest(worker.id, date, startTime, endTime, editingShift?.id);
-      if (sameDayRest) {
-        console.log(`🚫 ${worker.full_name} filtered out: insufficient rest on same day (${sameDayRest.restHours.toFixed(1)}h < 8h)`);
-        return false;
-      }
-      
-      // Check for insufficient rest from previous day
-      if (hasInsufficientRest(worker)) {
-        console.log(`🚫 ${worker.full_name} filtered out: insufficient rest from previous day`);
-        return false;
-      }
-      
-      // Check for daily 12+ hour limit first
-      const timeToMins = (t) => {
-        const [h, m] = t.split(':').map(Number);
-        return h * 60 + (m || 0);
-      };
-      let shiftDuration = (timeToMins(endTime) - timeToMins(startTime)) / 60;
-      if (shiftDuration <= 0) shiftDuration += 24; // Handle overnight
-      
-      // Calculate hours for this worker on THIS DATE only
-      let dailyHours = shiftDuration;
-      for (const participantCode in rosterData) {
-        const participantShifts = rosterData[participantCode];
-        if (participantShifts && participantShifts[date]) {
-          for (const existingShift of participantShifts[date]) {
-            // Skip the shift being edited
-            if (editingShift?.id && existingShift.id === editingShift.id) continue;
-            
-            const hasWorker = Array.isArray(existingShift.workers) && existingShift.workers.some(w => String(w) === String(worker.id));
-            if (hasWorker) {
-              dailyHours += parseFloat(existingShift.duration || 0);
+        // Check if merged coverage fully covers [startMin, endMin]
+        let coveredEnd = -1;
+        for (const [a, b] of merged) {
+          if (coveredEnd < 0) {
+            if (a <= startMin && b >= startMin) {
+              coveredEnd = b;
+              if (coveredEnd >= endMin) { isAllowedByRules = true; break; }
+            }
+          } else {
+            if (a <= coveredEnd) {
+              coveredEnd = Math.max(coveredEnd, b);
+              if (coveredEnd >= endMin) { isAllowedByRules = true; break; }
             }
           }
         }
       }
-      
-      if (dailyHours >= 12) {
-        console.log(`🚫 ${worker.full_name} filtered out: would exceed 12h daily limit (${dailyHours.toFixed(1)}h on this day)`);
+
+      // If there are no rules, default to allowed (subject to unavailability and conflicts)
+      if (rules.length === 0) {
+        isAllowedByRules = true;
+      }
+ 
+      if (!isAllowedByRules) {
+        console.log(`\u274C ${worker.full_name}: Outside availability rules`);
         return false;
       }
-      
-      // Check for weekly max hours (unless override is enabled)
-      if (worker.max_hours && !overrideValidation) {
-        const currentHours = calculateWorkerHours(worker.id, weekType);
-        const totalHours = currentHours + shiftDuration;
-        
-        if (totalHours > worker.max_hours) {
-          console.log(`🚫 ${worker.full_name} filtered out: would exceed max hours (${totalHours.toFixed(1)}/${worker.max_hours})`);
-          return false;
-        }
-      }
-      
-      // Check for insufficient rest TO next day (NEW)
-      const currentDate = new Date(date);
-      const nextDate = new Date(currentDate);
-      nextDate.setDate(nextDate.getDate() + 1);
-      const nextDateStr = nextDate.toISOString().split('T')[0];
-      
-      // Check all participants for this worker on next day
-      for (const participantCode in rosterData) {
-        const participantShifts = rosterData[participantCode];
-        if (participantShifts && participantShifts[nextDateStr]) {
-          for (const nextShift of participantShifts[nextDateStr]) {
-            const hasWorker = Array.isArray(nextShift.workers) 
-              ? nextShift.workers.some(w => String(w) === String(worker.id))
-              : String(nextShift.workers) === String(worker.id) || String(nextShift.worker_id) === String(worker.id);
-            
-            if (hasWorker) {
-              const nextStartTime = nextShift.startTime || nextShift.start_time;
-              const currentEndTime = endTime;
-              
-              const currentEndMin = timeToMinutes(currentEndTime);
-              const nextStartMin = timeToMinutes(nextStartTime);
-              
-              const hoursFromCurrentEndToMidnight = (1440 - currentEndMin) / 60;
-              const hoursFromMidnightToNextStart = nextStartMin / 60;
-              const totalRestHours = hoursFromCurrentEndToMidnight + hoursFromMidnightToNextStart;
-              
-              const minRestHours = 8;
-              if (totalRestHours < minRestHours) {
-                console.log(`🚫 Worker ${worker.full_name} filtered out: insufficient rest before next day shift (${totalRestHours.toFixed(1)}h < ${minRestHours}h)`);
-                return false;
-              }
+
+      // NEW: Exclude workers already booked on the SAME date with overlap/back-to-back or insufficient rest (<8h)
+      const participantCodes = Object.keys(rosterData || {});
+      for (const pCode of participantCodes) {
+        const dayShifts = (rosterData[pCode] && rosterData[pCode][date]) || [];
+        for (const s of dayShifts) {
+          if (!Array.isArray(s.workers)) continue;
+          if (!s.workers.some(w => String(w) === String(worker.id))) continue;
+          const sStart = timeToMinutes(s.startTime || s.start_time);
+          const sEnd = timeToMinutes(s.endTime || s.end_time);
+
+          // Overlap
+          const overlaps = sStart < endMin && startMin < sEnd;
+          if (overlaps) {
+            console.log(`\u274C ${worker.full_name}: Overlap with ${pCode} ${s.startTime}-${s.endTime}`);
+            return false;
+          }
+
+          // Back-to-back (no break)
+          if (sEnd === startMin || endMin === sStart) {
+            console.log(`\u274C ${worker.full_name}: Back-to-back with ${pCode} ${s.startTime}-${s.endTime}`);
+            return false;
+          }
+
+          // Insufficient same-day rest (<8h and >0)
+          const MIN_REST_MIN = 8 * 60;
+          if (sEnd <= startMin) {
+            const rest = startMin - sEnd;
+            if (rest > 0 && rest < MIN_REST_MIN) {
+              console.log(`\u274C ${worker.full_name}: Only ${(rest/60).toFixed(1)}h rest before shift`);
+              return false;
+            }
+          }
+          if (endMin <= sStart) {
+            const rest = sStart - endMin;
+            if (rest > 0 && rest < MIN_REST_MIN) {
+              console.log(`\u274C ${worker.full_name}: Only ${(rest/60).toFixed(1)}h rest after shift`);
+              return false;
             }
           }
         }
       }
-      
-      // Worker is available
+
       return true;
     });
   }, [unavailabilityCheckComplete, date, existingShifts, unavailableWorkerPeriods, rosterData, editingShift, workerAvailabilityRules]);

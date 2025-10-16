@@ -1024,6 +1024,22 @@
             "locked": false
           },
           {
+            "id": "shift_1760597788209_enrymoypg",
+            "date": "2025-10-22",
+            "startTime": "10:00",
+            "endTime": "12:00",
+            "supportType": "Self-Care",
+            "ratio": "1:1",
+            "workers": [
+              "336"
+            ],
+            "location": "1",
+            "notes": "",
+            "shiftNumber": "G2025102274",
+            "duration": 2,
+            "isSplitShift": false
+          },
+          {
             "id": "shift_1760580244672_GRA001_2025-10-15_2000",
             "date": "2025-10-22",
             "startTime": "20:00",
@@ -1039,22 +1055,6 @@
             "duration": 2,
             "isSplitShift": false,
             "locked": false
-          },
-          {
-            "id": "shift_1760597788209_enrymoypg",
-            "date": "2025-10-22",
-            "startTime": "10:00",
-            "endTime": "12:00",
-            "supportType": "Self-Care",
-            "ratio": "1:1",
-            "workers": [
-              "336"
-            ],
-            "location": "1",
-            "notes": "",
-            "shiftNumber": "G2025102274",
-            "duration": 2,
-            "isSplitShift": false
           }
         ],
         "2025-10-23": [
@@ -1246,7 +1246,7 @@
             "supportType": "Self-Care",
             "ratio": "2:1",
             "workers": [
-              "125",
+              "123",
               "130"
             ],
             "location": "2",
@@ -1264,8 +1264,8 @@
             "supportType": "Self-Care",
             "ratio": "2:1",
             "workers": [
-              "126",
-              "127"
+              "118",
+              "126"
             ],
             "location": "2",
             "notes": "",
@@ -1302,7 +1302,7 @@
             "supportType": "Self-Care",
             "ratio": "2:1",
             "workers": [
-              "127",
+              "123",
               "131"
             ],
             "location": "2",
@@ -1320,8 +1320,8 @@
             "supportType": "Self-Care",
             "ratio": "2:1",
             "workers": [
-              "136",
-              "126"
+              "118",
+              "127"
             ],
             "location": "2",
             "notes": "",
@@ -1358,7 +1358,7 @@
             "supportType": "Self-Care",
             "ratio": "2:1",
             "workers": [
-              "129",
+              "123",
               "119"
             ],
             "location": "2",
@@ -1376,8 +1376,8 @@
             "supportType": "Self-Care",
             "ratio": "2:1",
             "workers": [
-              "125",
-              "126"
+              "127",
+              "132"
             ],
             "location": "2",
             "notes": "",
@@ -1632,7 +1632,27 @@
       },
       "LIB001": {
         "2025-10-22": [],
-        "2025-10-23": []
+        "2025-10-23": [],
+        "2025-10-21": [
+          {
+            "id": "shift_1760607175727_yftw1xrt9",
+            "date": "2025-10-21",
+            "startTime": "10:00",
+            "endTime": "18:00",
+            "supportType": "Self-Care",
+            "ratio": "2:1",
+            "workers": [
+              "125",
+              "126"
+            ],
+            "location": "1",
+            "notes": "",
+            "shiftNumber": "L2025102194",
+            "duration": 8,
+            "isSplitShift": false,
+            "locked": false
+          }
+        ]
       },
       "ACE001": {
         "2025-10-25": [
