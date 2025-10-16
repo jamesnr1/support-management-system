@@ -445,7 +445,7 @@ const ShiftsTab = ({ workers, participants = [], rosterData }) => {
     const shifts = {};
 
     // Use the data from the currently selected week in the Roster tab
-    let dataSource = rosterData.current?.data;
+    let dataSource = rosterData.data;
     
     if (!dataSource) return {};
 
@@ -482,6 +482,25 @@ const ShiftsTab = ({ workers, participants = [], rosterData }) => {
       });
     });
 
+    // Sort shifts by time for each worker
+    Object.keys(shifts).forEach(workerId => {
+      shifts[workerId].sort((a, b) => {
+        // Convert time strings to minutes for comparison
+        const timeToMinutes = (timeStr) => {
+          if (!timeStr) return 0;
+          const [hours, minutes] = timeStr.split(':').map(Number);
+          return hours * 60 + minutes;
+        };
+        
+        // First sort by date
+        if (a.date !== b.date) {
+          return new Date(a.date) - new Date(b.date);
+        }
+        
+        // Then sort by start time
+        return timeToMinutes(a.startTime) - timeToMinutes(b.startTime);
+      });
+    });
 
     return shifts;
   }, [rosterData, selectedWeek, startDate, endDate, workers]);
@@ -499,6 +518,20 @@ const ShiftsTab = ({ workers, participants = [], rosterData }) => {
   const getWorkerMaxHours = (workerId) => {
     const workerInfo = workers?.find(w => w.id === workerId);
     return workerInfo?.max_hours ?? 48;
+  };
+
+  // Format hours display with color coding
+  const formatWorkerHours = (hours) => {
+    const roundedHours = Math.round(hours * 10) / 10; // Round to 1 decimal
+    let color = "#28a745"; // Green for normal
+    
+    if (hours >= 50) {
+      color = "#dc3545"; // Red for over weekly limit
+    } else if (hours >= 12) {
+      color = "#ffc107"; // Yellow for daily limit
+    }
+    
+    return { hours: roundedHours, color };
   };
 
   // Get workers who have shifts in the selected week
@@ -639,7 +672,10 @@ const ShiftsTab = ({ workers, participants = [], rosterData }) => {
                       {getDisplayName(worker.full_name)}
                     </span>
                     <span style={{ fontSize: '0.75rem', color: 'var(--text-secondary)' }}>
-                      {workerTotalHours[worker.id]?.toFixed(1) || 0}h / {getWorkerMaxHours(worker.id)}h
+                      <span style={{ color: formatWorkerHours(workerTotalHours[worker.id] || 0).color, fontWeight: '600' }}>
+                        {formatWorkerHours(workerTotalHours[worker.id] || 0).hours}h
+                      </span>
+                      <span style={{ color: 'var(--text-secondary)' }}> / {getWorkerMaxHours(worker.id)}h</span>
                     </span>
                   </div>
 
