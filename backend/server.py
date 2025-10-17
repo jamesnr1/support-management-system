@@ -198,8 +198,26 @@ async def get_workers(check_date: Optional[str] = None):
 async def create_worker(worker: WorkerCreate):
     """Create a new worker in Supabase"""
     try:
-        worker_data = worker.dict()
+        # Use Pydantic v2 API and exclude None fields
+        worker_data = worker.model_dump(exclude_none=True)  # type: ignore[attr-defined]
         worker_data['status'] = 'Active'
+        
+        # Sanitise optional bigint fields that may come as empty strings from UI
+        # Telegram must be a bigint in Supabase; remove or coerce if blank
+        if 'telegram' in worker_data:
+            raw_tel = str(worker_data.get('telegram', '')).strip()
+            if raw_tel == '':
+                # Remove to avoid "invalid input syntax for type bigint: \"\""
+                worker_data.pop('telegram', None)
+            elif raw_tel.isdigit():
+                worker_data['telegram'] = int(raw_tel)
+            else:
+                # Non-numeric values are not valid for bigint; drop the field
+                worker_data.pop('telegram', None)
+        
+        # Ensure code isn't an empty string (database layer will auto-generate if missing)
+        if 'code' in worker_data and (worker_data['code'] is None or str(worker_data['code']).strip() == ''):
+            worker_data.pop('code', None)
         
         created_worker = db.create_support_worker(worker_data)
         if created_worker:
