@@ -814,8 +814,8 @@ const ShiftForm = ({
     const earlierEndMin = timeToMinutes(earlierEnd);
     const laterStartMin = timeToMinutes(laterStart);
     
-    // Add 24 hours to the later start (next day) and subtract earlier end
-    const gapMinutes = (laterStartMin + 24 * 60) - earlierEndMin;
+    // Add 24 hours to the later start (next day) and subtract earlier end, then modulo 24h to get true gap
+    const gapMinutes = ((laterStartMin + 24 * 60) - earlierEndMin) % (24 * 60);
     
     return gapMinutes;
   };
