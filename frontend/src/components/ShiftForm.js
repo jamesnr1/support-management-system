@@ -318,6 +318,25 @@ const ShiftForm = ({
         return false;
       }
 
+      // NEW: Exclude workers who would exceed their weekly max hours in the target week
+      try {
+        const MINUTES_IN_DAY = 1440;
+        const newShiftMinutes = (() => {
+          const durationMin = endMin - startMin < 0 ? (endMin + MINUTES_IN_DAY) - startMin : endMin - startMin;
+          return durationMin;
+        })();
+        if (worker.max_hours) {
+          const weeklyHours = calculateWorkerWeeklyHours(worker.id, date);
+          const totalWithNew = weeklyHours + (newShiftMinutes / 60);
+          if (totalWithNew > worker.max_hours) {
+            console.log(`\u274C ${worker.full_name}: Weekly limit ${worker.max_hours}h would be exceeded (${totalWithNew.toFixed(1)}h)`);
+            return false;
+          }
+        }
+      } catch (e) {
+        console.warn('Weekly hours check failed:', e);
+      }
+
       // NEW: Exclude workers already booked on the SAME date with overlap/back-to-back or insufficient rest (<8h)
       const participantCodes = Object.keys(rosterData || {});
       for (const pCode of participantCodes) {
@@ -613,21 +632,21 @@ const ShiftForm = ({
   };
   
   // Calculate worker's current weekly hours
-  const calculateWorkerWeeklyHours = (workerId) => {
-    // Get current week (Monday to Sunday)
-    const now = new Date();
-    const startOfWeek = new Date(now);
-    const dayOfWeek = now.getDay();
+  const calculateWorkerWeeklyHours = (workerId, referenceDateStr) => {
+    // Compute the Monday-Sunday week containing the reference date (or today if missing)
+    const ref = referenceDateStr ? new Date(referenceDateStr) : new Date();
+    const startOfWeek = new Date(ref);
+    const dayOfWeek = ref.getDay(); // 0=Sun, 1=Mon
     const daysFromMonday = dayOfWeek === 0 ? 6 : dayOfWeek - 1;
-    startOfWeek.setDate(now.getDate() - daysFromMonday);
+    startOfWeek.setDate(ref.getDate() - daysFromMonday);
     startOfWeek.setHours(0, 0, 0, 0);
-    
+
     const endOfWeek = new Date(startOfWeek);
     endOfWeek.setDate(startOfWeek.getDate() + 7);
-    
+
     let totalHours = 0;
-    
-    // Check all roster data for this worker's shifts in current week
+
+    // Sum hours for this worker across all participants within the computed week
     Object.keys(rosterData || {}).forEach(participantCode => {
       const participantData = rosterData[participantCode];
       if (participantData) {
@@ -645,7 +664,7 @@ const ShiftForm = ({
         });
       }
     });
-    
+
     return totalHours;
   };
   
@@ -814,8 +833,10 @@ const ShiftForm = ({
     const earlierEndMin = timeToMinutes(earlierEnd);
     const laterStartMin = timeToMinutes(laterStart);
     
-    // Add 24 hours to the later start (next day) and subtract earlier end, then modulo 24h to get true gap
-    const gapMinutes = ((laterStartMin + 24 * 60) - earlierEndMin) % (24 * 60);
+    // For adjacent days, compute the actual elapsed time from previous day's end
+    // to next day's start without reducing modulo 24 hours.
+    // Example: Mon 11:00 -> Tue 13:00 should be 26 hours (1560 minutes).
+    const gapMinutes = (laterStartMin + 24 * 60) - earlierEndMin;
     
     return gapMinutes;
   };

@@ -683,19 +683,19 @@
             "locked": false
           },
           {
-            "id": "shift_1760580244673_JAM001_2025-10-19_1400",
+            "id": "shift_1760696019249_wjlolqjxq",
             "date": "2025-10-19",
             "startTime": "14:00",
             "endTime": "22:00",
             "supportType": "Self-Care",
             "ratio": "2:1",
             "workers": [
-              "138",
+              "126",
               "119"
             ],
             "location": "2",
             "notes": "",
-            "shiftNumber": "J202510191400",
+            "shiftNumber": "J2025101922",
             "duration": 8,
             "isSplitShift": false,
             "locked": false
@@ -741,26 +741,7 @@
             "isSplitShift": false
           }
         ],
-        "2025-10-17": [
-          {
-            "id": "shift_1760605550034_qfsscjro5",
-            "date": "2025-10-17",
-            "startTime": "14:00",
-            "endTime": "22:00",
-            "supportType": "Self-Care",
-            "ratio": "2:1",
-            "workers": [
-              "126",
-              "125"
-            ],
-            "location": "1",
-            "notes": "",
-            "shiftNumber": "L2025101744",
-            "duration": 8,
-            "isSplitShift": false,
-            "locked": false
-          }
-        ]
+        "2025-10-17": []
       },
       "ACE001": {
         "2025-10-18": [
@@ -908,7 +889,7 @@
             "supportType": "Self-Care",
             "ratio": "1:1",
             "workers": [
-              "336"
+              "137"
             ],
             "location": "1",
             "notes": "",
@@ -1007,37 +988,21 @@
             "locked": false
           },
           {
-            "id": "shift_1760580244672_GRA001_2025-10-15_800",
-            "date": "2025-10-22",
-            "startTime": "08:00",
-            "endTime": "10:00",
-            "supportType": "Self-Care",
-            "ratio": "1:1",
-            "workers": [
-              "118"
-            ],
-            "location": "1",
-            "notes": "",
-            "shiftNumber": "G20251015800",
-            "duration": 2,
-            "isSplitShift": false,
-            "locked": false
-          },
-          {
             "id": "shift_1760597788209_enrymoypg",
             "date": "2025-10-22",
             "startTime": "10:00",
-            "endTime": "12:00",
+            "endTime": "14:00",
             "supportType": "Self-Care",
             "ratio": "1:1",
             "workers": [
-              "336"
+              "137"
             ],
             "location": "1",
             "notes": "",
             "shiftNumber": "G2025102274",
-            "duration": 2,
-            "isSplitShift": false
+            "duration": 4,
+            "isSplitShift": false,
+            "locked": false
           },
           {
             "id": "shift_1760580244672_GRA001_2025-10-15_2000",
@@ -1061,12 +1026,12 @@
           {
             "id": "shift_1760580244672_GRA001_2025-10-16_600",
             "date": "2025-10-23",
-            "startTime": "16:00",
-            "endTime": "22:00",
+            "startTime": "09:00",
+            "endTime": "15:00",
             "supportType": "Self-Care",
             "ratio": "1:1",
             "workers": [
-              "336"
+              "137"
             ],
             "location": "1",
             "notes": "",
@@ -1172,7 +1137,7 @@
             "supportType": "Self-Care",
             "ratio": "1:1",
             "workers": [
-              "131"
+              "123"
             ],
             "location": "2",
             "notes": "",
@@ -1282,7 +1247,7 @@
             "supportType": "Self-Care",
             "ratio": "2:1",
             "workers": [
-              "132",
+              "127",
               "136"
             ],
             "location": "2",
@@ -1302,8 +1267,8 @@
             "supportType": "Self-Care",
             "ratio": "2:1",
             "workers": [
-              "123",
-              "131"
+              "127",
+              "119"
             ],
             "location": "2",
             "notes": "",
@@ -1320,8 +1285,8 @@
             "supportType": "Self-Care",
             "ratio": "2:1",
             "workers": [
-              "118",
-              "127"
+              "126",
+              "125"
             ],
             "location": "2",
             "notes": "",
@@ -1545,7 +1510,7 @@
             "ratio": "2:1",
             "workers": [
               "129",
-              "119"
+              "131"
             ],
             "location": "2",
             "notes": "",
@@ -1633,26 +1598,7 @@
       "LIB001": {
         "2025-10-22": [],
         "2025-10-23": [],
-        "2025-10-21": [
-          {
-            "id": "shift_1760607175727_yftw1xrt9",
-            "date": "2025-10-21",
-            "startTime": "10:00",
-            "endTime": "18:00",
-            "supportType": "Self-Care",
-            "ratio": "2:1",
-            "workers": [
-              "125",
-              "126"
-            ],
-            "location": "1",
-            "notes": "",
-            "shiftNumber": "L2025102194",
-            "duration": 8,
-            "isSplitShift": false,
-            "locked": false
-          }
-        ]
+        "2025-10-21": []
       },
       "ACE001": {
         "2025-10-25": [
@@ -1724,6 +1670,181 @@
             "isSplitShift": false,
             "locked": false
           }
+        ],
+        "2025-10-21": [
+          {
+            "id": "shift_1760760516397_c0bsrdj5q",
+            "date": "2025-10-21",
+            "startTime": "13:00",
+            "endTime": "18:00",
+            "supportType": "Self-Care",
+            "ratio": "1:1",
+            "workers": [
+              "336"
+            ],
+            "location": "1",
+            "notes": "",
+            "shiftNumber": "A2025102138",
+            "duration": 5,
+            "isSplitShift": false
+          },
+          {
+            "id": "shift_1760761165672_khjeozwoa",
+            "date": "2025-10-21",
+            "startTime": "18:00",
+            "endTime": "22:00",
+            "supportType": "Self-Care",
+            "ratio": "1:1",
+            "workers": [
+              "136"
+            ],
+            "location": "1",
+            "notes": "",
+            "shiftNumber": "A2025102199",
+            "duration": 4,
+            "isSplitShift": false,
+            "locked": false
+          }
+        ],
+        "2025-10-23": [
+          {
+            "id": "shift_1760760574150_a7emit4u1",
+            "date": "2025-10-23",
+            "startTime": "13:00",
+            "endTime": "18:00",
+            "supportType": "Self-Care",
+            "ratio": "1:1",
+            "workers": [
+              "336"
+            ],
+            "location": "1",
+            "notes": "",
+            "shiftNumber": "A2025102378",
+            "duration": 5,
+            "isSplitShift": false
+          },
+          {
+            "id": "shift_1760761235526_arc6oompo",
+            "date": "2025-10-23",
+            "startTime": "18:00",
+            "endTime": "22:00",
+            "supportType": "Self-Care",
+            "ratio": "1:1",
+            "workers": [
+              "123"
+            ],
+            "location": "1",
+            "notes": "",
+            "shiftNumber": "A2025102351",
+            "duration": 4,
+            "isSplitShift": false,
+            "locked": false
+          }
+        ],
+        "2025-10-20": [
+          {
+            "id": "shift_1760761080270_cm62urz80",
+            "date": "2025-10-20",
+            "startTime": "10:00",
+            "endTime": "12:00",
+            "supportType": "Self-Care",
+            "ratio": "1:1",
+            "workers": [
+              "336"
+            ],
+            "location": "1",
+            "notes": "",
+            "shiftNumber": "A2025102073",
+            "duration": 2,
+            "isSplitShift": false
+          },
+          {
+            "id": "shift_1760761122280_fks1navey",
+            "date": "2025-10-20",
+            "startTime": "16:00",
+            "endTime": "22:00",
+            "supportType": "Self-Care",
+            "ratio": "1:1",
+            "workers": [
+              "125"
+            ],
+            "location": "1",
+            "notes": "",
+            "shiftNumber": "A2025102043",
+            "duration": 6,
+            "isSplitShift": false,
+            "locked": false
+          }
+        ],
+        "2025-10-22": [
+          {
+            "id": "shift_1760761292576_z23zprmac",
+            "date": "2025-10-22",
+            "startTime": "09:00",
+            "endTime": "15:00",
+            "supportType": "Self-Care",
+            "ratio": "1:1",
+            "workers": [
+              "118"
+            ],
+            "location": "1",
+            "notes": "",
+            "shiftNumber": "A2025102274",
+            "duration": 6,
+            "isSplitShift": false,
+            "locked": false
+          },
+          {
+            "id": "shift_1760761537484_mtgi1fypw",
+            "date": "2025-10-22",
+            "startTime": "16:00",
+            "endTime": "22:00",
+            "supportType": "Self-Care",
+            "ratio": "1:1",
+            "workers": [
+              "129"
+            ],
+            "location": "1",
+            "notes": "",
+            "shiftNumber": "A2025102257",
+            "duration": 6,
+            "isSplitShift": false,
+            "locked": false
+          }
+        ],
+        "2025-10-24": [
+          {
+            "id": "shift_1760761575837_c5y7muuli",
+            "date": "2025-10-24",
+            "startTime": "09:00",
+            "endTime": "15:00",
+            "supportType": "Self-Care",
+            "ratio": "1:1",
+            "workers": [
+              "136"
+            ],
+            "location": "1",
+            "notes": "",
+            "shiftNumber": "A2025102433",
+            "duration": 6,
+            "isSplitShift": false
+          },
+          {
+            "id": "shift_1760761647691_jchvcozae",
+            "date": "2025-10-24",
+            "startTime": "16:00",
+            "endTime": "22:00",
+            "supportType": "Self-Care",
+            "ratio": "1:1",
+            "workers": [
+              "137"
+            ],
+            "location": "1",
+            "notes": "",
+            "shiftNumber": "A2025102428",
+            "duration": 6,
+            "isSplitShift": false
+          }
         ]
       },
       "MIL001": {
@@ -1731,8 +1852,8 @@
           {
             "id": "shift_1760580244673_MIL001_2025-10-18_600",
             "date": "2025-10-25",
-            "startTime": "08:00",
-            "endTime": "14:00",
+            "startTime": "09:00",
+            "endTime": "12:00",
             "supportType": "Self-Care",
             "ratio": "1:1",
             "workers": [
@@ -1741,7 +1862,7 @@
             "location": "2",
             "notes": "",
             "shiftNumber": "M20251018600",
-            "duration": 6,
+            "duration": 3,
             "isSplitShift": false,
             "locked": false
           }
@@ -1750,8 +1871,8 @@
           {
             "id": "shift_1760589077501_vkxcva19d",
             "date": "2025-10-26",
-            "startTime": "08:00",
-            "endTime": "14:00",
+            "startTime": "09:00",
+            "endTime": "12:00",
             "supportType": "Self-Care",
             "ratio": "1:1",
             "workers": [
@@ -1760,9 +1881,99 @@
             "location": "2",
             "notes": "",
             "shiftNumber": "M2025101963",
-            "duration": 6,
+            "duration": 3,
             "isSplitShift": false,
             "locked": false
+          }
+        ],
+        "2025-10-20": [
+          {
+            "id": "shift_1760761731148_jfut1pvzc",
+            "date": "2025-10-20",
+            "startTime": "09:00",
+            "endTime": "12:00",
+            "supportType": "Self-Care",
+            "ratio": "1:1",
+            "workers": [
+              "131"
+            ],
+            "location": "1",
+            "notes": "",
+            "shiftNumber": "M2025102077",
+            "duration": 3,
+            "isSplitShift": false
+          }
+        ],
+        "2025-10-21": [
+          {
+            "id": "shift_1760761744424_rw5d6ew7l",
+            "date": "2025-10-21",
+            "startTime": "09:00",
+            "endTime": "12:00",
+            "supportType": "Self-Care",
+            "ratio": "1:1",
+            "workers": [
+              "131"
+            ],
+            "location": "1",
+            "notes": "",
+            "shiftNumber": "M2025102146",
+            "duration": 3,
+            "isSplitShift": false
+          }
+        ],
+        "2025-10-22": [
+          {
+            "id": "shift_1760761770073_u799a1bq9",
+            "date": "2025-10-22",
+            "startTime": "09:00",
+            "endTime": "12:00",
+            "supportType": "Self-Care",
+            "ratio": "1:1",
+            "workers": [
+              "131"
+            ],
+            "location": "1",
+            "notes": "",
+            "shiftNumber": "M2025102287",
+            "duration": 3,
+            "isSplitShift": false
+          }
+        ],
+        "2025-10-23": [
+          {
+            "id": "shift_1760761794167_fopgk2bda",
+            "date": "2025-10-23",
+            "startTime": "09:00",
+            "endTime": "12:00",
+            "supportType": "Self-Care",
+            "ratio": "1:1",
+            "workers": [
+              "118"
+            ],
+            "location": "1",
+            "notes": "",
+            "shiftNumber": "M2025102352",
+            "duration": 3,
+            "isSplitShift": false
+          }
+        ],
+        "2025-10-24": [
+          {
+            "id": "shift_1760761831694_i8p2awkyq",
+            "date": "2025-10-24",
+            "startTime": "09:00",
+            "endTime": "12:00",
+            "supportType": "Self-Care",
+            "ratio": "1:1",
+            "workers": [
+              "123"
+            ],
+            "location": "1",
+            "notes": "",
+            "shiftNumber": "M2025102417",
+            "duration": 3,
+            "isSplitShift": false
           }
         ]
       }
