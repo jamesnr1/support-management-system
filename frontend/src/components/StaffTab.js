@@ -47,6 +47,7 @@ const StaffTab = ({ locations = [], onWorkersUpdate, rosterData, participants = 
   const [showWorkerModal, setShowWorkerModal] = useState(false);
   const [showAvailabilityModal, setShowAvailabilityModal] = useState(false);
   const [selectedWorker, setSelectedWorker] = useState(null);
+  const [selectedWorkerAvailabilityData, setSelectedWorkerAvailabilityData] = useState(null);
   const [editingWorker, setEditingWorker] = useState(null);
   const [showUnavailability, setShowUnavailability] = useState({});
   const [unavailabilityData, setUnavailabilityData] = useState({
@@ -353,10 +354,21 @@ const StaffTab = ({ locations = [], onWorkersUpdate, rosterData, participants = 
                       setEditingWorker(worker);
                       setShowWorkerModal(true);
                     }}
-                    onManageAvailability={() => {
+                    onManageAvailability={async () => {
                       console.log('Availability button clicked for worker:', worker.full_name);
                       setSelectedWorker(worker);
-                      setShowAvailabilityModal(true);
+                      
+                      // Fetch availability data for this worker first
+                      try {
+                        const response = await axios.get(`${API}/workers/${worker.id}/availability`);
+                        console.log('📊 Fetched availability data for', worker.full_name, ':', response.data);
+                        setSelectedWorkerAvailabilityData(response.data);
+                        setShowAvailabilityModal(true);
+                      } catch (error) {
+                        console.error('Error fetching availability data:', error);
+                        setSelectedWorkerAvailabilityData(null);
+                        setShowAvailabilityModal(true);
+                      }
                     }}
                     onDelete={async (workerToDelete) => {
                       try {
@@ -690,90 +702,58 @@ const StaffTab = ({ locations = [], onWorkersUpdate, rosterData, participants = 
       {showAvailabilityModal && selectedWorker && (
         <AvailabilityModal
           worker={selectedWorker}
-          initialAvailabilityData={allAvailabilityData[selectedWorker.id]}
-          onClose={() => setShowAvailabilityModal(false)}
+          initialAvailabilityData={selectedWorkerAvailabilityData}
+          onClose={() => {
+            setShowAvailabilityModal(false);
+            setSelectedWorker(null);
+            setSelectedWorkerAvailabilityData(null);
+          }}
         />
       )}
     </div>
   );
 };
 
-// Full Availability Modal Component
+// Simple Availability Modal Component
 const AvailabilityModal = ({ worker, onClose, initialAvailabilityData }) => {
+  console.log('🚀 AvailabilityModal opened for:', worker.full_name);
+  console.log('📊 Initial availability data:', initialAvailabilityData);
+  
   const [isSaving, setIsSaving] = useState(false);
   const [loadingUnavailability, setLoadingUnavailability] = useState(false);
   const queryClient = useQueryClient();
 
-  // Availability state - now supports split availability
+  // Simple availability state
   const [availabilityRules, setAvailabilityRules] = useState(() => {
+    console.log('🔧 Initializing availability rules for:', worker.full_name);
+    console.log('📊 Initial availability data:', initialAvailabilityData);
+    
     const rules = {};
     const days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
     
     // Initialize with existing data or defaults
-    if (initialAvailabilityData?.weeklyAvailability) {
-      Object.entries(initialAvailabilityData.weeklyAvailability).forEach(([day, data]) => {
-        const dayIndex = days.indexOf(day);
-        if (dayIndex !== -1) {
-          const isFullDay = data.from_time === '00:00:00' && (data.to_time === '23:59:00' || data.to_time === '24:00:00');
-          
-          rules[dayIndex] = {
-            available: data.available || false,
-            isFullDay: isFullDay,
-            timeRanges: [
-              {
-                fromTime: data.from_time ? data.from_time.slice(0, 5) : '06:00',
-                toTime: data.to_time ? data.to_time.slice(0, 5) : '14:00',
-                enabled: true
-              },
-              {
-                fromTime: '18:00',
-                toTime: '23:00',
-                enabled: false
-              }
-            ]
-          };
-        }
-      });
-    }
-    
-    // Also check for raw availability rules data (new format)
     if (initialAvailabilityData?.rules && Array.isArray(initialAvailabilityData.rules)) {
+      console.log('📋 Processing rules:', initialAvailabilityData.rules);
       initialAvailabilityData.rules.forEach(rule => {
+        console.log('🔄 Processing rule:', rule);
         // Backend uses 0=Sunday, 1=Monday, etc.
-        // Frontend now uses 0=Monday, 1=Tuesday, ..., 6=Sunday
-        // Convert: backend 0 (Sunday) -> frontend 6, backend 1 (Monday) -> frontend 0, etc.
+        // Frontend uses 0=Monday, 1=Tuesday, ..., 6=Sunday
         const backendWeekday = rule.weekday;
         const dayIndex = backendWeekday === 0 ? 6 : backendWeekday - 1;
+        console.log(`📅 Backend weekday ${backendWeekday} -> Frontend dayIndex ${dayIndex} (${days[dayIndex]})`);
+        
         if (dayIndex >= 0 && dayIndex <= 6) {
-          if (!rules[dayIndex]) {
-            rules[dayIndex] = {
-              available: false,
-              isFullDay: false,
-              timeRanges: [
-                { fromTime: '06:00', toTime: '14:00', enabled: false },
-                { fromTime: '18:00', toTime: '23:00', enabled: false }
-              ]
-            };
-          }
-          
-          rules[dayIndex].available = true;
-          
-          if (rule.is_full_day) {
-            rules[dayIndex].isFullDay = true;
-          } else {
-            const sequenceNumber = rule.sequence_number || 1;
-            const rangeIndex = sequenceNumber - 1;
-            
-            if (rangeIndex < rules[dayIndex].timeRanges.length) {
-            rules[dayIndex].timeRanges[rangeIndex] = {
-              fromTime: rule.from_time ? rule.from_time.slice(0, 5) : '06:00',
-              toTime: rule.to_time ? rule.to_time.slice(0, 5) : '14:00',
-              enabled: true
-            };
-            }
-          }
+          rules[dayIndex] = {
+            available: true,
+            isFullDay: rule.is_full_day || false,
+            fromTime: (rule.from_time && rule.from_time !== null) ? rule.from_time.slice(0, 5) : '09:00',
+            toTime: (rule.to_time && rule.to_time !== null) ? rule.to_time.slice(0, 5) : '17:00'
+          };
+          console.log(`✅ Set ${days[dayIndex]}:`, rules[dayIndex]);
         }
       });
+    } else {
+      console.log('⚠️ No availability data provided, using defaults');
     }
     
     // Fill in missing days with defaults
@@ -782,22 +762,13 @@ const AvailabilityModal = ({ worker, onClose, initialAvailabilityData }) => {
         rules[i] = {
           available: false,
           isFullDay: false,
-          timeRanges: [
-            {
-              fromTime: '06:00',
-              toTime: '14:00',
-              enabled: false
-            },
-            {
-              fromTime: '18:00',
-              toTime: '23:00',
-              enabled: false
-            }
-          ]
+          fromTime: '09:00',
+          toTime: '17:00'
         };
       }
     }
     
+    console.log('🎯 Final availability rules:', rules);
     return rules;
   });
 
@@ -839,19 +810,10 @@ const AvailabilityModal = ({ worker, onClose, initialAvailabilityData }) => {
     }));
   };
 
-  const handleTimeRangeChange = (dayIndex, rangeIndex, field, value) => {
-    setAvailabilityRules(prev => ({
-      ...prev,
-      [dayIndex]: {
-        ...prev[dayIndex],
-        timeRanges: prev[dayIndex].timeRanges.map((range, index) => 
-          index === rangeIndex ? { ...range, [field]: value } : range
-        )
-      }
-    }));
-  };
-
   const handleSaveAvailability = async () => {
+    console.log('🔄 Starting to save availability for:', worker.full_name);
+    console.log('📊 Current availability rules:', availabilityRules);
+    
     setIsSaving(true);
     try {
       // Convert availability rules to backend format
@@ -868,40 +830,37 @@ const AvailabilityModal = ({ worker, onClose, initialAvailabilityData }) => {
             // Full day availability
             rules.push({
               weekday: backendWeekday,
-              sequence_number: 1,
-              from_time: '00:00',
-              to_time: '23:59',
+              from_time: null,
+              to_time: null,
               is_full_day: true,
-              wraps_midnight: false,
-              rule_type: 'full_day'
+              wraps_midnight: false
             });
           } else {
-            // Split availability - create separate rules for each enabled time range
-            rule.timeRanges.forEach((timeRange, index) => {
-              if (timeRange.enabled) {
-                rules.push({
-                  weekday: backendWeekday,
-                  sequence_number: index + 1,
-                  from_time: timeRange.fromTime,
-                  to_time: timeRange.toTime,
-                  is_full_day: false,
-                  wraps_midnight: false,
-                  rule_type: index === 0 ? 'morning' : 'evening'
-                });
-              }
+            // Regular time availability
+            rules.push({
+              weekday: backendWeekday,
+              from_time: rule.fromTime || '09:00',
+              to_time: rule.toTime || '17:00',
+              is_full_day: false,
+              wraps_midnight: false
             });
           }
         }
       });
 
+      console.log('📤 Sending rules to backend:', rules);
+      console.log('🌐 API URL:', `${API}/workers/${worker.id}/availability`);
+
       await axios.post(`${API}/workers/${worker.id}/availability`, { rules });
+      console.log('✅ Successfully saved availability');
       toast.success(`Availability for ${worker.full_name} saved successfully!`);
       
       // Refresh the query cache
       queryClient.invalidateQueries(['workers']);
       onClose();
     } catch (error) {
-      console.error('Error saving availability:', error);
+      console.error('❌ Error saving availability:', error);
+      console.error('❌ Error details:', error.response?.data);
       toast.error('Failed to save availability');
     } finally {
       setIsSaving(false);
@@ -1012,70 +971,48 @@ const AvailabilityModal = ({ worker, onClose, initialAvailabilityData }) => {
                     </label>
                   )}
                   
-                  {/* Two time ranges - compact layout */}
+                  {/* Simple time range */}
                   {availabilityRules[index]?.available && !availabilityRules[index]?.isFullDay && (
                     <div style={{ display: 'flex', gap: '0.5rem', flex: 1, alignItems: 'center' }}>
-                      {availabilityRules[index]?.timeRanges?.map((timeRange, rangeIndex) => (
-                        <div key={rangeIndex} style={{ 
-                          display: 'flex', 
-                          alignItems: 'center', 
-                          gap: '0.2rem',
-                          flex: 1,
-                          minWidth: 0
-                        }}>
-                          <label style={{ display: 'flex', alignItems: 'center', gap: '0.15rem', fontSize: '0.75rem', width: '28px', flexShrink: 0 }}>
-                            <input
-                              type="checkbox"
-                              checked={timeRange.enabled || false}
-                              onChange={(e) => handleTimeRangeChange(index, rangeIndex, 'enabled', e.target.checked)}
-                              style={{ transform: 'scale(1.1)' }}
-                            />
-                            <span>{rangeIndex === 0 ? '1st' : '2nd'}</span>
-                          </label>
-                          
-                          {timeRange.enabled && (
-                            <div style={{ display: 'flex', alignItems: 'center', gap: '0.3rem', flex: 1 }}>
-                              <select
-                                value={timeRange.fromTime || (rangeIndex === 0 ? '06:00' : '18:00')}
-                                onChange={(e) => handleTimeRangeChange(index, rangeIndex, 'fromTime', e.target.value)}
-                                style={{ 
-                                  padding: '0.4rem 0.5rem', 
-                                  borderRadius: '4px', 
-                                  border: '1px solid var(--border)', 
-                                  fontSize: '1rem',
-                                  width: '90px',
-                                  background: 'var(--card-bg)',
-                                  color: 'var(--text-primary)',
-                                  cursor: 'pointer'
-                                }}
-                              >
-                                {['00:00', '01:00', '02:00', '03:00', '04:00', '05:00', '06:00', '07:00', '08:00', '09:00', '10:00', '11:00', '12:00', '13:00', '14:00', '15:00', '16:00', '17:00', '18:00', '19:00', '20:00', '21:00', '22:00', '23:00'].map(time => (
-                                  <option key={time} value={time}>{time}</option>
-                                ))}
-                              </select>
-                              <span style={{ color: 'var(--text-secondary)', fontSize: '1rem' }}>-</span>
-                              <select
-                                value={timeRange.toTime || (rangeIndex === 0 ? '14:00' : '23:00')}
-                                onChange={(e) => handleTimeRangeChange(index, rangeIndex, 'toTime', e.target.value)}
-                                style={{ 
-                                  padding: '0.4rem 0.5rem', 
-                                  borderRadius: '4px', 
-                                  border: '1px solid var(--border)', 
-                                  fontSize: '1rem',
-                                  width: '90px',
-                                  background: 'var(--card-bg)',
-                                  color: 'var(--text-primary)',
-                                  cursor: 'pointer'
-                                }}
-                              >
-                                {['00:00', '01:00', '02:00', '03:00', '04:00', '05:00', '06:00', '07:00', '08:00', '09:00', '10:00', '11:00', '12:00', '13:00', '14:00', '15:00', '16:00', '17:00', '18:00', '19:00', '20:00', '21:00', '22:00', '23:00'].map(time => (
-                                  <option key={time} value={time}>{time}</option>
-                                ))}
-                              </select>
-                            </div>
-                          )}
-                        </div>
-                      ))}
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '0.3rem', flex: 1 }}>
+                        <select
+                          value={availabilityRules[index]?.fromTime || '09:00'}
+                          onChange={(e) => handleAvailabilityChange(index, 'fromTime', e.target.value)}
+                          style={{ 
+                            padding: '0.4rem 0.5rem', 
+                            borderRadius: '4px', 
+                            border: '1px solid var(--border)', 
+                            fontSize: '1rem',
+                            width: '90px',
+                            background: 'var(--card-bg)',
+                            color: 'var(--text-primary)',
+                            cursor: 'pointer'
+                          }}
+                        >
+                          {['00:00', '01:00', '02:00', '03:00', '04:00', '05:00', '06:00', '07:00', '08:00', '09:00', '10:00', '11:00', '12:00', '13:00', '14:00', '15:00', '16:00', '17:00', '18:00', '19:00', '20:00', '21:00', '22:00', '23:00'].map(time => (
+                            <option key={time} value={time}>{time}</option>
+                          ))}
+                        </select>
+                        <span style={{ color: 'var(--text-secondary)', fontSize: '1rem' }}>-</span>
+                        <select
+                          value={availabilityRules[index]?.toTime || '17:00'}
+                          onChange={(e) => handleAvailabilityChange(index, 'toTime', e.target.value)}
+                          style={{ 
+                            padding: '0.4rem 0.5rem', 
+                            borderRadius: '4px', 
+                            border: '1px solid var(--border)', 
+                            fontSize: '1rem',
+                            width: '90px',
+                            background: 'var(--card-bg)',
+                            color: 'var(--text-primary)',
+                            cursor: 'pointer'
+                          }}
+                        >
+                          {['00:00', '01:00', '02:00', '03:00', '04:00', '05:00', '06:00', '07:00', '08:00', '09:00', '10:00', '11:00', '12:00', '13:00', '14:00', '15:00', '16:00', '17:00', '18:00', '19:00', '20:00', '21:00', '22:00', '23:00'].map(time => (
+                            <option key={time} value={time}>{time}</option>
+                          ))}
+                        </select>
+                      </div>
                     </div>
                   )}
                 </div>
@@ -1189,9 +1126,12 @@ const AvailabilityModal = ({ worker, onClose, initialAvailabilityData }) => {
           >
             Cancel
           </button>
-          <button 
+          <button
             className="btn btn-primary" 
-            onClick={handleSaveAvailability}
+            onClick={() => {
+              console.log('🔘 Save button clicked!');
+              handleSaveAvailability();
+            }}
             disabled={isSaving}
             style={{ padding: '0.75rem 1.5rem' }}
           >

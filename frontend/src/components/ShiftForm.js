@@ -326,8 +326,31 @@ const ShiftForm = ({
           return durationMin;
         })();
         if (worker.max_hours) {
-          const weeklyHours = calculateWorkerWeeklyHours(worker.id, date);
-          const totalWithNew = weeklyHours + (newShiftMinutes / 60);
+          let weeklyHours, totalWithNew;
+          
+          if (editingShift) {
+            // When editing a shift, check if this worker is actually being changed
+            const wasInOriginalShift = editingShift.workers && editingShift.workers.some(w => String(w) === String(worker.id));
+            const isInNewShift = formData.workers && formData.workers.some(w => String(w) === String(worker.id));
+            
+            if (wasInOriginalShift && isInNewShift) {
+              // Worker unchanged - use current hours without modification
+              weeklyHours = calculateWorkerWeeklyHours(worker.id, date);
+              totalWithNew = weeklyHours; // No change in hours
+            } else if (!wasInOriginalShift && isInNewShift) {
+              // Worker being added - exclude current shift and add new duration
+              weeklyHours = calculateWorkerWeeklyHours(worker.id, date, editingShift.id);
+              totalWithNew = weeklyHours + (newShiftMinutes / 60);
+            } else {
+              // Worker being removed or not involved - use current hours
+              weeklyHours = calculateWorkerWeeklyHours(worker.id, date);
+              totalWithNew = weeklyHours;
+            }
+          } else {
+            // New shift - add duration to current hours
+            weeklyHours = calculateWorkerWeeklyHours(worker.id, date);
+            totalWithNew = weeklyHours + (newShiftMinutes / 60);
+          }
           if (totalWithNew > worker.max_hours) {
             console.log(`\u274C ${worker.full_name}: Weekly limit ${worker.max_hours}h would be exceeded (${totalWithNew.toFixed(1)}h)`);
             return false;
@@ -599,8 +622,35 @@ const ShiftForm = ({
         
         // 4. CHECK MAXIMUM WEEKLY HOURS
         if (worker.max_hours) {
-          const currentHours = calculateWorkerWeeklyHours(workerId);
-          const totalHours = currentHours + duration;
+          let currentHours, totalHours;
+          
+          if (editingShift) {
+            // When editing a shift, check if this worker is actually being changed
+            const wasInOriginalShift = editingShift.workers && editingShift.workers.some(w => String(w) === String(workerId));
+            const isInNewShift = shiftData.workers && shiftData.workers.some(w => String(w) === String(workerId));
+            
+            if (wasInOriginalShift && isInNewShift) {
+              // Worker unchanged - use current hours without modification
+              currentHours = calculateWorkerWeeklyHours(workerId, date);
+              totalHours = currentHours; // No change in hours
+            } else if (!wasInOriginalShift && isInNewShift) {
+              // Worker being added - exclude current shift and add new duration
+              currentHours = calculateWorkerWeeklyHours(workerId, date, editingShift.id);
+              totalHours = currentHours + duration;
+            } else if (wasInOriginalShift && !isInNewShift) {
+              // Worker being removed - exclude current shift (hours will decrease)
+              currentHours = calculateWorkerWeeklyHours(workerId, date, editingShift.id);
+              totalHours = currentHours; // Hours will decrease, no warning needed
+            } else {
+              // Worker not involved in this shift
+              currentHours = calculateWorkerWeeklyHours(workerId, date);
+              totalHours = currentHours;
+            }
+          } else {
+            // New shift - add duration to current hours
+            currentHours = calculateWorkerWeeklyHours(workerId, date);
+            totalHours = currentHours + duration;
+          }
           
           if (totalHours > worker.max_hours) {
             // When editing a shift, allow override with warning instead of blocking error
@@ -632,7 +682,7 @@ const ShiftForm = ({
   };
   
   // Calculate worker's current weekly hours
-  const calculateWorkerWeeklyHours = (workerId, referenceDateStr) => {
+  const calculateWorkerWeeklyHours = (workerId, referenceDateStr, excludeShiftId = null) => {
     // Compute the Monday-Sunday week containing the reference date (or today if missing)
     const ref = referenceDateStr ? new Date(referenceDateStr) : new Date();
     const startOfWeek = new Date(ref);
@@ -655,6 +705,11 @@ const ShiftForm = ({
           if (shiftDateObj >= startOfWeek && shiftDateObj < endOfWeek) {
             const shifts = Array.isArray(participantData[shiftDate]) ? participantData[shiftDate] : [];
             shifts.forEach(shift => {
+              // Skip the shift we're editing (to avoid double-counting)
+              if (excludeShiftId && shift.id === excludeShiftId) {
+                return;
+              }
+              
               const hasWorker = Array.isArray(shift.workers) && shift.workers.some(w => String(w) === String(workerId));
               if (hasWorker) {
                 totalHours += parseFloat(shift.duration || 0);

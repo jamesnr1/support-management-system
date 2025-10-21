@@ -462,7 +462,11 @@ const RosteringSystem = () => {
         allShifts.sort((a, b) => {
           if (a.date !== b.date) return a.date.localeCompare(b.date);
           if (a.participantName !== b.participantName) return a.participantName.localeCompare(b.participantName);
-          return a.startTime.localeCompare(b.startTime);
+          
+          // Convert times to comparable format (HH:MM)
+          const timeA = a.startTime.padStart(5, '0'); // Ensure format like "06:00"
+          const timeB = b.startTime.padStart(5, '0'); // Ensure format like "14:00"
+          return timeA.localeCompare(timeB);
         });
         
         // Write CSV rows
@@ -497,7 +501,11 @@ const RosteringSystem = () => {
           Object.keys(participantData).sort().forEach(date => {
             const shifts = participantData[date];
             
-            shifts.sort((a, b) => (a.startTime || '').localeCompare(b.startTime || '')).forEach(shift => {
+            shifts.sort((a, b) => {
+              const timeA = (a.startTime || '').padStart(5, '0');
+              const timeB = (b.startTime || '').padStart(5, '0');
+              return timeA.localeCompare(timeB);
+            }).forEach(shift => {
               const locationName = shift.location ? 
                 locations.find(l => l.id === shift.location)?.name || '' : '';
               
