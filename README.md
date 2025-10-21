@@ -31,8 +31,8 @@ This is a **specialized rostering system** for managing NDIS (National Disabilit
 ## 🚀 QUICK START
 
 ### Current Running State
-- **Backend:** http://localhost:8001 (FastAPI + Supabase PostgreSQL)
-- **Frontend:** http://localhost:3000 (React)
+- **Backend:** Render (FastAPI + Supabase PostgreSQL)
+- **Frontend:** Vercel (React)
 - **Database:** Supabase PostgreSQL with 24 workers, 5 participants
 
 ### Start Servers
@@ -449,7 +449,7 @@ pytest  # Run all tests
 
 ## 🔐 ENVIRONMENT VARIABLES
 
-**Backend (Vercel Environment Variables):**
+**Backend (Render Environment Variables):**
 ```bash
 SUPABASE_URL=your_supabase_url
 SUPABASE_SERVICE_KEY=your_supabase_service_key
@@ -457,12 +457,12 @@ GOOGLE_CLIENT_ID=your_google_client_id
 GOOGLE_CLIENT_SECRET=your_google_client_secret
 TELEGRAM_BOT_TOKEN=your_telegram_bot_token
 OPENAI_API_KEY=your_openai_api_key
-CORS_ORIGINS=http://localhost:3000,https://your-domain.com
+CORS_ORIGINS=https://your-vercel-domain.com
 ```
 
-**Frontend (`.env`):**
+**Frontend (Vercel Environment Variables):**
 ```bash
-REACT_APP_BACKEND_URL=http://localhost:8001
+REACT_APP_BACKEND_URL=https://your-render-backend-url.com
 REACT_APP_GOOGLE_CLIENT_ID=your_google_client_id
 ```
 

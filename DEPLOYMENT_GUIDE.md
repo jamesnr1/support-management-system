@@ -2,7 +2,7 @@
 
 ## Architecture
 - **Frontend:** Vercel (React)
-- **Backend:** Vercel (Python/FastAPI serverless functions)
+- **Backend:** Render (Python/FastAPI)
 - **Database:** Supabase (already hosted)
 
 ## Current Setup
@@ -45,11 +45,10 @@ git merge feature/current-planning-tabs
 git push origin main
 ```
 
-### 3. Vercel Deployment (Automatic)
-- Vercel detects the push to `main`
-- Builds your app automatically
-- Deploys to production URL
-- You'll get a notification when complete
+### 3. Deployment (Automatic)
+- **Frontend:** Vercel detects the push to `main` and deploys React app
+- **Backend:** Render automatically deploys from GitHub (if configured)
+- You'll get notifications when deployments complete
 
 ## 🔐 Vercel Login
 
@@ -92,9 +91,9 @@ git push origin main
 
 ## ⚙️ Environment Variables
 
-**Important:** Make sure these are set in Vercel:
+**Important:** Make sure these are set in their respective platforms:
 
-### Backend Variables (Required)
+### Backend Variables (Required - Set in Render)
 ```
 SUPABASE_URL=your_supabase_url
 SUPABASE_SERVICE_KEY=your_supabase_service_key
@@ -102,9 +101,9 @@ GOOGLE_CLIENT_SECRETS_FILE=client_secrets.json
 TELEGRAM_BOT_TOKEN=your_telegram_token
 ```
 
-### Frontend Variables (Required)
+### Frontend Variables (Required - Set in Vercel)
 ```
-REACT_APP_BACKEND_URL=your_backend_url
+REACT_APP_BACKEND_URL=your_render_backend_url
 REACT_APP_SUPABASE_URL=your_supabase_url
 REACT_APP_SUPABASE_ANON_KEY=your_supabase_anon_key
 ```
@@ -114,10 +113,10 @@ REACT_APP_SUPABASE_ANON_KEY=your_supabase_anon_key
 OPENAI_API_KEY=your_openai_key (for AI chat)
 ```
 
-**To Set Variables in Vercel:**
-1. Vercel Dashboard → Your Project
-2. "Settings" → "Environment Variables"
-3. Add each variable
+**To Set Variables:**
+1. **Frontend (Vercel):** Dashboard → Your Project → "Settings" → "Environment Variables"
+2. **Backend (Render):** Dashboard → Your Service → "Environment" tab
+3. Add each variable to the appropriate platform
 4. Redeploy if needed
 
 ## 🎯 Deployment Checklist
@@ -125,7 +124,7 @@ OPENAI_API_KEY=your_openai_key (for AI chat)
 Before deploying to production:
 
 - [ ] All features tested locally
-- [ ] Environment variables set in Vercel
+- [ ] Environment variables set in Vercel (frontend) and Render (backend)
 - [ ] Database (Supabase) is production-ready
 - [ ] Google Calendar credentials configured
 - [ ] Telegram bot configured (if using)
@@ -138,10 +137,9 @@ Before deploying to production:
 ## 🔄 Continuous Deployment
 
 **Every time you push to main:**
-1. Vercel automatically detects the change
-2. Runs build process
-3. Deploys new version
-4. Previous version available as rollback
+1. **Frontend:** Vercel automatically detects the change and deploys React app
+2. **Backend:** Render automatically deploys (if configured for auto-deploy)
+3. Previous versions available as rollback on both platforms
 
 **For feature branches:**
 - Vercel creates preview deployments
@@ -159,12 +157,12 @@ Before deploying to production:
    - Missing dependencies
 
 ### Backend Not Working
-1. Check if backend is deployed separately (Vercel Functions or external server)
-2. Verify `REACT_APP_BACKEND_URL` points to correct backend
-3. Check backend logs
+1. Check if backend is deployed on Render
+2. Verify `REACT_APP_BACKEND_URL` points to correct Render backend URL
+3. Check backend logs in Render dashboard
 
 ### Environment Variables Not Working
-1. Make sure variables are set in Vercel (not just .env locally)
+1. Make sure frontend variables are set in Vercel and backend variables in Render
 2. Redeploy after adding variables
 3. Use `REACT_APP_` prefix for frontend variables
 
