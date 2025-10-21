@@ -1,5 +1,10 @@
 # 🚀 Deployment Guide - GitHub + Vercel
 
+## Architecture
+- **Frontend:** Vercel (React)
+- **Backend:** Vercel (Python/FastAPI serverless functions)
+- **Database:** Supabase (already hosted)
+
 ## Current Setup
 - **GitHub Repo**: https://github.com/jamesnr1/support-management-system.git
 - **Vercel**: Already linked to GitHub repo
@@ -92,7 +97,7 @@ git push origin main
 ### Backend Variables (Required)
 ```
 SUPABASE_URL=your_supabase_url
-SUPABASE_KEY=your_supabase_key
+SUPABASE_SERVICE_KEY=your_supabase_service_key
 GOOGLE_CLIENT_SECRETS_FILE=client_secrets.json
 TELEGRAM_BOT_TOKEN=your_telegram_token
 ```
@@ -101,7 +106,7 @@ TELEGRAM_BOT_TOKEN=your_telegram_token
 ```
 REACT_APP_BACKEND_URL=your_backend_url
 REACT_APP_SUPABASE_URL=your_supabase_url
-REACT_APP_SUPABASE_ANON_KEY=your_supabase_key
+REACT_APP_SUPABASE_ANON_KEY=your_supabase_anon_key
 ```
 
 ### Optional Variables

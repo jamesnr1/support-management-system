@@ -449,10 +449,10 @@ pytest  # Run all tests
 
 ## 🔐 ENVIRONMENT VARIABLES
 
-**Backend (`.env`):**
+**Backend (Vercel Environment Variables):**
 ```bash
 SUPABASE_URL=your_supabase_url
-SUPABASE_KEY=your_supabase_anon_key
+SUPABASE_SERVICE_KEY=your_supabase_service_key
 GOOGLE_CLIENT_ID=your_google_client_id
 GOOGLE_CLIENT_SECRET=your_google_client_secret
 TELEGRAM_BOT_TOKEN=your_telegram_bot_token
