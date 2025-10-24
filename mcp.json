@@ -1,0 +1,8 @@
+{
+  "name": "support-management-system",
+  "version": "1.0.0",
+  "entry": "dist/index.js",
+  "env": {
+    "WORKSPACES_ROOT": "/Users/James/projects/support-management-system"
+  }
+}

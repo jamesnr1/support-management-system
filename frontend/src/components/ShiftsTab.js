@@ -599,6 +599,48 @@ const ShiftsTab = ({ workers, participants = [], rosterData, locations = [] }) =
     }
   };
 
+  // Clear all workers from shifts (but keep the shifts)
+  const handleClearAllWorkers = async () => {
+    if (!rosterData?.data) {
+      alert('No roster data found');
+      return;
+    }
+
+    const confirmMessage = `Are you sure you want to clear ALL workers from shifts for ${selectedWeek} week?\n\nThis will:\n✅ Keep all shifts and times\n❌ Remove all worker assignments\n\nThis action cannot be undone.`;
+    
+    if (!confirm(confirmMessage)) {
+      return;
+    }
+
+    try {
+      // Create a copy of the roster data
+      const updatedRosterData = JSON.parse(JSON.stringify(rosterData.data));
+      
+      // Clear workers from all shifts
+      Object.keys(updatedRosterData).forEach(participantCode => {
+        Object.keys(updatedRosterData[participantCode]).forEach(date => {
+          if (Array.isArray(updatedRosterData[participantCode][date])) {
+            updatedRosterData[participantCode][date].forEach(shift => {
+              shift.workers = []; // Clear all workers
+            });
+          }
+        });
+      });
+
+      // Save the updated roster
+      await axios.post(`${API}/roster/${selectedWeek}`, updatedRosterData);
+      
+      alert(`✅ Successfully cleared all workers from ${selectedWeek} week shifts!\n\nAll shifts and times have been preserved.`);
+      
+      // Refresh the page to show updated data
+      window.location.reload();
+      
+    } catch (error) {
+      console.error('Error clearing workers:', error);
+      alert('❌ Failed to clear workers: ' + (error.response?.data?.detail || error.message));
+    }
+  };
+
   const handleClearTelegramMessage = () => {
     setTelegramMessage('');
     setSelectedWorkers(new Set());
@@ -608,7 +650,7 @@ const ShiftsTab = ({ workers, participants = [], rosterData, locations = [] }) =
   return (
     <div style={{ padding: '1rem' }}>
       {/* Week Selector */}
-      <div style={{ marginBottom: '2rem', display: 'flex', alignItems: 'center', gap: '1rem' }}>
+      <div style={{ marginBottom: '2rem', display: 'flex', alignItems: 'center', gap: '1rem', flexWrap: 'wrap' }}>
         <label style={{ fontSize: '0.95rem', fontWeight: '500', color: 'var(--text-secondary)' }}>
           Week:
         </label>
@@ -633,6 +675,46 @@ const ShiftsTab = ({ workers, participants = [], rosterData, locations = [] }) =
         <span style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', whiteSpace: 'nowrap' }}>
           {workersWithShifts.length} worker{workersWithShifts.length !== 1 ? 's' : ''} with shifts
         </span>
+        
+        {/* Clear All Workers Button */}
+        {workersWithShifts.length > 0 && (
+          <button
+            onClick={handleClearAllWorkers}
+            style={{
+              background: '#dc3545',
+              color: 'white',
+              border: 'none',
+              borderRadius: '8px',
+              padding: '0.5rem 1rem',
+              fontSize: '0.85rem',
+              fontWeight: '500',
+              cursor: 'pointer',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '0.5rem',
+              transition: 'all 0.2s',
+              marginLeft: 'auto'
+            }}
+            onMouseEnter={(e) => {
+              e.target.style.background = '#c82333';
+              e.target.style.transform = 'translateY(-1px)';
+            }}
+            onMouseLeave={(e) => {
+              e.target.style.background = '#dc3545';
+              e.target.style.transform = 'translateY(0)';
+            }}
+            title="Clear all workers from shifts (keeps shifts and times)"
+          >
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M3 6h18"></path>
+              <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"></path>
+              <path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"></path>
+              <line x1="10" y1="11" x2="10" y2="17"></line>
+              <line x1="14" y1="11" x2="14" y2="17"></line>
+            </svg>
+            Clear All Workers
+          </button>
+        )}
       </div>
 
       {/* Main layout: Worker shift cards on left, Telegram panel on right */}

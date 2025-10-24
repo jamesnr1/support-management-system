@@ -621,6 +621,205 @@ const RosteringSystem = () => {
     }
   };
 
+  // Clear all workers from shifts (but keep the shifts)
+  const checkRosterConflicts = () => {
+    if (activeTab !== 'roster') return;
+    
+    const currentRoster = rosterData.current;
+    if (!currentRoster?.data) {
+      toast.error('No roster data found');
+      return;
+    }
+
+    // Track worker assignments by date and time
+    const workerAssignments = {};
+    const allShifts = [];
+
+    // Process all shifts
+    Object.keys(currentRoster.data).forEach(participantCode => {
+      Object.keys(currentRoster.data[participantCode]).forEach(date => {
+        const shifts = currentRoster.data[participantCode][date];
+        if (Array.isArray(shifts)) {
+          shifts.forEach(shift => {
+            allShifts.push({
+              participant: participantCode,
+              date: date,
+              startTime: shift.startTime || '',
+              endTime: shift.endTime || '',
+              workers: shift.workers || [],
+              location: shift.location || '',
+              shiftId: shift.id || ''
+            });
+            
+            // Track each worker's assignments
+            (shift.workers || []).forEach(workerId => {
+              if (!workerAssignments[workerId]) {
+                workerAssignments[workerId] = [];
+              }
+              workerAssignments[workerId].push({
+                date: date,
+                startTime: shift.startTime || '',
+                endTime: shift.endTime || '',
+                participant: participantCode,
+                location: shift.location || '',
+                shiftId: shift.id || ''
+              });
+            });
+          });
+        }
+      });
+    });
+
+    // Check for conflicts
+    const doubleBookings = [];
+    const backToBackShifts = [];
+
+    Object.keys(workerAssignments).forEach(workerId => {
+      const assignments = workerAssignments[workerId];
+      if (assignments.length <= 1) return;
+      
+      // Sort assignments by date and time
+      assignments.sort((a, b) => {
+        if (a.date !== b.date) return a.date.localeCompare(b.date);
+        return a.startTime.localeCompare(b.startTime);
+      });
+      
+      for (let i = 0; i < assignments.length - 1; i++) {
+        const current = assignments[i];
+        const nextShift = assignments[i + 1];
+        
+        // Check for same-day conflicts
+        if (current.date === nextShift.date) {
+          const currentStart = current.startTime;
+          const currentEnd = current.endTime;
+          const nextStart = nextShift.startTime;
+          const nextEnd = nextShift.endTime;
+          
+          if (currentStart && currentEnd && nextStart && nextEnd) {
+            try {
+              const currentStartMinutes = parseInt(currentStart.split(':')[0]) * 60 + parseInt(currentStart.split(':')[1]);
+              const currentEndMinutes = parseInt(currentEnd.split(':')[0]) * 60 + parseInt(currentEnd.split(':')[1]);
+              const nextStartMinutes = parseInt(nextStart.split(':')[0]) * 60 + parseInt(nextStart.split(':')[1]);
+              const nextEndMinutes = parseInt(nextEnd.split(':')[0]) * 60 + parseInt(nextEnd.split(':')[1]);
+              
+              // Check for overlap
+              if (currentStartMinutes < nextEndMinutes && nextStartMinutes < currentEndMinutes) {
+                doubleBookings.push({
+                  workerId: workerId,
+                  date: current.date,
+                  shift1: `${current.startTime}-${current.endTime} (${current.participant})`,
+                  shift2: `${nextShift.startTime}-${nextShift.endTime} (${nextShift.participant})`,
+                  location1: current.location,
+                  location2: nextShift.location
+                });
+              }
+              
+              // Check for back-to-back shifts
+              if (currentEnd === nextStart) {
+                backToBackShifts.push({
+                  workerId: workerId,
+                  date: current.date,
+                  shift1: `${current.startTime}-${current.endTime} (${current.participant})`,
+                  shift2: `${nextShift.startTime}-${nextShift.endTime} (${nextShift.participant})`,
+                  location1: current.location,
+                  location2: nextShift.location
+                });
+              }
+            } catch (error) {
+              // Skip invalid time formats
+              continue;
+            }
+          }
+        }
+      }
+    });
+
+    // Display results
+    let message = `🔍 Roster Conflict Check Results:\n\n`;
+    message += `📊 Total shifts: ${allShifts.length}\n`;
+    message += `👥 Workers with assignments: ${Object.keys(workerAssignments).length}\n\n`;
+
+    if (doubleBookings.length > 0) {
+      message += `🚨 DOUBLE BOOKINGS FOUND (${doubleBookings.length}):\n`;
+      doubleBookings.forEach(conflict => {
+        message += `• Worker ${conflict.workerId} on ${conflict.date}\n`;
+        message += `  - ${conflict.shift1} at ${conflict.location1}\n`;
+        message += `  - ${conflict.shift2} at ${conflict.location2}\n\n`;
+      });
+    } else {
+      message += `✅ No double bookings found\n\n`;
+    }
+
+    if (backToBackShifts.length > 0) {
+      message += `⚠️ BACK-TO-BACK SHIFTS FOUND (${backToBackShifts.length}):\n`;
+      backToBackShifts.forEach(shift => {
+        message += `• Worker ${shift.workerId} on ${shift.date}\n`;
+        message += `  - ${shift.shift1} at ${shift.location1}\n`;
+        message += `  - ${shift.shift2} at ${shift.location2}\n\n`;
+      });
+    } else {
+      message += `✅ No back-to-back shifts found\n\n`;
+    }
+
+    if (doubleBookings.length === 0 && backToBackShifts.length === 0) {
+      message += `🎉 No conflicts detected in ${selectedRosterWeek} roster!`;
+      toast.success(message, { duration: 5000 });
+    } else {
+      toast.error(message, { duration: 8000 });
+    }
+  };
+
+  const clearAllWorkers = async () => {
+    if (activeTab !== 'roster') return;
+    
+    const currentRoster = rosterData.current;
+    if (!currentRoster?.data) {
+      toast.error('No roster data found');
+      return;
+    }
+
+    const confirmMessage = `Are you sure you want to clear ALL workers from shifts for ${selectedRosterWeek} week?\n\nThis will:\n✅ Keep all shifts and times\n❌ Remove all worker assignments\n\nThis action cannot be undone.`;
+    
+    if (!confirm(confirmMessage)) {
+      return;
+    }
+
+    try {
+      // Create a copy of the roster data
+      const updatedRosterData = JSON.parse(JSON.stringify(currentRoster.data));
+      
+      // Clear workers from all shifts
+      Object.keys(updatedRosterData).forEach(participantCode => {
+        Object.keys(updatedRosterData[participantCode]).forEach(date => {
+          if (Array.isArray(updatedRosterData[participantCode][date])) {
+            updatedRosterData[participantCode][date].forEach(shift => {
+              shift.workers = []; // Clear all workers
+            });
+          }
+        });
+      });
+
+      // Create updated roster object
+      const updatedRoster = {
+        ...currentRoster,
+        data: updatedRosterData
+      };
+
+      // Save the updated roster
+      const weekEndpoint = rosterData.weekEndpoint || 'roster';
+      await axios.post(`${API}/roster/${weekEndpoint}`, updatedRoster);
+      
+      // Refetch data
+      await queryClient.refetchQueries({ queryKey: ['rosterData'], type: 'active' });
+      
+      toast.success(`✅ Successfully cleared all workers from ${selectedRosterWeek} week shifts!\n\nAll shifts and times have been preserved.`);
+      
+    } catch (error) {
+      console.error('Error clearing workers:', error);
+      toast.error('❌ Failed to clear workers: ' + (error.response?.data?.detail || error.message));
+    }
+  };
+
   // Show loading only if participants aren't ready - we can proceed with just participants
   if (participantsLoading) {
     return (
@@ -661,38 +860,96 @@ const RosteringSystem = () => {
       <header className="header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
         <h2>Support Management System</h2>
         
-        {/* Top-right header action (varies by tab) */}
+        {/* Top-right header actions (varies by tab) */}
         {activeTab === 'roster' && (
-          <button
-            onClick={() => {
-              setIsAppointmentFormOpen(true);
-            }}
-            style={{
-              background: 'var(--accent)',
-              border: 'none',
-              borderRadius: '8px',
-              padding: '8px',
-              cursor: 'pointer',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              width: '40px',
-              height: '40px',
-              transition: 'all 0.2s',
-              stroke: 'white',
-              strokeWidth: '2.5'
-            }}
-            title="Add Appointment"
-          >
-            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-              <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
-              <line x1="16" y1="2" x2="16" y2="6"/>
-              <line x1="8" y1="2" x2="8" y2="6"/>
-              <line x1="3" y1="10" x2="21" y2="10"/>
-              <line x1="12" y1="14" x2="12" y2="18"/>
-              <line x1="8" y1="16" x2="16" y2="16"/>
-            </svg>
-          </button>
+          <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
+            {/* Check Conflicts Button */}
+            <button
+              onClick={checkRosterConflicts}
+              style={{
+                background: 'var(--secondary)',
+                border: 'none',
+                borderRadius: '8px',
+                padding: '8px',
+                cursor: 'pointer',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                width: '40px',
+                height: '40px',
+                transition: 'all 0.2s',
+                stroke: 'white',
+                strokeWidth: '2.5'
+              }}
+              title="Check for double bookings and back-to-back shifts"
+            >
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+                <path d="M9 12l2 2 4-4"></path>
+              </svg>
+            </button>
+            
+            {/* Clear Workers Button */}
+            <button
+              onClick={clearAllWorkers}
+              style={{
+                background: 'var(--accent)',
+                border: 'none',
+                borderRadius: '8px',
+                padding: '8px',
+                cursor: 'pointer',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                width: '40px',
+                height: '40px',
+                transition: 'all 0.2s',
+                stroke: 'white',
+                strokeWidth: '2.5'
+              }}
+              title="Clear all workers from shifts (keeps shifts and times)"
+            >
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M3 6h18"></path>
+                <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"></path>
+                <path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"></path>
+                <line x1="10" y1="11" x2="10" y2="17"></line>
+                <line x1="14" y1="11" x2="14" y2="17"></line>
+              </svg>
+            </button>
+            
+            {/* Add Appointment Button */}
+            <button
+              onClick={() => {
+                setIsAppointmentFormOpen(true);
+              }}
+              style={{
+                background: 'var(--accent)',
+                border: 'none',
+                borderRadius: '8px',
+                padding: '8px',
+                cursor: 'pointer',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                width: '40px',
+                height: '40px',
+                transition: 'all 0.2s',
+                stroke: 'white',
+                strokeWidth: '2.5'
+              }}
+              title="Add Appointment"
+            >
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
+                <line x1="16" y1="2" x2="16" y2="6"/>
+                <line x1="8" y1="2" x2="8" y2="6"/>
+                <line x1="3" y1="10" x2="21" y2="10"/>
+                <line x1="12" y1="14" x2="12" y2="18"/>
+                <line x1="8" y1="16" x2="16" y2="16"/>
+              </svg>
+            </button>
+          </div>
         )}
         {activeTab === 'staff' && (
           <button

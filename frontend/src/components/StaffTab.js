@@ -8,6 +8,12 @@ import { useQuery } from '@tanstack/react-query';
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 const API = `${BACKEND_URL}/api`;
 
+// Helper function to convert time string to minutes
+const timeToMinutes = (timeStr) => {
+  const [hours, minutes] = timeStr.split(':').map(Number);
+  return hours * 60 + minutes;
+};
+
 const StaffTab = ({ locations = [], onWorkersUpdate, rosterData, participants = [], selectedWeek = 'current' }) => {
   const queryClient = useQueryClient();
 
@@ -837,12 +843,20 @@ const AvailabilityModal = ({ worker, onClose, initialAvailabilityData }) => {
             });
           } else {
             // Regular time availability
+            const fromTime = rule.fromTime || '09:00';
+            const toTime = rule.toTime || '17:00';
+            
+            // Calculate if this wraps midnight
+            const fromMinutes = timeToMinutes(fromTime);
+            const toMinutes = timeToMinutes(toTime);
+            const wrapsMidnight = toMinutes <= fromMinutes;
+            
             rules.push({
               weekday: backendWeekday,
-              from_time: rule.fromTime || '09:00',
-              to_time: rule.toTime || '17:00',
+              from_time: fromTime,
+              to_time: toTime,
               is_full_day: false,
-              wraps_midnight: false
+              wraps_midnight: wrapsMidnight
             });
           }
         }

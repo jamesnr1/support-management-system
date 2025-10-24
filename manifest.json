@@ -1,0 +1,71 @@
+{
+  "dxt_version": "0.1",
+  "name": "support-management-mcp",
+  "display_name": "Support Management MCP",
+  "version": "1.0.0",
+  "description": "MCP server for Support Management System - Roster management, scheduling, and support coordination",
+  "long_description": "# Support Management MCP\n\nA Model Context Protocol (MCP) server for the Support Management System, providing intelligent access to roster management, scheduling, support coordination, and team management.\n\n## Features\n\n- **Roster Management**: Manage support worker rosters and schedules\n- **Scheduling**: Handle shift scheduling and availability\n- **Support Coordination**: Coordinate support activities and assignments\n- **Team Management**: Manage support team members and roles\n- **Calendar Integration**: Integrate with calendar systems for scheduling\n- **Reporting**: Generate support and roster reports\n\n## Perfect For\n\n- Support coordinators and managers\n- Healthcare administrators\n- Team leaders and supervisors\n- HR professionals\n- Operations managers",
+  "author": {
+    "name": "James Narula",
+    "url": "https://github.com/jamesnarula"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/jamesnarula/support-management-system"
+  },
+  "homepage": "https://github.com/jamesnarula/support-management-system",
+  "documentation": "https://github.com/jamesnarula/support-management-system#readme",
+  "support": "https://github.com/jamesnarula/support-management-system/issues",
+  "server": {
+    "type": "node",
+    "entry_point": "dist/index.js",
+    "mcp_config": {
+      "command": "node",
+      "args": ["${__dirname}/dist/index.js"],
+      "env": {
+        "WORKSPACES_ROOT": "/Users/James/projects/support-management-system",
+        "SUPPORT_LOG_LEVEL": "${user_config.log_level}"
+      }
+    }
+  },
+  "tools": [
+    {
+      "name": "get_roster",
+      "description": "Get current roster information and schedules"
+    },
+    {
+      "name": "update_roster",
+      "description": "Update roster with new schedules or assignments"
+    },
+    {
+      "name": "schedule_shift",
+      "description": "Schedule a new shift or modify existing ones"
+    },
+    {
+      "name": "get_team_members",
+      "description": "Get information about team members and their roles"
+    },
+    {
+      "name": "generate_schedule_report",
+      "description": "Generate reports on schedules and coverage"
+    },
+    {
+      "name": "manage_availability",
+      "description": "Manage team member availability and time-off requests"
+    }
+  ],
+  "user_config": {
+    "support_root": {
+      "title": "Support Management Directory",
+      "description": "Root directory where all support management data is stored",
+      "type": "string",
+      "default": "/Users/James/projects/support-management-system"
+    },
+    "log_level": {
+      "title": "Log Level",
+      "description": "Logging verbosity level",
+      "type": "string",
+      "default": "info"
+    }
+  }
+}
