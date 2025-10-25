@@ -190,9 +190,7 @@ const ShiftForm = ({
             rulesByWorker[workerId].push(rule);
           });
           
-          console.log(`📋 Fetched ${allRules.length} availability rules for weekday ${dayOfWeek}`);
-          console.log(`📋 Rules grouped for ${Object.keys(rulesByWorker).length} workers`);
-          console.log('📋 Sample rules:', Object.entries(rulesByWorker).slice(0, 3));
+          // Debug logging removed for production
           
           setWorkerAvailabilityRules(rulesByWorker);
         } catch (error) {
@@ -201,7 +199,7 @@ const ShiftForm = ({
           setWorkerAvailabilityRules({});
         }
         
-        console.log('✅ Availability fetch complete. Unavailable workers:', Array.from(unavailablePeriodsMap.keys()));
+        // Debug logging removed for production
         setUnavailableWorkerPeriods(unavailablePeriodsMap);
         setUnavailabilityCheckComplete(true);
       } catch (error) {
@@ -330,13 +328,14 @@ const ShiftForm = ({
           
           if (editingShift) {
             // When editing a shift, check if this worker is actually being changed
-            const wasInOriginalShift = editingShift.workers && editingShift.workers.some(w => String(w) === String(worker.id));
-            const isInNewShift = formData.workers && formData.workers.some(w => String(w) === String(worker.id));
+            const wasInOriginalShift = editingShift.workers?.some(w => String(w) === String(worker.id));
+            const isInNewShift = currentFormData.workers?.some(w => String(w) === String(worker.id));
             
             if (wasInOriginalShift && isInNewShift) {
-              // Worker unchanged - use current hours without modification
-              weeklyHours = calculateWorkerWeeklyHours(worker.id, date);
-              totalWithNew = weeklyHours; // No change in hours
+              // Worker unchanged - ALWAYS exclude the editing shift to prevent double-counting
+              weeklyHours = calculateWorkerWeeklyHours(worker.id, date, editingShift.id);
+              // Then add the NEW duration (which may be different from original)
+              totalWithNew = weeklyHours + (newShiftMinutes / 60);
             } else if (!wasInOriginalShift && isInNewShift) {
               // Worker being added - exclude current shift and add new duration
               weeklyHours = calculateWorkerWeeklyHours(worker.id, date, editingShift.id);
@@ -626,13 +625,14 @@ const ShiftForm = ({
           
           if (editingShift) {
             // When editing a shift, check if this worker is actually being changed
-            const wasInOriginalShift = editingShift.workers && editingShift.workers.some(w => String(w) === String(workerId));
-            const isInNewShift = shiftData.workers && shiftData.workers.some(w => String(w) === String(workerId));
+            const wasInOriginalShift = editingShift.workers?.some(w => String(w) === String(workerId));
+            const isInNewShift = shiftData.workers?.some(w => String(w) === String(workerId));
             
             if (wasInOriginalShift && isInNewShift) {
-              // Worker unchanged - use current hours without modification
-              currentHours = calculateWorkerWeeklyHours(workerId, date);
-              totalHours = currentHours; // No change in hours
+              // Worker unchanged - ALWAYS exclude the editing shift to prevent double-counting
+              currentHours = calculateWorkerWeeklyHours(workerId, date, editingShift.id);
+              // Then add the NEW duration (which may be different from original)
+              totalHours = currentHours + duration;
             } else if (!wasInOriginalShift && isInNewShift) {
               // Worker being added - exclude current shift and add new duration
               currentHours = calculateWorkerWeeklyHours(workerId, date, editingShift.id);

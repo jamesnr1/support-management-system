@@ -36,10 +36,13 @@ class SupabaseDatabase:
             logger.error(f"Failed to connect to Supabase: {e}")
             raise
     
-    def get_participants(self) -> List[Dict]:
+    def get_participants(self, include_deleted: bool = False) -> List[Dict]:
         """Get all participants from Supabase"""
         try:
-            response = self.client.table('participants').select('*').execute()
+            query = self.client.table('participants').select('*')
+            if not include_deleted:
+                query = query.is_('deleted_at', 'null')
+            response = query.execute()
             participants = []
             for p in response.data:
                 participants.append({
@@ -113,11 +116,14 @@ class SupabaseDatabase:
             }
         ]
     
-    def get_support_workers(self, check_date: Optional[date] = None) -> List[Dict]:
+    def get_support_workers(self, check_date: Optional[date] = None, include_deleted: bool = False) -> List[Dict]:
         """Get all ACTIVE support workers from Supabase, sorted alphabetically"""
         try:
-            # First, get all active workers
-            response = self.client.table('support_workers').select('*').neq('status', 'Inactive').order('full_name').execute()
+            # First, get all active workers (excluding soft-deleted)
+            query = self.client.table('support_workers').select('*').neq('status', 'Inactive')
+            if not include_deleted:
+                query = query.is_('deleted_at', 'null')
+            response = query.order('full_name').execute()
             
             # Now, optimize unavailability checking
             check_date = check_date or datetime.now().date()
@@ -303,6 +309,24 @@ class SupabaseDatabase:
             logger.error(f"Error fetching availability rules: {e}")
             return []
 
+    def get_availability_rules_batch(self, worker_ids: List[int]) -> Dict[int, List[Dict]]:
+        """Get availability rules for multiple workers in a single query"""
+        try:
+            response = self.client.table('availability_rule').select('*').in_('worker_id', worker_ids).execute()
+            
+            # Group rules by worker_id
+            rules_by_worker = {}
+            for rule in response.data:
+                worker_id = rule['worker_id']
+                if worker_id not in rules_by_worker:
+                    rules_by_worker[worker_id] = []
+                rules_by_worker[worker_id].append(rule)
+            
+            return rules_by_worker
+        except Exception as e:
+            logger.error(f"Error fetching availability rules batch: {e}")
+            return {}
+
     def save_availability_rules(self, worker_id: int, rules: List[Dict]) -> bool:
         """Save availability rules for a worker (now supports split availability)"""
         try:
@@ -363,7 +387,7 @@ class SupabaseDatabase:
     def create_support_worker(self, worker_data: Dict) -> Optional[Dict]:
         """Create a new support worker in Supabase"""
         try:
-            print(f"DEBUG: Starting create_support_worker with data: {worker_data}")
+            # Debug logging removed for production
             
             # Always ensure worker has a code - simple and reliable
             if not worker_data.get('code'):
@@ -484,9 +508,12 @@ class SupabaseDatabase:
     
     
     def delete_support_worker(self, worker_id: str) -> bool:
-        """Delete (deactivate) a support worker in Supabase"""
+        """Soft delete a support worker in Supabase"""
         try:
-            response = self.client.table('support_workers').update({'status': 'Inactive'}).eq('id', worker_id).execute()
+            response = self.client.table('support_workers').update({
+                'status': 'Inactive',
+                'deleted_at': datetime.now(timezone.utc).isoformat()
+            }).eq('id', worker_id).execute()
             return len(response.data) > 0
         except Exception as e:
             logger.error(f"Error deleting support worker: {e}")
@@ -560,6 +587,55 @@ class SupabaseDatabase:
         except Exception as e:
             logger.error(f"Error fetching worker {worker_id}: {e}")
             return None
+
+    def get_worker_availability(self, worker_id: str) -> Dict:
+        """Get worker availability rules"""
+        try:
+            rules = self.get_availability_rules(int(worker_id))
+            return {'rules': rules}
+        except Exception as e:
+            logger.error(f"Error fetching availability for worker {worker_id}: {e}")
+            return {'rules': []}
+
+    def set_worker_availability(self, worker_id: str, availability_data: List[Dict]) -> bool:
+        """Set worker availability rules"""
+        try:
+            return self.save_availability_rules(int(worker_id), availability_data)
+        except Exception as e:
+            logger.error(f"Error setting availability for worker {worker_id}: {e}")
+            return False
+
+    def get_unavailability_periods(self, worker_id: str) -> List[Dict]:
+        """Get worker unavailability periods"""
+        try:
+            response = self.client.table('unavailability_periods').select('*').eq('worker_id', worker_id).execute()
+            return response.data
+        except Exception as e:
+            logger.error(f"Error fetching unavailability periods for worker {worker_id}: {e}")
+            return []
+
+    def add_unavailability_period(self, worker_id: str, from_date: str, to_date: str, reason: str = 'Other') -> Dict:
+        """Add unavailability period for worker"""
+        try:
+            response = self.client.table('unavailability_periods').insert({
+                'worker_id': worker_id,
+                'from_date': from_date,
+                'to_date': to_date,
+                'reason': reason
+            }).execute()
+            return response.data[0] if response.data else {}
+        except Exception as e:
+            logger.error(f"Error adding unavailability period for worker {worker_id}: {e}")
+            raise
+
+    def delete_unavailability_period(self, period_id: str) -> bool:
+        """Delete unavailability period"""
+        try:
+            self.client.table('unavailability_periods').delete().eq('id', period_id).execute()
+            return True
+        except Exception as e:
+            logger.error(f"Error deleting unavailability period {period_id}: {e}")
+            return False
 
 # Global database instance
 db = SupabaseDatabase()

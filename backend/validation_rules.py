@@ -2,10 +2,18 @@
 """
 COMPREHENSIVE VALIDATION RULES FOR NDIS COMPLIANCE
 These rules should run automatically on every shift save/update
+
+DEPRECATED: This file is being replaced by enhanced_validation_service.py
+Maintained for backward compatibility
 """
 
 from datetime import datetime, timedelta
 from typing import List, Dict, Tuple
+import logging
+from services.enhanced_validation_service import EnhancedValidationService
+from services.validation_config import get_validation_config
+
+logger = logging.getLogger(__name__)
 
 class RosterValidationError(Exception):
     """Raised when a validation rule is violated"""
@@ -282,7 +290,134 @@ def validate_roster_data(roster_data: dict, workers: dict) -> dict:
     }
 
 
+# ENHANCED VALIDATION FUNCTIONS
+# These replace the legacy validation with improved logic
 
+def validate_roster_data_enhanced(roster_data: dict, workers: dict, config: dict = None) -> dict:
+    """
+    Enhanced validation function with improved conflict detection and flexible rules
+    
+    Args:
+        roster_data: The roster data to validate
+        workers: Worker data for validation
+        config: Optional validation configuration
+        
+    Returns:
+        Dict with validation results including errors, warnings, and info
+    """
+    try:
+        # Get validation configuration
+        validation_config = get_validation_config()
+        config = config or validation_config.get_config()
+        
+        # Use enhanced validation service
+        validator = EnhancedValidationService(workers, config)
+        result = validator.validate_roster_data(roster_data)
+        
+        logger.info(f"Enhanced validation completed: {result['summary']}")
+        return result
+        
+    except Exception as e:
+        logger.error(f"Enhanced validation failed: {e}")
+        # Fallback to legacy validation
+        return validate_roster_data_legacy(roster_data, workers)
+
+
+def validate_roster_data_legacy(roster_data: dict, workers: dict) -> dict:
+    """
+    Legacy validation function for backward compatibility
+    
+    Args:
+        roster_data: The roster data to validate
+        workers: Worker data for validation
+        
+    Returns:
+        Dict with validation results
+    """
+    try:
+        validator = RosterValidator(roster_data, workers)
+        errors, warnings = validator.validate_all()
+        
+        return {
+            'valid': len(errors) == 0,
+            'errors': errors,
+            'warnings': warnings,
+            'info': [],
+            'summary': {
+                'total_errors': len(errors),
+                'total_warnings': len(warnings),
+                'total_info': 0,
+                'is_valid': len(errors) == 0,
+                'has_warnings': len(warnings) > 0,
+                'validation_type': 'legacy'
+            }
+        }
+        
+    except Exception as e:
+        logger.error(f"Legacy validation failed: {e}")
+        return {
+            'valid': False,
+            'errors': [f"Validation failed: {str(e)}"],
+            'warnings': [],
+            'info': [],
+            'summary': {
+                'total_errors': 1,
+                'total_warnings': 0,
+                'total_info': 0,
+                'is_valid': False,
+                'has_warnings': False,
+                'validation_type': 'error'
+            }
+        }
+
+
+# Backward compatibility - main validation function now uses enhanced validation
+def validate_roster_data(roster_data: dict, workers: dict) -> dict:
+    """
+    Main validation function - now uses enhanced validation by default
+    
+    Args:
+        roster_data: The roster data to validate
+        workers: Worker data for validation
+        
+    Returns:
+        Dict with validation results
+    """
+    return validate_roster_data_enhanced(roster_data, workers)
+
+
+def get_validation_config_info() -> dict:
+    """
+    Get information about current validation configuration
+    
+    Returns:
+        Dict with configuration details
+    """
+    try:
+        config = get_validation_config()
+        return config.get_validation_rules_summary()
+    except Exception as e:
+        logger.error(f"Failed to get validation config: {e}")
+        return {'error': str(e)}
+
+
+def update_validation_config(updates: dict) -> dict:
+    """
+    Update validation configuration
+    
+    Args:
+        updates: Configuration updates to apply
+        
+    Returns:
+        Dict with updated configuration
+    """
+    try:
+        config = get_validation_config()
+        config.update_config(updates)
+        return config.get_validation_rules_summary()
+    except Exception as e:
+        logger.error(f"Failed to update validation config: {e}")
+        return {'error': str(e)}
 
 
 

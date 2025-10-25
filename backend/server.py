@@ -1,17 +1,20 @@
-from fastapi import FastAPI, APIRouter, HTTPException, Depends
+from fastapi import FastAPI, APIRouter, HTTPException, Depends, Request
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import HTMLResponse
+from fastapi.responses import HTMLResponse, JSONResponse
+from fastapi_cache import cache
 from contextlib import asynccontextmanager
 from dotenv import load_dotenv
 import os
 import logging
 from pathlib import Path
 from typing import List, Dict, Any, Optional
-from datetime import datetime, timedelta, date
+from datetime import datetime, timedelta, date, timezone
 import uuid
 import json
 import copy
 from collections import defaultdict
+import sentry_sdk
+from sentry_sdk.integrations.fastapi import FastApiIntegration
 
 # Import database
 from database import db
@@ -30,8 +33,28 @@ from calendar_service import calendar_service
 from telegram_service import telegram_service
 from openai import OpenAI
 
+# Import core modules
+from core.config import get_settings, get_allowed_origins, is_production
+from core.security import setup_rate_limiting, get_rate_limiter, require_admin, optional_admin
+from core.logging_config import setup_logging, get_logger
+
 ROOT_DIR = Path(__file__).parent
 load_dotenv(ROOT_DIR / '.env')
+
+# Setup logging first
+setup_logging()
+logger = get_logger("main")
+
+# Initialize Sentry for error tracking
+sentry_dsn = os.getenv("SENTRY_DSN")
+if sentry_dsn:
+    sentry_sdk.init(
+        dsn=sentry_dsn,
+        environment=os.getenv("ENVIRONMENT", "development"),
+        traces_sample_rate=0.1,
+        integrations=[FastApiIntegration()],
+    )
+    logger.info("sentry_initialized", environment=os.getenv("ENVIRONMENT", "development"))
 
 # Lifespan event handler to replace deprecated on_event
 @asynccontextmanager
@@ -40,32 +63,48 @@ async def lifespan(app: FastAPI):
     # Startup
     try:
         load_roster_data()
-        logger.info("Application started successfully - using Supabase database")
+        logger.info("application_started", database="supabase")
         yield
     except Exception as e:
-        logger.error(f"Failed to start application: {e}")
+        logger.error("application_startup_failed", error=str(e))
         raise
     # Shutdown
-    logger.info("Application shutdown")
+    logger.info("application_shutdown")
 
 # Create the main app with lifespan events
-app = FastAPI(title="Support Management System", lifespan=lifespan)
+app = FastAPI(
+    title="Support Management System", 
+    version="2.0.0",
+    lifespan=lifespan
+)
 
 # Create router with /api prefix
 api_router = APIRouter(prefix="/api")
 
-# Configure CORS
+# Configure CORS with security
+allowed_origins = get_allowed_origins()
+if is_production() and '*' in allowed_origins:
+    logger.warning("cors_wildcard_in_production", 
+        message="CORS is set to allow all origins in production - this is insecure!"
+    )
+
 app.add_middleware(
     CORSMiddleware,
     allow_credentials=True,
-    allow_origins=os.environ.get('CORS_ORIGINS', '*').split(','),
-    allow_methods=["*"],
+    allow_origins=allowed_origins,
+    allow_methods=["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
     allow_headers=["*"],
 )
 
-# Configure logging
-logging.basicConfig(level=logging.INFO)
-logger = logging.getLogger(__name__)
+logger.info("cors_configured", 
+    allowed_origins=allowed_origins,
+    production=is_production()
+)
+
+# Setup rate limiting
+setup_rate_limiting(app)
+limiter = get_rate_limiter()
+logger.info("rate_limiting_configured")
 
 # Global roster state - we'll use a simple dict for now
 ROSTER_DATA = {
@@ -174,6 +213,7 @@ async def root():
 
 # Worker Management Routes
 @api_router.get("/workers", response_model=List[Worker])
+@cache(expire=60)  # Cache for 1 minute
 async def get_workers(check_date: Optional[str] = None):
     """Get all workers from Supabase"""
     try:
@@ -194,8 +234,9 @@ async def get_workers(check_date: Optional[str] = None):
         logger.error(f"Error fetching workers: {e}")
         raise HTTPException(status_code=500, detail="Failed to fetch workers")
 
-@api_router.post("/workers", response_model=Worker)
-async def create_worker(worker: WorkerCreate):
+@api_router.post("/workers", response_model=Worker, dependencies=[require_admin()])
+@limiter.limit("10/minute")
+async def create_worker(request: Request, worker: WorkerCreate):
     """Create a new worker in Supabase"""
     try:
         # Use Pydantic v2 API and exclude None fields
@@ -228,8 +269,9 @@ async def create_worker(worker: WorkerCreate):
         logger.error(f"Error creating worker: {e}")
         raise HTTPException(status_code=400, detail=str(e))
 
-@api_router.put("/workers/{worker_id}", response_model=Worker)
-async def update_worker(worker_id: str, worker: WorkerCreate):
+@api_router.put("/workers/{worker_id}", response_model=Worker, dependencies=[require_admin()])
+@limiter.limit("10/minute")
+async def update_worker(request: Request, worker_id: str, worker: WorkerCreate):
     """Update a worker in Supabase"""
     try:
         # Only include fields that are not None
@@ -246,8 +288,9 @@ async def update_worker(worker_id: str, worker: WorkerCreate):
         logger.error(f"Error updating worker: {e}")
         raise HTTPException(status_code=400, detail=str(e))
 
-@api_router.delete("/workers/{worker_id}")
-async def delete_worker(worker_id: str):
+@api_router.delete("/workers/{worker_id}", dependencies=[require_admin()])
+@limiter.limit("10/minute")
+async def delete_worker(request: Request, worker_id: str):
     """Delete (deactivate) a worker in Supabase"""
     try:
         success = db.delete_support_worker(worker_id)
@@ -322,7 +365,9 @@ def check_and_transition_weeks():
 
 # Roster Management Routes
 @api_router.get("/roster/{week_type}")
-async def get_roster(week_type: str):
+@limiter.limit("30/minute")
+@cache(expire=300)  # Cache for 5 minutes
+async def get_roster(request: Request, week_type: str):
     """Get roster for specific week type from database"""
     try:
         # Check and perform week transition if needed
@@ -502,8 +547,9 @@ async def get_roster(week_type: str):
         logger.error(f"Error getting roster {week_type}: {e}", exc_info=True)
         return {}
 
-@api_router.post("/roster/{week_type}")
-async def update_roster(week_type: str, roster_data: Dict[str, Any]):
+@api_router.post("/roster/{week_type}", dependencies=[require_admin()])
+@limiter.limit("5/minute")
+async def update_roster(request: Request, week_type: str, roster_data: Dict[str, Any]):
     """Robust roster update with comprehensive validation"""
     try:
         # Handle roster structure (current, next, week after)
@@ -570,8 +616,9 @@ async def update_roster(week_type: str, roster_data: Dict[str, Any]):
         logger.error(f"Error updating {week_type} roster: {e}")
         raise HTTPException(status_code=500, detail=f"Failed to update roster: {str(e)}")
 
-@api_router.post("/roster/copy_to_planner")
-async def copy_to_planner():
+@api_router.post("/roster/copy_to_planner", dependencies=[require_admin()])
+@limiter.limit("5/minute")
+async def copy_to_planner(request: Request):
     """Copy roster to planner with week_type flip"""
     try:
         roster = ROSTER_DATA.get("roster", {})
@@ -603,8 +650,9 @@ async def copy_to_planner():
         logger.error(f"Error copying to planner: {e}")
         raise HTTPException(status_code=500, detail=str(e))
 
-@api_router.post("/roster/transition_to_roster")
-async def transition_to_roster():
+@api_router.post("/roster/transition_to_roster", dependencies=[require_admin()])
+@limiter.limit("5/minute")
+async def transition_to_roster(request: Request):
     """Move planner to roster (Sunday automation)"""
     try:
         planner = ROSTER_DATA.get("planner", {})
@@ -656,7 +704,7 @@ async def force_week_transition():
 @api_router.post("/roster/{week_type}/validate")
 async def validate_roster(week_type: str, roster_data: Optional[Dict[str, Any]] = None):
     """
-    Validate roster data against NDIS compliance rules
+    Validate roster data against Support compliance rules
     Returns errors and warnings
     """
     try:
@@ -884,20 +932,17 @@ async def authorize_calendar(data: Dict[str, Any]):
     Complete OAuth authorization with code
     """
     try:
-        logger.info(f"DEBUG: Received authorization request with data: {data}")
+        # Debug logging removed for production
         
         code = data.get('code')
         redirect_uri = data.get('redirect_uri')
         
-        logger.info(f"DEBUG: Extracted code: {repr(code)}")
-        logger.info(f"DEBUG: Extracted redirect_uri: {redirect_uri}")
+        # Debug logging removed for production
         
         if not code or not redirect_uri:
             raise HTTPException(status_code=400, detail="Missing code or redirect_uri")
         
-        logger.info(f"DEBUG: About to call calendar_service.authorize_with_code")
         success = calendar_service.authorize_with_code(code, redirect_uri)
-        logger.info(f"DEBUG: authorize_with_code returned: {success}")
         
         if success:
             return {"success": True, "message": "Calendar authorized successfully"}
@@ -1283,6 +1328,11 @@ async def chat_with_ai(data: Dict[str, Any]):
         
         # Build context string with detailed worker information
         worker_info = []
+        
+        # Fix N+1 query problem: Batch load availability rules for all workers
+        worker_ids = [w.get('id') for w in workers[:45] if w.get('id')]
+        availability_rules_batch = db.get_availability_rules_batch(worker_ids)
+        
         for w in workers[:45]:  # Include more workers for comprehensive queries
             worker_id = w.get('id')
             
@@ -1291,8 +1341,8 @@ async def chat_with_ai(data: Dict[str, Any]):
             unavailability_text = ""
             if worker_id:
                 try:
-                    # Get regular availability rules
-                    avail_rules = db.get_availability_rules(worker_id)
+                    # Get regular availability rules from batch-loaded data
+                    avail_rules = availability_rules_batch.get(worker_id, [])
                     if avail_rules:
                         # Group by weekday
                         by_day = defaultdict(list)
@@ -1462,6 +1512,94 @@ Be direct. Extract what's asked. No extra info.
         raise HTTPException(status_code=500, detail=f"AI chat error: {str(e)}")
 
 # Include the router in the main app
+# Add health check endpoints
+@app.get("/health")
+async def health_check():
+    """Health check endpoint for monitoring"""
+    try:
+        # Check database connection
+        db_healthy = db.client is not None
+        
+        # Check if we can query
+        test_query = db.client.table('support_workers').select('id').limit(1).execute()
+        db_query_healthy = len(test_query.data) >= 0
+        
+        return {
+            "status": "healthy" if db_healthy and db_query_healthy else "unhealthy",
+            "timestamp": datetime.now(timezone.utc).isoformat(),
+            "database": {
+                "connected": db_healthy,
+                "can_query": db_query_healthy
+            },
+            "version": os.getenv("APP_VERSION", "2.0.0"),
+            "environment": os.getenv("ENVIRONMENT", "development")
+        }
+    except Exception as e:
+        logger.error("health_check_failed", error=str(e))
+        return {
+            "status": "unhealthy",
+            "error": str(e),
+            "timestamp": datetime.now(timezone.utc).isoformat()
+        }
+
+@app.get("/ready")
+async def readiness_check():
+    """Readiness check for load balancers"""
+    return {"status": "ready", "timestamp": datetime.now(timezone.utc).isoformat()}
+
+# Global error handlers
+@app.exception_handler(Exception)
+async def global_exception_handler(request: Request, exc: Exception):
+    """Catch all unhandled exceptions"""
+    request_id = str(uuid.uuid4())
+    
+    logger.error("unhandled_exception",
+        request_id=request_id,
+        path=request.url.path,
+        method=request.method,
+        error=str(exc),
+        exc_info=True
+    )
+    
+    # Don't expose internal errors to users
+    return JSONResponse(
+        status_code=500,
+        content={
+            "error": "internal_server_error",
+            "message": "An unexpected error occurred. Please try again later.",
+            "request_id": request_id
+        }
+    )
+
+from fastapi.exceptions import RequestValidationError
+
+@app.exception_handler(RequestValidationError)
+async def validation_exception_handler(request: Request, exc: RequestValidationError):
+    """Handle validation errors with clear messages"""
+    return JSONResponse(
+        status_code=422,
+        content={
+            "error": "validation_error",
+            "message": "Invalid request data",
+            "details": exc.errors()
+        }
+    )
+
+class BusinessLogicError(Exception):
+    """Custom exception for business logic errors"""
+    pass
+
+@app.exception_handler(BusinessLogicError)
+async def business_logic_handler(request: Request, exc: BusinessLogicError):
+    """Handle business logic errors"""
+    return JSONResponse(
+        status_code=400,
+        content={
+            "error": "business_logic_error",
+            "message": str(exc)
+        }
+    )
+
 app.include_router(api_router)
 
 if __name__ == "__main__":

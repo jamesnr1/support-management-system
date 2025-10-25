@@ -56,9 +56,7 @@ class CalendarService:
         Exchange authorization code for credentials
         """
         try:
-            print(f"DEBUG: Raw code received: {repr(code)}")
-            print(f"DEBUG: Code length: {len(code)}")
-            print(f"DEBUG: Redirect URI: {redirect_uri}")
+            # Debug logging removed for production
             
             # Clean the code - remove any whitespace or URL encoding issues
             clean_code = code.strip()
@@ -71,9 +69,9 @@ class CalendarService:
                 query_params = urlparse.parse_qs(parsed.query)
                 if 'code' in query_params:
                     clean_code = query_params['code'][0]
-                    print(f"DEBUG: Extracted code from URL: {clean_code[:20]}...")
+                    # Debug logging removed for production
             
-            print(f"DEBUG: Final cleaned code: {clean_code[:20]}...")
+            # Debug logging removed for production
             
             flow = Flow.from_client_secrets_file(
                 CLIENT_SECRETS_FILE,
@@ -81,9 +79,7 @@ class CalendarService:
                 redirect_uri=redirect_uri
             )
             
-            print(f"DEBUG: About to call flow.fetch_token with code")
             flow.fetch_token(code=clean_code)
-            print(f"DEBUG: Successfully got token!")
             
             self.creds = flow.credentials
             self.service = build('calendar', 'v3', credentials=self.creds)
@@ -94,8 +90,7 @@ class CalendarService:
             return True
         except Exception as e:
             print(f"Error authorizing with code: {e}")
-            print(f"DEBUG: Exception type: {type(e)}")
-            print(f"DEBUG: Exception details: {str(e)}")
+            # Debug logging removed for production
             return False
     
     def save_credentials(self):
@@ -105,7 +100,7 @@ class CalendarService:
                 creds_file = os.path.join(os.path.dirname(__file__), 'calendar_credentials.json')
                 with open(creds_file, 'w') as f:
                     f.write(self.creds.to_json())
-                print(f"DEBUG: Saved credentials to {creds_file}")
+                # Debug logging removed for production
         except Exception as e:
             print(f"Error saving credentials: {e}")
     
@@ -127,7 +122,7 @@ class CalendarService:
                     self.save_credentials()  # Save refreshed credentials
                 
                 self.service = build('calendar', 'v3', credentials=self.creds)
-                print(f"DEBUG: Loaded existing credentials")
+                # Debug logging removed for production
                 return True
         except Exception as e:
             print(f"Error loading credentials: {e}")
@@ -185,7 +180,7 @@ class CalendarService:
         try:
             # If 'all' is specified, fetch from all accessible calendars
             if calendar_id == 'all':
-                print(f"DEBUG: Fetching from ALL calendars, timeMin: {start_date.isoformat()}, timeMax: {end_date.isoformat()}")
+                # Debug logging removed for production
 
                 # Get list of all calendars
                 calendars_result = self.service.calendarList().list().execute()
@@ -207,7 +202,7 @@ class CalendarService:
                         ).execute()
 
                         cal_events = events_result.get('items', [])
-                        print(f"DEBUG: Calendar '{cal_name}' ({cal_id}): {len(cal_events)} events")
+                        # Debug logging removed for production
                         # Add calendar info to each event
                         for event in cal_events:
                             event['_calendarId'] = cal_id
@@ -215,13 +210,13 @@ class CalendarService:
                         all_events.extend(cal_events)
 
                     except Exception as cal_error:
-                        print(f"DEBUG: Error fetching from calendar '{cal_name}': {cal_error}")
+                        # Debug logging removed for production
 
                 events = all_events
-                print(f"DEBUG: Got total {len(events)} events from all calendars")
+                # Debug logging removed for production
 
             else:
-                print(f"DEBUG: Fetching from calendar {calendar_id}, timeMin: {start_date.isoformat()}, timeMax: {end_date.isoformat()}")
+                # Debug logging removed for production
 
                 events_result = self.service.events().list(
                     calendarId=calendar_id,
@@ -233,7 +228,7 @@ class CalendarService:
                 ).execute()
 
                 events = events_result.get('items', [])
-                print(f"DEBUG: Got {len(events)} events from Google Calendar")
+                # Debug logging removed for production
             
             # Format events for frontend
             appointments = []

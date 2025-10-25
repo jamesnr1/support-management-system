@@ -1,18 +1,19 @@
+# Security Configuration
+ADMIN_SECRET_KEY=generate-strong-random-key-here
+ALLOWED_ORIGINS=http://localhost:3000,https://your-production-domain.vercel.app
+
 # Database Configuration
-SUPABASE_URL=your_supabase_url_here
-SUPABASE_KEY=your_supabase_anon_key_here
+SUPABASE_URL=https://your-project.supabase.co
+SUPABASE_SERVICE_KEY=your-service-role-key
 
-# Google Calendar Integration (Optional)
-GOOGLE_CLIENT_SECRETS_FILE=client_secrets.json
+# External APIs
+OPENAI_API_KEY=your-openai-api-key
+TELEGRAM_BOT_TOKEN=your-telegram-bot-token
 
-# Telegram Bot Configuration
-# Get bot token from @BotFather on Telegram
-TELEGRAM_BOT_TOKEN=your_telegram_bot_token_here
+# Monitoring
+SENTRY_DSN=your-sentry-dsn-here
+ENVIRONMENT=development
+APP_VERSION=2.0.0
 
-# Coordinator Telegram Chat IDs (comma-separated for multiple coordinators)
-# To get your chat ID: message your bot, then visit https://api.telegram.org/bot<YourBOTToken>/getUpdates
-TELEGRAM_COORDINATOR_IDS=123456789,987654321
-
-# Example:
-# TELEGRAM_BOT_TOKEN=6123456789:AAEhBOweik9ad3hd23Eh2dhd23dh23dh2dh
-# TELEGRAM_COORDINATOR_IDS=123456789,987654321
+# CORS (comma-separated list of allowed origins)
+CORS_ORIGINS=http://localhost:3000,https://your-production-domain.vercel.app
