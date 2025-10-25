@@ -8,8 +8,8 @@ import json
 from supabase import create_client, Client
 
 # Configuration - Update these with your actual values
-LIVE_SUPABASE_URL = "https://vskqemnnjozeirizbutj.supabase.co"
-LIVE_SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZza3FlbW5uam96ZWlyaXpidXRqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTg0MjE5NDYsImV4cCI6MjA3Mzk5Nzk0Nn0.qdmY6qVNquRwWBWTakdg06HiTHYRkF1HbaAEFfZYgR4"
+LIVE_SUPABASE_URL = "https://your-project.supabase.co"
+LIVE_SUPABASE_KEY = "your-supabase-anon-key-here"
 LOCAL_SUPABASE_URL = "http://localhost:8001"  # Your local backend URL
 LOCAL_SUPABASE_KEY = "your-local-anon-key"  # Not needed for local backend
 
